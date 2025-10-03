@@ -1,0 +1,43 @@
+{
+  "component_type": "Agent",
+  "id": "7ae9f5a7-419a-4f30-9221-4ec3bf393671",
+  "name": "assistant",
+  "description": "An agent that provides assistance with tool use.",
+  "metadata": {},
+  "inputs": [],
+  "outputs": [],
+  "llm_config": {
+    "component_type": "OllamaConfig",
+    "id": "98d132c1-ca63-4429-91e1-af2c3cf6b5fa",
+    "name": "llama3.2:latest",
+    "description": null,
+    "metadata": {},
+    "default_generation_parameters": {},
+    "url": "localhost:11434",
+    "model_id": "llama3.2:latest"
+  },
+  "system_prompt": "Use tools to solve tasks.",
+  "tools": [
+    {
+      "component_type": "ServerTool",
+      "id": "0276909b-66e0-4dd7-9c35-12bb570b60ed",
+      "name": "web_search",
+      "description": "Find information on the web",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "query",
+          "title": "Query",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "Output",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "agentspec_version": "25.4.1"
+}

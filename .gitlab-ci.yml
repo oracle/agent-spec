@@ -1,0 +1,9 @@
+image : $GITLAB_CI_CD_IMAGE
+include:
+  - local: '.gitlab/jobs/templates/get_merge_request_id.yml'
+  - local: '.gitlab/jobs/templates/get_private_branch.yml'
+  - local: '.gitlab/jobs/schedule_mergegate.yml'
+  - local: '.gitlab/jobs/schedule_regression.yml'
+
+stages:
+  - trigger

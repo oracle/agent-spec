@@ -1,0 +1,154 @@
+{
+    "component_type": "Flow",
+    "id": "2849ac60-7154-48a8-a4ef-433ffe85b5ef",
+    "name": "Flow using MCP",
+    "description": null,
+    "metadata": {},
+    "inputs": [],
+    "outputs": [
+        {
+            "title": "user_info",
+            "type": "string"
+        }
+    ],
+    "start_node": {
+        "$component_ref": "1949f7b0-782e-4856-bfe9-cc58964c175a"
+    },
+    "nodes": [
+        {
+            "$component_ref": "1949f7b0-782e-4856-bfe9-cc58964c175a"
+        },
+        {
+            "$component_ref": "c4be5127-81a6-4627-8525-bac37214d547"
+        },
+        {
+            "$component_ref": "ab20a178-5658-4c92-bd9a-ce87dd9a1ecd"
+        }
+    ],
+    "control_flow_connections": [
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "d4c33b22-4de1-4e36-bc7f-6e48a7dccfb0",
+            "name": "start->mcptool",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "1949f7b0-782e-4856-bfe9-cc58964c175a"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "c4be5127-81a6-4627-8525-bac37214d547"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "c6fde850-2bff-45f4-b44b-6cf1c85805c1",
+            "name": "mcptool->end",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "c4be5127-81a6-4627-8525-bac37214d547"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "ab20a178-5658-4c92-bd9a-ce87dd9a1ecd"
+            }
+        }
+    ],
+    "data_flow_connections": [
+        {
+            "component_type": "DataFlowEdge",
+            "id": "62ee2e58-19e1-403d-b6ca-eeabb753c20a",
+            "name": "user_info",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "c4be5127-81a6-4627-8525-bac37214d547"
+            },
+            "source_output": "user_info",
+            "destination_node": {
+                "$component_ref": "ab20a178-5658-4c92-bd9a-ce87dd9a1ecd"
+            },
+            "destination_input": "user_info"
+        }
+    ],
+    "$referenced_components": {
+        "c4be5127-81a6-4627-8525-bac37214d547": {
+            "component_type": "ToolNode",
+            "id": "c4be5127-81a6-4627-8525-bac37214d547",
+            "name": "mcp_tool",
+            "description": null,
+            "metadata": {},
+            "inputs": [],
+            "outputs": [
+                {
+                    "title": "user_info",
+                    "type": "string"
+                }
+            ],
+            "branches": [
+                "next"
+            ],
+            "tool": {
+                "component_type": "MCPTool",
+                "id": "f1730e08-491b-4348-96e6-8fb18b0db618",
+                "name": "get_user_session",
+                "description": "Return session details for the current user",
+                "metadata": {},
+                "inputs": [],
+                "outputs": [
+                    {
+                        "title": "user_info",
+                        "type": "string"
+                    }
+                ],
+                "client_transport": {
+                    "component_type": "SSETransport",
+                    "id": "96cda25c-5b3e-43cf-97bd-2d1feca83473",
+                    "name": "MCP Client",
+                    "description": null,
+                    "metadata": {},
+                    "session_parameters": {
+                        "read_timeout_seconds": 60
+                    },
+                    "url": "http://localhost:8080/sse",
+                    "headers": null
+                }
+            }
+        },
+        "ab20a178-5658-4c92-bd9a-ce87dd9a1ecd": {
+            "component_type": "EndNode",
+            "id": "ab20a178-5658-4c92-bd9a-ce87dd9a1ecd",
+            "name": "end",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "user_info",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "user_info",
+                    "type": "string"
+                }
+            ],
+            "branches": [],
+            "branch_name": "next"
+        },
+        "1949f7b0-782e-4856-bfe9-cc58964c175a": {
+            "component_type": "StartNode",
+            "id": "1949f7b0-782e-4856-bfe9-cc58964c175a",
+            "name": "start",
+            "description": null,
+            "metadata": {},
+            "inputs": [],
+            "outputs": [],
+            "branches": [
+                "next"
+            ]
+        }
+    },
+    "agentspec_version": "25.4.1"
+}

@@ -1,0 +1,50 @@
+component_type: Agent
+id: bdd2369b-82e6-488f-be2c-44f05b244cab
+name: Helpful agent with username and tools
+description: null
+metadata: {}
+inputs:
+- title: user_name
+  type: string
+outputs: []
+llm_config:
+  component_type: VllmConfig
+  id: 3a5bf0c0-9f28-47d8-99b4-be7da6a531c8
+  name: vllm-llama-4-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: http://url.to.my.vllm.server/llama4mav
+  model_id: llama-4-maverick
+system_prompt: 'Your a helpful writing assistant. Answer the user''s questions about
+  article writing.
+
+  Make sure to welcome the user first, their name is {{user_name}}, but keep it short'
+tools:
+- component_type: ServerTool
+  id: fc98ab56-0d30-4bdd-a84d-cab76d75e575
+  name: get_synonyms
+  description: Given a word, return the list of synonyms according to the vocabulary
+  metadata: {}
+  inputs:
+  - title: word
+    type: string
+  outputs:
+  - title: synonyms
+    items:
+      title: word
+      type: string
+    type: array
+- component_type: ServerTool
+  id: 48676753-50ff-4346-b0a5-1ff13069d0be
+  name: pretty_formatting
+  description: Given a paragraph, format the paragraph to fix spaces, newlines, indentation,
+    etc.
+  metadata: {}
+  inputs:
+  - title: paragraph
+    type: string
+  outputs:
+  - title: formatted_paragraph
+    type: string
+agentspec_version: 25.4.1

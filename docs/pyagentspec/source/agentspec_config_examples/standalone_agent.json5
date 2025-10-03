@@ -1,0 +1,103 @@
+{
+  "$referenced_components": {
+
+    // LLM
+
+    "oci_genai_llm": {
+      "id": "93b6d1d1",
+      "type": "OciGenAiLLM",
+      "name": "OCI GenAi LLM",
+      "model_id": "command-r-08-2024",
+      "default_generation_parameters": {}
+    },
+
+    // Tools
+
+    "get_beneficiaries_tool": {
+      "id": "57961473",
+      "type": "ServerTool",
+      "name": "get_beneficiaries",
+      "description": "Tool that retrieves the beneficiaries of a benefit",
+      "inputs": [
+        {
+          "title": "benefit_id",
+          "description": "The benefit ID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "beneficiaries",
+          "description": "The list of beneficiaries of the benefit",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "add_beneficiary_tool": {
+      "id": "ee92ebd5",
+      "type": "ServerTool",
+      "name": "Add beneficiary",
+      "description": "Tool that add a beneficiaries to a benefit",
+      "inputs": [
+        {
+          "title": "benefit_id",
+          "description": "The benefit ID",
+          "type": "string"
+        },
+        {
+          "title": "beneficiary_id",
+          "description": "The beneficiary ID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "success",
+          "type": "boolean"
+        }
+      ]
+    },
+
+    // (Other tools omitted for brevity...)
+
+    "agent": {
+      "id": "230f3438",
+      "type": "Agent",
+      "name": "Benefits Agent",
+      "description": "Agent focused of managing benefits",
+      "prompt_template": "You are an expert in managing benefits for employees (i.e., beneficiaries).\nPlease be kind and perform the task that the user gives you.\n",
+      "llm": [
+        {
+          "$ref": "oci_genai_llm"
+        }
+      ],
+      "tools": [
+        {
+          "$ref": "get_beneficiaries_tool"
+        },
+        {
+          "$ref": "add_beneficiary_tool"
+        },
+        {
+          "$ref": "get_benefits_tool"
+        },
+        {
+          "$ref": "add_benefit_tool"
+        },
+        {
+          "$ref": "revoke_benefit_tool"
+        }
+      ],
+      // ...
+      "inputs": [],
+      "outputs": []
+    }
+  },
+  "agentspec_version": "25.4.1"
+}

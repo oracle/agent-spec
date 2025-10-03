@@ -1,0 +1,17 @@
+client_config:
+  auth_type: INSTANCE_PRINCIPAL
+  service_endpoint: my_llm_endpoint
+  component_type: OciClientConfigWithInstancePrincipal
+  description: null
+  id: d55cbd63-4109-44c0-b5c8-5e9387ee5731
+  metadata: {}
+  name: my_oci_config
+component_type: OciGenAiConfig
+default_generation_parameters: null
+description: my remote oci llm
+id: oci_llm_123
+metadata: {}
+model_id: cohere
+name: oci_llm
+compartment_id: my_compartment
+agentspec_version: 25.4.1

@@ -1,0 +1,9 @@
+{
+  "component_type": "MyCustomComponent",
+  "component_plugin_name": "MyCustomComponentPlugin",
+  "component_plugin_version": "1.2.3.4",
+  "id": "component_id",
+  "name": "My custom component",
+  "metadata": {},
+  "extra_field1": "...",
+}

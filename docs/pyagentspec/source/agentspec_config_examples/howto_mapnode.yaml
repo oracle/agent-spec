@@ -1,0 +1,246 @@
+component_type: Flow
+id: 9f172d92-f64b-4545-8297-4afa830088e6
+name: flow
+description: null
+metadata: {}
+inputs:
+- title: articles
+  items:
+    title: article
+    type: string
+  type: array
+outputs:
+- title: summaries
+  items:
+    title: summary
+    type: string
+  type: array
+start_node:
+  $component_ref: 2e7a764f-8236-459f-9cf5-7cde37f8ce94
+nodes:
+- $component_ref: 2e7a764f-8236-459f-9cf5-7cde37f8ce94
+- $component_ref: 6c41a036-c2d2-4a1f-90f3-c6c0b0fda79e
+- $component_ref: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 9fe25f4f-5c0b-423c-b139-c659d24df775
+  name: cfe1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 2e7a764f-8236-459f-9cf5-7cde37f8ce94
+  from_branch: null
+  to_node:
+    $component_ref: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+- component_type: ControlFlowEdge
+  id: bbe03108-e414-4eca-9992-c5bb2770ffcf
+  name: cfe2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+  from_branch: null
+  to_node:
+    $component_ref: 6c41a036-c2d2-4a1f-90f3-c6c0b0fda79e
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 97018039-7d88-4de1-b09c-1b84a8b0f425
+  name: dfe1
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2e7a764f-8236-459f-9cf5-7cde37f8ce94
+  source_output: articles
+  destination_node:
+    $component_ref: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+  destination_input: iterated_article
+- component_type: DataFlowEdge
+  id: 002ab9b3-78b3-42cf-9b07-02063174783d
+  name: dfe2
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+  source_output: collected_summary
+  destination_node:
+    $component_ref: 6c41a036-c2d2-4a1f-90f3-c6c0b0fda79e
+  destination_input: summaries
+$referenced_components:
+  fa5a8b80-fd92-4b75-bd5f-aba7af849fe6:
+    component_type: MapNode
+    id: fa5a8b80-fd92-4b75-bd5f-aba7af849fe6
+    name: map_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: iterated_article
+      items:
+        title: article
+        type: string
+      type: array
+    outputs:
+    - title: collected_summary
+      items:
+        title: summary
+        type: string
+      type: array
+    branches:
+    - next
+    subflow:
+      component_type: Flow
+      id: ab1087dd-8469-4173-b46c-03426bc7ae8f
+      name: mapnode_subflow
+      description: null
+      metadata: {}
+      inputs:
+      - title: article
+        type: string
+      outputs:
+      - title: summary
+        type: string
+      start_node:
+        $component_ref: 0a09736b-87e3-4b73-9c50-803fda03d5ce
+      nodes:
+      - $component_ref: 0a09736b-87e3-4b73-9c50-803fda03d5ce
+      - $component_ref: e0293cb9-1cc2-4434-b398-1c4ec4cf269c
+      - $component_ref: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: eb62a074-4bdb-480e-8498-cc3db3b9b976
+        name: cfe1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 0a09736b-87e3-4b73-9c50-803fda03d5ce
+        from_branch: null
+        to_node:
+          $component_ref: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+      - component_type: ControlFlowEdge
+        id: fc730dd7-a564-47e9-8d42-4b9c36880edc
+        name: cfe2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+        from_branch: null
+        to_node:
+          $component_ref: e0293cb9-1cc2-4434-b398-1c4ec4cf269c
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: 87c2ec9d-f2df-4e85-ae41-ee03cea71ce0
+        name: dfe1
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 0a09736b-87e3-4b73-9c50-803fda03d5ce
+        source_output: article
+        destination_node:
+          $component_ref: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+        destination_input: article
+      - component_type: DataFlowEdge
+        id: 7c53602c-d3e8-45ae-99fe-93e05ce48f93
+        name: dfe2
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+        source_output: summary
+        destination_node:
+          $component_ref: e0293cb9-1cc2-4434-b398-1c4ec4cf269c
+        destination_input: summary
+      $referenced_components:
+        0c76dfef-f68d-4e79-ac06-e2f605e017c3:
+          component_type: LlmNode
+          id: 0c76dfef-f68d-4e79-ac06-e2f605e017c3
+          name: summarize_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: article
+            type: string
+          outputs:
+          - title: summary
+            type: string
+          branches:
+          - next
+          llm_config:
+            component_type: VllmConfig
+            id: 4175f758-cf13-4f15-87dc-fde10befe077
+            name: vllm-llama-4-maverick
+            description: null
+            metadata: {}
+            default_generation_parameters: null
+            url: http://url.to.my.vllm.server/llama4mav
+            model_id: llama-4-maverick
+          prompt_template: "Summarize this article in 10 words:\n {{article}}"
+        0a09736b-87e3-4b73-9c50-803fda03d5ce:
+          component_type: StartNode
+          id: 0a09736b-87e3-4b73-9c50-803fda03d5ce
+          name: start_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: article
+            type: string
+          outputs:
+          - title: article
+            type: string
+          branches:
+          - next
+        e0293cb9-1cc2-4434-b398-1c4ec4cf269c:
+          component_type: EndNode
+          id: e0293cb9-1cc2-4434-b398-1c4ec4cf269c
+          name: end_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: summary
+            type: string
+          outputs:
+          - title: summary
+            type: string
+          branches: []
+          branch_name: next
+    reducers:
+      summary: append
+  2e7a764f-8236-459f-9cf5-7cde37f8ce94:
+    component_type: StartNode
+    id: 2e7a764f-8236-459f-9cf5-7cde37f8ce94
+    name: start_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: articles
+      items:
+        title: article
+        type: string
+      type: array
+    outputs:
+    - title: articles
+      items:
+        title: article
+        type: string
+      type: array
+    branches:
+    - next
+  6c41a036-c2d2-4a1f-90f3-c6c0b0fda79e:
+    component_type: EndNode
+    id: 6c41a036-c2d2-4a1f-90f3-c6c0b0fda79e
+    name: end_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: summaries
+      items:
+        title: summary
+        type: string
+      type: array
+    outputs:
+    - title: summaries
+      items:
+        title: summary
+        type: string
+      type: array
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

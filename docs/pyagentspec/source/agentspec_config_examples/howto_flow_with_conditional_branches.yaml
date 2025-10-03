@@ -1,0 +1,293 @@
+component_type: Flow
+id: c00190a0-6fc4-4f28-9577-1bf9493304c6
+name: Generate code and review flow
+description: Flow that given a user request, generates a python code snippet to satisfy
+  it and passes it through a code review before returning it
+metadata: {}
+inputs:
+- title: user_request
+  type: string
+outputs:
+- title: code
+  type: string
+  default: ''
+start_node:
+  $component_ref: e486b685-8af7-40d0-87c9-3d8a8f8ac9ca
+nodes:
+- $component_ref: e486b685-8af7-40d0-87c9-3d8a8f8ac9ca
+- $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+- $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+- $component_ref: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+- $component_ref: d2771d05-cea1-4d91-a7ee-e1789db6598e
+- $component_ref: e44296e1-cd8e-41f1-a75e-d1e2dc34bf17
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 07a6797d-c175-4242-890a-eca87087e6aa
+  name: start_to_generate_code_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: e486b685-8af7-40d0-87c9-3d8a8f8ac9ca
+  from_branch: null
+  to_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+- component_type: ControlFlowEdge
+  id: 57f5a41d-ad00-4b99-89f7-d2e6905b9aa1
+  name: generate_code_to_review_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  from_branch: null
+  to_node:
+    $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+- component_type: ControlFlowEdge
+  id: 777ee015-8902-49f9-ae85-50f40c1efe14
+  name: review_to_is_code_ready_decision_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+  from_branch: null
+  to_node:
+    $component_ref: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+- component_type: ControlFlowEdge
+  id: 2f6792cb-2dbe-4301-8291-adf4184345fc
+  name: is_code_ready_decision_to_is_code_ready_branching_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+  from_branch: null
+  to_node:
+    $component_ref: d2771d05-cea1-4d91-a7ee-e1789db6598e
+- component_type: ControlFlowEdge
+  id: 1aeb743f-646d-4c03-9ebb-6594ce5c1022
+  name: is_code_ready_branching_to_end_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: d2771d05-cea1-4d91-a7ee-e1789db6598e
+  from_branch: 'yes'
+  to_node:
+    $component_ref: e44296e1-cd8e-41f1-a75e-d1e2dc34bf17
+- component_type: ControlFlowEdge
+  id: fdcc989d-6d81-4299-8e71-60d57469f24f
+  name: is_code_ready_branching_to_generate_code_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: d2771d05-cea1-4d91-a7ee-e1789db6598e
+  from_branch: 'no'
+  to_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: c99890dc-a45c-4dfb-99f2-95eb064f7cc9
+  name: start_to_generate_code_user_request_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: e486b685-8af7-40d0-87c9-3d8a8f8ac9ca
+  source_output: user_request
+  destination_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  destination_input: user_request
+- component_type: DataFlowEdge
+  id: fd313b9f-4c2e-4f5b-b56e-485392201054
+  name: generate_code_to_end_code_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  source_output: code
+  destination_node:
+    $component_ref: e44296e1-cd8e-41f1-a75e-d1e2dc34bf17
+  destination_input: code
+- component_type: DataFlowEdge
+  id: f2376f1c-2a99-44f6-8b6d-2c7c63426999
+  name: generate_code_to_generate_code_code_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  source_output: code
+  destination_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  destination_input: code
+- component_type: DataFlowEdge
+  id: 4ed023a6-edb7-490e-9231-f6b3c8851631
+  name: generate_code_to_review_code_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  source_output: code
+  destination_node:
+    $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+  destination_input: code
+- component_type: DataFlowEdge
+  id: 8e19ed78-4fb5-4fc8-bbd2-a6f7a84a7193
+  name: review_code_to_generate_code_review_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+  source_output: review
+  destination_node:
+    $component_ref: fe833040-7c2b-4ccb-948b-438231a81e6c
+  destination_input: review
+- component_type: DataFlowEdge
+  id: b94e7966-1556-498f-a0fc-30d407ec7def
+  name: review_code_to_is_code_ready_review_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 05e0070f-20d6-4087-842f-0bc0797e07a7
+  source_output: review
+  destination_node:
+    $component_ref: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+  destination_input: review
+- component_type: DataFlowEdge
+  id: edc7ff9d-8e67-4aab-9128-355a6ab10d31
+  name: review_code_to_is_code_ready_flag_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+  source_output: is_code_ready
+  destination_node:
+    $component_ref: d2771d05-cea1-4d91-a7ee-e1789db6598e
+  destination_input: is_code_ready
+$referenced_components:
+  e486b685-8af7-40d0-87c9-3d8a8f8ac9ca:
+    component_type: StartNode
+    id: e486b685-8af7-40d0-87c9-3d8a8f8ac9ca
+    name: Start node
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_request
+      type: string
+    outputs:
+    - title: user_request
+      type: string
+    branches:
+    - next
+  fe833040-7c2b-4ccb-948b-438231a81e6c:
+    component_type: LlmNode
+    id: fe833040-7c2b-4ccb-948b-438231a81e6c
+    name: Generate code node
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_request
+      type: string
+    - title: code
+      type: string
+      default: ''
+    - title: review
+      type: string
+      default: ''
+    outputs:
+    - title: code
+      type: string
+      default: ''
+    branches:
+    - next
+    llm_config:
+      $component_ref: cd9d2aa4-9506-4013-b85c-7c77b275e059
+    prompt_template: "You are a great code python software engineer.\n\n    Please\
+      \ write the python code to satisfy the following user request: \"{{user_request}}\"\
+      .\n\n    You previously generated the following snippet of code:\n    ```\n\
+      \    {{code}}\n    ```\n    Take inspiration from the snippet of code.\n\n \
+      \   The code reviewer gave the following feedback:\n    {{review}}\n    Take\
+      \ also into account the comments in the review\n\n    Write only the python\
+      \ code.\n    "
+  cd9d2aa4-9506-4013-b85c-7c77b275e059:
+    component_type: VllmConfig
+    id: cd9d2aa4-9506-4013-b85c-7c77b275e059
+    name: Vllm model
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: vllm_url
+    model_id: model_id
+  05e0070f-20d6-4087-842f-0bc0797e07a7:
+    component_type: LlmNode
+    id: 05e0070f-20d6-4087-842f-0bc0797e07a7
+    name: Review code node
+    description: null
+    metadata: {}
+    inputs:
+    - title: code
+      type: string
+      default: ''
+    outputs:
+    - title: review
+      type: string
+      default: ''
+    branches:
+    - next
+    llm_config:
+      $component_ref: cd9d2aa4-9506-4013-b85c-7c77b275e059
+    prompt_template: "You are a great code python software engineer, and a highly\
+      \ skilled code reviewer.\n    Please review the following snippet of python\
+      \ code:\n    ```\n    {{code}}\n    ```\n    "
+  942a3daf-c3d2-40a1-b986-0a50e0027d74:
+    component_type: LlmNode
+    id: 942a3daf-c3d2-40a1-b986-0a50e0027d74
+    name: Check if code is ready node
+    description: null
+    metadata: {}
+    inputs:
+    - title: review
+      type: string
+      default: ''
+    outputs:
+    - title: is_code_ready
+      type: boolean
+      default: false
+    branches:
+    - next
+    llm_config:
+      $component_ref: cd9d2aa4-9506-4013-b85c-7c77b275e059
+    prompt_template: "You are a software engineer with 20 years of experience. You\
+      \ have to take a decision.\n    Based on the following code review, do you think\
+      \ that the code is ready to be deployed?\n    ```\n    {{review}}\n    ```\n\
+      \    Please answer only with `yes` or `no`.\n    "
+  d2771d05-cea1-4d91-a7ee-e1789db6598e:
+    component_type: BranchingNode
+    id: d2771d05-cea1-4d91-a7ee-e1789db6598e
+    name: Is code ready branching node
+    description: null
+    metadata: {}
+    inputs:
+    - title: is_code_ready
+      type: boolean
+      default: false
+    outputs: []
+    branches:
+    - default
+    - 'no'
+    - 'yes'
+    mapping:
+      'yes': 'yes'
+      'no': 'no'
+  e44296e1-cd8e-41f1-a75e-d1e2dc34bf17:
+    component_type: EndNode
+    id: e44296e1-cd8e-41f1-a75e-d1e2dc34bf17
+    name: End node
+    description: null
+    metadata: {}
+    inputs:
+    - title: code
+      type: string
+      default: ''
+    outputs:
+    - title: code
+      type: string
+      default: ''
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

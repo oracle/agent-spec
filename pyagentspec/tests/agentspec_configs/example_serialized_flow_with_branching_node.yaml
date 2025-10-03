@@ -1,0 +1,238 @@
+$referenced_components:
+  0892u3jkjhdas:
+    branches:
+    - 'No'
+    - 'Yes'
+    - default
+    component_type: BranchingNode
+    description: null
+    id: 0892u3jkjhdas
+    inputs:
+    - default: 'no'
+      title: Input_2
+      type: string
+    mapping:
+      'no': 'No'
+      'yes': 'Yes'
+    metadata: {}
+    name: Branching Node 2
+    outputs: []
+  123724893yhrj:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 123724893yhrj
+    inputs:
+    - default: 'no'
+      title: Input_2
+      type: string
+    metadata: {}
+    name: End Node 2
+    outputs:
+    - default: 'no'
+      title: Input_2
+      type: string
+  321724893yhrj:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 321724893yhrj
+    inputs: []
+    metadata: {}
+    name: End Node 3
+    outputs: []
+  724893yhrj:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 724893yhrj
+    inputs:
+    - default: 'yes'
+      title: Input_1
+      type: string
+    metadata: {}
+    name: End Node 1
+    outputs:
+    - default: 'yes'
+      title: Input_1
+      type: string
+  724oiquh3hrj:
+    branches:
+    - Maybe
+    - 'No'
+    - 'Yes'
+    - default
+    component_type: BranchingNode
+    description: null
+    id: 724oiquh3hrj
+    inputs:
+    - default: 'yes'
+      title: Input_1
+      type: string
+    mapping:
+      maybe: Maybe
+      'no': 'No'
+      'yes': 'Yes'
+    metadata: {}
+    name: Branching Node
+    outputs: []
+  lniwuebjsdvkc:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: lniwuebjsdvkc
+    inputs:
+    - default: 'yes'
+      title: Input_1
+      type: string
+    - default: 'no'
+      title: Input_2
+      type: string
+    metadata: {}
+    name: Node 1
+    outputs:
+    - default: 'yes'
+      title: Input_1
+      type: string
+    - default: 'no'
+      title: Input_2
+      type: string
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: lniwuebjsdvkc
+  id: nh32tewsaicjkl
+  metadata: {}
+  name: ctrl_edge_1
+  to_node:
+    $component_ref: 724oiquh3hrj
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: 'yes'
+  from_node:
+    $component_ref: 724oiquh3hrj
+  id: 28yu3egh
+  metadata: {}
+  name: ctrl_edge_2
+  to_node:
+    $component_ref: 724893yhrj
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: 'no'
+  from_node:
+    $component_ref: 724oiquh3hrj
+  id: 09b4h321k
+  metadata: {}
+  name: ctrl_edge_3
+  to_node:
+    $component_ref: 321724893yhrj
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: maybe
+  from_node:
+    $component_ref: 724oiquh3hrj
+  id: 09b4hq2e321k
+  metadata: {}
+  name: ctrl_edge_4
+  to_node:
+    $component_ref: 0892u3jkjhdas
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: 'yes'
+  from_node:
+    $component_ref: 0892u3jkjhdas
+  id: 0980123y321k
+  metadata: {}
+  name: ctrl_edge_5
+  to_node:
+    $component_ref: 123724893yhrj
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: 'no'
+  from_node:
+    $component_ref: 0892u3jkjhdas
+  id: nbhj234g23y321k
+  metadata: {}
+  name: ctrl_edge_6
+  to_node:
+    $component_ref: 321724893yhrj
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: Input_1
+  destination_node:
+    $component_ref: 724oiquh3hrj
+  id: buhdgsbjmn
+  metadata: {}
+  name: data_edge_1
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Input_1
+- component_type: DataFlowEdge
+  description: null
+  destination_input: Input_2
+  destination_node:
+    $component_ref: 0892u3jkjhdas
+  id: 67uyh5423hje
+  metadata: {}
+  name: data_edge_2
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Input_2
+- component_type: DataFlowEdge
+  description: null
+  destination_input: Input_1
+  destination_node:
+    $component_ref: 724893yhrj
+  id: 722njqbakhcsa
+  metadata: {}
+  name: data_edge_3
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Input_1
+- component_type: DataFlowEdge
+  description: null
+  destination_input: Input_2
+  destination_node:
+    $component_ref: 123724893yhrj
+  id: 8h4k23jhmans
+  metadata: {}
+  name: data_edge_4
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Input_2
+description: null
+id: mmnhagawse98273
+inputs:
+- default: 'yes'
+  title: Input_1
+  type: string
+- default: 'no'
+  title: Input_2
+  type: string
+metadata: null
+name: Example branching test flow
+nodes:
+- $component_ref: lniwuebjsdvkc
+- $component_ref: 724oiquh3hrj
+- $component_ref: 0892u3jkjhdas
+- $component_ref: 724893yhrj
+- $component_ref: 123724893yhrj
+- $component_ref: 321724893yhrj
+outputs:
+- default: 'yes'
+  title: Input_1
+  type: string
+- default: 'no'
+  title: Input_2
+  type: string
+start_node:
+  $component_ref: lniwuebjsdvkc
+agentspec_version: 25.4.1

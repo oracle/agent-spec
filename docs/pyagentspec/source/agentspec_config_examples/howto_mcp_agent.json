@@ -1,0 +1,61 @@
+{
+    "component_type": "Agent",
+    "id": "a98dfe0f-2f36-4c4c-937e-ab4394ef7863",
+    "name": "Agent using MCP",
+    "description": null,
+    "metadata": {},
+    "inputs": [],
+    "outputs": [],
+    "llm_config": {
+        "component_type": "VllmConfig",
+        "id": "2242f59e-d803-4413-8473-c807bc5cbf19",
+        "name": "llm",
+        "description": null,
+        "metadata": {},
+        "default_generation_parameters": null,
+        "url": "url",
+        "model_id": "model_id"
+    },
+    "system_prompt": "Use tools at your disposal to assist the user.",
+    "tools": [
+        {
+            "component_type": "MCPTool",
+            "id": "d0b7948c-74e1-4789-a89a-b7a8a11a1651",
+            "name": "get_user_session",
+            "description": "Return session details for the current user",
+            "metadata": {},
+            "inputs": [],
+            "outputs": [],
+            "client_transport": {
+                "$component_ref": "d083a903-d504-41d4-84db-aabf19344c5c"
+            }
+        },
+        {
+            "component_type": "MCPTool",
+            "id": "2f03453b-def7-4515-b02e-b780c92c81ca",
+            "name": "get_payslips",
+            "description": "Return payslip details for a given PersonId",
+            "metadata": {},
+            "inputs": [],
+            "outputs": [],
+            "client_transport": {
+                "$component_ref": "d083a903-d504-41d4-84db-aabf19344c5c"
+            }
+        }
+    ],
+    "$referenced_components": {
+        "d083a903-d504-41d4-84db-aabf19344c5c": {
+            "component_type": "SSETransport",
+            "id": "d083a903-d504-41d4-84db-aabf19344c5c",
+            "name": "MCP Client",
+            "description": null,
+            "metadata": {},
+            "session_parameters": {
+                "read_timeout_seconds": 60
+            },
+            "url": "http://localhost:8080/sse",
+            "headers": null
+        }
+    },
+    "agentspec_version": "25.4.1"
+}
