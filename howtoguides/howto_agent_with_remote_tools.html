@@ -1,0 +1,1627 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>How to Develop an Agent with Remote Tools &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_agent_with_remote_tools';</script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to Do Map and Reduce Operations in Flows" href="howto_mapnode.html" />
+    <link rel="prev" title="How to Develop a Flow with Conditional Branches" href="howto_flow_with_conditional_branches.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="26.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">How-to guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-to Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Develop an Agent with Remote Tools</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="how-to-develop-an-agent-with-remote-tools">
+<h1>How to Develop an Agent with Remote Tools<a class="headerlink" href="#how-to-develop-an-agent-with-remote-tools" title="Permalink to this heading">#</a></h1>
+<p>This guide demonstrates how to:</p>
+<ol class="arabic simple">
+<li><p>Define properties to document the types of tool arguments and variables used in prompt templates</p></li>
+<li><p>Configure remote tools that query external web APIs</p></li>
+<li><p>Define the configuration for a LLM model</p></li>
+<li><p>Define an agent with specific instructions and access to tools</p></li>
+<li><p>Export the Agent Spec configuration for the agent</p></li>
+</ol>
+<p>The assistant demonstrated in this guide focuses on helping users understand their benefits; however, the approach can be applied to other use-cases.
+The assistant is a flexible agent based on the ReAct framework.
+It has access to the tools to retrieve user-specific data and perform accurate calculations.</p>
+<section id="basic-implementation">
+<h2>Basic implementation<a class="headerlink" href="#basic-implementation" title="Permalink to this heading">#</a></h2>
+<section id="define-properties">
+<h3>1. Define properties<a class="headerlink" href="#define-properties" title="Permalink to this heading">#</a></h3>
+<p>Properties help describe the inputs and outputs of assistant components, such as tools and nodes.
+They serve as documentation, particularly important for tools, to guide the agent in correctly passing values to tool arguments.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListProperty</span><span class="p">,</span> <span class="n">StringProperty</span>
+
+<span class="n">agent_title_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;agent_title&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The agent title&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Benefits Assistant Agent&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">agent_description_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;agent_description&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The agent description&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;This agent provides employees with accurate and efficient responses to&quot;</span>
+        <span class="s2">&quot;benefits-related inquiries&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">workflow_title_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;workflow_title&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The workflow title&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Benefits Advisor Workflow&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">workflow_description_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;workflow_description&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The workflow description&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;This Agent workflow is designed for integration within the benefits product&#39;s chatbot, &quot;</span>
+        <span class="s2">&quot;enabling seamless interaction with employees.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">topics_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;topics&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The topics&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;- Medical Insurance&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- General Benefits Coverage&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Retirement Benefits Coverage&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Employee Benefits Enrollments&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">special_instructions_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;special_instructions&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The special instructions&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- If insufficient data is available to answer a query, ask the user for clarification or additional information.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Only entertain questions related to benefits.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Fetch factual information from documents using the RAG Retriever tool instead of generating it yourself.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- For user-specific details like costs or savings, use the REST tool to obtain only relevant information.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Use the Calculator Tool for queries requiring calculations.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Provide relevant details (e.g., insurance company, health plan, names, dates) as input to the RAG Retriever tool for effective semantic search.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- If a question is repeated, respond politely without mentioning the repetition.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Your goal is to consolidate information retrieved from tools into a coherent answer addressing the user&#39;s query.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Treat the USER_QUERY as the sole source of the user&#39;s question.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">format_instructions_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;format_instructions&quot;</span><span class="p">)</span>
+<span class="n">context_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;context&quot;</span><span class="p">)</span>
+<span class="n">employee_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;employee_id&quot;</span><span class="p">)</span>
+
+<span class="n">task_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">query_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;query&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The query string in interrogative form to be used to retrieve documents for addressing user questions.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">problem_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;problem&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A mathematical problem in natural language.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">benefits_enrollment_status_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;benefits_enrollment_status&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">cost_and_contribution_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;cost_and_contribution&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">coverage_and_plan_details_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;coverage_and_plan&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">dependents_and_beneficiaries_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;dependents_and_beneficiaries&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">providers_and_policy_info_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;providers_and_policy_info&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">calculator_output_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;calculator_output&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Calculator_Tool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">benefits_policy_rag_property</span> <span class="o">=</span> <span class="n">ListProperty</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;benefits_policy_rag&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+    <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">(),</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/ioproperties.html#property"><span class="std std-ref">Property</span></a></p>
+</section>
+<section id="define-the-remote-tools">
+<h3>2. Define the remote tools<a class="headerlink" href="#define-the-remote-tools" title="Permalink to this heading">#</a></h3>
+<p>Tools are separate methods that the agent can decide to call by passing input arguments in order to fulfill user requests.
+This section focuses on remote tools, which are configured to send HTTP requests to external web APIs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urljoin</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools.remotetool</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteTool</span>
+
+<span class="c1"># Change this url depending on where the API is hosted</span>
+<span class="n">remote_tools_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:HOST_PORT/&quot;</span>
+
+<span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tracks the current status and pending actions related to benefits enrollment.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;benefits/{{task}}&quot;</span><span class="p">),</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">benefits_enrollment_status_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Generates a breakdown of costs and contributions associated with benefits plans.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;costs&quot;</span><span class="p">),</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;employee_id&quot;</span><span class="p">:</span> <span class="s2">&quot;{{employee_id}}&quot;</span><span class="p">},</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">employee_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">cost_and_contribution_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Provides detailed information about the employee&#39;s existing benefits coverage and plans.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;coverage/{{task}}&quot;</span><span class="p">),</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">coverage_and_plan_details_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Retrieves information about dependents and beneficiaries linked to benefits plans.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;dependents/{{task}}&quot;</span><span class="p">),</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">dependents_and_beneficiaries_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Offers details about benefits providers and policy-related information.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;providers/{{task}}&quot;</span><span class="p">),</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">providers_and_policy_info_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This tool empowers agents to retrieve HR benefits policy documents or chunks of documents from a knowledge base, enhancing the accuracy of responses.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;rag&quot;</span><span class="p">),</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;{{query}}&quot;</span><span class="p">},</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">query_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">benefits_policy_rag_property</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">RemoteTool</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Calculator_Tool&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This tool allows agents to perform real-time mathematical computations for needs like estimates of benefits costs, deductibles, coverages, etc.&quot;</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;calculator&quot;</span><span class="p">),</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;problem&quot;</span><span class="p">:</span> <span class="s2">&quot;{{problem}}&quot;</span><span class="p">},</span>
+        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">problem_property</span><span class="p">],</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">calculator_output_property</span><span class="p">],</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/tools.html#remotetool"><span class="std std-ref">RemoteTool</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Never commit sensitive data such as API keys or authentication tokens when using <a class="reference internal" href="../api/tools.html#remotetool"><span class="std std-ref">RemoteTool</span></a>.
+Use secret management solutions instead.</p>
+</div>
+</section>
+<section id="define-a-llm-model">
+<h3>3. Define a LLM model<a class="headerlink" href="#define-a-llm-model" title="Permalink to this heading">#</a></h3>
+<p>The decision mechanism of Agents is powered by a Large Language Model.
+Defining the agent with Agent Spec requires to pass the configuration for the LLM.
+There are several options such as using <a class="reference external" href="https://www.oracle.com/artificial-intelligence/generative-ai/generative-ai-service/">OCI GenAI Service</a> or self hosting a model with vLLM.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">OCI GenAI</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">vLLM</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Ollama</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciGenAiConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
+
+<span class="n">client_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci Client Config&quot;</span><span class="p">,</span>
+    <span class="n">service_endpoint</span><span class="o">=</span><span class="s2">&quot;https://url-to-service-endpoint.com&quot;</span><span class="p">,</span>
+    <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
+    <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span>
+<span class="p">)</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OciGenAiConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci GenAI Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;provider.model-id&quot;</span><span class="p">,</span>
+    <span class="n">compartment_id</span><span class="o">=</span><span class="s2">&quot;compartment-id&quot;</span><span class="p">,</span>
+    <span class="n">client_config</span><span class="o">=</span><span class="n">client_config</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;VLLM_URL&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OllamaConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ollama Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+<p>API Reference: <a class="reference internal" href="../api/llmmodels.html#vllmconfig"><span class="std std-ref">VllmConfig</span></a></p>
+</section>
+<section id="define-the-agent">
+<h3>4. Define the agent<a class="headerlink" href="#define-the-agent" title="Permalink to this heading">#</a></h3>
+<p>The agent is defined with custom instructions that include placeholder variables and the list of accessible tools.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+<span class="n">system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are a helpful agent. Your official title is: {{agent_title}}.</span>
+<span class="s2">The following statement describes your responsibilities:</span>
+<span class="s2">&quot;{{agent_description}}&quot;.</span>
+
+<span class="s2">You are part of the workflow {{workflow_title}} within the company.</span>
+<span class="s2">The following is a quick description of the workflow:</span>
+<span class="s2">&quot;{{workflow_description}}&quot;.</span>
+
+<span class="s2">Your tasks are related to the following topics with their special instructions:</span>
+<span class="s2">{{topics}}</span>
+
+<span class="s2">Here are some extra special instructions:</span>
+<span class="s2">{{special_instructions}}</span>
+
+<span class="s2">Your answer is intended to be customer-facing, be sure to be professional in your response.</span>
+<span class="s2">Do not invent answers or information.</span>
+
+<span class="s2">{{format_instructions}}</span>
+
+<span class="s2">{{context}}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Benefits Advisor&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="n">system_prompt</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">agent_title_property</span><span class="p">,</span>
+        <span class="n">agent_description_property</span><span class="p">,</span>
+        <span class="n">workflow_title_property</span><span class="p">,</span>
+        <span class="n">workflow_description_property</span><span class="p">,</span>
+        <span class="n">topics_property</span><span class="p">,</span>
+        <span class="n">format_instructions_property</span><span class="p">,</span>
+        <span class="n">special_instructions_property</span><span class="p">,</span>
+        <span class="n">context_property</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agent</span></a></p>
+</section>
+<section id="export-the-agent-spec-configuration">
+<h3>5. Export the Agent Spec configuration<a class="headerlink" href="#export-the-agent-spec-configuration" title="Permalink to this heading">#</a></h3>
+<p>The Agent Spec configuration is generated in JSON format.
+These configurations can be loaded and executed in Agent Spec-compatible systems such as the <a class="reference external" href="https://github.com/oracle/wayflow">WayFlow</a> runtime.
+See, for example, <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">How to Execute Agent Spec Configurations with WayFlow</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+
+    <span class="n">serialized_agent</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+
+    <span class="c1"># you can print the serialized form or save it to a file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">serialized_agent</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/serialization.html#serialize"><span class="std std-ref">AgentSpecSerializer</span></a>.</p>
+<p>Here is what the <strong>Agent Spec representation will look like ↓</strong></p>
+<details class="summary-click-here-to-see-the-assistant-configuration">
+<summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;92ec5e14-616a-43bc-9d8b-9003d41b62a8&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Benefits Advisor&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The agent title&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;agent_title&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Benefits Assistant Agent&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The agent description&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;agent_description&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This agent provides employees with accurate and efficient responses tobenefits-related inquiries&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The workflow title&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workflow_title&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Benefits Advisor Workflow&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The workflow description&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workflow_description&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This Agent workflow is designed for integration within the benefits product&#39;s chatbot, enabling seamless interaction with employees.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The topics&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;topics&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;- Medical Insurance\n- General Benefits Coverage\n- Retirement Benefits Coverage\n- Employee Benefits Enrollments&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;format_instructions&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The special instructions&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;special_instructions&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;\n- If insufficient data is available to answer a query, ask the user for clarification or additional information.\n- Only entertain questions related to benefits.\n- Fetch factual information from documents using the RAG Retriever tool instead of generating it yourself.\n- For user-specific details like costs or savings, use the REST tool to obtain only relevant information.\n- Use the Calculator Tool for queries requiring calculations.\n- Provide relevant details (e.g., insurance company, health plan, names, dates) as input to the RAG Retriever tool for effective semantic search.\n- If a question is repeated, respond politely without mentioning the repetition.\n- Your goal is to consolidate information retrieved from tools into a coherent answer addressing the user&#39;s query.\n- Treat the USER_QUERY as the sole source of the user&#39;s question.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;context&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VllmConfig&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;33fbdf52-bb7b-4cb7-b169-782c2a368a4c&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vllm model&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;default_generation_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vllm_url&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;model_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model_id&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are a helpful agent. Your official title is: {{agent_title}}.\nThe following statement describes your responsibilities:\n\&quot;{{agent_description}}\&quot;.\n\nYou are part of the workflow {{workflow_title}} within the company.\nThe following is a quick description of the workflow:\n\&quot;{{workflow_description}}\&quot;.\n\nYour tasks are related to the following topics with their special instructions:\n{{topics}}\n\nHere are some extra special instructions:\n{{special_instructions}}\n\nYour answer is intended to be customer-facing, be sure to be professional in your response.\nDo not invent answers or information.\n\n{{format_instructions}}\n\n{{context}}\n&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;802966ae-5992-4f6f-867f-c7a9c0f3a624&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tracks the current status and pending actions related to benefits enrollment.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;benefits_enrollment_status&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/benefits/{{task}}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c74ddba5-c3bc-4493-9805-3b423595ca9d&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Generates a breakdown of costs and contributions associated with benefits plans.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;employee_id&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cost_and_contribution&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/costs&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;employee_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;{{employee_id}}&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;70c1bde5-7c34-4408-bd05-9183b881be17&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provides detailed information about the employee&#39;s existing benefits coverage and plans.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;coverage_and_plan&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/coverage/{{task}}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;15b41806-a999-48dc-8b59-29d2ab3af466&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Retrieves information about dependents and beneficiaries linked to benefits plans.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dependents_and_beneficiaries&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/dependents/{{task}}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3d6dd5ec-d7d9-4da0-b300-b70b6832849a&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Offers details about benefits providers and policy-related information.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;providers_and_policy_info&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/providers/{{task}}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a1c88588-ddf0-4760-bef8-799007390b33&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This tool empowers agents to retrieve HR benefits policy documents or chunks of documents from a knowledge base, enhancing the accuracy of responses.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The query string in interrogative form to be used to retrieve documents for addressing user questions.&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;query&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;benefits_policy_rag&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/rag&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;{{query}}&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RemoteTool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2edd172c-b745-45d8-a6b9-07906e5d6923&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Calculator_Tool&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This tool allows agents to perform real-time mathematical computations for needs like estimates of benefits costs, deductibles, coverages, etc.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A mathematical problem in natural language.&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;problem&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output of the tool Calculator_Tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;calculator_output&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:HOST_PORT/calculator&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_spec_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;problem&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;{{problem}}&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;query_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">      </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">292195eb-fb2a-4877-a4a2-515b3c69e7e3</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Benefits Advisor</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">inputs</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The agent title</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent_title</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Benefits Assistant Agent</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The agent description</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent_description</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This agent provides employees with accurate and efficient responses tobenefits-related</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">inquiries</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The workflow title</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workflow_title</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Benefits Advisor Workflow</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The workflow description</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workflow_description</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This Agent workflow is designed for integration within the benefits product&#39;s</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">chatbot, enabling seamless interaction with employees.</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The topics</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">topics</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;-</span><span class="nv"> </span><span class="s">Medical</span><span class="nv"> </span><span class="s">Insurance</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">General</span><span class="nv"> </span><span class="s">Benefits</span><span class="nv"> </span><span class="s">Coverage</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Retirement</span><span class="nv"> </span><span class="s">Benefits</span><span class="nv"> </span><span class="s">Coverage</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Employee</span><span class="nv"> </span><span class="s">Benefits</span><span class="nv"> </span><span class="s">Enrollments&#39;</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">format_instructions</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The special instructions</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">special_instructions</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">If</span><span class="nv"> </span><span class="s">insufficient</span><span class="nv"> </span><span class="s">data</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">available</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">answer</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">query,</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">clarification</span>
+<span class="w">    </span><span class="s">or</span><span class="nv"> </span><span class="s">additional</span><span class="nv"> </span><span class="s">information.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Only</span><span class="nv"> </span><span class="s">entertain</span><span class="nv"> </span><span class="s">questions</span><span class="nv"> </span><span class="s">related</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">benefits.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Fetch</span><span class="nv"> </span><span class="s">factual</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">documents</span><span class="nv"> </span><span class="s">using</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">RAG</span><span class="nv"> </span><span class="s">Retriever</span><span class="nv"> </span><span class="s">tool</span><span class="nv"> </span><span class="s">instead</span>
+<span class="w">    </span><span class="s">of</span><span class="nv"> </span><span class="s">generating</span><span class="nv"> </span><span class="s">it</span><span class="nv"> </span><span class="s">yourself.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">For</span><span class="nv"> </span><span class="s">user-specific</span><span class="nv"> </span><span class="s">details</span><span class="nv"> </span><span class="s">like</span><span class="nv"> </span><span class="s">costs</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">savings,</span><span class="nv"> </span><span class="s">use</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">REST</span><span class="nv"> </span><span class="s">tool</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">obtain</span>
+<span class="w">    </span><span class="s">only</span><span class="nv"> </span><span class="s">relevant</span><span class="nv"> </span><span class="s">information.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Calculator</span><span class="nv"> </span><span class="s">Tool</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">queries</span><span class="nv"> </span><span class="s">requiring</span><span class="nv"> </span><span class="s">calculations.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Provide</span><span class="nv"> </span><span class="s">relevant</span><span class="nv"> </span><span class="s">details</span><span class="nv"> </span><span class="s">(e.g.,</span><span class="nv"> </span><span class="s">insurance</span><span class="nv"> </span><span class="s">company,</span><span class="nv"> </span><span class="s">health</span><span class="nv"> </span><span class="s">plan,</span><span class="nv"> </span><span class="s">names,</span><span class="nv"> </span><span class="s">dates)</span>
+<span class="w">    </span><span class="s">as</span><span class="nv"> </span><span class="s">input</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">RAG</span><span class="nv"> </span><span class="s">Retriever</span><span class="nv"> </span><span class="s">tool</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">effective</span><span class="nv"> </span><span class="s">semantic</span><span class="nv"> </span><span class="s">search.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">If</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">question</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">repeated,</span><span class="nv"> </span><span class="s">respond</span><span class="nv"> </span><span class="s">politely</span><span class="nv"> </span><span class="s">without</span><span class="nv"> </span><span class="s">mentioning</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">repetition.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Your</span><span class="nv"> </span><span class="s">goal</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">consolidate</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">retrieved</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">tools</span><span class="nv"> </span><span class="s">into</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">coherent</span>
+<span class="w">    </span><span class="s">answer</span><span class="nv"> </span><span class="s">addressing</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">user</span><span class="se">&#39;&#39;</span><span class="s">s</span><span class="nv"> </span><span class="s">query.</span>
+
+<span class="w">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Treat</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">USER_QUERY</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">sole</span><span class="nv"> </span><span class="s">source</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">user</span><span class="se">&#39;&#39;</span><span class="s">s</span><span class="nv"> </span><span class="s">question.&#39;</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">llm_config</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VllmConfig</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d7f7636a-48b3-42b3-b704-d43692ee5505</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Vllm model</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">default_generation_parameters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vllm_url</span>
+<span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_id</span>
+<span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;You</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">helpful</span><span class="nv"> </span><span class="s">agent.</span><span class="nv"> </span><span class="s">Your</span><span class="nv"> </span><span class="s">official</span><span class="nv"> </span><span class="s">title</span><span class="nv"> </span><span class="s">is:</span><span class="nv"> </span><span class="s">{{agent_title}}.</span>
+
+<span class="w">  </span><span class="s">The</span><span class="nv"> </span><span class="s">following</span><span class="nv"> </span><span class="s">statement</span><span class="nv"> </span><span class="s">describes</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">responsibilities:</span>
+
+<span class="w">  </span><span class="s">&quot;{{agent_description}}&quot;.</span>
+
+
+<span class="w">  </span><span class="s">You</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">part</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">workflow</span><span class="nv"> </span><span class="s">{{workflow_title}}</span><span class="nv"> </span><span class="s">within</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">company.</span>
+
+<span class="w">  </span><span class="s">The</span><span class="nv"> </span><span class="s">following</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">quick</span><span class="nv"> </span><span class="s">description</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">workflow:</span>
+
+<span class="w">  </span><span class="s">&quot;{{workflow_description}}&quot;.</span>
+
+
+<span class="w">  </span><span class="s">Your</span><span class="nv"> </span><span class="s">tasks</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">related</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">following</span><span class="nv"> </span><span class="s">topics</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">their</span><span class="nv"> </span><span class="s">special</span><span class="nv"> </span><span class="s">instructions:</span>
+
+<span class="w">  </span><span class="s">{{topics}}</span>
+
+
+<span class="w">  </span><span class="s">Here</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">some</span><span class="nv"> </span><span class="s">extra</span><span class="nv"> </span><span class="s">special</span><span class="nv"> </span><span class="s">instructions:</span>
+
+<span class="w">  </span><span class="s">{{special_instructions}}</span>
+
+
+<span class="w">  </span><span class="s">Your</span><span class="nv"> </span><span class="s">answer</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">intended</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">customer-facing,</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">sure</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">professional</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">your</span>
+<span class="w">  </span><span class="s">response.</span>
+
+<span class="w">  </span><span class="s">Do</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">invent</span><span class="nv"> </span><span class="s">answers</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">information.</span>
+
+
+<span class="w">  </span><span class="s">{{format_instructions}}</span>
+
+
+<span class="w">  </span><span class="s">{{context}}</span>
+
+<span class="w">  </span><span class="s">&#39;</span>
+<span class="nt">tools</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1d052f2f-ae1d-47b2-ac8d-4bfc231c73b2</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Benefits_Enrollment_Status_REST_API_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tracks the current status and pending actions related to benefits enrollment.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A task, expressed as an imperative, of which data to look up in the</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">task</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Benefits_Enrollment_Status_REST_API_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">benefits_enrollment_status</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/benefits/{{task}}</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">48799e60-eccd-4e1e-a1fd-9fc00d60de1e</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Costs_and_Contributions_REST_API_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generates a breakdown of costs and contributions associated with benefits</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">plans.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">employee_id</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Costs_and_Contributions_REST_API_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cost_and_contribution</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/costs</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">employee_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{employee_id}}&#39;</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1117282d-d092-4958-94d1-8043f00ab730</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coverage_and_Plan_Details_REST_API_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Provides detailed information about the employee&#39;s existing benefits</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">coverage and plans.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A task, expressed as an imperative, of which data to look up in the</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">task</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Coverage_and_Plan_Details_REST_API_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">coverage_and_plan</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/coverage/{{task}}</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2ef04e43-3097-4046-8108-fddb14493b95</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dependents_and_Beneficiaries_REST_API_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Retrieves information about dependents and beneficiaries linked to</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">benefits plans.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A task, expressed as an imperative, of which data to look up in the</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">task</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Dependents_and_Beneficiaries_REST_API_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dependents_and_beneficiaries</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/dependents/{{task}}</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e068c758-8903-4c1f-8304-848227439e7e</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Providers_and_Policy_Information_REST_API_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Offers details about benefits providers and policy-related information.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A task, expressed as an imperative, of which data to look up in the</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">task</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Providers_and_Policy_Information_REST_API_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">providers_and_policy_info</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/providers/{{task}}</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a3a3faa5-9b9e-47fc-a588-8619df752ed0</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RAG_Retrieval_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This tool empowers agents to retrieve HR benefits policy documents</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">or chunks of documents from a knowledge base, enhancing the accuracy of responses.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The query string in interrogative form to be used to retrieve documents</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">for addressing user questions.</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">query</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool RAG_Retrieval_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">benefits_policy_rag</span>
+<span class="w">    </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">array</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/rag</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{query}}&#39;</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoteTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c64aae7c-5987-4e57-ad21-89781f3587c7</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Calculator_Tool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This tool allows agents to perform real-time mathematical computations</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">for needs like estimates of benefits costs, deductibles, coverages, etc.</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A mathematical problem in natural language.</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">problem</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Output of the tool Calculator_Tool</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">calculator_output</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:HOST_PORT/calculator</span>
+<span class="w">  </span><span class="nt">http_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">POST</span>
+<span class="w">  </span><span class="nt">api_spec_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">problem</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{problem}}&#39;</span>
+<span class="w">  </span><span class="nt">query_params</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.1</span>
+</pre></div>
+</div>
+</div></div>
+</details></section>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
+<p>This guide covered how to:</p>
+<ol class="arabic simple">
+<li><p>Define properties to document tool arguments and variables used in prompt templates</p></li>
+<li><p>Define remote tools configured to query web APIs</p></li>
+<li><p>Define the configuration for a LLM model</p></li>
+<li><p>Define an agent with custom instructions and tool access</p></li>
+<li><p>Export the Agent Spec configuration for the agent</p></li>
+</ol>
+<details class="summary-below-is-the-complete-code-from-this-guide">
+<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span>
+<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListProperty</span><span class="p">,</span> <span class="n">StringProperty</span>
+<span class="linenos">  3</span>
+<span class="linenos">  4</span><span class="n">agent_title_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos">  5</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;agent_title&quot;</span><span class="p">,</span>
+<span class="linenos">  6</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The agent title&quot;</span><span class="p">,</span>
+<span class="linenos">  7</span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Benefits Assistant Agent&quot;</span><span class="p">,</span>
+<span class="linenos">  8</span><span class="p">)</span>
+<span class="linenos">  9</span>
+<span class="linenos"> 10</span><span class="n">agent_description_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 11</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;agent_description&quot;</span><span class="p">,</span>
+<span class="linenos"> 12</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The agent description&quot;</span><span class="p">,</span>
+<span class="linenos"> 13</span>    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos"> 14</span>        <span class="s2">&quot;This agent provides employees with accurate and efficient responses to&quot;</span>
+<span class="linenos"> 15</span>        <span class="s2">&quot;benefits-related inquiries&quot;</span>
+<span class="linenos"> 16</span>    <span class="p">),</span>
+<span class="linenos"> 17</span><span class="p">)</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="n">workflow_title_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 20</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;workflow_title&quot;</span><span class="p">,</span>
+<span class="linenos"> 21</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The workflow title&quot;</span><span class="p">,</span>
+<span class="linenos"> 22</span>    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Benefits Advisor Workflow&quot;</span><span class="p">,</span>
+<span class="linenos"> 23</span><span class="p">)</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="n">workflow_description_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 26</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;workflow_description&quot;</span><span class="p">,</span>
+<span class="linenos"> 27</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The workflow description&quot;</span><span class="p">,</span>
+<span class="linenos"> 28</span>    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos"> 29</span>        <span class="s2">&quot;This Agent workflow is designed for integration within the benefits product&#39;s chatbot, &quot;</span>
+<span class="linenos"> 30</span>        <span class="s2">&quot;enabling seamless interaction with employees.&quot;</span>
+<span class="linenos"> 31</span>    <span class="p">),</span>
+<span class="linenos"> 32</span><span class="p">)</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="n">topics_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 35</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;topics&quot;</span><span class="p">,</span>
+<span class="linenos"> 36</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The topics&quot;</span><span class="p">,</span>
+<span class="linenos"> 37</span>    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos"> 38</span>        <span class="s2">&quot;- Medical Insurance&quot;</span>
+<span class="linenos"> 39</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- General Benefits Coverage&quot;</span>
+<span class="linenos"> 40</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Retirement Benefits Coverage&quot;</span>
+<span class="linenos"> 41</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Employee Benefits Enrollments&quot;</span>
+<span class="linenos"> 42</span>    <span class="p">),</span>
+<span class="linenos"> 43</span><span class="p">)</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="n">special_instructions_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 46</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;special_instructions&quot;</span><span class="p">,</span>
+<span class="linenos"> 47</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The special instructions&quot;</span><span class="p">,</span>
+<span class="linenos"> 48</span>    <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos"> 49</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- If insufficient data is available to answer a query, ask the user for clarification or additional information.&quot;</span>
+<span class="linenos"> 50</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Only entertain questions related to benefits.&quot;</span>
+<span class="linenos"> 51</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Fetch factual information from documents using the RAG Retriever tool instead of generating it yourself.&quot;</span>
+<span class="linenos"> 52</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- For user-specific details like costs or savings, use the REST tool to obtain only relevant information.&quot;</span>
+<span class="linenos"> 53</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Use the Calculator Tool for queries requiring calculations.&quot;</span>
+<span class="linenos"> 54</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Provide relevant details (e.g., insurance company, health plan, names, dates) as input to the RAG Retriever tool for effective semantic search.&quot;</span>
+<span class="linenos"> 55</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- If a question is repeated, respond politely without mentioning the repetition.&quot;</span>
+<span class="linenos"> 56</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Your goal is to consolidate information retrieved from tools into a coherent answer addressing the user&#39;s query.&quot;</span>
+<span class="linenos"> 57</span>        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- Treat the USER_QUERY as the sole source of the user&#39;s question.&quot;</span>
+<span class="linenos"> 58</span>    <span class="p">),</span>
+<span class="linenos"> 59</span><span class="p">)</span>
+<span class="linenos"> 60</span>
+<span class="linenos"> 61</span><span class="n">format_instructions_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;format_instructions&quot;</span><span class="p">)</span>
+<span class="linenos"> 62</span><span class="n">context_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;context&quot;</span><span class="p">)</span>
+<span class="linenos"> 63</span><span class="n">employee_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;employee_id&quot;</span><span class="p">)</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span><span class="n">task_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 66</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="linenos"> 67</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A task, expressed as an imperative, of which data to look up in the database&quot;</span><span class="p">,</span>
+<span class="linenos"> 68</span><span class="p">)</span>
+<span class="linenos"> 69</span>
+<span class="linenos"> 70</span><span class="n">query_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 71</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;query&quot;</span><span class="p">,</span>
+<span class="linenos"> 72</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The query string in interrogative form to be used to retrieve documents for addressing user questions.&quot;</span><span class="p">,</span>
+<span class="linenos"> 73</span><span class="p">)</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span><span class="n">problem_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 76</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;problem&quot;</span><span class="p">,</span>
+<span class="linenos"> 77</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A mathematical problem in natural language.&quot;</span><span class="p">,</span>
+<span class="linenos"> 78</span><span class="p">)</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span><span class="n">benefits_enrollment_status_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 81</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;benefits_enrollment_status&quot;</span><span class="p">,</span>
+<span class="linenos"> 82</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos"> 83</span><span class="p">)</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="n">cost_and_contribution_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 86</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;cost_and_contribution&quot;</span><span class="p">,</span>
+<span class="linenos"> 87</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos"> 88</span><span class="p">)</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span><span class="n">coverage_and_plan_details_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 91</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;coverage_and_plan&quot;</span><span class="p">,</span>
+<span class="linenos"> 92</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos"> 93</span><span class="p">)</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span><span class="n">dependents_and_beneficiaries_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos"> 96</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;dependents_and_beneficiaries&quot;</span><span class="p">,</span>
+<span class="linenos"> 97</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos"> 98</span><span class="p">)</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span><span class="n">providers_and_policy_info_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos">101</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;providers_and_policy_info&quot;</span><span class="p">,</span>
+<span class="linenos">102</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">103</span><span class="p">)</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span><span class="n">calculator_output_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span>
+<span class="linenos">106</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;calculator_output&quot;</span><span class="p">,</span>
+<span class="linenos">107</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool Calculator_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">108</span><span class="p">)</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span><span class="n">benefits_policy_rag_property</span> <span class="o">=</span> <span class="n">ListProperty</span><span class="p">(</span>
+<span class="linenos">111</span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;benefits_policy_rag&quot;</span><span class="p">,</span>
+<span class="linenos">112</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output of the tool RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">113</span>    <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">(),</span>
+<span class="linenos">114</span><span class="p">)</span>
+<span class="linenos">115</span>
+<span class="linenos">116</span><span class="c1"># .. end-define-properties:</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="c1"># .. define-tools:</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urljoin</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools.remotetool</span><span class="w"> </span><span class="kn">import</span> <span class="n">RemoteTool</span>
+<span class="linenos">123</span>
+<span class="linenos">124</span><span class="c1"># Change this url depending on where the API is hosted</span>
+<span class="linenos">125</span><span class="n">remote_tools_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://127.0.0.1:HOST_PORT/&quot;</span>
+<span class="linenos">126</span>
+<span class="linenos">127</span><span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">128</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">129</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Benefits_Enrollment_Status_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">130</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tracks the current status and pending actions related to benefits enrollment.&quot;</span><span class="p">,</span>
+<span class="linenos">131</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;benefits/{{task}}&quot;</span><span class="p">),</span>
+<span class="linenos">132</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">133</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+<span class="linenos">134</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">benefits_enrollment_status_property</span><span class="p">],</span>
+<span class="linenos">135</span>    <span class="p">),</span>
+<span class="linenos">136</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">137</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Costs_and_Contributions_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">138</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Generates a breakdown of costs and contributions associated with benefits plans.&quot;</span><span class="p">,</span>
+<span class="linenos">139</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;costs&quot;</span><span class="p">),</span>
+<span class="linenos">140</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">141</span>        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;employee_id&quot;</span><span class="p">:</span> <span class="s2">&quot;{{employee_id}}&quot;</span><span class="p">},</span>
+<span class="linenos">142</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">employee_property</span><span class="p">],</span>
+<span class="linenos">143</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">cost_and_contribution_property</span><span class="p">],</span>
+<span class="linenos">144</span>    <span class="p">),</span>
+<span class="linenos">145</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">146</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coverage_and_Plan_Details_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">147</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Provides detailed information about the employee&#39;s existing benefits coverage and plans.&quot;</span><span class="p">,</span>
+<span class="linenos">148</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;coverage/{{task}}&quot;</span><span class="p">),</span>
+<span class="linenos">149</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">150</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+<span class="linenos">151</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">coverage_and_plan_details_property</span><span class="p">],</span>
+<span class="linenos">152</span>    <span class="p">),</span>
+<span class="linenos">153</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">154</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dependents_and_Beneficiaries_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">155</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Retrieves information about dependents and beneficiaries linked to benefits plans.&quot;</span><span class="p">,</span>
+<span class="linenos">156</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;dependents/{{task}}&quot;</span><span class="p">),</span>
+<span class="linenos">157</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">158</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+<span class="linenos">159</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">dependents_and_beneficiaries_property</span><span class="p">],</span>
+<span class="linenos">160</span>    <span class="p">),</span>
+<span class="linenos">161</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">162</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Providers_and_Policy_Information_REST_API_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">163</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Offers details about benefits providers and policy-related information.&quot;</span><span class="p">,</span>
+<span class="linenos">164</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;providers/{{task}}&quot;</span><span class="p">),</span>
+<span class="linenos">165</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">166</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">task_property</span><span class="p">],</span>
+<span class="linenos">167</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">providers_and_policy_info_property</span><span class="p">],</span>
+<span class="linenos">168</span>    <span class="p">),</span>
+<span class="linenos">169</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">170</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RAG_Retrieval_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">171</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This tool empowers agents to retrieve HR benefits policy documents or chunks of documents from a knowledge base, enhancing the accuracy of responses.&quot;</span><span class="p">,</span>
+<span class="linenos">172</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;rag&quot;</span><span class="p">),</span>
+<span class="linenos">173</span>        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;{{query}}&quot;</span><span class="p">},</span>
+<span class="linenos">174</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="linenos">175</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">query_property</span><span class="p">],</span>
+<span class="linenos">176</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">benefits_policy_rag_property</span><span class="p">],</span>
+<span class="linenos">177</span>    <span class="p">),</span>
+<span class="linenos">178</span>    <span class="n">RemoteTool</span><span class="p">(</span>
+<span class="linenos">179</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Calculator_Tool&quot;</span><span class="p">,</span>
+<span class="linenos">180</span>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This tool allows agents to perform real-time mathematical computations for needs like estimates of benefits costs, deductibles, coverages, etc.&quot;</span><span class="p">,</span>
+<span class="linenos">181</span>        <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">remote_tools_url</span><span class="p">,</span> <span class="s2">&quot;calculator&quot;</span><span class="p">),</span>
+<span class="linenos">182</span>        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;problem&quot;</span><span class="p">:</span> <span class="s2">&quot;{{problem}}&quot;</span><span class="p">},</span>
+<span class="linenos">183</span>        <span class="n">http_method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="linenos">184</span>        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">problem_property</span><span class="p">],</span>
+<span class="linenos">185</span>        <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">calculator_output_property</span><span class="p">],</span>
+<span class="linenos">186</span>    <span class="p">),</span>
+<span class="linenos">187</span><span class="p">]</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span><span class="c1"># .. end-define-tools:</span>
+<span class="linenos">190</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.vllmconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+<span class="linenos">191</span>
+<span class="linenos">192</span><span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+<span class="linenos">193</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Vllm model&quot;</span><span class="p">,</span>
+<span class="linenos">194</span>    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;vllm_url&quot;</span><span class="p">,</span>
+<span class="linenos">195</span>    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span>
+<span class="linenos">196</span><span class="p">)</span>
+<span class="linenos">197</span><span class="c1"># .. define-agent:</span>
+<span class="linenos">198</span>
+<span class="linenos">199</span>
+<span class="linenos">200</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="linenos">201</span>
+<span class="linenos">202</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are a helpful agent. Your official title is: {{agent_title}}.</span>
+<span class="linenos">203</span><span class="s2">The following statement describes your responsibilities:</span>
+<span class="linenos">204</span><span class="s2">&quot;{{agent_description}}&quot;.</span>
+<span class="linenos">205</span>
+<span class="linenos">206</span><span class="s2">You are part of the workflow {{workflow_title}} within the company.</span>
+<span class="linenos">207</span><span class="s2">The following is a quick description of the workflow:</span>
+<span class="linenos">208</span><span class="s2">&quot;{{workflow_description}}&quot;.</span>
+<span class="linenos">209</span>
+<span class="linenos">210</span><span class="s2">Your tasks are related to the following topics with their special instructions:</span>
+<span class="linenos">211</span><span class="s2">{{topics}}</span>
+<span class="linenos">212</span>
+<span class="linenos">213</span><span class="s2">Here are some extra special instructions:</span>
+<span class="linenos">214</span><span class="s2">{{special_instructions}}</span>
+<span class="linenos">215</span>
+<span class="linenos">216</span><span class="s2">Your answer is intended to be customer-facing, be sure to be professional in your response.</span>
+<span class="linenos">217</span><span class="s2">Do not invent answers or information.</span>
+<span class="linenos">218</span>
+<span class="linenos">219</span><span class="s2">{{format_instructions}}</span>
+<span class="linenos">220</span>
+<span class="linenos">221</span><span class="s2">{{context}}</span>
+<span class="linenos">222</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">223</span>
+<span class="linenos">224</span><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<span class="linenos">225</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Benefits Advisor&quot;</span><span class="p">,</span>
+<span class="linenos">226</span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="linenos">227</span>    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+<span class="linenos">228</span>    <span class="n">system_prompt</span><span class="o">=</span><span class="n">system_prompt</span><span class="p">,</span>
+<span class="linenos">229</span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">230</span>        <span class="n">agent_title_property</span><span class="p">,</span>
+<span class="linenos">231</span>        <span class="n">agent_description_property</span><span class="p">,</span>
+<span class="linenos">232</span>        <span class="n">workflow_title_property</span><span class="p">,</span>
+<span class="linenos">233</span>        <span class="n">workflow_description_property</span><span class="p">,</span>
+<span class="linenos">234</span>        <span class="n">topics_property</span><span class="p">,</span>
+<span class="linenos">235</span>        <span class="n">format_instructions_property</span><span class="p">,</span>
+<span class="linenos">236</span>        <span class="n">special_instructions_property</span><span class="p">,</span>
+<span class="linenos">237</span>        <span class="n">context_property</span><span class="p">,</span>
+<span class="linenos">238</span>    <span class="p">],</span>
+<span class="linenos">239</span><span class="p">)</span>
+<span class="linenos">240</span>
+<span class="linenos">241</span><span class="c1"># .. end-define-agent:</span>
+<span class="linenos">242</span>
+<span class="linenos">243</span><span class="c1"># .. export-serialization:</span>
+<span class="linenos">244</span>
+<span class="linenos">245</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">246</span>
+<span class="linenos">247</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+<span class="linenos">248</span>
+<span class="linenos">249</span>    <span class="n">serialized_agent</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+<span class="linenos">250</span>
+<span class="linenos">251</span>    <span class="c1"># you can print the serialized form or save it to a file</span>
+<span class="linenos">252</span>    <span class="nb">print</span><span class="p">(</span><span class="n">serialized_agent</span><span class="p">)</span>
+<span class="linenos">253</span>
+</pre></div>
+</div>
+</details></section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
+<p>Having learned how to define an agent, you may now proceed to <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">how to use the WayFlow runtime to execute it</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-implementation">Basic implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-properties">1. Define properties</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-remote-tools">2. Define the remote tools</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-a-llm-model">3. Define a LLM model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-agent">4. Define the agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export-the-agent-spec-configuration">5. Export the Agent Spec configuration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

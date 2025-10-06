@@ -1,0 +1,1162 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>How to Implement a Plugin for MCP &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_mcp';</script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to Develop a Flow with Conditional Branches" href="howto_flow_with_conditional_branches.html" />
+    <link rel="prev" title="How to build a simple ReAct Agent" href="howto_agents.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="26.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">How-to guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-to Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Implement a Plugin for MCP</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="how-to-implement-a-plugin-for-mcp">
+<h1>How to Implement a Plugin for MCP<a class="headerlink" href="#how-to-implement-a-plugin-for-mcp" title="Permalink to this heading">#</a></h1>
+<div class="admonition-prerequisites admonition">
+<p class="admonition-title">Prerequisites</p>
+<p>This guide assumes you are familiar with the following concepts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="howto_flow_with_conditional_branches.html"><span class="doc">Flows</span></a></p></li>
+<li><p><a class="reference internal" href="howto_agent_with_remote_tools.html"><span class="doc">Agents</span></a></p></li>
+</ul>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://modelcontextprotocol.io/introduction">Model Context Protocol</a> (MCP) is an open protocol that standardizes
+how applications provide context to LLMs. MCP servers allow you to connect your assistant to external tools and services
+(such as web APIs, search engines, or custom data sources) <strong>without writing custom adapters for each integration</strong>.</p>
+<p>In this guide, you will learn how to:</p>
+<ul class="simple">
+<li><p>Create a simple MCP Server (in a separate Python file)</p></li>
+<li><p>Connect an Agent/Flow to an MCP Server</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This guide will show you how to integrate with WayFlow, which supports MCP Tools.
+Note that the steps shown in this guide can be applied on any runtime executor that supports MCP.</p>
+</div>
+</section>
+<section id="prerequisite-setup-a-simple-mcp-server">
+<h2>Prerequisite: Setup a simple MCP Server<a class="headerlink" href="#prerequisite-setup-a-simple-mcp-server" title="Permalink to this heading">#</a></h2>
+<p>First, let’s see how to create and start a simple MCP server exposing a couple of tools.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should copy the following server code and run it in a separate Python process.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mcp.server.fastmcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastMCP</span>
+
+<span class="n">PAYSLIPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Amount&quot;</span><span class="p">:</span> <span class="mi">7612</span><span class="p">,</span>
+        <span class="s2">&quot;Currency&quot;</span><span class="p">:</span> <span class="s2">&quot;USD&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodStartDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2025/05/15&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodEndDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2025/06/15&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PaymentDate&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DocumentId&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;PersonId&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Amount&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="s2">&quot;Currency&quot;</span><span class="p">:</span> <span class="s2">&quot;CHF&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodStartDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2024/05/01&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodEndDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2024/06/01&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PaymentDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2024/05/15&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DocumentId&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PersonId&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Amount&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="s2">&quot;Currency&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodStartDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2025/06/15&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PeriodEndDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2025/10/15&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PaymentDate&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DocumentsId&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;PersonId&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_server</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create and configure the MCP server&quot;&quot;&quot;</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">FastMCP</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example MCP Server&quot;</span><span class="p">,</span>
+        <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;A MCP Server.&quot;</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@server</span><span class="o">.</span><span class="n">tool</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_session</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;called get_user_session&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;PersonId&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Username&quot;</span><span class="p">:</span> <span class="s2">&quot;Bob.b&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DisplayName&quot;</span><span class="p">:</span> <span class="s2">&quot;Bob B&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@server</span><span class="o">.</span><span class="n">tool</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return payslip details for a given PersonId&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_payslips</span><span class="p">(</span><span class="n">PersonId</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">payslip</span> <span class="k">for</span> <span class="n">payslip</span> <span class="ow">in</span> <span class="n">PAYSLIPS</span> <span class="k">if</span> <span class="n">payslip</span><span class="p">[</span><span class="s2">&quot;PersonId&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">PersonId</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">server</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">start_mcp_server</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8080</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">create_server</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">transport</span><span class="o">=</span><span class="s2">&quot;sse&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">/sse&quot;</span>
+
+<span class="c1"># mcp_server_url = start_mcp_server() # &lt;--- Move the code above to a separate file then uncomment</span>
+</pre></div>
+</div>
+<p>This MCP server exposes two example tools: <code class="docutils literal notranslate"><span class="pre">get_user_session</span></code> and <code class="docutils literal notranslate"><span class="pre">get_payslips</span></code>.
+Once started, it will be available at (by default): <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/sse</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When choosing a transport for MCP:</p>
+<ul class="simple">
+<li><p>Use <a class="reference internal" href="../api/mcp.html#stdiotransport"><span class="std std-ref">Stdio</span></a> when launching and communicating with an MCP server as a local subprocess on the same machine as the client.</p></li>
+<li><p>Use <a class="reference internal" href="../api/mcp.html#streamablehttpmtlstransport"><span class="std std-ref">Streamable HTTP</span></a> when connecting to a remote MCP server.</p></li>
+</ul>
+<p>For more information, visit <a class="reference external" href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#stdio">https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#stdio</a></p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This guide does not aim at explaining how to make secure MCP servers, but instead mainly aims at showing how to connect to one.
+You should ensure that your MCP server configurations are secure, and only connect to trusted external MCP servers.</p>
+</div>
+</section>
+<section id="connecting-an-agent-to-the-mcp-server">
+<h2>Connecting an Agent to the MCP Server<a class="headerlink" href="#connecting-an-agent-to-the-mcp-server" title="Permalink to this heading">#</a></h2>
+<p>You can now connect an agent to this running MCP server.</p>
+<section id="add-imports-and-configure-an-llm">
+<h3>Add imports and configure an LLM<a class="headerlink" href="#add-imports-and-configure-an-llm" title="Permalink to this heading">#</a></h3>
+<p>Start by importing the necessary packages for this guide:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.edges</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlFlowEdge</span><span class="p">,</span> <span class="n">DataFlowEdge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.flow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EndNode</span><span class="p">,</span> <span class="n">StartNode</span><span class="p">,</span> <span class="n">ToolNode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPTool</span><span class="p">,</span> <span class="n">SSETransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringProperty</span>
+
+<span class="n">mcp_server_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://localhost:8080/sse&quot;</span> <span class="c1"># change to your own URL</span>
+</pre></div>
+</div>
+<p>Agent Spec supports several LLM API providers.
+Select an LLM from the options below:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">OCI GenAI</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">vLLM</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Ollama</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciGenAiConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
+
+<span class="n">client_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci Client Config&quot;</span><span class="p">,</span>
+    <span class="n">service_endpoint</span><span class="o">=</span><span class="s2">&quot;https://url-to-service-endpoint.com&quot;</span><span class="p">,</span>
+    <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
+    <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span>
+<span class="p">)</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OciGenAiConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci GenAI Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;provider.model-id&quot;</span><span class="p">,</span>
+    <span class="n">compartment_id</span><span class="o">=</span><span class="s2">&quot;compartment-id&quot;</span><span class="p">,</span>
+    <span class="n">client_config</span><span class="o">=</span><span class="n">client_config</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;VLLM_URL&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OllamaConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ollama Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="build-the-agent">
+<h3>Build the Agent<a class="headerlink" href="#build-the-agent" title="Permalink to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a> can use tools exposed by MCP servers using <a class="reference internal" href="../api/tools.html#mcptool"><span class="std std-ref">MCPTool</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mcp_client</span> <span class="o">=</span> <span class="n">SSETransport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">mcp_server_url</span><span class="p">)</span>
+
+<span class="n">get_user_session_tool</span> <span class="o">=</span> <span class="n">MCPTool</span><span class="p">(</span>
+    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">get_payslips_tool</span> <span class="o">=</span> <span class="n">MCPTool</span><span class="p">(</span>
+    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return payslip details for a given PersonId&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_payslips&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Agent using MCP&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="s2">&quot;Use tools at your disposal to assist the user.&quot;</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_user_session_tool</span><span class="p">,</span> <span class="n">get_payslips_tool</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Specify the <a class="reference internal" href="../api/mcp.html"><span class="doc">transport</span></a> to use to handle the connection to the server
+as well as the name of the specific tool you want to use. Additionally, you can override the tool
+description (exposed by the MCP server) by specifying the <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter.</p>
+</section>
+<section id="agent-serialization">
+<h3>Agent Serialization<a class="headerlink" href="#agent-serialization" title="Permalink to this heading">#</a></h3>
+<p>You can export the agent configuration using the <a class="reference internal" href="../api/serialization.html#serialize"><span class="std std-ref">AgentSpecSerializer</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+
+<span class="n">serialized_assistant</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is what the <strong>Agent Spec representation will look like ↓</strong></p>
+<details class="summary-click-here-to-see-the-assistant-configuration">
+<summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a98dfe0f-2f36-4c4c-937e-ab4394ef7863&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent using MCP&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VllmConfig&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2242f59e-d803-4413-8473-c807bc5cbf19&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;default_generation_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;model_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model_id&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use tools at your disposal to assist the user.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPTool&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d0b7948c-74e1-4789-a89a-b7a8a11a1651&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPTool&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2f03453b-def7-4515-b02e-b780c92c81ca&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_payslips&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Return payslip details for a given PersonId&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;$referenced_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSETransport&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;session_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;read_timeout_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/sse&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29eba92b-ae73-4a28-9bc0-ed47d1d6db12</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent using MCP</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">llm_config</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VllmConfig</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">82f0e440-792b-4f4a-b2c7-16306a2c0356</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">llm</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">default_generation_parameters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">url</span>
+<span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_id</span>
+<span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Use tools at your disposal to assist the user.</span>
+<span class="nt">tools</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3e16fc6c-4c7c-4cfe-b25b-a4c792d3fbf8</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get_user_session</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Return session details for the current user</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">client_transport</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPTool</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2f4a1eff-3df5-4688-9267-c24ae0ae9b1f</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get_payslips</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Return payslip details for a given PersonId</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">client_transport</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
+<span class="nt">$referenced_components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SSETransport</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP Client</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">session_parameters</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">read_timeout_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8080/sse</span>
+<span class="w">    </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.1</span>
+</pre></div>
+</div>
+</div></div>
+</details></section>
+</section>
+<section id="connecting-a-flow-to-the-mcp-server">
+<h2>Connecting a Flow to the MCP Server<a class="headerlink" href="#connecting-a-flow-to-the-mcp-server" title="Permalink to this heading">#</a></h2>
+<p>You can also use MCP tools in a <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a> by using the <a class="reference internal" href="../api/tools.html#mcptool"><span class="std std-ref">MCPTool</span></a> in a <a class="reference internal" href="../api/flows.html#toolnode"><span class="std std-ref">ToolNode</span></a>.</p>
+<section id="build-the-flow">
+<h3>Build the Flow<a class="headerlink" href="#build-the-flow" title="Permalink to this heading">#</a></h3>
+<p>Create the flow using the MCP tool:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">start_node</span> <span class="o">=</span> <span class="n">StartNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<span class="n">user_info_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;user_info&quot;</span><span class="p">)</span>
+<span class="n">get_user_session_tool</span> <span class="o">=</span> <span class="n">MCPTool</span><span class="p">(</span>
+    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">user_info_property</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">mcptool_node</span> <span class="o">=</span> <span class="n">ToolNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mcp_tool&quot;</span><span class="p">,</span>
+    <span class="n">tool</span><span class="o">=</span><span class="n">get_user_session_tool</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">end_node</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">user_info_property</span><span class="p">])</span>
+
+<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Flow using MCP&quot;</span><span class="p">,</span>
+    <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">mcptool_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">],</span>
+    <span class="n">control_flow_connections</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ControlFlowEdge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;start-&gt;mcptool&quot;</span><span class="p">,</span>
+            <span class="n">from_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+            <span class="n">to_node</span><span class="o">=</span><span class="n">mcptool_node</span>
+        <span class="p">),</span>
+        <span class="n">ControlFlowEdge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mcptool-&gt;end&quot;</span><span class="p">,</span>
+            <span class="n">from_node</span><span class="o">=</span><span class="n">mcptool_node</span><span class="p">,</span>
+            <span class="n">to_node</span><span class="o">=</span><span class="n">end_node</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">data_flow_connections</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">DataFlowEdge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+            <span class="n">source_node</span><span class="o">=</span><span class="n">mcptool_node</span><span class="p">,</span>
+            <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+            <span class="n">destination_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span>
+            <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly to when equipping <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a> with MCP Tools, you should specify the
+client transport as with the MCP ToolBox, as well as the name of the specific tool
+you want to use.</p>
+</section>
+<section id="flow-serialization">
+<h3>Flow Serialization<a class="headerlink" href="#flow-serialization" title="Permalink to this heading">#</a></h3>
+<p>You can export the flow configuration using the <a class="reference internal" href="../api/serialization.html#serialize"><span class="std std-ref">AgentSpecSerializer</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+
+<span class="n">serialized_assistant</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is what the <strong>Agent Spec representation will look like ↓</strong></p>
+<details class="summary-click-here-to-see-the-assistant-configuration">
+<summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Flow&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2849ac60-7154-48a8-a4ef-433ffe85b5ef&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Flow using MCP&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;start_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1949f7b0-782e-4856-bfe9-cc58964c175a&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1949f7b0-782e-4856-bfe9-cc58964c175a&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab20a178-5658-4c92-bd9a-ce87dd9a1ecd&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;control_flow_connections&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControlFlowEdge&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d4c33b22-4de1-4e36-bc7f-6e48a7dccfb0&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;start-&gt;mcptool&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;from_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1949f7b0-782e-4856-bfe9-cc58964c175a&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;from_branch&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;to_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControlFlowEdge&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c6fde850-2bff-45f4-b44b-6cf1c85805c1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mcptool-&gt;end&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;from_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;from_branch&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;to_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab20a178-5658-4c92-bd9a-ce87dd9a1ecd&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;data_flow_connections&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataFlowEdge&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;62ee2e58-19e1-403d-b6ca-eeabb753c20a&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;source_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;source_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;destination_node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab20a178-5658-4c92-bd9a-ce87dd9a1ecd&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;destination_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;$referenced_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ToolNode&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c4be5127-81a6-4627-8525-bac37214d547&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mcp_tool&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;branches&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;next&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;tool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPTool&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;f1730e08-491b-4348-96e6-8fb18b0db618&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">                </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">],</span>
+<span class="w">                </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSETransport&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96cda25c-5b3e-43cf-97bd-2d1feca83473&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                    </span><span class="nt">&quot;session_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;read_timeout_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/sse&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;ab20a178-5658-4c92-bd9a-ce87dd9a1ecd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EndNode&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab20a178-5658-4c92-bd9a-ce87dd9a1ecd&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;end&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_info&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;branches&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;branch_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;next&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;1949f7b0-782e-4856-bfe9-cc58964c175a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;StartNode&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1949f7b0-782e-4856-bfe9-cc58964c175a&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;branches&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;next&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baafbae6-c33a-4c1e-afa2-3fd9fccd0b87</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow using MCP</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="nt">start_node</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bd3c98eb-68ba-4a06-808d-49f0604d7d7e</span>
+<span class="nt">nodes</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bd3c98eb-68ba-4a06-808d-49f0604d7d7e</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">605773b7-2573-4a4f-8bbe-be03b1760cb6</span>
+<span class="nt">control_flow_connections</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ControlFlowEdge</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">84c3460e-0940-4e90-a2dc-fab9e7c84a52</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start-&gt;mcptool</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">from_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bd3c98eb-68ba-4a06-808d-49f0604d7d7e</span>
+<span class="w">  </span><span class="nt">from_branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">to_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ControlFlowEdge</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7afbd6be-8644-4a6a-b351-509be10580ab</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mcptool-&gt;end</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">from_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span>
+<span class="w">  </span><span class="nt">from_branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">to_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">605773b7-2573-4a4f-8bbe-be03b1760cb6</span>
+<span class="nt">data_flow_connections</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DataFlowEdge</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4275b1f6-a79e-4004-97b6-f00c9935e878</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">source_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span>
+<span class="w">  </span><span class="nt">source_output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">  </span><span class="nt">destination_node</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">605773b7-2573-4a4f-8bbe-be03b1760cb6</span>
+<span class="w">  </span><span class="nt">destination_input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="nt">$referenced_components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bd3c98eb-68ba-4a06-808d-49f0604d7d7e</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StartNode</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bd3c98eb-68ba-4a06-808d-49f0604d7d7e</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">next</span>
+<span class="w">  </span><span class="nt">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ToolNode</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4d5d3dd3-e826-41ec-bd19-1f41f61e07dc</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mcp_tool</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">next</span>
+<span class="w">    </span><span class="nt">tool</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPTool</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a94d225e-b15f-4fd5-988f-3587f0e31aab</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get_user_session</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Return session details for the current user</span>
+<span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">      </span><span class="nt">client_transport</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SSETransport</span>
+<span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2f098c44-854d-4ae6-9642-e50f6b0ac595</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP Client</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">        </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">        </span><span class="nt">session_parameters</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">read_timeout_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8080/sse</span>
+<span class="w">        </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">605773b7-2573-4a4f-8bbe-be03b1760cb6</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EndNode</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">605773b7-2573-4a4f-8bbe-be03b1760cb6</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user_info</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">branch_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">next</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.1</span>
+</pre></div>
+</div>
+</div></div>
+</details></section>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
+<p>In this guide, you learned how to connect MCP Tools to Agent Spec <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flows</span></a> and <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a>.</p>
+<p>Having learned how to configure agent instructions, you may now proceed to:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="howto_generation_config.html"><span class="doc">Specify the Generation Configuration when Using LLMs</span></a></p></li>
+<li><p><a class="reference internal" href="howto_agent_with_remote_tools.html"><span class="doc">How to Develop an Agent with Remote Tools</span></a></p></li>
+<li><p><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">How to Execute Agent Spec Configuration with WayFlow</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisite-setup-a-simple-mcp-server">Prerequisite: Setup a simple MCP Server</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-an-agent-to-the-mcp-server">Connecting an Agent to the MCP Server</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-imports-and-configure-an-llm">Add imports and configure an LLM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-agent">Build the Agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-serialization">Agent Serialization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-a-flow-to-the-mcp-server">Connecting a Flow to the MCP Server</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-flow">Build the Flow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-serialization">Flow Serialization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

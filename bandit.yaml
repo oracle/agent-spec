@@ -1,4 +1,0 @@
-# Avoid Bandit to raise issue for assert in test files
-assert_used:
-  skips: ['*_test.py', '*test_*.py', "**/conftest.py", "tests/**/*.py"]
-exclude_dirs: ['**/tests_fuzz/*', '**/tests/security/*']

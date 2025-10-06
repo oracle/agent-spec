@@ -1,0 +1,642 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Agent Spec Glossary &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'misc/glossary';</script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agent Spec Reference Sheet" href="reference_sheet.html" />
+    <link rel="prev" title="Serialization / Deserialization" href="../api/serialization.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="26.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec Glossary</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="agent-spec-glossary">
+<span id="core-glossary"></span><h1>Agent Spec Glossary<a class="headerlink" href="#agent-spec-glossary" title="Permalink to this heading">#</a></h1>
+<p>This page provides an overview of the key concepts and terms used throughout the Agent Spec library.</p>
+<section id="agent">
+<h2>Agent<a class="headerlink" href="#agent" title="Permalink to this heading">#</a></h2>
+<p>An <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agent</span></a> is an LLM-powered assistant that can interact with users, leverage external tools, and coordinate with other assistants to complete tasks through a conversational interface.</p>
+<p>Simple agentic systems may consist of a single agent engaging with a user.
+More complex systems can involve multiple agents collaborating to achieve broader goals.
+Agents can also be integrated in Flows with the <a class="reference internal" href="../api/flows.html#agentnode"><span class="std std-ref">AgentNode</span></a>.</p>
+<p>To learn more about agents, see <a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html"><span class="doc">How to Develop an Agent with Remote Tools</span></a> and the <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="branching">
+<h2>Branching<a class="headerlink" href="#branching" title="Permalink to this heading">#</a></h2>
+<p>Branching is the ability of a <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a> to conditionally transition between different nodes based on specific input values or conditions.
+Developers can then create more dynamic and adaptive workflows that respond to varying scenarios.
+It is implemented using the <a class="reference internal" href="../api/flows.html#branchingnode"><span class="std std-ref">BranchingNode</span></a>, which defines multiple possible branches and maps input values to specific nodes.</p>
+<p>For details on configuration and usage, see the <a class="reference internal" href="../api/flows.html#branchingnode"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="control-flow-edge">
+<h2>Control Flow Edge<a class="headerlink" href="#control-flow-edge" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/flows.html#controlflowedge"><span class="std std-ref">Control Flow Edge</span></a> is a connector that represents a directional link between two nodes in a <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a>.
+It specifies a possible transition between a specific branch of a source node and a destination node.
+This concept enables assistant developers to explicitly define the expected transitions that can occur within a Flow.</p>
+<p>For more information, see the <a class="reference internal" href="../api/flows.html#controlflowedge"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="composability">
+<h2>Composability<a class="headerlink" href="#composability" title="Permalink to this heading">#</a></h2>
+<p>Composability refers to the ability of assistants to be decomposed into smaller components, combined with other components,
+and rearranged to form new assistants that can solve a wide range of tasks.
+This capability enables you to create complex agentic systems from modular, reusable building blocks.</p>
+<p>Agent Spec supports two types of agentic patterns:</p>
+<ul class="simple">
+<li><p>Calling <a class="reference internal" href="../api/flows.html#agentnode"><span class="std std-ref">Agents in Flows</span></a>: Integrate conversational capabilities into structured workflows.</p></li>
+<li><p>Calling <a class="reference internal" href="../api/flows.html#flownode"><span class="std std-ref">Flows in Flows</span></a>: Create nested workflows to model complex business processes.</p></li>
+</ul>
+</section>
+<section id="data-flow-edge">
+<h2>Data Flow Edge<a class="headerlink" href="#data-flow-edge" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/flows.html#dataflowedge"><span class="std std-ref">Data Flow Edge</span></a> is a connector that represents a logical link between nodes or context providers within a <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a>.
+It defines how data is propagated from the output of one node, or context provider, to the input of another node.
+This concept enables assistant developers to explicitly define the expected orchestration of data flows within Flows.</p>
+<p>For more information, see the <a class="reference internal" href="../api/flows.html#dataflowedge"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="flow">
+<h2>Flow<a class="headerlink" href="#flow" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a> is a type of structured assistant composed of individual <a class="reference internal" href="../api/flows.html#presentnode"><span class="std std-ref">nodes</span></a> that are connected to form a coherent sequence of actions.
+Each node in a Flow is designed to perform a specific function, similar to functions in programming.</p>
+<p>Flows can have loops, <a class="reference internal" href="../api/flows.html#branchingnode"><span class="std std-ref">conditional transitions</span></a>, and multiple end points.
+Flows can also <a class="reference internal" href="../api/flows.html#flownode"><span class="std std-ref">integrate sub-flows</span></a> and <a class="reference internal" href="../api/flows.html#agentnode"><span class="std std-ref">agents</span></a> to enable more complex capabilities.</p>
+<p>Flow can be used to tackle a wide range of business processes and other tasks in a controllable and efficient way.</p>
+<p>To learn more about flows, see the <a class="reference internal" href="../howtoguides/index.html"><span class="doc">How-to Guides</span></a> and the <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="generation-config">
+<h2>Generation Config<a class="headerlink" href="#generation-config" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../api/llmmodels.html#llmgenerationconfig"><span class="std std-ref">LLM Generation Config</span></a> defines the parameters that control the output behavior of a <a class="reference internal" href="../api/llmmodels.html#id1"><span class="std std-ref">Large Language Model (LLM)</span></a> in Agent Spec.
+Key parameters include the maximum number of tokens to generate (<code class="docutils literal notranslate"><span class="pre">max_tokens</span></code>), the sampling <code class="docutils literal notranslate"><span class="pre">temperature</span></code>, and the probability threshold for nucleus sampling (<code class="docutils literal notranslate"><span class="pre">top_p</span></code>).</p>
+<p>For a complete list of parameters, see the <a class="reference internal" href="../api/llmmodels.html#llmgenerationconfig"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="large-language-model-llm">
+<h2>Large Language Model (LLM)<a class="headerlink" href="#large-language-model-llm" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/llmmodels.html#id1"><span class="std std-ref">Large Language Model</span></a> is a type deep neural network trained on vast amounts of text data that can understand, generate, and manipulate human language through pattern recognition and statistical relationships.
+It processes input text through multiple layers of neural networks, using specific mechanisms to understand context and relationships between words.</p>
+<p>Modern LLMs contain billions of parameters and often require dedicated hardware for both training and inference.
+As such, they are typically hosted through APIs by their respective providers, allowing for ease of integration and access.</p>
+<p>See the <a class="reference internal" href="../api/llmmodels.html#id1"><span class="std std-ref">API Reference</span></a> for the list of supported models.</p>
+</section>
+<section id="node">
+<h2>Node<a class="headerlink" href="#node" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/flows.html#presentnode"><span class="std std-ref">Node</span></a> is an atomic element of a <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flow</span></a> that encapsulates a specific piece of logic or functionality.
+Agent Spec offers a variety of nodes with functionalities ranging from <a class="reference internal" href="../api/flows.html#llmnode"><span class="std std-ref">LLM generation</span></a> to <a class="reference internal" href="../api/flows.html#branchingnode"><span class="std std-ref">branching</span></a>.
+By composing the nodes together, Agent Spec enables the creation of powerful structured assistants to solve diverse use-cases efficiently and reliably.</p>
+<p>See the list of available nodes in the <a class="reference internal" href="../api/flows.html#presentnode"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="prompt-engineering-and-optimization">
+<h2>Prompt Engineering and Optimization<a class="headerlink" href="#prompt-engineering-and-optimization" title="Permalink to this heading">#</a></h2>
+<p>Prompt engineering and optimization is the systematic process of designing, refining, and improving prompts to achieve more accurate, reliable, and desired outputs from language models.
+It involves iterative testing and refinement of prompt structures, careful consideration of context windows, and strategic use of examples and formatting.</p>
+<p>Methods such as Automated Prompt Engineering can help improve prompts by using algorithms to optimize the prompt performance on a specific metric.</p>
+</section>
+<section id="prompt-template">
+<h2>Prompt Template<a class="headerlink" href="#prompt-template" title="Permalink to this heading">#</a></h2>
+<p>A prompt template is a standardized prompt structure with placeholders for variable inputs, designed to maintain consistency across similar queries while allowing for customization.
+Agent Spec uses the <a class="reference external" href="https://jinja.palletsprojects.com/en/stable/">Jinja</a> templating placeholders syntax to specify the input variables to the prompt.</p>
+<p>For more information, see the <a class="reference internal" href="../agentspec/language_spec_25_4_1.html"><span class="doc">Agent Spec Specification Reference</span></a>.</p>
+</section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../api/ioproperties.html#property"><span class="std std-ref">Property</span></a> is a metadata descriptor that defines an input or output value for a component—such as <a class="reference internal" href="../api/tools.html"><span class="doc">Tools</span></a>, <a class="reference internal" href="../api/flows.html#presentnode"><span class="std std-ref">Nodes</span></a>, <a class="reference internal" href="../api/flows.html#flow"><span class="std std-ref">Flows</span></a> and <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a>—within an Agent Spec assistant.
+Properties include attributes such as title, description, and default value, which help to clarify the purpose and behavior of the component, making it easier to understand and interact with the component.</p>
+<p>For more details, see the <a class="reference internal" href="../api/ioproperties.html#property"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="retrieval-augmented-generation-rag">
+<h2>Retrieval Augmented Generation (RAG)<a class="headerlink" href="#retrieval-augmented-generation-rag" title="Permalink to this heading">#</a></h2>
+<p>Retrieval Augmented Generation is a technique to enhance LLM outputs by first retrieving relevant information from a knowledge base and then incorporating it into the generation process.
+This approach enhances the model’s ability to access and utilize specific information beyond its training data.</p>
+<p>RAG systems typically involves a retrieval component that searches for relevant information and a generation component that incorporates this information into the final output.</p>
+</section>
+<section id="serialization">
+<h2>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">#</a></h2>
+<p>In Agent Spec, serialization refers to the ability of capturing an assistant’s configuration and representing it in a compact, human-readable format.
+This enables assistants to be shared, stored, or deployed across environments while preserving their structure and behavior.</p>
+<p>For more details, see the  <a class="reference internal" href="../api/serialization.html#serialization"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="structured-generation">
+<span id="defstructuredgeneration"></span><h2>Structured Generation<a class="headerlink" href="#structured-generation" title="Permalink to this heading">#</a></h2>
+<p>Structured generation is the process of controlling LLM outputs to conform to specific formats, schemas, or patterns, ensuring consistency and machine-readability of generated content.
+It involves techniques for guiding the model to produce outputs that follow predetermined structures while maintaining natural language fluency.</p>
+<p>This approach is particularly valuable for generating data in formats like JSON, XML, or other structured representations.</p>
+</section>
+<section id="tool">
+<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec supports three types of tools:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">Server Tools</span></a> are the simplest types of function tools, executed in the same environment as the agent.</p></li>
+<li><p><a class="reference internal" href="../api/tools.html#clienttool"><span class="std std-ref">Client Tools</span></a> are meant to be executed on the client side.</p></li>
+<li><p><a class="reference internal" href="../api/tools.html#remotetool"><span class="std std-ref">Remote Tools</span></a> to call remote APIs.</p></li>
+</ul>
+<section id="server-tool">
+<span id="defservertool"></span><h3>Server Tool<a class="headerlink" href="#server-tool" title="Permalink to this heading">#</a></h3>
+<p>A <a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">ServerTool</span></a> is the type of tool that runs in the same environment where the assistant is being executed.</p>
+<p>For more information, see the <a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="client-tool">
+<span id="defclienttool"></span><h3>Client Tool<a class="headerlink" href="#client-tool" title="Permalink to this heading">#</a></h3>
+<p>A <a class="reference internal" href="../api/tools.html#clienttool"><span class="std std-ref">Client Tool</span></a> is one of the three tool types supported in Agent Spec.
+Unlike a <a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">Server Tool</span></a>, which executes directly on the server, the client tool, upon execution, returns a tool request to be executed in the client side.
+The client then returns the result to the assistant.</p>
+<p>For implementation details, see the <a class="reference internal" href="../api/tools.html#clienttool"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+<section id="remote-tool">
+<h3>Remote Tool<a class="headerlink" href="#remote-tool" title="Permalink to this heading">#</a></h3>
+<p>A <a class="reference internal" href="../api/tools.html#remotetool"><span class="std std-ref">Remote Tool</span></a> is a tool type in Agent Spec that enables integration with external web services or APIs via HTTP requests.
+A remote tool enables developers to make HTTP requests to external web services or APIs, providing a way to integrate external functionality into their assistants.
+It provides a flexible way to define and execute requests, including support for templated URLs, headers, and data, as well as error handling and retries.</p>
+<p>For implementation details, see the <a class="reference internal" href="../api/tools.html#remotetool"><span class="std std-ref">API Reference</span></a>.</p>
+</section>
+</section>
+<section id="tokens">
+<h2>Tokens<a class="headerlink" href="#tokens" title="Permalink to this heading">#</a></h2>
+<p>Tokens are the fundamental units of text processing in LLMs, representing words, parts of words, or characters that the model uses to understand and generate the language.
+They form the basis for the model’s context window size and directly impact processing costs and performance.</p>
+<p>There are two types of tokens relevant to LLMs: input tokens and output tokens.
+Input tokens refer to the tokens that are fed into the model as input, whereas output tokens are the tokens generated by the model as output.
+In general, output tokens are more expensive than input tokens.
+An example of pricing can be $3 per 1M input tokens, and $10 per 1M output tokens.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent">Agent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#branching">Branching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-flow-edge">Control Flow Edge</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#composability">Composability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-flow-edge">Data Flow Edge</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flow">Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-config">Generation Config</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#large-language-model-llm">Large Language Model (LLM)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node">Node</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prompt-engineering-and-optimization">Prompt Engineering and Optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prompt-template">Prompt Template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retrieval-augmented-generation-rag">Retrieval Augmented Generation (RAG)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization">Serialization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-generation">Structured Generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tool">Tool</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#server-tool">Server Tool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-tool">Client Tool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#remote-tool">Remote Tool</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tokens">Tokens</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
