@@ -1,0 +1,63 @@
+component_type: Agent
+description: null
+id: agent1
+inputs: []
+llm_config:
+  component_type: VllmConfig
+  default_generation_parameters: null
+  description: null
+  id: agi1
+  metadata: {}
+  model_id: agi_model1
+  name: agi1
+  url: http://some.where
+metadata: {}
+name: Funny agent
+outputs: []
+system_prompt: No matter what the user asks, don't reply but make a joke instead
+tools:
+- component_type: ClientTool
+  description: Gets the weather in specified city
+  id: weather_tool
+  inputs:
+  - default: zurich
+    title: city_name
+    type: string
+  metadata: {}
+  name: get_weather
+  outputs:
+  - title: forecast
+    type: string
+- component_type: ServerTool
+  description: Gets information about the city history
+  id: history_tool
+  inputs:
+  - default: zurich
+    title: city_name
+    type: string
+  metadata: {}
+  name: get_city_history_info
+  outputs:
+  - title: forecast
+    type: string
+- api_spec_uri: https://my.api.spec.url/tool
+  component_type: RemoteTool
+  data:
+    city_name: '{{city_name}}'
+  description: Subscribe to the newsletter of a city
+  headers:
+    my_header: '123'
+  http_method: POST
+  id: city_newsletter_subscribe_tool
+  inputs:
+    - title: city_name
+      type: string
+  metadata: {}
+  name: subscribe_to_city_newsletter
+  outputs:
+    - title: subscription_success
+      type: boolean
+  query_params:
+    my_query_param: abc
+  url: https://my.url/tool
+agentspec_version: 25.4.1

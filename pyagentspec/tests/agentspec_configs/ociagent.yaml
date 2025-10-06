@@ -1,0 +1,17 @@
+agent_endpoint_id: my_agent_endpoint
+client_config:
+  auth_type: INSTANCE_PRINCIPAL
+  service_endpoint: my_service_endpoint
+  component_type: OciClientConfigWithInstancePrincipal
+  description: null
+  id: 92834b05-3e84-4ecd-ba5f-0690c1be542e
+  metadata: {}
+  name: my_oci_config
+component_type: OciAgent
+description: my remote oci agent
+id: agent_123
+inputs: []
+metadata: {}
+name: oci_agent
+outputs: []
+agentspec_version: 25.4.1

@@ -1,0 +1,10 @@
+{% if (pagename is defined and pagename is not none and 'index' == pagename) %}
+{% extends "landing-page.html" %}
+{% else %}
+{% extends "!layout.html" %}
+{% endif %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ pathto('_static/announcement.js', 1) }}"></script>
+{% endblock %}

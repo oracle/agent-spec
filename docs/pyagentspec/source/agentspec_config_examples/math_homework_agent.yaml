@@ -1,0 +1,32 @@
+component_type: Agent
+id: e52d2c57-0bdc-4f25-948a-2e9d9f670008
+name: Math homework assistant
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: VllmConfig
+  id: vllm_config
+  name: llama-3.1-8b-instruct
+  description: null
+  metadata: {}
+  default_generation_parameters: {}
+  url: LLAMA_PUBLIC_ENDPOINT
+  model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+system_prompt: You are an assistant for helping with math homework.
+tools:
+- component_type: ServerTool
+  id: multiplication_tool
+  name: multiplication_tool
+  description: Tool that allows to compute multiplications
+  metadata: {}
+  inputs:
+  - title: a
+    type: integer
+  - title: b
+    type: integer
+  outputs:
+  - title: product
+    type: integer
+agentspec_version: 25.4.1

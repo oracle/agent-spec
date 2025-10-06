@@ -1,0 +1,59 @@
+$referenced_components:
+  top_level_end_node:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: top_level_end_node
+    inputs: []
+    metadata: {}
+    name: end
+    outputs: []
+  top_level_start_node:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: top_level_start_node
+    inputs: []
+    metadata: {}
+    name: start
+    outputs: []
+  c23d17c4-a751-4f65-a60b-0e6ce41cee2c:
+    component_type: Flow
+    control_flow_connections:
+    - component_type: ControlFlowEdge
+      description: null
+      from_branch: null
+      from_node:
+        $component_ref: top_level_start_node
+      id: 1868ac9a-eb83-4deb-b90c-5a4fd6756c74
+      metadata: {}
+      name: edge
+      to_node:
+        $component_ref: top_level_end_node
+    data_flow_connections: []
+    description: null
+    id: c23d17c4-a751-4f65-a60b-0e6ce41cee2c
+    inputs: []
+    metadata: {}
+    name: self_referencing_flow
+    nodes:
+    - $component_ref: top_level_start_node
+    - $component_ref: top_level_end_node
+    - branches:
+      - next
+      component_type: FlowNode
+      description: null
+      id: 0c75b713-3b23-4e73-91d7-d234613fe298
+      inputs: []
+      metadata: {}
+      name: flow_node
+      outputs: []
+      subflow:
+        $component_ref: c23d17c4-a751-4f65-a60b-0e6ce41cee2c
+    outputs: []
+    start_node:
+      $component_ref: top_level_start_node
+$component_ref: c23d17c4-a751-4f65-a60b-0e6ce41cee2c
+agentspec_version: 25.4.1

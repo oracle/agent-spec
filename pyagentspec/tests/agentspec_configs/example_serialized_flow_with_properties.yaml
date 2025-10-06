@@ -1,0 +1,201 @@
+component_type: Flow
+id: mmnhagawse
+name: Example test flow
+description: null
+metadata: {}
+inputs:
+- title: Input_1
+  default: input_1_default
+  type: string
+- title: Output_3
+  anyOf:
+  - type: 'null'
+  - type: integer
+outputs:
+- title: Output_2
+  default:
+  - 1.0
+  items:
+    type: number
+  type: array
+- title: Output_1
+  default: true
+  type: boolean
+start_node:
+  $component_ref: lniwuebjsdvkc
+nodes:
+- $component_ref: lniwuebjsdvkc
+- $component_ref: nxbcwoiauhbjv
+- $component_ref: 724893yhrj
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: nh32tewsaicjkl
+  name: ctrl_edge_1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: lniwuebjsdvkc
+  from_branch: null
+  to_node:
+    $component_ref: nxbcwoiauhbjv
+- component_type: ControlFlowEdge
+  id: 28yu3egh
+  name: ctrl_edge_2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: nxbcwoiauhbjv
+  from_branch: null
+  to_node:
+    $component_ref: 724893yhrj
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: buhdgsbjmn
+  name: data_edge_1
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Output_3
+  destination_node:
+    $component_ref: nxbcwoiauhbjv
+  destination_input: Input_3
+- component_type: DataFlowEdge
+  id: 67uyh5423hje
+  name: data_edge_2
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: nxbcwoiauhbjv
+  source_output: Output_2
+  destination_node:
+    $component_ref: 724893yhrj
+  destination_input: Input_4
+- component_type: DataFlowEdge
+  id: 722njqbakhcsa
+  name: data_edge_3
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: lniwuebjsdvkc
+  source_output: Output_3
+  destination_node:
+    $component_ref: 724893yhrj
+  destination_input: Input_3
+$referenced_components:
+  lniwuebjsdvkc:
+    component_type: StartNode
+    id: lniwuebjsdvkc
+    name: Node 1
+    description: null
+    metadata: {}
+    inputs:
+    - title: Input_1
+      default: input_1_default
+      type: string
+    - title: Output_3
+      anyOf:
+      - type: 'null'
+      - type: integer
+    outputs:
+    - title: Input_1
+      default: input_1_default
+      type: string
+    - title: Output_3
+      anyOf:
+      - type: 'null'
+      - type: integer
+    branches:
+    - next
+  nxbcwoiauhbjv:
+    component_type: LlmNode
+    id: nxbcwoiauhbjv
+    name: Node 2
+    description: null
+    metadata: {}
+    inputs:
+    - title: Input_2
+      default: {}
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - title: Input_3
+      type:
+      - 'null'
+      - integer
+      default: null
+    outputs:
+    - title: Output_2
+      default:
+      - 1.0
+      items:
+        type: number
+      type: array
+    branches:
+    - next
+    llm_config:
+      component_type: VllmConfig
+      id: 99asbdiugjk4b5
+      name: LLama 3.1 8b
+      description: llama 3.1 config
+      metadata: {}
+      default_generation_parameters: null
+      url: url.to.my.llm.com/hostedllm:12345
+      model_id: llama3.1-8b-instruct
+    prompt_template: This is the prompt! {{ Input_2 }} {{ Input_3 }}
+  724893yhrj:
+    component_type: EndNode
+    id: 724893yhrj
+    name: Node 3
+    description: null
+    metadata: {}
+    inputs:
+    - title: Output_2
+      default:
+      - 1.0
+      items:
+        type: number
+      type: array
+    - title: Input_3
+      type:
+      - 'null'
+      - integer
+      default: null
+    - title: Input_2
+      default: {}
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - title: Input_4
+      default: []
+      items:
+        type: number
+      type: array
+    outputs:
+    - title: Output_2
+      default:
+      - 1.0
+      items:
+        type: number
+      type: array
+    - title: Input_3
+      type:
+      - 'null'
+      - integer
+      default: null
+    - title: Input_2
+      default: {}
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - title: Input_4
+      default: []
+      items:
+        type: number
+      type: array
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

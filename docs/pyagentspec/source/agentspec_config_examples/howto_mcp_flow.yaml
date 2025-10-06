@@ -1,0 +1,106 @@
+component_type: Flow
+id: baafbae6-c33a-4c1e-afa2-3fd9fccd0b87
+name: Flow using MCP
+description: null
+metadata: {}
+inputs: []
+outputs:
+- title: user_info
+  type: string
+start_node:
+  $component_ref: bd3c98eb-68ba-4a06-808d-49f0604d7d7e
+nodes:
+- $component_ref: bd3c98eb-68ba-4a06-808d-49f0604d7d7e
+- $component_ref: 4d5d3dd3-e826-41ec-bd19-1f41f61e07dc
+- $component_ref: 605773b7-2573-4a4f-8bbe-be03b1760cb6
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 84c3460e-0940-4e90-a2dc-fab9e7c84a52
+  name: start->mcptool
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: bd3c98eb-68ba-4a06-808d-49f0604d7d7e
+  from_branch: null
+  to_node:
+    $component_ref: 4d5d3dd3-e826-41ec-bd19-1f41f61e07dc
+- component_type: ControlFlowEdge
+  id: 7afbd6be-8644-4a6a-b351-509be10580ab
+  name: mcptool->end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 4d5d3dd3-e826-41ec-bd19-1f41f61e07dc
+  from_branch: null
+  to_node:
+    $component_ref: 605773b7-2573-4a4f-8bbe-be03b1760cb6
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 4275b1f6-a79e-4004-97b6-f00c9935e878
+  name: user_info
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 4d5d3dd3-e826-41ec-bd19-1f41f61e07dc
+  source_output: user_info
+  destination_node:
+    $component_ref: 605773b7-2573-4a4f-8bbe-be03b1760cb6
+  destination_input: user_info
+$referenced_components:
+  bd3c98eb-68ba-4a06-808d-49f0604d7d7e:
+    component_type: StartNode
+    id: bd3c98eb-68ba-4a06-808d-49f0604d7d7e
+    name: start
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+  4d5d3dd3-e826-41ec-bd19-1f41f61e07dc:
+    component_type: ToolNode
+    id: 4d5d3dd3-e826-41ec-bd19-1f41f61e07dc
+    name: mcp_tool
+    description: null
+    metadata: {}
+    inputs: []
+    outputs:
+    - title: user_info
+      type: string
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: a94d225e-b15f-4fd5-988f-3587f0e31aab
+      name: get_user_session
+      description: Return session details for the current user
+      metadata: {}
+      inputs: []
+      outputs:
+      - title: user_info
+        type: string
+      client_transport:
+        component_type: SSETransport
+        id: 2f098c44-854d-4ae6-9642-e50f6b0ac595
+        name: MCP Client
+        description: null
+        metadata: {}
+        session_parameters:
+          read_timeout_seconds: 60
+        url: http://localhost:8080/sse
+        headers: null
+  605773b7-2573-4a4f-8bbe-be03b1760cb6:
+    component_type: EndNode
+    id: 605773b7-2573-4a4f-8bbe-be03b1760cb6
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_info
+      type: string
+    outputs:
+    - title: user_info
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1
