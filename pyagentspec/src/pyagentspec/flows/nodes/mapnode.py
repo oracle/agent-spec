@@ -40,6 +40,10 @@ class MapNode(Node):
         complemented with the ``iterated_`` prefix. Their type is
         ``Union[inner_type, List[inner_type]]``, where ``inner_type``
         is the type of the respective input in the inner flow.
+
+        If None is given, ``pyagentspec`` infers input properties directly from the inner flow,
+        specifying title and type according to the rules defined above.
+
     - **Outputs**
         Inferred from the inner structure. It's the union of the
         sets of outputs exposed by the EndNodes of the inner flow,
@@ -50,6 +54,10 @@ class MapNode(Node):
 
         - ``List`` of the respective output type in case of ``append``
         - same type of the respective output type in case of ``sum``, ``avg``
+
+        If None is given, ``pyagentspec`` infers outputs by exposing
+        an output property for each entry in the ``reducers`` dictionary, specifying title
+        and type according to the rules defined above.
 
     - **Branches**
         One, the default next.

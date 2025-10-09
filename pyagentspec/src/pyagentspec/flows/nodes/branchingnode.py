@@ -22,6 +22,8 @@ class BranchingNode(Node):
 
     - **Inputs**
         The input value that should be used as key for the mapping.
+
+        If None is given, ``pyagentspec`` infers a string property named ``branching_mapping_key``.
     - **Outputs**
         None.
     - **Branches**
@@ -116,7 +118,7 @@ class BranchingNode(Node):
     """Name of the default branch used when mapping fails"""
 
     DEFAULT_INPUT: ClassVar[str] = "branching_mapping_key"
-    """str: Input key for the name to transition to next."""
+    """Input key for the name to transition to next."""
 
     mapping: Dict[str, str]
     """The mapping between the value of the input and the name of the outgoing branch

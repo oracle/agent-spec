@@ -26,7 +26,9 @@ class ApiNode(Node):
         Otherwise, users have to manually specify them.
     - **Outputs**
         Inferred from the json spec retrieved from API Spec URI, if available and reachable.
-        Otherwise, users have to manually specify them.
+        Otherwise, users should manually specify them.
+
+        If None is given, ``pyagentspec`` infers a generic property of any type named ``response``.
     - **Branches**
         One, the default next.
 
@@ -116,7 +118,7 @@ class ApiNode(Node):
        Allows placeholders in dict values, which can define inputs"""
 
     DEFAULT_OUTPUT: ClassVar[str] = "response"
-    """str: Input key for the name to transition to next."""
+    """Default output name"""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the attributes and make them string inputs by default
@@ -145,5 +147,6 @@ class ApiNode(Node):
         )
 
     def _get_inferred_outputs(self) -> List[Property]:
-        output_title = self.outputs[0].title if self.outputs else ApiNode.DEFAULT_OUTPUT
-        return [Property(json_schema={"title": output_title})]
+        if self.outputs is not None:
+            return self.outputs
+        return [Property(json_schema={"title": ApiNode.DEFAULT_OUTPUT})]

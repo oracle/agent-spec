@@ -21,9 +21,13 @@ class StartNode(Node):
     - **Inputs**
         The list of inputs that should be the inputs of the flow. If both input and output
         properties are specified they must be an exact match
+
+        If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.
     - **Outputs**
         The list of outputs of the step. If both input and output properties are specified they
         must be an exact match
+
+        If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.
     - **Branches**
         One, the default next.
 

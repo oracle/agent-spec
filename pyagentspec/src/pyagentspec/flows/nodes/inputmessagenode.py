@@ -26,6 +26,8 @@ class InputMessageNode(Node):
         One per variable in the message
     - **Outputs**
         One string property that represents the content of the input user message.
+
+        If None is given, ``pyagentspec`` infers a string property named ``user_input``.
     - **Branches**
         One, the default next.
 

@@ -25,9 +25,13 @@ class EndNode(Node):
     - **Inputs**
         The list of inputs of the step. If both input and output properties are specified they
         must be an exact match
+
+        If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.
     - **Outputs**
         The list of outputs that should be exposed by the flow. If both input and output properties
         are specified they must be an exact match
+
+        If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.
     - **Branches**
         None.
 
