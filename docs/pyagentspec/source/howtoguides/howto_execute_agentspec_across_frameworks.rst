@@ -41,8 +41,8 @@ into the equivalent solution, as per each framework's definition, and return an 
 As a reference runtime for Agent Spec, `WayFlow <https://github.com/oracle/wayflow>`_ offers an Agent Spec adapter as part of the package.
 Besides WayFlow, the Agent Spec team provides the implementation of adapters for two other common agentic frameworks:
 
-- `LangGraph <https://github.com/oracle/agent-spec/adapters/langgraphagentspecadapter>`_
-- `AutoGen <https://github.com/oracle/agent-spec/adapters/autogenagentspecadapter>`_
+- `LangGraph <https://github.com/oracle/agent-spec/tree/main/adapters/langgraphagentspecadapter>`_
+- `AutoGen <https://github.com/oracle/agent-spec/tree/main/adapters/autogenagentspecadapter>`_
 
 Each adapter contains two main public classes, ``AgentSpecExporter`` and ``AgentSpecLoader``.
 
