@@ -721,7 +721,10 @@
     "BaseAgenticComponent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/OciAgent"
+          "$ref": "#/$defs/Flow"
+        },
+        {
+          "$ref": "#/$defs/OpenAiAgent"
         },
         {
           "$ref": "#/$defs/RemoteAgent"
@@ -730,17 +733,14 @@
           "$ref": "#/$defs/Agent"
         },
         {
-          "$ref": "#/$defs/OpenAiAgent"
-        },
-        {
-          "$ref": "#/$defs/Flow"
+          "$ref": "#/$defs/OciAgent"
         }
       ],
       "x-abstract-component": true
     },
     "BaseApiNode": {
       "additionalProperties": false,
-      "description": "Make an API call.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users have to manually specify them.\n- **Outputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users have to manually specify them.\n- **Branches**\n    One, the default next.\n\n\nExamples\n--------\n>>> from pyagentspec.flows.nodes import ApiNode\n>>> from pyagentspec.property import Property\n>>> weather_result_property = Property(\n...     json_schema={\n...         \"title\": \"zurich_weather\",\n...         \"type\": \"object\",\n...         \"properties\": {\n...             \"temperature\": {\n...                 \"type\": \"number\",\n...                 \"description\": \"Temperature in celsius degrees\",\n...             },\n...             \"weather\": {\"type\": \"string\"}\n...         },\n...     }\n... )\n>>> call_current_weather_step = ApiNode(\n...     name=\"Weather API call node\",\n...     url=\"https://example.com/weather\",\n...     http_method = \"GET\",\n...     query_params={\n...         \"location\": \"zurich\",\n...     },\n...     outputs=[weather_result_property]\n... )\n>>>\n>>> item_id_property = Property(\n...     json_schema={\"title\": \"item_id\", \"type\": \"string\"}\n... )\n>>> order_id_property = Property(\n...     json_schema={\"title\": \"order_id\", \"type\": \"string\"}\n... )\n>>> store_id_property = Property(\n...     json_schema={\"title\": \"store_id\", \"type\": \"string\"}\n... )\n>>> session_id_property = Property(\n...     json_schema={\"title\": \"session_id\", \"type\": \"string\"}\n... )\n>>> create_order_step = ApiNode(\n...     name=\"Orders api call node\",\n...     url=\"https://example.com/orders/{{ order_id }}\",\n...     http_method=\"POST\",\n...     # sending an object which will automatically be transformed into JSON\n...     data={\n...         # define a static body parameter\n...         \"topic_id\": 12345,\n...         # define a templated body parameter.\n...         # The value for {{ item_id }} will be taken from the IO system at runtime\n...         \"item_id\": \"{{ item_id }}\",\n...     },\n...     query_params={\n...         # provide one templated query parameter called \"store_id\"\n...         # which will take its value from the IO system from key \"store_id\"\n...         \"store_id\": \"{{ store_id }}\",\n...     },\n...     headers={\n...         # set header session_id. the value is coming from the IO system\n...         \"session_id\": \"{{ session_id }}\",\n...     },\n...     inputs=[item_id_property, order_id_property, store_id_property, session_id_property],\n... )",
+      "description": "Make an API call.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users have to manually specify them.\n- **Outputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users should manually specify them.\n\n    If None is given, ``pyagentspec`` infers a generic property of any type named ``response``.\n- **Branches**\n    One, the default next.\n\n\nExamples\n--------\n>>> from pyagentspec.flows.nodes import ApiNode\n>>> from pyagentspec.property import Property\n>>> weather_result_property = Property(\n...     json_schema={\n...         \"title\": \"zurich_weather\",\n...         \"type\": \"object\",\n...         \"properties\": {\n...             \"temperature\": {\n...                 \"type\": \"number\",\n...                 \"description\": \"Temperature in celsius degrees\",\n...             },\n...             \"weather\": {\"type\": \"string\"}\n...         },\n...     }\n... )\n>>> call_current_weather_step = ApiNode(\n...     name=\"Weather API call node\",\n...     url=\"https://example.com/weather\",\n...     http_method = \"GET\",\n...     query_params={\n...         \"location\": \"zurich\",\n...     },\n...     outputs=[weather_result_property]\n... )\n>>>\n>>> item_id_property = Property(\n...     json_schema={\"title\": \"item_id\", \"type\": \"string\"}\n... )\n>>> order_id_property = Property(\n...     json_schema={\"title\": \"order_id\", \"type\": \"string\"}\n... )\n>>> store_id_property = Property(\n...     json_schema={\"title\": \"store_id\", \"type\": \"string\"}\n... )\n>>> session_id_property = Property(\n...     json_schema={\"title\": \"session_id\", \"type\": \"string\"}\n... )\n>>> create_order_step = ApiNode(\n...     name=\"Orders api call node\",\n...     url=\"https://example.com/orders/{{ order_id }}\",\n...     http_method=\"POST\",\n...     # sending an object which will automatically be transformed into JSON\n...     data={\n...         # define a static body parameter\n...         \"topic_id\": 12345,\n...         # define a templated body parameter.\n...         # The value for {{ item_id }} will be taken from the IO system at runtime\n...         \"item_id\": \"{{ item_id }}\",\n...     },\n...     query_params={\n...         # provide one templated query parameter called \"store_id\"\n...         # which will take its value from the IO system from key \"store_id\"\n...         \"store_id\": \"{{ store_id }}\",\n...     },\n...     headers={\n...         # set header session_id. the value is coming from the IO system\n...         \"session_id\": \"{{ session_id }}\",\n...     },\n...     inputs=[item_id_property, order_id_property, store_id_property, session_id_property],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -864,7 +864,7 @@
     },
     "BaseBranchingNode": {
       "additionalProperties": false,
-      "description": "Select the next node to transition to based on a mapping.\n\nThe input is used as key for the mapping. If the input does not correspond to any of the keys\nof the mapping the branch 'default' will be selected. This node is intended to be a part of a\nFlow.\n\n- **Inputs**\n    The input value that should be used as key for the mapping.\n- **Outputs**\n    None.\n- **Branches**\n    One for each value in the mapping, plus a branch called ``default``,\n    which is the branch taken by the flow when mapping fails\n    (i.e., the input does not match any key in the mapping).\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> CORRECT_PASSWORD_BRANCH = \"PASSWORD_OK\"\n>>> password_property = Property(\n...     json_schema={\"title\": \"password\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"User input agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to ask the password to the user. \"\n...         \"Once you get it, submit it and end.\"\n...     ),\n...     outputs=[password_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> access_granted_end_node = EndNode(\n...     name=\"access granted end\", branch_name=\"ACCESS_GRANTED\"\n... )\n>>> access_denied_end_node = EndNode(\n...     name=\"access denied end\", branch_name=\"ACCESS_DENIED\"\n... )\n>>> branching_node = BranchingNode(\n...     name=\"password check\",\n...     mapping={\"123456\": CORRECT_PASSWORD_BRANCH},\n...     inputs=[password_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         access_granted_end_node,\n...         access_denied_end_node\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\",\n...             from_node=start_node,\n...             to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\",\n...             from_node=agent_node,\n...             to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_granted\",\n...             from_node=branching_node,\n...             from_branch=CORRECT_PASSWORD_BRANCH,\n...             to_node=access_granted_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_denied\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=access_denied_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"password_edge\",\n...             source_node=agent_node,\n...             source_output=\"password\",\n...             destination_node=branching_node,\n...             destination_input=\"password\",\n...         ),\n...     ],\n... )",
+      "description": "Select the next node to transition to based on a mapping.\n\nThe input is used as key for the mapping. If the input does not correspond to any of the keys\nof the mapping the branch 'default' will be selected. This node is intended to be a part of a\nFlow.\n\n- **Inputs**\n    The input value that should be used as key for the mapping.\n\n    If None is given, ``pyagentspec`` infers a string property named ``branching_mapping_key``.\n- **Outputs**\n    None.\n- **Branches**\n    One for each value in the mapping, plus a branch called ``default``,\n    which is the branch taken by the flow when mapping fails\n    (i.e., the input does not match any key in the mapping).\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> CORRECT_PASSWORD_BRANCH = \"PASSWORD_OK\"\n>>> password_property = Property(\n...     json_schema={\"title\": \"password\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"User input agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to ask the password to the user. \"\n...         \"Once you get it, submit it and end.\"\n...     ),\n...     outputs=[password_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> access_granted_end_node = EndNode(\n...     name=\"access granted end\", branch_name=\"ACCESS_GRANTED\"\n... )\n>>> access_denied_end_node = EndNode(\n...     name=\"access denied end\", branch_name=\"ACCESS_DENIED\"\n... )\n>>> branching_node = BranchingNode(\n...     name=\"password check\",\n...     mapping={\"123456\": CORRECT_PASSWORD_BRANCH},\n...     inputs=[password_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         access_granted_end_node,\n...         access_denied_end_node\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\",\n...             from_node=start_node,\n...             to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\",\n...             from_node=agent_node,\n...             to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_granted\",\n...             from_node=branching_node,\n...             from_branch=CORRECT_PASSWORD_BRANCH,\n...             to_node=access_granted_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_denied\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=access_denied_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"password_edge\",\n...             source_node=agent_node,\n...             source_output=\"password\",\n...             destination_node=branching_node,\n...             destination_input=\"password\",\n...         ),\n...     ],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -1040,22 +1040,22 @@
     "BaseClientTransport": {
       "anyOf": [
         {
+          "$ref": "#/$defs/StdioTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+        },
+        {
           "$ref": "#/$defs/RemoteTransport"
         },
         {
           "$ref": "#/$defs/SSEmTLSTransport"
         },
         {
-          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+          "$ref": "#/$defs/StreamableHTTPTransport"
         },
         {
           "$ref": "#/$defs/SSETransport"
-        },
-        {
-          "$ref": "#/$defs/StdioTransport"
-        },
-        {
-          "$ref": "#/$defs/StreamableHTTPTransport"
         }
       ],
       "x-abstract-component": true
@@ -1063,73 +1063,73 @@
     "BaseComponentWithIO": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ApiNode"
-        },
-        {
-          "$ref": "#/$defs/ClientTool"
-        },
-        {
-          "$ref": "#/$defs/AgenticComponent"
-        },
-        {
-          "$ref": "#/$defs/RemoteAgent"
-        },
-        {
-          "$ref": "#/$defs/LlmNode"
-        },
-        {
-          "$ref": "#/$defs/Agent"
-        },
-        {
-          "$ref": "#/$defs/OciAgent"
-        },
-        {
-          "$ref": "#/$defs/MapNode"
-        },
-        {
-          "$ref": "#/$defs/AgentNode"
+          "$ref": "#/$defs/Node"
         },
         {
           "$ref": "#/$defs/OpenAiAgent"
         },
         {
-          "$ref": "#/$defs/FlowNode"
+          "$ref": "#/$defs/LlmNode"
         },
         {
-          "$ref": "#/$defs/Flow"
+          "$ref": "#/$defs/ClientTool"
         },
         {
           "$ref": "#/$defs/ToolNode"
         },
         {
-          "$ref": "#/$defs/ServerTool"
+          "$ref": "#/$defs/Flow"
         },
         {
-          "$ref": "#/$defs/OutputMessageNode"
-        },
-        {
-          "$ref": "#/$defs/RemoteTool"
+          "$ref": "#/$defs/RemoteAgent"
         },
         {
           "$ref": "#/$defs/StartNode"
         },
         {
-          "$ref": "#/$defs/EndNode"
+          "$ref": "#/$defs/ServerTool"
         },
         {
-          "$ref": "#/$defs/Node"
-        },
-        {
-          "$ref": "#/$defs/Tool"
+          "$ref": "#/$defs/InputMessageNode"
         },
         {
           "$ref": "#/$defs/MCPTool"
         },
         {
+          "$ref": "#/$defs/OutputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/OciAgent"
+        },
+        {
+          "$ref": "#/$defs/AgenticComponent"
+        },
+        {
+          "$ref": "#/$defs/Tool"
+        },
+        {
+          "$ref": "#/$defs/Agent"
+        },
+        {
+          "$ref": "#/$defs/ApiNode"
+        },
+        {
+          "$ref": "#/$defs/RemoteTool"
+        },
+        {
+          "$ref": "#/$defs/EndNode"
+        },
+        {
+          "$ref": "#/$defs/FlowNode"
+        },
+        {
+          "$ref": "#/$defs/MapNode"
+        },
+        {
           "$ref": "#/$defs/BranchingNode"
         },
         {
-          "$ref": "#/$defs/InputMessageNode"
+          "$ref": "#/$defs/AgentNode"
         }
       ],
       "x-abstract-component": true
@@ -1274,7 +1274,7 @@
     },
     "BaseEndNode": {
       "additionalProperties": false,
-      "description": "End nodes denote the end of the execution of a flow.\n\nThere might be several end nodes in a flow, in which case the executor of the flow\nshould be able to track which one was reached and pass that back to the caller.\n\n- **Inputs**\n    The list of inputs of the step. If both input and output properties are specified they\n    must be an exact match\n- **Outputs**\n    The list of outputs that should be exposed by the flow. If both input and output properties\n    are specified they must be an exact match\n- **Branches**\n    None.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> languages_to_branch_name = {\n...     \"english\": \"ENGLISH\",\n...     \"spanish\": \"SPANISH\",\n...     \"italian\": \"ITALIAN\",\n... }\n>>> language_property = Property(\n...     json_schema={\"title\": \"language\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"Language detector agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to understand the language spoken by the user.\"\n...         \"Please output only the language in lowercase and submit.\"\n...     ),\n...     outputs=[language_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> english_end_node = EndNode(\n...     name=\"english end\", branch_name=languages_to_branch_name[\"english\"]\n... )\n>>> spanish_end_node = EndNode(\n...     name=\"spanish end\", branch_name=languages_to_branch_name[\"spanish\"]\n... )\n>>> italian_end_node = EndNode(\n...     name=\"italian end\", branch_name=languages_to_branch_name[\"italian\"]\n... )\n>>> unknown_end_node = EndNode(name=\"unknown language end\", branch_name=\"unknown\")\n>>> branching_node = BranchingNode(\n...     name=\"language check\",\n...     mapping=languages_to_branch_name,\n...     inputs=[language_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         english_end_node,\n...         spanish_end_node,\n...         italian_end_node,\n...         unknown_end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\", from_node=start_node, to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\", from_node=agent_node, to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_english_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"english\"],\n...             to_node=english_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_spanish_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"spanish\"],\n...             to_node=spanish_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_italian_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"italian\"],\n...             to_node=italian_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_unknown_end\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=unknown_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"language_edge\",\n...             source_node=agent_node,\n...             source_output=\"language\",\n...             destination_node=branching_node,\n...             destination_input=\"language\",\n...         ),\n...     ],\n... )",
+      "description": "End nodes denote the end of the execution of a flow.\n\nThere might be several end nodes in a flow, in which case the executor of the flow\nshould be able to track which one was reached and pass that back to the caller.\n\n- **Inputs**\n    The list of inputs of the step. If both input and output properties are specified they\n    must be an exact match\n\n    If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.\n- **Outputs**\n    The list of outputs that should be exposed by the flow. If both input and output properties\n    are specified they must be an exact match\n\n    If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.\n- **Branches**\n    None.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> languages_to_branch_name = {\n...     \"english\": \"ENGLISH\",\n...     \"spanish\": \"SPANISH\",\n...     \"italian\": \"ITALIAN\",\n... }\n>>> language_property = Property(\n...     json_schema={\"title\": \"language\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"Language detector agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to understand the language spoken by the user.\"\n...         \"Please output only the language in lowercase and submit.\"\n...     ),\n...     outputs=[language_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> english_end_node = EndNode(\n...     name=\"english end\", branch_name=languages_to_branch_name[\"english\"]\n... )\n>>> spanish_end_node = EndNode(\n...     name=\"spanish end\", branch_name=languages_to_branch_name[\"spanish\"]\n... )\n>>> italian_end_node = EndNode(\n...     name=\"italian end\", branch_name=languages_to_branch_name[\"italian\"]\n... )\n>>> unknown_end_node = EndNode(name=\"unknown language end\", branch_name=\"unknown\")\n>>> branching_node = BranchingNode(\n...     name=\"language check\",\n...     mapping=languages_to_branch_name,\n...     inputs=[language_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         english_end_node,\n...         spanish_end_node,\n...         italian_end_node,\n...         unknown_end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\", from_node=start_node, to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\", from_node=agent_node, to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_english_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"english\"],\n...             to_node=english_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_spanish_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"spanish\"],\n...             to_node=spanish_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_italian_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"italian\"],\n...             to_node=italian_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_unknown_end\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=unknown_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"language_edge\",\n...             source_node=agent_node,\n...             source_output=\"language\",\n...             destination_node=branching_node,\n...             destination_input=\"language\",\n...         ),\n...     ],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -1572,7 +1572,7 @@
     },
     "BaseInputMessageNode": {
       "additionalProperties": false,
-      "description": "This node interrupts the execution of the flow in order to wait for a user input, and restarts after receiving it.\nAn agent message, if given, is appended to the conversation before waiting for input.\nUser input is appended to the conversation as a user message, and it is returned as a string property from the node.\n\n- **Inputs**\n    One per variable in the message\n- **Outputs**\n    One string property that represents the content of the input user message.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import StartNode, EndNode, InputMessageNode, OutputMessageNode, LlmNode\n>>> from pyagentspec.property import StringProperty\n>>> start_node = StartNode(name=\"start\")\n>>> prompt_node = OutputMessageNode(name=\"ask_input\", message=\"What is the paragraph you want to rephrase?\")\n>>> input_node = InputMessageNode(name=\"user_input\", outputs=[StringProperty(title=\"user_input\")])\n>>> llm_node = LlmNode(\n...     name=\"rephrase\",\n...     llm_config=llm_config,\n...     prompt_template=\"Rephrase {{user_input}}\",\n...     outputs=[StringProperty(title=\"rephrased_user_input\")],\n... )\n>>> output_node = OutputMessageNode(name=\"ask_input\", message=\"{{rephrased_user_input}}\")\n>>> end_node = EndNode(name=\"end\")\n>>> flow = Flow(\n...     name=\"rephrase_paragraph_flow\",\n...     start_node=start_node,\n...     nodes=[start_node, prompt_node, input_node, llm_node, output_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"ce1\", from_node=start_node, to_node=prompt_node),\n...         ControlFlowEdge(name=\"ce2\", from_node=prompt_node, to_node=input_node),\n...         ControlFlowEdge(name=\"ce3\", from_node=input_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"ce4\", from_node=llm_node, to_node=output_node),\n...         ControlFlowEdge(name=\"ce5\", from_node=output_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"de1\",\n...             source_node=input_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"de2\",\n...             source_node=llm_node,\n...             source_output=\"rephrased_user_input\",\n...             destination_node=output_node,\n...             destination_input=\"rephrased_user_input\",\n...         ),\n...     ]\n... )",
+      "description": "This node interrupts the execution of the flow in order to wait for a user input, and restarts after receiving it.\nAn agent message, if given, is appended to the conversation before waiting for input.\nUser input is appended to the conversation as a user message, and it is returned as a string property from the node.\n\n- **Inputs**\n    One per variable in the message\n- **Outputs**\n    One string property that represents the content of the input user message.\n\n    If None is given, ``pyagentspec`` infers a string property named ``user_input``.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import StartNode, EndNode, InputMessageNode, OutputMessageNode, LlmNode\n>>> from pyagentspec.property import StringProperty\n>>> start_node = StartNode(name=\"start\")\n>>> prompt_node = OutputMessageNode(name=\"ask_input\", message=\"What is the paragraph you want to rephrase?\")\n>>> input_node = InputMessageNode(name=\"user_input\", outputs=[StringProperty(title=\"user_input\")])\n>>> llm_node = LlmNode(\n...     name=\"rephrase\",\n...     llm_config=llm_config,\n...     prompt_template=\"Rephrase {{user_input}}\",\n...     outputs=[StringProperty(title=\"rephrased_user_input\")],\n... )\n>>> output_node = OutputMessageNode(name=\"ask_input\", message=\"{{rephrased_user_input}}\")\n>>> end_node = EndNode(name=\"end\")\n>>> flow = Flow(\n...     name=\"rephrase_paragraph_flow\",\n...     start_node=start_node,\n...     nodes=[start_node, prompt_node, input_node, llm_node, output_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"ce1\", from_node=start_node, to_node=prompt_node),\n...         ControlFlowEdge(name=\"ce2\", from_node=prompt_node, to_node=input_node),\n...         ControlFlowEdge(name=\"ce3\", from_node=input_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"ce4\", from_node=llm_node, to_node=output_node),\n...         ControlFlowEdge(name=\"ce5\", from_node=output_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"de1\",\n...             source_node=input_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"de2\",\n...             source_node=llm_node,\n...             source_output=\"rephrased_user_input\",\n...             destination_node=output_node,\n...             destination_input=\"rephrased_user_input\",\n...         ),\n...     ]\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -1672,26 +1672,26 @@
     "BaseLlmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/OpenAiConfig"
-        },
-        {
           "$ref": "#/$defs/OllamaConfig"
-        },
-        {
-          "$ref": "#/$defs/OpenAiCompatibleConfig"
         },
         {
           "$ref": "#/$defs/VllmConfig"
         },
         {
+          "$ref": "#/$defs/OpenAiCompatibleConfig"
+        },
+        {
           "$ref": "#/$defs/OciGenAiConfig"
+        },
+        {
+          "$ref": "#/$defs/OpenAiConfig"
         }
       ],
       "x-abstract-component": true
     },
     "BaseLlmNode": {
       "additionalProperties": false,
-      "description": "Execute a prompt template with a given LLM.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    One per placeholder in the prompt template.\n- **Outputs**\n    The output text generated by the LLM.\n- **Branches**\n    One, the default next.\n\nExample\n-------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.nodes import LlmNode, StartNode, EndNode\n>>> country_property = Property(\n...     json_schema={\"title\": \"country\", \"type\": \"string\"}\n... )\n>>> capital_property = Property(\n...     json_schema={\"title\": \"capital\", \"type\": \"string\"}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[country_property])\n>>> end_node = EndNode(name=\"end\", outputs=[capital_property])\n>>> llm_node = LlmNode(\n...     name=\"simple llm node\",\n...     llm_config=llm_config,\n...     prompt_template=\"What is the capital of {{ country }}?\",\n...     inputs=[country_property],\n...     outputs=[capital_property],\n... )\n>>> flow = Flow(\n...     name=\"Get the country's capital flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"country_edge\",\n...             source_node=start_node,\n...             source_output=\"country\",\n...             destination_node=llm_node,\n...             destination_input=\"country\",\n...         ),\n...         DataFlowEdge(\n...             name=\"capital_edge\",\n...             source_node=llm_node,\n...             source_output=\"capital\",\n...             destination_node=end_node,\n...             destination_input=\"capital\"\n...         ),\n...     ],\n... )",
+      "description": "Execute a prompt template with a given LLM.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    One per placeholder in the prompt template.\n- **Outputs**\n    The output text generated by the LLM.\n\n    If None is given, ``pyagentspec`` infers a string property named ``generated_text``.\n- **Branches**\n    One, the default next.\n\nExample\n-------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.nodes import LlmNode, StartNode, EndNode\n>>> country_property = Property(\n...     json_schema={\"title\": \"country\", \"type\": \"string\"}\n... )\n>>> capital_property = Property(\n...     json_schema={\"title\": \"capital\", \"type\": \"string\"}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[country_property])\n>>> end_node = EndNode(name=\"end\", outputs=[capital_property])\n>>> llm_node = LlmNode(\n...     name=\"simple llm node\",\n...     llm_config=llm_config,\n...     prompt_template=\"What is the capital of {{ country }}?\",\n...     inputs=[country_property],\n...     outputs=[capital_property],\n... )\n>>> flow = Flow(\n...     name=\"Get the country's capital flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"country_edge\",\n...             source_node=start_node,\n...             source_output=\"country\",\n...             destination_node=llm_node,\n...             destination_input=\"country\",\n...         ),\n...         DataFlowEdge(\n...             name=\"capital_edge\",\n...             source_node=llm_node,\n...             source_output=\"capital\",\n...             destination_node=end_node,\n...             destination_input=\"capital\"\n...         ),\n...     ],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -1871,7 +1871,7 @@
     },
     "BaseMapNode": {
       "additionalProperties": false,
-      "description": "The map node executes a subflow on each element of a given input as part of a flow.\n\n- **Inputs**\n    Inferred from the inner structure. It's the sets of inputs\n    required by the StartNode of the inner flow.\n    The names of the inputs will be the ones of the inner flow,\n    complemented with the ``iterated_`` prefix. Their type is\n    ``Union[inner_type, List[inner_type]]``, where ``inner_type``\n    is the type of the respective input in the inner flow.\n- **Outputs**\n    Inferred from the inner structure. It's the union of the\n    sets of outputs exposed by the EndNodes of the inner flow,\n    combined with the reducer method of each output.\n    The names of the outputs will be the ones of the inner flow,\n    complemented with the ``collected_`` prefix. Their type depends\n    on the ``reduce`` method specified for that output:\n\n    - ``List`` of the respective output type in case of ``append``\n    - same type of the respective output type in case of ``sum``, ``avg``\n\n- **Branches**\n    One, the default next.\n\nExamples\n--------\nIn this example we will create a flow that returns\nan L2-normalized version of a given list of numbers.\n\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, StartNode, MapNode, ToolNode\n>>> from pyagentspec.tools import ServerTool\n\nFirst, we define a MapNode that returns the square of all the elements in a list.\nIt will be used to compute the L2-norm.\n\n>>> x_property = Property(json_schema={\"title\": \"x\", \"type\": \"number\"})\n>>> x_square_property = Property(\n...     json_schema={\"title\": \"x_square\", \"type\": \"number\"}\n... )\n>>> square_tool = ServerTool(\n...     name=\"compute_square_tool\",\n...     description=\"Computes the square of a number\",\n...     inputs=[x_property],\n...     outputs=[x_square_property],\n... )\n>>> list_of_x_property = Property(\n...     json_schema={\"title\": \"x_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[x_square_property])\n>>> square_tool_node = ToolNode(name=\"square tool node\", tool=square_tool)\n>>> square_number_flow = Flow(\n...     name=\"Square number flow\",\n...     start_node=start_node,\n...     nodes=[start_node, square_tool_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_tool\", from_node=start_node, to_node=square_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"tool_to_end\", from_node=square_tool_node, to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"x_edge\",\n...             source_node=start_node,\n...             source_output=\"x\",\n...             destination_node=square_tool_node,\n...             destination_input=\"x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_edge\",\n...             source_node=square_tool_node,\n...             source_output=\"x_square\",\n...             destination_node=end_node,\n...             destination_input=\"x_square\",\n...         ),\n...     ],\n... )\n>>> list_of_x_square_property = Property(\n...     json_schema={\"title\": \"x_square_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> square_numbers_map_node = MapNode(\n...     name=\"square number map node\",\n...     subflow=square_number_flow,\n... )\n\nNow we define the MapNode responsible for normalizing the given list of input numbers.\nThe denominator is the same for all of the numbers,\nwe are going to map only the numerators (i.e., the input numbers).\n\n>>> numerator_property = Property(\n...     json_schema={\"title\": \"numerator\", \"type\": \"number\"}\n... )\n>>> denominator_property = Property(\n...     json_schema={\"title\": \"denominator\", \"type\": \"number\"}\n... )\n>>> result_property = Property(\n...     json_schema={\"title\": \"result\", \"type\": \"number\"}\n... )\n>>> division_tool = ServerTool(\n...     name=\"division_tool\",\n...     description=\"Computes the ratio between two numbers\",\n...     inputs=[numerator_property, denominator_property],\n...     outputs=[result_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[numerator_property, denominator_property])\n>>> end_node = EndNode(name=\"end\", outputs=[result_property])\n>>> divide_node = ToolNode(name=\"divide node\", tool=division_tool)\n>>> normalize_flow = Flow(\n...     name=\"Normalize flow\",\n...     start_node=start_node,\n...     nodes=[start_node, divide_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_tool\", from_node=start_node, to_node=divide_node),\n...         ControlFlowEdge(name=\"tool_to_end\", from_node=divide_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"numerator\",\n...             destination_node=divide_node,\n...             destination_input=\"numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=start_node,\n...             source_output=\"denominator\",\n...             destination_node=divide_node,\n...             destination_input=\"denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"result_edge\",\n...             source_node=divide_node,\n...             source_output=\"result\",\n...             destination_node=end_node,\n...             destination_input=\"result\",\n...         ),\n...     ],\n... )\n\nFinally, we define the overall flow:\n\n- The list of inputs is squared\n- The squared list is summed and root squared\n- The list of inputs is normalized based on the outcomes of the previous 2 steps\n\n>>> squared_sum_property = Property(\n...     json_schema={\"title\": \"squared_sum\", \"type\": \"number\"}\n... )\n>>> normalized_list_of_x_property = Property(\n...     json_schema={\n...         \"title\": \"x_list_normalized\",\n...         \"type\": \"array\",\n...         \"items\": {\"type\": \"number\"},\n...     }\n... )\n>>> normalize_map_node = MapNode(\n...     name=\"normalize map node\",\n...     subflow=normalize_flow,\n... )\n>>> squared_sum_tool = ServerTool(\n...     name=\"squared_sum_tool\",\n...     description=\"Computes the squared sum of a list of numbers\",\n...     inputs=[list_of_x_property],\n...     outputs=[squared_sum_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[list_of_x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[normalized_list_of_x_property])\n>>> squared_sum_tool_node = ToolNode(name=\"squared sum tool node\", tool=squared_sum_tool)\n>>> flow = Flow(\n...     name=\"L2 normalize flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         square_numbers_map_node,\n...         squared_sum_tool_node,\n...         normalize_map_node,\n...         end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_square_numbers\",\n...             from_node=start_node,\n...             to_node=square_numbers_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"square_numbers_to_squared_sum_tool\",\n...             from_node=square_numbers_map_node,\n...             to_node=squared_sum_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"squared_sum_tool_to_normalize\",\n...             from_node=squared_sum_tool_node,\n...             to_node=normalize_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"normalize_to_end\",\n...             from_node=normalize_map_node,\n...             to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"list_of_x_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=square_numbers_map_node,\n...             destination_input=\"iterated_x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_list_edge\",\n...             source_node=square_numbers_map_node,\n...             source_output=\"collected_x_square\",\n...             destination_node=squared_sum_tool_node,\n...             destination_input=\"x_list\",\n...         ),\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=squared_sum_tool_node,\n...             source_output=\"squared_sum\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_list_normalized_edge\",\n...             source_node=normalize_map_node,\n...             source_output=\"collected_result\",\n...             destination_node=end_node,\n...             destination_input=\"x_list_normalized\",\n...         ),\n...     ],\n... )",
+      "description": "The map node executes a subflow on each element of a given input as part of a flow.\n\n- **Inputs**\n    Inferred from the inner structure. It's the sets of inputs\n    required by the StartNode of the inner flow.\n    The names of the inputs will be the ones of the inner flow,\n    complemented with the ``iterated_`` prefix. Their type is\n    ``Union[inner_type, List[inner_type]]``, where ``inner_type``\n    is the type of the respective input in the inner flow.\n\n    If None is given, ``pyagentspec`` infers input properties directly from the inner flow,\n    specifying title and type according to the rules defined above.\n\n- **Outputs**\n    Inferred from the inner structure. It's the union of the\n    sets of outputs exposed by the EndNodes of the inner flow,\n    combined with the reducer method of each output.\n    The names of the outputs will be the ones of the inner flow,\n    complemented with the ``collected_`` prefix. Their type depends\n    on the ``reduce`` method specified for that output:\n\n    - ``List`` of the respective output type in case of ``append``\n    - same type of the respective output type in case of ``sum``, ``avg``\n\n    If None is given, ``pyagentspec`` infers outputs by exposing\n    an output property for each entry in the ``reducers`` dictionary, specifying title\n    and type according to the rules defined above.\n\n- **Branches**\n    One, the default next.\n\nExamples\n--------\nIn this example we will create a flow that returns\nan L2-normalized version of a given list of numbers.\n\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, StartNode, MapNode, ToolNode\n>>> from pyagentspec.tools import ServerTool\n\nFirst, we define a MapNode that returns the square of all the elements in a list.\nIt will be used to compute the L2-norm.\n\n>>> x_property = Property(json_schema={\"title\": \"x\", \"type\": \"number\"})\n>>> x_square_property = Property(\n...     json_schema={\"title\": \"x_square\", \"type\": \"number\"}\n... )\n>>> square_tool = ServerTool(\n...     name=\"compute_square_tool\",\n...     description=\"Computes the square of a number\",\n...     inputs=[x_property],\n...     outputs=[x_square_property],\n... )\n>>> list_of_x_property = Property(\n...     json_schema={\"title\": \"x_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[x_square_property])\n>>> square_tool_node = ToolNode(name=\"square tool node\", tool=square_tool)\n>>> square_number_flow = Flow(\n...     name=\"Square number flow\",\n...     start_node=start_node,\n...     nodes=[start_node, square_tool_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_tool\", from_node=start_node, to_node=square_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"tool_to_end\", from_node=square_tool_node, to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"x_edge\",\n...             source_node=start_node,\n...             source_output=\"x\",\n...             destination_node=square_tool_node,\n...             destination_input=\"x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_edge\",\n...             source_node=square_tool_node,\n...             source_output=\"x_square\",\n...             destination_node=end_node,\n...             destination_input=\"x_square\",\n...         ),\n...     ],\n... )\n>>> list_of_x_square_property = Property(\n...     json_schema={\"title\": \"x_square_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> square_numbers_map_node = MapNode(\n...     name=\"square number map node\",\n...     subflow=square_number_flow,\n... )\n\nNow we define the MapNode responsible for normalizing the given list of input numbers.\nThe denominator is the same for all of the numbers,\nwe are going to map only the numerators (i.e., the input numbers).\n\n>>> numerator_property = Property(\n...     json_schema={\"title\": \"numerator\", \"type\": \"number\"}\n... )\n>>> denominator_property = Property(\n...     json_schema={\"title\": \"denominator\", \"type\": \"number\"}\n... )\n>>> result_property = Property(\n...     json_schema={\"title\": \"result\", \"type\": \"number\"}\n... )\n>>> division_tool = ServerTool(\n...     name=\"division_tool\",\n...     description=\"Computes the ratio between two numbers\",\n...     inputs=[numerator_property, denominator_property],\n...     outputs=[result_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[numerator_property, denominator_property])\n>>> end_node = EndNode(name=\"end\", outputs=[result_property])\n>>> divide_node = ToolNode(name=\"divide node\", tool=division_tool)\n>>> normalize_flow = Flow(\n...     name=\"Normalize flow\",\n...     start_node=start_node,\n...     nodes=[start_node, divide_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_tool\", from_node=start_node, to_node=divide_node),\n...         ControlFlowEdge(name=\"tool_to_end\", from_node=divide_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"numerator\",\n...             destination_node=divide_node,\n...             destination_input=\"numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=start_node,\n...             source_output=\"denominator\",\n...             destination_node=divide_node,\n...             destination_input=\"denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"result_edge\",\n...             source_node=divide_node,\n...             source_output=\"result\",\n...             destination_node=end_node,\n...             destination_input=\"result\",\n...         ),\n...     ],\n... )\n\nFinally, we define the overall flow:\n\n- The list of inputs is squared\n- The squared list is summed and root squared\n- The list of inputs is normalized based on the outcomes of the previous 2 steps\n\n>>> squared_sum_property = Property(\n...     json_schema={\"title\": \"squared_sum\", \"type\": \"number\"}\n... )\n>>> normalized_list_of_x_property = Property(\n...     json_schema={\n...         \"title\": \"x_list_normalized\",\n...         \"type\": \"array\",\n...         \"items\": {\"type\": \"number\"},\n...     }\n... )\n>>> normalize_map_node = MapNode(\n...     name=\"normalize map node\",\n...     subflow=normalize_flow,\n... )\n>>> squared_sum_tool = ServerTool(\n...     name=\"squared_sum_tool\",\n...     description=\"Computes the squared sum of a list of numbers\",\n...     inputs=[list_of_x_property],\n...     outputs=[squared_sum_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[list_of_x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[normalized_list_of_x_property])\n>>> squared_sum_tool_node = ToolNode(name=\"squared sum tool node\", tool=squared_sum_tool)\n>>> flow = Flow(\n...     name=\"L2 normalize flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         square_numbers_map_node,\n...         squared_sum_tool_node,\n...         normalize_map_node,\n...         end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_square_numbers\",\n...             from_node=start_node,\n...             to_node=square_numbers_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"square_numbers_to_squared_sum_tool\",\n...             from_node=square_numbers_map_node,\n...             to_node=squared_sum_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"squared_sum_tool_to_normalize\",\n...             from_node=squared_sum_tool_node,\n...             to_node=normalize_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"normalize_to_end\",\n...             from_node=normalize_map_node,\n...             to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"list_of_x_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=square_numbers_map_node,\n...             destination_input=\"iterated_x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_list_edge\",\n...             source_node=square_numbers_map_node,\n...             source_output=\"collected_x_square\",\n...             destination_node=squared_sum_tool_node,\n...             destination_input=\"x_list\",\n...         ),\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=squared_sum_tool_node,\n...             source_output=\"squared_sum\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_list_normalized_edge\",\n...             source_node=normalize_map_node,\n...             source_output=\"collected_result\",\n...             destination_node=end_node,\n...             destination_input=\"x_list_normalized\",\n...         ),\n...     ],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -1978,37 +1978,37 @@
     "BaseNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ApiNode"
-        },
-        {
-          "$ref": "#/$defs/OutputMessageNode"
-        },
-        {
-          "$ref": "#/$defs/MapNode"
+          "$ref": "#/$defs/ToolNode"
         },
         {
           "$ref": "#/$defs/StartNode"
         },
         {
+          "$ref": "#/$defs/ApiNode"
+        },
+        {
+          "$ref": "#/$defs/MapNode"
+        },
+        {
           "$ref": "#/$defs/EndNode"
-        },
-        {
-          "$ref": "#/$defs/AgentNode"
-        },
-        {
-          "$ref": "#/$defs/LlmNode"
-        },
-        {
-          "$ref": "#/$defs/ToolNode"
-        },
-        {
-          "$ref": "#/$defs/BranchingNode"
         },
         {
           "$ref": "#/$defs/InputMessageNode"
         },
         {
           "$ref": "#/$defs/FlowNode"
+        },
+        {
+          "$ref": "#/$defs/BranchingNode"
+        },
+        {
+          "$ref": "#/$defs/LlmNode"
+        },
+        {
+          "$ref": "#/$defs/OutputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/AgentNode"
         }
       ],
       "x-abstract-component": true
@@ -2105,16 +2105,16 @@
     "BaseOciClientConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/OciClientConfigWithApiKey"
+          "$ref": "#/$defs/OciClientConfigWithSecurityToken"
         },
         {
           "$ref": "#/$defs/OciClientConfigWithInstancePrincipal"
         },
         {
-          "$ref": "#/$defs/OciClientConfigWithResourcePrincipal"
+          "$ref": "#/$defs/OciClientConfigWithApiKey"
         },
         {
-          "$ref": "#/$defs/OciClientConfigWithSecurityToken"
+          "$ref": "#/$defs/OciClientConfigWithResourcePrincipal"
         }
       ],
       "x-abstract-component": true
@@ -2643,10 +2643,10 @@
     "BaseOpenAiCompatibleConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/VllmConfig"
+          "$ref": "#/$defs/OllamaConfig"
         },
         {
-          "$ref": "#/$defs/OllamaConfig"
+          "$ref": "#/$defs/VllmConfig"
         },
         {
           "additionalProperties": false,
@@ -3004,16 +3004,16 @@
     "BaseRemoteTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
-        },
-        {
           "$ref": "#/$defs/StreamableHTTPTransport"
         },
         {
-          "$ref": "#/$defs/SSETransport"
+          "$ref": "#/$defs/SSEmTLSTransport"
         },
         {
-          "$ref": "#/$defs/SSEmTLSTransport"
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+        },
+        {
+          "$ref": "#/$defs/SSETransport"
         }
       ],
       "x-abstract-component": true
@@ -3262,7 +3262,7 @@
     },
     "BaseStartNode": {
       "additionalProperties": false,
-      "description": "Start nodes denote the start of the execution of a flow.\n\n- **Inputs**\n    The list of inputs that should be the inputs of the flow. If both input and output\n    properties are specified they must be an exact match\n- **Outputs**\n    The list of outputs of the step. If both input and output properties are specified they\n    must be an exact match\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode\n>>> user_question_property = Property(\n...     json_schema=dict(\n...         title=\"user_question\",\n...         description=\"The user question.\",\n...         type=\"string\",\n...     )\n... )\n>>> answer_property = Property(json_schema=dict(title=\"answer\", type=\"string\"))\n>>> start_node = StartNode(name=\"start\", inputs=[user_question_property])\n>>> end_node = EndNode(name=\"end\", outputs=[answer_property])\n>>> llm_node = LlmNode(\n...     name=\"llm node\",\n...     prompt_template=\"Answer the user question: {{user_question}}\",\n...     llm_config=llm_config,\n... )\n>>> flow = Flow(\n...     name=\"flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"user_question\",\n...             destination_node=llm_node,\n...             destination_input=\"user_question\",\n...         ),\n...         DataFlowEdge(\n...             name=\"answer_edge\",\n...             source_node=llm_node,\n...             source_output=\"generated_text\",\n...             destination_node=end_node,\n...             destination_input=\"answer\"\n...         ),\n...     ],\n... )",
+      "description": "Start nodes denote the start of the execution of a flow.\n\n- **Inputs**\n    The list of inputs that should be the inputs of the flow. If both input and output\n    properties are specified they must be an exact match\n\n    If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.\n- **Outputs**\n    The list of outputs of the step. If both input and output properties are specified they\n    must be an exact match\n\n    If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode\n>>> user_question_property = Property(\n...     json_schema=dict(\n...         title=\"user_question\",\n...         description=\"The user question.\",\n...         type=\"string\",\n...     )\n... )\n>>> answer_property = Property(json_schema=dict(title=\"answer\", type=\"string\"))\n>>> start_node = StartNode(name=\"start\", inputs=[user_question_property])\n>>> end_node = EndNode(name=\"end\", outputs=[answer_property])\n>>> llm_node = LlmNode(\n...     name=\"llm node\",\n...     prompt_template=\"Answer the user question: {{user_question}}\",\n...     llm_config=llm_config,\n... )\n>>> flow = Flow(\n...     name=\"flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"user_question\",\n...             destination_node=llm_node,\n...             destination_input=\"user_question\",\n...         ),\n...         DataFlowEdge(\n...             name=\"answer_edge\",\n...             source_node=llm_node,\n...             source_output=\"generated_text\",\n...             destination_node=end_node,\n...             destination_input=\"answer\"\n...         ),\n...     ],\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -3604,13 +3604,13 @@
     "BaseTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ClientTool"
-        },
-        {
           "$ref": "#/$defs/ServerTool"
         },
         {
           "$ref": "#/$defs/RemoteTool"
+        },
+        {
+          "$ref": "#/$defs/ClientTool"
         },
         {
           "$ref": "#/$defs/MCPTool"
@@ -3957,139 +3957,6 @@
       "title": "AgentSpecVersionEnum",
       "type": "string"
     },
-    "VersionedApiNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseApiNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedClientTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseClientTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOpenAiConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedAgenticComponent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseAgenticComponent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedRemoteAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseRemoteAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedLlmNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseLlmNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciClientConfigWithSecurityToken": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
     "VersionedVllmConfig": {
       "anyOf": [
         {
@@ -4097,44 +3964,6 @@
         },
         {
           "$ref": "#/$defs/BaseVllmConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciClientConfigWithApiKey": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
         }
       ],
       "properties": {
@@ -4166,127 +3995,13 @@
         }
       }
     },
-    "VersionedOciClientConfig": {
+    "VersionedNode": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedStreamableHTTPmTLSTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOpenAiCompatibleConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedAgentNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseAgentNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedMapNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseMapNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedSSETransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseSSETransport"
+          "$ref": "#/$defs/BaseNode"
         }
       ],
       "properties": {
@@ -4337,13 +4052,13 @@
         }
       }
     },
-    "VersionedStdioTransport": {
+    "VersionedLlmNode": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseStdioTransport"
+          "$ref": "#/$defs/BaseLlmNode"
         }
       ],
       "properties": {
@@ -4356,70 +4071,13 @@
         }
       }
     },
-    "VersionedStreamableHTTPTransport": {
+    "VersionedClientTool": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseStreamableHTTPTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOllamaConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOllamaConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedFlow": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseFlow"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedFlowNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseFlowNode"
+          "$ref": "#/$defs/BaseClientTool"
         }
       ],
       "properties": {
@@ -4451,13 +4109,13 @@
         }
       }
     },
-    "VersionedServerTool": {
+    "VersionedOpenAiCompatibleConfig": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseServerTool"
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
         }
       ],
       "properties": {
@@ -4470,260 +4128,13 @@
         }
       }
     },
-    "VersionedOutputMessageNode": {
+    "VersionedFlow": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseOutputMessageNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedRemoteTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseRemoteTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedStartNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseStartNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedEndNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseEndNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedComponentWithIO": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseComponentWithIO"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedMCPTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseMCPTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedControlFlowEdge": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseControlFlowEdge"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedRemoteTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseRemoteTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedSSEmTLSTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseSSEmTLSTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedDataFlowEdge": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseDataFlowEdge"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedBranchingNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseBranchingNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedInputMessageNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseInputMessageNode"
+          "$ref": "#/$defs/BaseFlow"
         }
       ],
       "properties": {
@@ -4755,6 +4166,481 @@
         }
       }
     },
+    "VersionedRemoteAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStartNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStartNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedServerTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseServerTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedControlFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseControlFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedInputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseInputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedSSEmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSEmTLSTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedMCPTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMCPTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOutputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOutputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgenticComponent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgenticComponent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedSSETransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSETransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOllamaConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOllamaConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedDataFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseDataFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStreamableHTTPmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedApiNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseApiNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedComponentWithIO": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseComponentWithIO"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedEndNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseEndNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedFlowNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlowNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOpenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStdioTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStdioTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
     "VersionedOciGenAiConfig": {
       "anyOf": [
         {
@@ -4774,6 +4660,101 @@
         }
       }
     },
+    "VersionedOciClientConfigWithSecurityToken": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedMapNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMapNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedBranchingNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseBranchingNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStreamableHTTPTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
     "VersionedOciClientConfigWithResourcePrincipal": {
       "anyOf": [
         {
@@ -4781,6 +4762,25 @@
         },
         {
           "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgentNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgentNode"
         }
       ],
       "properties": {
@@ -4819,58 +4819,13 @@
   },
   "anyOf": [
     {
-      "$ref": "#/$defs/VersionedApiNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedClientTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedOpenAiConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedAgenticComponent"
-    },
-    {
-      "$ref": "#/$defs/VersionedRemoteAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedLlmNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciClientConfigWithSecurityToken"
-    },
-    {
       "$ref": "#/$defs/VersionedVllmConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
     },
     {
       "$ref": "#/$defs/VersionedLlmConfig"
     },
     {
-      "$ref": "#/$defs/VersionedOciClientConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedOpenAiCompatibleConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedAgentNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedMapNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedSSETransport"
+      "$ref": "#/$defs/VersionedNode"
     },
     {
       "$ref": "#/$defs/VersionedOpenAiAgent"
@@ -4879,76 +4834,121 @@
       "$ref": "#/$defs/VersionedOciClientConfigWithInstancePrincipal"
     },
     {
-      "$ref": "#/$defs/VersionedStdioTransport"
+      "$ref": "#/$defs/VersionedLlmNode"
     },
     {
-      "$ref": "#/$defs/VersionedStreamableHTTPTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedOllamaConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedFlow"
-    },
-    {
-      "$ref": "#/$defs/VersionedFlowNode"
+      "$ref": "#/$defs/VersionedClientTool"
     },
     {
       "$ref": "#/$defs/VersionedToolNode"
     },
     {
-      "$ref": "#/$defs/VersionedServerTool"
+      "$ref": "#/$defs/VersionedOpenAiCompatibleConfig"
     },
     {
-      "$ref": "#/$defs/VersionedOutputMessageNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedRemoteTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedStartNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedEndNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedComponentWithIO"
-    },
-    {
-      "$ref": "#/$defs/VersionedTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedMCPTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedControlFlowEdge"
-    },
-    {
-      "$ref": "#/$defs/VersionedRemoteTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedSSEmTLSTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedDataFlowEdge"
-    },
-    {
-      "$ref": "#/$defs/VersionedBranchingNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedInputMessageNode"
+      "$ref": "#/$defs/VersionedFlow"
     },
     {
       "$ref": "#/$defs/VersionedClientTransport"
     },
     {
+      "$ref": "#/$defs/VersionedRemoteAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedStartNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedServerTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedControlFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedInputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedSSEmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedMCPTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedOutputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgenticComponent"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedSSETransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedOllamaConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
+    },
+    {
+      "$ref": "#/$defs/VersionedTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedDataFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedApiNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedComponentWithIO"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedEndNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedFlowNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedOpenAiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedStdioTransport"
+    },
+    {
       "$ref": "#/$defs/VersionedOciGenAiConfig"
     },
     {
+      "$ref": "#/$defs/VersionedOciClientConfigWithSecurityToken"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedMapNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedBranchingNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedStreamableHTTPTransport"
+    },
+    {
       "$ref": "#/$defs/VersionedOciClientConfigWithResourcePrincipal"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgentNode"
     },
     {
       "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
