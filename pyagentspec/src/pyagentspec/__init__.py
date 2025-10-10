@@ -13,11 +13,11 @@ import pyagentspec.flows.nodes  # noqa: F401
 import pyagentspec.llms  # noqa: F401
 import pyagentspec.tools  # noqa: F401
 
+from ._openaiagent import OpenAiAgent
 from ._swarm import Swarm
 from .agent import Agent
 from .component import Component
 from .ociagent import OciAgent
-from .openaiagent import OpenAiAgent
 from .property import Property
 from .serialization import AgentSpecDeserializer, AgentSpecSerializer
 

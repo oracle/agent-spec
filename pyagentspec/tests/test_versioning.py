@@ -377,3 +377,11 @@ def test_legacy_version_field_name_can_be_loaded(simplest_flow: Flow) -> None:
     assert deserialized_flow.min_agentspec_version == AgentSpecVersionEnum(
         serialized_flow[_LEGACY_VERSION_FIELD_NAME]
     )
+
+
+def test_legacy_version_spec_can_be_loaded_and_warns(simplest_flow: Flow) -> None:
+    serialized_flow = AgentSpecSerializer().to_dict(simplest_flow)
+    serialized_flow[AGENTSPEC_VERSION_FIELD_NAME] = AgentSpecVersionEnum.v25_4_0.value
+    with pytest.warns(UserWarning, match="Using a pre-release `agentspec_version`"):
+        deserialized_flow = AgentSpecDeserializer().from_dict(serialized_flow)
+    assert deserialized_flow == simplest_flow

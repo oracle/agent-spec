@@ -18,13 +18,6 @@ install_with_pip() {
     run_pip install "$@"
 }
 
-# Sets up PyPI
-setup_pypi_mirror() {
-    local PUBLIC_PYPI_MIRROR="https://pypi.org"
-    python -m pip config --user set global.index "$PUBLIC_PYPI_MIRROR/pypi"
-    python -m pip config --user set global.index-url "$PUBLIC_PYPI_MIRROR/simple"
-}
-
 # Creates a virtual environment
 create_venv() {
     local VENV_DIR=".venv-agentspec"

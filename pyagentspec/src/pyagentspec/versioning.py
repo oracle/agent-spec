@@ -10,7 +10,8 @@ from enum import Enum
 
 AGENTSPEC_VERSION_FIELD_NAME = "agentspec_version"
 """Name for the field storing the version information"""
-_LEGACY_AGENTSPEC_VERSIONS = {"25.3.0", "25.3.1"}
+_PRERELEASE_AGENTSPEC_VERSIONS = {"25.4.0"}
+_LEGACY_AGENTSPEC_VERSIONS = {"25.3.0", "25.3.1", "25.4.0"}
 _LEGACY_VERSION_FIELD_NAME = "air_version"
 
 
@@ -25,6 +26,7 @@ def _version_lt(version1: str, version2: str):
 class AgentSpecVersionEnum(Enum):
     v25_3_0 = "25.3.0"
     v25_3_1 = "25.3.1"
+    v25_4_0 = "25.4.0"
     v25_4_1 = "25.4.1"
     current_version = "25.4.1"
 
