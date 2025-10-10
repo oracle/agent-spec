@@ -6,14 +6,16 @@
 
 
 from types import CellType
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, cast
 
 from langchain_core.runnables import RunnableBinding
 from langchain_ollama import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
-from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph, StateNodeSpec
-from langgraph_agentspec_adapter._utils import LangGraphLlmConfig
+from langgraph_agentspec_adapter._agentspec_converter_flow import (
+    _langgraph_graph_convert_to_agentspec,
+)
+from langgraph_agentspec_adapter._utils import LangGraphComponent, LangGraphLlmConfig
 
 from pyagentspec import Property
 from pyagentspec.agent import Agent as AgentSpecAgent
@@ -28,7 +30,7 @@ from pyagentspec.tools import Tool as AgentSpecTool
 class LangGraphToAgentSpecConverter:
     def convert(
         self,
-        langgraph_component: Union[CompiledStateGraph[Any, Any, Any], StateGraph[Any, Any, Any]],
+        langgraph_component: LangGraphComponent,
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
     ) -> AgentSpecComponent:
         """Convert the given LangGraph component object into the corresponding PyAgentSpec component"""
@@ -48,13 +50,17 @@ class LangGraphToAgentSpecConverter:
 
     def _convert(
         self,
-        langgraph_component: Union[CompiledStateGraph[Any, Any, Any], StateGraph[Any, Any, Any]],
+        langgraph_component: LangGraphComponent,
         referenced_objects: Dict[str, AgentSpecComponent],
     ) -> AgentSpecComponent:
         agentspec_component: Optional[AgentSpecComponent] = None
         if self._is_react_agent(langgraph_component):
             agentspec_component = self._langgraph_agent_convert_to_agentspec(
                 langgraph_component, referenced_objects
+            )
+        else:
+            agentspec_component = _langgraph_graph_convert_to_agentspec(
+                self, langgraph_component, referenced_objects
             )
 
         if agentspec_component is None:
@@ -64,7 +70,7 @@ class LangGraphToAgentSpecConverter:
 
     def _is_react_agent(
         self,
-        langgraph_component: Union[CompiledStateGraph[Any, Any, Any], StateGraph[Any, Any, Any]],
+        langgraph_component: LangGraphComponent,
     ) -> bool:
         if isinstance(langgraph_component, CompiledStateGraph):
             langgraph_component = langgraph_component.builder
@@ -73,7 +79,7 @@ class LangGraphToAgentSpecConverter:
         return node is not None and hasattr(node.runnable, "get_graph")
 
     def _extract_llm_config_from_runnables_closures(
-        self, agent_node: StateNodeSpec
+        self, agent_node: StateNodeSpec[Any]
     ) -> LangGraphLlmConfig:
         nodes = cast(Any, agent_node.runnable).get_graph().nodes
 
@@ -123,7 +129,9 @@ class LangGraphToAgentSpecConverter:
             tools=tools,
         )
 
-    def _extract_prompt_from_react_agent_node(self, langgraph_agent_node: StateNodeSpec) -> str:
+    def _extract_prompt_from_react_agent_node(
+        self, langgraph_agent_node: StateNodeSpec[Any]
+    ) -> str:
         # The agent_node's runnable corresponds to the `call_model` function, that contains the prompt somewhere
         call_model_function = langgraph_agent_node.runnable.func  # type: ignore
         # We get the cell contents of the last element of the `call_model` function closure,
@@ -171,7 +179,7 @@ class LangGraphToAgentSpecConverter:
 
     def _langgraph_agent_convert_to_agentspec(
         self,
-        langgraph_component: Union[CompiledStateGraph[Any, Any, Any], StateGraph[Any, Any, Any]],
+        langgraph_component: LangGraphComponent,
         referenced_objects: Dict[str, AgentSpecComponent],
     ) -> AgentSpecAgent:
         if isinstance(langgraph_component, CompiledStateGraph):

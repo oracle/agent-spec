@@ -32,8 +32,12 @@ CONFIGS = Path(__file__).parent / "configs"
 
 
 def _replace_config_placeholders(yaml_config: str) -> str:
-    return yaml_config.replace("[[LLAMA_API_URL]]", os.environ.get("LLAMA_API_URL")).replace(
-        "[[LLAMA70BV33_API_URL]]", os.environ.get("LLAMA70BV33_API_URL")
+    llama_api_url = os.environ.get("LLAMA_API_URL")
+    llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
+    assert llama_api_url, "Please set LLAMA_API_URL"
+    assert llama70bv33_api_url, "Please set LLAMA70BV33_API_URL"
+    return yaml_config.replace("[[LLAMA_API_URL]]", llama_api_url).replace(
+        "[[LLAMA70BV33_API_URL]]", llama70bv33_api_url
     )
 
 
@@ -81,6 +85,7 @@ def is_port_busy(port: Optional[int]):
 
 
 # We try to find an open port between 8000 and 9000 for 5 times, if we don't we skip remote tests
+JSON_SERVER_PORT: int | None = None
 attempt = 0
 while is_port_busy(JSON_SERVER_PORT := random.randint(8000, 9000)) and attempt < 5:
     time.sleep(1)

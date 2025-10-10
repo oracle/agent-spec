@@ -98,12 +98,3 @@ This section documents some useful information related to using the LangGraph ad
 ### Client Tools
 
 In order to use client tools in LangGraph, we make use of the `interrupt` api (`https://langchain-ai.github.io/langgraph/reference/types/#langgraph.types.interrupt`).
-
-You can find an example of an execution loop for an agent in `./examples/client_tool_agent.py`.
-It consists of passing the result of the Client Tool call (detected through the `__interrupt__` key in the invocation result) using a `Command(resume=...)` call.
-
-## Testing
-
-To run the tests, make sure to have the following:
-
-- A running Ollama server (There is a test that tests ollama configuration using the qwen3:32b model)
