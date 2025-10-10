@@ -54,7 +54,6 @@ from pyagentspec.mcp.clienttransport import (
 )
 from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.ociagent import OciAgent
-from pyagentspec.openaiagent import OpenAiAgent
 from pyagentspec.remoteagent import RemoteAgent
 from pyagentspec.tools.clienttool import ClientTool
 from pyagentspec.tools.remotetool import RemoteTool
@@ -90,7 +89,6 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "OciClientConfigWithSecurityToken": OciClientConfigWithSecurityToken,
     "OciGenAiConfig": OciGenAiConfig,
     "OllamaConfig": OllamaConfig,
-    "OpenAiAgent": OpenAiAgent,
     "OpenAiCompatibleConfig": OpenAiCompatibleConfig,
     "OpenAiConfig": OpenAiConfig,
     "OutputMessageNode": OutputMessageNode,

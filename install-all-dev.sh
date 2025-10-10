@@ -8,11 +8,7 @@
 
 source ./_installation_tools.sh
 
-setup_pypi_mirror
-
 upgrade_pip_or_uv
-
-install_requirements_dev
 
 # Install pyagentspec main module
 install_dev_python_package pyagentspec

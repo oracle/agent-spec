@@ -19,8 +19,6 @@ source ./_installation_tools.sh
 
 create_venv
 
-setup_pypi_mirror
-
 upgrade_pip_or_uv
 
 ./install-all-dev.sh

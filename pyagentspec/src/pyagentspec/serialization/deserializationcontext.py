@@ -31,6 +31,7 @@ from pyagentspec.component import Component
 from pyagentspec.property import Property
 from pyagentspec.versioning import (
     _LEGACY_VERSION_FIELD_NAME,
+    _PRERELEASE_AGENTSPEC_VERSIONS,
     AGENTSPEC_VERSION_FIELD_NAME,
     AgentSpecVersionEnum,
 )
@@ -455,6 +456,17 @@ class _DeserializationContextImpl(DeserializationContext):
                     AGENTSPEC_VERSION_FIELD_NAME, content.get(_LEGACY_VERSION_FIELD_NAME)
                 )
             )
+
+        if (
+            self._agentspec_version
+            and self._agentspec_version.value in _PRERELEASE_AGENTSPEC_VERSIONS
+        ):
+            warnings.warn(
+                "Using a pre-release `agentspec_version`, deserialization will be performed using the "
+                "first official version of Agent Spec (25.4.1) instead. Please update your representation.",
+                UserWarning,
+            )
+            self._agentspec_version = AgentSpecVersionEnum.v25_4_1
 
         self._load_component_registry(components_registry)
         # the top level object has to be a component, this method will check for that

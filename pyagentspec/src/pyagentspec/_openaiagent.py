@@ -18,7 +18,7 @@ class OpenAiAgent(RemoteAgent):
     """
     An agent is a component that can do several rounds of conversation to solve a task.
 
-    The agent is defined on the OCI console and this is only a wrapper to connect to it.
+    The agent is defined in the OpenAI console and this is only a wrapper to connect to it.
     It can be executed by itself, or be executed in a flow using an AgentNode.
 
     .. warning::

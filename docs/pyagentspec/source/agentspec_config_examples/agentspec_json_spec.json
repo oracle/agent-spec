@@ -325,16 +325,6 @@
         }
       ]
     },
-    "OpenAiAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiAgent"
-        }
-      ]
-    },
     "OpenAiCompatibleConfig": {
       "anyOf": [
         {
@@ -721,19 +711,16 @@
     "BaseAgenticComponent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/Flow"
-        },
-        {
-          "$ref": "#/$defs/OpenAiAgent"
+          "$ref": "#/$defs/OciAgent"
         },
         {
           "$ref": "#/$defs/RemoteAgent"
         },
         {
-          "$ref": "#/$defs/Agent"
+          "$ref": "#/$defs/Flow"
         },
         {
-          "$ref": "#/$defs/OciAgent"
+          "$ref": "#/$defs/Agent"
         }
       ],
       "x-abstract-component": true
@@ -1040,22 +1027,22 @@
     "BaseClientTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/StdioTransport"
-        },
-        {
-          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
-        },
-        {
-          "$ref": "#/$defs/RemoteTransport"
-        },
-        {
           "$ref": "#/$defs/SSEmTLSTransport"
+        },
+        {
+          "$ref": "#/$defs/SSETransport"
+        },
+        {
+          "$ref": "#/$defs/StdioTransport"
         },
         {
           "$ref": "#/$defs/StreamableHTTPTransport"
         },
         {
-          "$ref": "#/$defs/SSETransport"
+          "$ref": "#/$defs/RemoteTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
         }
       ],
       "x-abstract-component": true
@@ -1063,73 +1050,70 @@
     "BaseComponentWithIO": {
       "anyOf": [
         {
-          "$ref": "#/$defs/Node"
-        },
-        {
-          "$ref": "#/$defs/OpenAiAgent"
-        },
-        {
-          "$ref": "#/$defs/LlmNode"
-        },
-        {
-          "$ref": "#/$defs/ClientTool"
+          "$ref": "#/$defs/OciAgent"
         },
         {
           "$ref": "#/$defs/ToolNode"
         },
         {
-          "$ref": "#/$defs/Flow"
-        },
-        {
-          "$ref": "#/$defs/RemoteAgent"
-        },
-        {
-          "$ref": "#/$defs/StartNode"
-        },
-        {
-          "$ref": "#/$defs/ServerTool"
-        },
-        {
-          "$ref": "#/$defs/InputMessageNode"
-        },
-        {
-          "$ref": "#/$defs/MCPTool"
-        },
-        {
-          "$ref": "#/$defs/OutputMessageNode"
-        },
-        {
-          "$ref": "#/$defs/OciAgent"
-        },
-        {
-          "$ref": "#/$defs/AgenticComponent"
-        },
-        {
-          "$ref": "#/$defs/Tool"
-        },
-        {
-          "$ref": "#/$defs/Agent"
-        },
-        {
-          "$ref": "#/$defs/ApiNode"
-        },
-        {
-          "$ref": "#/$defs/RemoteTool"
-        },
-        {
-          "$ref": "#/$defs/EndNode"
+          "$ref": "#/$defs/BranchingNode"
         },
         {
           "$ref": "#/$defs/FlowNode"
         },
         {
+          "$ref": "#/$defs/LlmNode"
+        },
+        {
+          "$ref": "#/$defs/RemoteAgent"
+        },
+        {
+          "$ref": "#/$defs/ClientTool"
+        },
+        {
           "$ref": "#/$defs/MapNode"
         },
         {
-          "$ref": "#/$defs/BranchingNode"
+          "$ref": "#/$defs/AgentNode"
         },
         {
-          "$ref": "#/$defs/AgentNode"
+          "$ref": "#/$defs/StartNode"
+        },
+        {
+          "$ref": "#/$defs/Tool"
+        },
+        {
+          "$ref": "#/$defs/Node"
+        },
+        {
+          "$ref": "#/$defs/EndNode"
+        },
+        {
+          "$ref": "#/$defs/Agent"
+        },
+        {
+          "$ref": "#/$defs/MCPTool"
+        },
+        {
+          "$ref": "#/$defs/AgenticComponent"
+        },
+        {
+          "$ref": "#/$defs/Flow"
+        },
+        {
+          "$ref": "#/$defs/RemoteTool"
+        },
+        {
+          "$ref": "#/$defs/InputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/ServerTool"
+        },
+        {
+          "$ref": "#/$defs/ApiNode"
+        },
+        {
+          "$ref": "#/$defs/OutputMessageNode"
         }
       ],
       "x-abstract-component": true
@@ -1672,9 +1656,6 @@
     "BaseLlmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/OllamaConfig"
-        },
-        {
           "$ref": "#/$defs/VllmConfig"
         },
         {
@@ -1685,6 +1666,9 @@
         },
         {
           "$ref": "#/$defs/OpenAiConfig"
+        },
+        {
+          "$ref": "#/$defs/OllamaConfig"
         }
       ],
       "x-abstract-component": true
@@ -1978,13 +1962,16 @@
     "BaseNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ToolNode"
+          "$ref": "#/$defs/LlmNode"
         },
         {
           "$ref": "#/$defs/StartNode"
         },
         {
-          "$ref": "#/$defs/ApiNode"
+          "$ref": "#/$defs/ToolNode"
+        },
+        {
+          "$ref": "#/$defs/BranchingNode"
         },
         {
           "$ref": "#/$defs/MapNode"
@@ -1996,19 +1983,16 @@
           "$ref": "#/$defs/InputMessageNode"
         },
         {
+          "$ref": "#/$defs/AgentNode"
+        },
+        {
           "$ref": "#/$defs/FlowNode"
         },
         {
-          "$ref": "#/$defs/BranchingNode"
-        },
-        {
-          "$ref": "#/$defs/LlmNode"
+          "$ref": "#/$defs/ApiNode"
         },
         {
           "$ref": "#/$defs/OutputMessageNode"
-        },
-        {
-          "$ref": "#/$defs/AgentNode"
         }
       ],
       "x-abstract-component": true
@@ -2105,9 +2089,6 @@
     "BaseOciClientConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/OciClientConfigWithSecurityToken"
-        },
-        {
           "$ref": "#/$defs/OciClientConfigWithInstancePrincipal"
         },
         {
@@ -2115,6 +2096,9 @@
         },
         {
           "$ref": "#/$defs/OciClientConfigWithResourcePrincipal"
+        },
+        {
+          "$ref": "#/$defs/OciClientConfigWithSecurityToken"
         }
       ],
       "x-abstract-component": true
@@ -2544,102 +2528,6 @@
       "type": "object",
       "x-abstract-component": false
     },
-    "BaseOpenAiAgent": {
-      "additionalProperties": false,
-      "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nThe agent is defined on the OCI console and this is only a wrapper to connect to it.\nIt can be executed by itself, or be executed in a flow using an AgentNode.\n\n.. warning::\n    ``OpenAiAgent`` is currently in beta and may undergo significant changes.\n    The API and behaviour are not guaranteed to be stable and may change in future versions.",
-      "properties": {
-        "id": {
-          "title": "Id",
-          "type": "string"
-        },
-        "name": {
-          "title": "Name",
-          "type": "string"
-        },
-        "description": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Description"
-        },
-        "metadata": {
-          "anyOf": [
-            {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Metadata"
-        },
-        "inputs": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/$defs/Property"
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Inputs"
-        },
-        "outputs": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/$defs/Property"
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Outputs"
-        },
-        "llm_config": {
-          "$ref": "#/$defs/OpenAiConfig"
-        },
-        "remote_agent_id": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Remote Agent Id"
-        },
-        "$referenced_components": {
-          "$ref": "#/$defs/ReferencedComponents"
-        },
-        "component_type": {
-          "const": "OpenAiAgent"
-        }
-      },
-      "required": [
-        "name",
-        "llm_config"
-      ],
-      "title": "OpenAiAgent",
-      "type": "object",
-      "x-abstract-component": false
-    },
     "BaseOpenAiCompatibleConfig": {
       "anyOf": [
         {
@@ -2874,14 +2762,92 @@
       "x-abstract-component": false
     },
     "BaseRemoteAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/OciAgent"
+      "additionalProperties": false,
+      "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nThe agent is defined on the OCI console and this is only a wrapper to connect to it.\nIt can be executed by itself, or be executed in a flow using an AgentNode.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
         },
-        {
-          "$ref": "#/$defs/OpenAiAgent"
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "agent_endpoint_id": {
+          "title": "Agent Endpoint Id",
+          "type": "string"
+        },
+        "client_config": {
+          "$ref": "#/$defs/OciClientConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "RemoteAgent"
         }
+      },
+      "required": [
+        "name",
+        "agent_endpoint_id",
+        "client_config"
       ],
+      "title": "OciAgent",
+      "type": "object",
       "x-abstract-component": true
     },
     "BaseRemoteTool": {
@@ -3004,16 +2970,16 @@
     "BaseRemoteTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/StreamableHTTPTransport"
-        },
-        {
           "$ref": "#/$defs/SSEmTLSTransport"
         },
         {
-          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+          "$ref": "#/$defs/SSETransport"
         },
         {
-          "$ref": "#/$defs/SSETransport"
+          "$ref": "#/$defs/StreamableHTTPTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
         }
       ],
       "x-abstract-component": true
@@ -3604,9 +3570,6 @@
     "BaseTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ServerTool"
-        },
-        {
           "$ref": "#/$defs/RemoteTool"
         },
         {
@@ -3614,6 +3577,9 @@
         },
         {
           "$ref": "#/$defs/MCPTool"
+        },
+        {
+          "$ref": "#/$defs/ServerTool"
         }
       ],
       "x-abstract-component": true
@@ -3866,9 +3832,6 @@
             "$ref": "#/$defs/BaseOllamaConfig"
           },
           {
-            "$ref": "#/$defs/BaseOpenAiAgent"
-          },
-          {
             "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
           },
           {
@@ -3957,310 +3920,6 @@
       "title": "AgentSpecVersionEnum",
       "type": "string"
     },
-    "VersionedVllmConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseVllmConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedLlmConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseLlmConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOpenAiAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciClientConfigWithInstancePrincipal": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedLlmNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseLlmNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedClientTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseClientTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedToolNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseToolNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOpenAiCompatibleConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedFlow": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseFlow"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedClientTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseClientTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedRemoteAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseRemoteAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedStartNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseStartNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedServerTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseServerTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedControlFlowEdge": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseControlFlowEdge"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedInputMessageNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseInputMessageNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
     "VersionedSSEmTLSTransport": {
       "anyOf": [
         {
@@ -4268,63 +3927,6 @@
         },
         {
           "$ref": "#/$defs/BaseSSEmTLSTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedMCPTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseMCPTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOutputMessageNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOutputMessageNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedAgenticComponent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseAgenticComponent"
         }
       ],
       "properties": {
@@ -4356,13 +3958,13 @@
         }
       }
     },
-    "VersionedSSETransport": {
+    "VersionedToolNode": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseSSETransport"
+          "$ref": "#/$defs/BaseToolNode"
         }
       ],
       "properties": {
@@ -4375,13 +3977,13 @@
         }
       }
     },
-    "VersionedOllamaConfig": {
+    "VersionedVllmConfig": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseOllamaConfig"
+          "$ref": "#/$defs/BaseVllmConfig"
         }
       ],
       "properties": {
@@ -4394,260 +3996,13 @@
         }
       }
     },
-    "VersionedOciClientConfig": {
+    "VersionedBranchingNode": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciClientConfigWithApiKey": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedAgent": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseAgent"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedDataFlowEdge": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseDataFlowEdge"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedStreamableHTTPmTLSTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedApiNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseApiNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedComponentWithIO": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseComponentWithIO"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedRemoteTool": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseRemoteTool"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedEndNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseEndNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedFlowNode": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseFlowNode"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOpenAiConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOpenAiConfig"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedStdioTransport": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseStdioTransport"
-        }
-      ],
-      "properties": {
-        "agentspec_version": {
-          "enum": [
-            "25.4.1"
-          ],
-          "title": "AgentSpecVersionEnum",
-          "type": "string"
-        }
-      }
-    },
-    "VersionedOciGenAiConfig": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ComponentReference"
-        },
-        {
-          "$ref": "#/$defs/BaseOciGenAiConfig"
+          "$ref": "#/$defs/BaseBranchingNode"
         }
       ],
       "properties": {
@@ -4698,6 +4053,139 @@
         }
       }
     },
+    "VersionedDataFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseDataFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStreamableHTTPmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedFlowNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlowNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedLlmNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedClientTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
     "VersionedMapNode": {
       "anyOf": [
         {
@@ -4717,13 +4205,146 @@
         }
       }
     },
-    "VersionedBranchingNode": {
+    "VersionedOciClientConfigWithInstancePrincipal": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseBranchingNode"
+          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgentNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgentNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedComponentWithIO": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseComponentWithIO"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciGenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciGenAiConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStartNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStartNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStdioTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStdioTransport"
         }
       ],
       "properties": {
@@ -4755,6 +4376,291 @@
         }
       }
     },
+    "VersionedNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedEndNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseEndNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedControlFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseControlFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedMCPTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMCPTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgenticComponent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgenticComponent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedSSETransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSETransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedClientTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedFlow": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlow"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOpenAiCompatibleConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOpenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedInputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseInputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedServerTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseServerTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
     "VersionedOciClientConfigWithResourcePrincipal": {
       "anyOf": [
         {
@@ -4774,13 +4680,51 @@
         }
       }
     },
-    "VersionedAgentNode": {
+    "VersionedApiNode": {
       "anyOf": [
         {
           "$ref": "#/$defs/ComponentReference"
         },
         {
-          "$ref": "#/$defs/BaseAgentNode"
+          "$ref": "#/$defs/BaseApiNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOutputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOutputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOllamaConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOllamaConfig"
         }
       ],
       "properties": {
@@ -4819,115 +4763,19 @@
   },
   "anyOf": [
     {
-      "$ref": "#/$defs/VersionedVllmConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedLlmConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedOpenAiAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciClientConfigWithInstancePrincipal"
-    },
-    {
-      "$ref": "#/$defs/VersionedLlmNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedClientTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedToolNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedOpenAiCompatibleConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedFlow"
-    },
-    {
-      "$ref": "#/$defs/VersionedClientTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedRemoteAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedStartNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedServerTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedControlFlowEdge"
-    },
-    {
-      "$ref": "#/$defs/VersionedInputMessageNode"
-    },
-    {
       "$ref": "#/$defs/VersionedSSEmTLSTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedMCPTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedOutputMessageNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedAgenticComponent"
     },
     {
       "$ref": "#/$defs/VersionedOciAgent"
     },
     {
-      "$ref": "#/$defs/VersionedSSETransport"
+      "$ref": "#/$defs/VersionedToolNode"
     },
     {
-      "$ref": "#/$defs/VersionedOllamaConfig"
+      "$ref": "#/$defs/VersionedVllmConfig"
     },
     {
-      "$ref": "#/$defs/VersionedOciClientConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
-    },
-    {
-      "$ref": "#/$defs/VersionedTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedAgent"
-    },
-    {
-      "$ref": "#/$defs/VersionedDataFlowEdge"
-    },
-    {
-      "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedApiNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedComponentWithIO"
-    },
-    {
-      "$ref": "#/$defs/VersionedRemoteTool"
-    },
-    {
-      "$ref": "#/$defs/VersionedEndNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedFlowNode"
-    },
-    {
-      "$ref": "#/$defs/VersionedOpenAiConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedStdioTransport"
-    },
-    {
-      "$ref": "#/$defs/VersionedOciGenAiConfig"
+      "$ref": "#/$defs/VersionedBranchingNode"
     },
     {
       "$ref": "#/$defs/VersionedOciClientConfigWithSecurityToken"
@@ -4936,19 +4784,112 @@
       "$ref": "#/$defs/VersionedRemoteTransport"
     },
     {
+      "$ref": "#/$defs/VersionedDataFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
+    },
+    {
+      "$ref": "#/$defs/VersionedFlowNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedLlmNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedClientTool"
+    },
+    {
       "$ref": "#/$defs/VersionedMapNode"
     },
     {
-      "$ref": "#/$defs/VersionedBranchingNode"
+      "$ref": "#/$defs/VersionedOciClientConfigWithInstancePrincipal"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgentNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedComponentWithIO"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciGenAiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedStartNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedLlmConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedStdioTransport"
     },
     {
       "$ref": "#/$defs/VersionedStreamableHTTPTransport"
     },
     {
+      "$ref": "#/$defs/VersionedNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedEndNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedControlFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedMCPTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgenticComponent"
+    },
+    {
+      "$ref": "#/$defs/VersionedSSETransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedClientTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedFlow"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedOpenAiCompatibleConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOpenAiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedInputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedServerTool"
+    },
+    {
       "$ref": "#/$defs/VersionedOciClientConfigWithResourcePrincipal"
     },
     {
-      "$ref": "#/$defs/VersionedAgentNode"
+      "$ref": "#/$defs/VersionedApiNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedOutputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedOllamaConfig"
     },
     {
       "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
