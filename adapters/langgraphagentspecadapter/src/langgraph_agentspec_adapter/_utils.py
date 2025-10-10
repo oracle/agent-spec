@@ -231,9 +231,9 @@ class LlmNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecLlmNode):
             raise TypeError("LlmNodeExecutor can only be initialized with LlmNode")
+        self.llm = llm
         if not isinstance(self.llm, BaseChatModel):
             raise TypeError("Llm can only be initialized with a BaseChatModel")
-        self.llm = llm
 
     def _execute(self, inputs: Dict[str, Any]) -> ExecuteOutput:
         prompt_template = self.node.prompt_template
