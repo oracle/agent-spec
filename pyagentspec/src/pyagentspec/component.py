@@ -36,6 +36,7 @@ from pydantic import (
     computed_field,
     model_serializer,
 )
+from pydantic.fields import FieldInfo
 from pydantic.json_schema import (
     DEFAULT_REF_TEMPLATE,
     GenerateJsonSchema,
@@ -191,6 +192,26 @@ class Component(AbstractableModel, abstract=True):
         # By default, we just return the min_agentspec_version defined for the Component
         # If a Component changes its behavior based on the spec version, it should override this method accordingly
         return self.min_agentspec_version
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        """Returns the set of model fields names to exclude for the component.
+        Can be overriden by components to include version-specific fields.
+        """
+        return set()
+
+    def get_versioned_model_fields(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> Dict[str, FieldInfo]:
+        """Returns the dictionary of model fields info."""
+        model_fields = self.__class__.model_fields
+        fields_to_exclude = self._versioned_model_fields_to_exclude(agentspec_version)
+        return {
+            f_name: f_info
+            for f_name, f_info in model_fields.items()
+            if f_name not in fields_to_exclude
+        }
 
     @property
     def model_fields_set(self) -> set[str]:
@@ -636,9 +657,21 @@ def replace_abstract_models_and_hierarchical_definitions(
             all_subclasses = component_type._get_all_subclasses(
                 only_core_components=only_core_components
             )
-            abstract_type_json_schema = TypeAdapter(Union[all_subclasses]).json_schema(
-                mode=mode, by_alias=by_alias
-            )
+            num_subclasses = len(all_subclasses)
+            if num_subclasses > 1:
+                abstract_type_json_schema = TypeAdapter(Union[tuple(all_subclasses)]).json_schema(
+                    mode=mode, by_alias=by_alias
+                )
+            elif num_subclasses == 1:
+                subclass_ = all_subclasses[0]
+                abstract_type_json_schema = TypeAdapter(Union[subclass_, None]).json_schema(
+                    mode=mode, by_alias=by_alias
+                )
+                abstract_type_json_schema["anyOf"].remove({"type": "null"})
+                # ^ pop the null ref (ok since python list.remove relies on equality)
+            else:
+                raise ValueError(f"No subclass was found")
+
             new_type_definitions = abstract_type_json_schema.pop("$defs")
             abstract_types_to_resolve.extend(
                 [
@@ -725,14 +758,18 @@ def _add_references(json_schema: JsonSchemaValue, root_type_name: str) -> JsonSc
                     "x-abstract-component"
                 ] = component_type_class._is_abstract
             json_schema["$defs"][f"Base{component_type}"] = json_schema["$defs"][component_type]
-            if "properties" in json_schema["$defs"][f"Base{component_type}"]:
-                json_schema["$defs"][f"Base{component_type}"]["properties"][
-                    "$referenced_components"
-                ] = {"$ref": "#/$defs/ReferencedComponents"}
-                json_schema["$defs"][f"Base{component_type}"]["properties"]["component_type"] = {
-                    "const": component_type
-                }
-                json_schema["$defs"][f"Base{component_type}"]["additionalProperties"] = False
+
+            base_def: JsonSchemaValue = json_schema["$defs"][f"Base{component_type}"]
+            component_schema_def: Optional[JsonSchemaValue] = (
+                base_def
+                if "properties" in base_def
+                else next((x for x in base_def.get("anyOf", []) if "properties" in x), {})
+            )
+            if component_schema_def:
+                props = component_schema_def["properties"]
+                props["$referenced_components"] = {"$ref": "#/$defs/ReferencedComponents"}
+                props["component_type"] = {"const": component_type}
+                component_schema_def["additionalProperties"] = False
             json_schema["$defs"][component_type] = {
                 "anyOf": [
                     {"$ref": "#/$defs/ComponentReference"},

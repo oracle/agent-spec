@@ -14,10 +14,12 @@ from .clienttransport import (
     StreamableHTTPmTLSTransport,
     StreamableHTTPTransport,
 )
-from .tools import MCPTool
+from .tools import MCPTool, MCPToolBox, MCPToolSpec
 
 __all__ = [
     "MCPTool",
+    "MCPToolSpec",
+    "MCPToolBox",
     "SessionParameters",
     "SSETransport",
     "SSEmTLSTransport",

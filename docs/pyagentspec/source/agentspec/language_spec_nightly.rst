@@ -375,6 +375,12 @@ following goals :
       - A procedural function that can be made available to an Agent
       - * A tool to calculate the Levenshtein distance between two strings
         * A tool to execute a remote API on OCI
+    * - ToolBox
+      - A component that exposes a set of Tools to Agentic Components. ToolBoxes are
+        discovery/aggregation constructs, not executable tools. MCPToolBox exposes tools
+        discovered from an MCP server.
+      - * A ToolBox connecting to an MCP server and exposing its tools to an Agent
+
 
 
 Agentic Components
@@ -409,6 +415,7 @@ for interactions with the agentic system.
      system_prompt: str
      llm_configuration: LlmConfig
      tools: List[Tool]
+     toolboxes: List[ToolBox]
 
 Its main goal is to accomplish any task assigned in the ``system_prompt`` and terminate,
 with or without any interaction with the user.
@@ -428,6 +435,16 @@ If a special output format is required, users can specify a tool to fit the requ
 It is also not required to specify the presence of tools in the ``system_prompt``.
 Agent Spec assumes that the list of available tools, including their description, parameters, etc.
 is handled by the runtime implementation, that should inform the agent's LLM of their existence.
+
+Toolboxes, when present, augment the set of tools available to the Agent at runtime through
+discovery/aggregation.
+
+When an Agent consumes multiple ToolBoxes and tools, runtimes MAY merge them into a single tool
+registry for the Agent. In case of tool name collisions across different sources:
+
+- The specification recommends optional namespacing (e.g., toolbox_name.tool_name) and leaves
+  the exact behavior to the runtime. Runtimes MAY error on collisions.
+- Implementations SHOULD provide clear diagnostics when collisions occur.
 
 This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, ...).
@@ -784,6 +801,85 @@ For example, an MCP Tool might use an ``SSEmTLSTransport`` to securely call a re
 function for data processing.
 
 
+ToolBoxes
+^^^^^^^^^
+
+A ToolBox is a component that exposes one or more tools to components. ToolBoxes are not
+executable by themselves; they are discovery/aggregation mechanisms. A component can
+receive tools from both:
+
+- tools (concrete Tool instances), and
+- toolboxes (ToolBox instances that expose tools discovered elsewhere).
+
+When the set of tools is dynamic, its content should be established just before use by the
+consuming component. ToolBoxes do not embed executable code or the full discovered tool list
+at serialization time. Discovery happens at runtime.
+
+.. code-block:: python
+
+   class ToolBox(Component):
+     pass
+
+
+MCPToolBox
+''''''''''
+
+MCPToolBox connects to an MCP server via a ClientTransport and exposes tools discovered
+from that server to components.
+
+
+.. code-block:: python
+
+   class MCPToolBox(ToolBox):
+     client_transport: ClientTransport
+     tool_filter: Optional[List[Union[str, MCPToolSpec]]]
+
+
+The ``client_transport`` specifies the MCP ClientTransport used to discover remote
+MCP tools and route calls to them.
+
+.. _mcp_toolfilter_rules:
+
+By default the ``tool_filter`` parameter is null and the MCPToolBox exposes all tools
+discovered from the MCP server. When the ``tool_filter`` is not null, the toolbox only
+exposes the listed tools. For each entry in the list:
+
+- If an entry is a ``str``, the MCP server MUST expose a tool with the exact name, or the configuration is invalid.
+- If an entry is an ``MCPToolSpec``, it is treated as a strict signature to validate against the tool exposed by the MCP server:
+
+  - The name MUST exactly match a name of an exposed tool.
+  - If description is provided, it overrides the exposed tool description.
+  - If inputs are provided, they MUST exactly match the exposed tool input schema by name and JSON Schema type.
+    On mismatch, the configuration is invalid.
+  - If outputs are provided, they MUST consist of exactly one string-typed property with the expected tool output
+    name and optional description.
+
+The ``tool_filter`` information should be validated against the exposed MCP tools each time the tools
+are provided to the consuming component (as the toolbox content may change dynamically). If any of the
+constraints described above is not respected, the runtime can raise an error.
+
+.. note::
+
+  ToolBoxes are not valid values for ToolNode.tool;
+  ToolNode requires a concrete Tool (including MCPTool).
+
+
+MCPToolSpec
+'''''''''''
+
+``MCPToolSpec`` is a declarative tool signature used inside ``MCPToolBox.tool_filter`` to
+pin and validate specific remote MCP tools.
+
+.. code-block:: python
+
+   class MCPToolSpec(ComponentWithIO):
+     pass
+
+
+See the :ref:`filter rules for the MCPToolBox <mcp_toolfilter_rules>` to see how the ``MCPToolSpec``
+is used.
+
+
 Execution flows
 ~~~~~~~~~~~~~~~
 
@@ -803,7 +899,7 @@ Inner Components of the flow are described in subsequent sections.
 
 .. code-block:: python
 
-   class Flow(ComponentWithIo):
+   class Flow(ComponentWithIO):
      start_node: Node
      nodes: List[Node]
      control_flow_connections: List[ControlFlowEdge]

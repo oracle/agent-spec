@@ -7,7 +7,7 @@
 """This module defines typing aliases for the Agent Spec serialization."""
 
 from collections import UserDict
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Generic, List, Mapping, Optional, Sequence, Set, Tuple, TypeVar, Union
 
 from typing_extensions import TypeAlias
 
@@ -44,24 +44,26 @@ DisaggregatedComponentsConfigT: TypeAlias = Sequence[
 """Configuration list of components and fields to disaggregated upon serialization."""
 
 
-class WatchingDict(UserDict):
-    def __init__(self, *args, **kwargs):
+class WatchingDict(UserDict[str, str]):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.visited = set()
+        self.visited: Set[str] = set()
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Optional[str] = None) -> str:  # type: ignore
         if key in self.data:
             self.visited.add(key)
             return self.data[key]
+        if not default:
+            raise ValueError("Should specify default if key is not in dict")
         return default
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         value = super().__getitem__(key)
         self.visited.add(key)
         return value
 
-    def clear_visited(self):
+    def clear_visited(self) -> None:
         self.visited.clear()
 
-    def get_unvisited_keys(self) -> Optional[List[str]]:
+    def get_unvisited_keys(self) -> List[str]:
         return [k for k in self.keys() if k not in self.visited]

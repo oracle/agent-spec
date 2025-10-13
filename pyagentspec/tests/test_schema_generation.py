@@ -138,6 +138,7 @@ def test_generated_schema_correctly_validates_components_serializations(
     [
         ("flow_with_multiple_levels_of_references.yaml", Flow),
         ("example_serialized_agent_with_tools.yaml", Agent),
+        ("example_serialized_agent_with_tools_and_toolboxes.yaml", Agent),
         ("example_serialized_flow.yaml", Flow),
         ("example_serialized_flow_executing_agent.yaml", Flow),
         ("example_serialized_flow_with_branching_node.yaml", Flow),

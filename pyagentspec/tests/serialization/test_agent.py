@@ -4,11 +4,17 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl) or Apache License
 # 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0), at your option.
 
+import pytest
+
 from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.mcp.clienttransport import SSETransport
+from pyagentspec.mcp.tools import MCPTool, MCPToolBox, MCPToolSpec
 from pyagentspec.property import BooleanProperty, StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
+from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
@@ -71,3 +77,75 @@ def test_agent_can_be_serialized() -> None:
         "example_serialized_agent_with_tools.yaml"
     )
     assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+
+def test_agent_with_toolbox_can_be_serialized() -> None:
+    vllmconfig = VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
+
+    _mcp_client = SSETransport(
+        id="mcp_transport", name="mcp_transport", url="https://some.where/sse"
+    )
+    mcp_tool = MCPTool(id="mcptool", name="my_mcp_tool", client_transport=_mcp_client)
+    mcp_toolbox_without_filters = MCPToolBox(
+        id="mcptoolbox_no_filter", name="MCP ToolBox", client_transport=_mcp_client
+    )
+    mcp_toolbox_with_filters = MCPToolBox(
+        id="mcptoolbox_with_filter",
+        name="MCP ToolBox",
+        client_transport=_mcp_client,
+        tool_filter=[
+            "tool_name1",
+            MCPToolSpec(id="tool_id2", name="tool_name2", description="description for tool2"),
+        ],
+    )
+
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        tools=[mcp_tool],
+        toolboxes=[mcp_toolbox_without_filters, mcp_toolbox_with_filters],
+    )
+    serializer = AgentSpecSerializer()
+    serialized_agent = serializer.to_yaml(agent)
+    example_serialized_agent = read_agentspec_config_file(
+        "example_serialized_agent_with_tools_and_toolboxes.yaml"
+    )
+    assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+
+@pytest.fixture
+def agent_with_toolbox() -> Agent:
+    vllmconfig = VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
+    _mcp_client = SSETransport(name="mcp_transport", url="https://some.where/sse")
+    mcp_toolbox = MCPToolBox(name="MCP ToolBox", client_transport=_mcp_client)
+
+    return Agent(
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="Assistant instructions...",
+        toolboxes=[mcp_toolbox],
+    )
+
+
+def test_serializing_agent_with_toolboxes_and_unsupported_version_raises(
+    agent_with_toolbox: Agent,
+) -> None:
+    serializer = AgentSpecSerializer()
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = serializer.to_yaml(agent_with_toolbox, agentspec_version=AgentSpecVersionEnum.v25_4_1)
+
+
+def test_deserializing_agent_with_toolboxes_and_unsupported_version_raises(
+    agent_with_toolbox: Agent,
+) -> None:
+    serializer = AgentSpecSerializer()
+    serialized_node = serializer.to_yaml(agent_with_toolbox)
+    assert "agentspec_version: 25.4.2" in serialized_node
+    serialized_node = serialized_node.replace(
+        "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"
+    )
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(serialized_node)

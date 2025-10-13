@@ -10,10 +10,12 @@ from .clienttool import ClientTool
 from .remotetool import RemoteTool
 from .servertool import ServerTool
 from .tool import Tool
+from .toolbox import ToolBox
 
 __all__ = [
     "ClientTool",
     "ServerTool",
     "RemoteTool",
     "Tool",
+    "ToolBox",
 ]

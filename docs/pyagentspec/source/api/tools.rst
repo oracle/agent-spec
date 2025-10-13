@@ -41,3 +41,24 @@ MCP Tool
 .. _mcptool:
 .. autoclass:: pyagentspec.mcp.tools.MCPTool
     :exclude-members: model_post_init, model_config
+
+
+ToolBox
+-------
+
+.. _toolbox:
+.. autoclass:: pyagentspec.tools.toolbox.ToolBox
+    :exclude-members: model_post_init, model_config
+
+
+MCP ToolBox
+-----------
+
+.. _mcptoolspec:
+.. autoclass:: pyagentspec.mcp.tools.MCPToolSpec
+    :exclude-members: model_post_init, model_config
+
+
+.. _mcptoolbox:
+.. autoclass:: pyagentspec.mcp.tools.MCPToolBox
+    :exclude-members: model_post_init, model_config
