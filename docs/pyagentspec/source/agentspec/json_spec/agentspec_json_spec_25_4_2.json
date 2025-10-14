@@ -1,0 +1,4943 @@
+{
+  "$defs": {
+    "Agent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgent"
+        }
+      ]
+    },
+    "AgentNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgentNode"
+        }
+      ]
+    },
+    "AgenticComponent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgenticComponent"
+        }
+      ]
+    },
+    "ApiNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseApiNode"
+        }
+      ]
+    },
+    "BranchingNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseBranchingNode"
+        }
+      ]
+    },
+    "ClientTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTool"
+        }
+      ]
+    },
+    "ClientTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTransport"
+        }
+      ]
+    },
+    "ComponentWithIO": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseComponentWithIO"
+        }
+      ]
+    },
+    "ControlFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseControlFlowEdge"
+        }
+      ]
+    },
+    "DataFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseDataFlowEdge"
+        }
+      ]
+    },
+    "EndNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseEndNode"
+        }
+      ]
+    },
+    "Flow": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlow"
+        }
+      ]
+    },
+    "FlowNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlowNode"
+        }
+      ]
+    },
+    "InputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseInputMessageNode"
+        }
+      ]
+    },
+    "LlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmConfig"
+        }
+      ]
+    },
+    "LlmGenerationConfig": {
+      "additionalProperties": true,
+      "description": "A configuration object defining LLM generation parameters.\n\nParameters include number of tokens, sampling parameters, etc.",
+      "properties": {
+        "max_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tokens"
+        },
+        "temperature": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        }
+      },
+      "title": "LlmGenerationConfig",
+      "type": "object"
+    },
+    "LlmNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmNode"
+        }
+      ]
+    },
+    "MCPTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMCPTool"
+        }
+      ]
+    },
+    "MapNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMapNode"
+        }
+      ]
+    },
+    "ModelProvider": {
+      "description": "Provider of the model. It is used to ensure the requests to this model respect\nthe format expected by the provider.",
+      "enum": [
+        "META",
+        "GROK",
+        "COHERE",
+        "OTHER"
+      ],
+      "title": "ModelProvider",
+      "type": "string"
+    },
+    "Node": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseNode"
+        }
+      ]
+    },
+    "OciAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciAgent"
+        }
+      ]
+    },
+    "OciClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfig"
+        }
+      ]
+    },
+    "OciClientConfigWithApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+        }
+      ]
+    },
+    "OciClientConfigWithInstancePrincipal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+        }
+      ]
+    },
+    "OciClientConfigWithResourcePrincipal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+        }
+      ]
+    },
+    "OciClientConfigWithSecurityToken": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+        }
+      ]
+    },
+    "OciGenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciGenAiConfig"
+        }
+      ]
+    },
+    "OllamaConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOllamaConfig"
+        }
+      ]
+    },
+    "OpenAiCompatibleConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+        }
+      ]
+    },
+    "OpenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiConfig"
+        }
+      ]
+    },
+    "OutputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOutputMessageNode"
+        }
+      ]
+    },
+    "Property": {
+      "description": "This object must be a valid JSON Schema",
+      "type": "object"
+    },
+    "ReductionMethod": {
+      "description": "Enumerator for the types of reduction available in the MapNode.",
+      "enum": [
+        "append",
+        "sum",
+        "average",
+        "max",
+        "min"
+      ],
+      "title": "ReductionMethod",
+      "type": "string"
+    },
+    "RemoteAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteAgent"
+        }
+      ]
+    },
+    "RemoteTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTool"
+        }
+      ]
+    },
+    "RemoteTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTransport"
+        }
+      ]
+    },
+    "SSETransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSETransport"
+        }
+      ]
+    },
+    "SSEmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSEmTLSTransport"
+        }
+      ]
+    },
+    "ServerTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseServerTool"
+        }
+      ]
+    },
+    "ServingMode": {
+      "enum": [
+        "ON_DEMAND",
+        "DEDICATED"
+      ],
+      "title": "ServingMode",
+      "type": "string"
+    },
+    "SessionParameters": {
+      "description": "Class to specify parameters of the MCP client session.",
+      "properties": {
+        "read_timeout_seconds": {
+          "default": 60,
+          "title": "Read Timeout Seconds",
+          "type": "number"
+        }
+      },
+      "title": "SessionParameters",
+      "type": "object"
+    },
+    "StartNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStartNode"
+        }
+      ]
+    },
+    "StdioTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStdioTransport"
+        }
+      ]
+    },
+    "StreamableHTTPTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPTransport"
+        }
+      ]
+    },
+    "StreamableHTTPmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+        }
+      ]
+    },
+    "Tool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseTool"
+        }
+      ]
+    },
+    "ToolNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseToolNode"
+        }
+      ]
+    },
+    "VllmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseVllmConfig"
+        }
+      ]
+    },
+    "BaseAgent": {
+      "additionalProperties": false,
+      "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nIt can be executed by itself, or be executed in a flow using an AgentNode.\n\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.property import Property\n>>> expertise_property=Property(\n...     json_schema={\"title\": \"domain_of_expertise\", \"type\": \"string\"}\n... )\n>>> system_prompt = '''You are an expert in {{domain_of_expertise}}.\n... Please help the users with their requests.'''\n>>> agent = Agent(\n...     name=\"Adaptive expert agent\",\n...     system_prompt=system_prompt,\n...     llm_config=llm_config,\n...     inputs=[expertise_property],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "llm_config": {
+          "$ref": "#/$defs/LlmConfig"
+        },
+        "system_prompt": {
+          "title": "System Prompt",
+          "type": "string"
+        },
+        "tools": {
+          "items": {
+            "$ref": "#/$defs/Tool"
+          },
+          "title": "Tools",
+          "type": "array"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "Agent"
+        }
+      },
+      "required": [
+        "name",
+        "llm_config",
+        "system_prompt"
+      ],
+      "title": "Agent",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseAgentNode": {
+      "additionalProperties": false,
+      "description": "The agent execution node is a node that will execute an agent as part of a flow.\n\nIf branches are configured, the agent will be prompted to select a branch before the agent node\ncompletes to transition to another node of the Flow.\n\n- **Inputs**\n    Inferred from the definition of the agent to execute.\n- **Outputs**\n    Inferred from the definition of the agent to execute.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.nodes import AgentNode, StartNode, EndNode\n>>> from pyagentspec.tools import ServerTool\n>>> query_property = Property(json_schema={\"title\": \"query\", \"type\": \"string\"})\n>>> search_results_property = Property(\n...     json_schema={\"title\": \"search_results\", \"type\": \"array\", \"items\": {\"type\": \"string\"}}\n... )\n>>> search_tool = ServerTool(\n...     name=\"search_tool\",\n...     description=(\n...        \"This tool runs a web search with the given query \"\n...        \"and returns the most relevant results\"\n...     ),\n...     inputs=[query_property],\n...     outputs=[search_results_property],\n... )\n>>> agent = Agent(\n...     name=\"Search agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to gather the required information for the user: {{query}}\"\n...     ),\n...     tools=[search_tool],\n...     outputs=[search_results_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[query_property])\n>>> end_node = EndNode(name=\"end\", outputs=[search_results_property])\n>>> agent_node = AgentNode(\n...     name=\"Search agent node\",\n...     agent=agent,\n... )\n>>> flow = Flow(\n...     name=\"Search agent flow\",\n...     start_node=start_node,\n...     nodes=[start_node, agent_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_agent\", from_node=start_node, to_node=agent_node),\n...         ControlFlowEdge(name=\"agent_to_end\", from_node=agent_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"query\",\n...             destination_node=agent_node,\n...             destination_input=\"query\",\n...         ),\n...         DataFlowEdge(\n...             name=\"search_results_edge\",\n...             source_node=agent_node,\n...             source_output=\"search_results\",\n...             destination_node=end_node,\n...             destination_input=\"search_results\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "agent": {
+          "$ref": "#/$defs/AgenticComponent"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "AgentNode"
+        }
+      },
+      "required": [
+        "name",
+        "agent"
+      ],
+      "title": "AgentNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseAgenticComponent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Agent"
+        },
+        {
+          "$ref": "#/$defs/Flow"
+        },
+        {
+          "$ref": "#/$defs/OciAgent"
+        },
+        {
+          "$ref": "#/$defs/RemoteAgent"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseApiNode": {
+      "additionalProperties": false,
+      "description": "Make an API call.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users have to manually specify them.\n- **Outputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users should manually specify them.\n\n    If None is given, ``pyagentspec`` infers a generic property of any type named ``response``.\n- **Branches**\n    One, the default next.\n\n\nExamples\n--------\n>>> from pyagentspec.flows.nodes import ApiNode\n>>> from pyagentspec.property import Property\n>>> weather_result_property = Property(\n...     json_schema={\n...         \"title\": \"zurich_weather\",\n...         \"type\": \"object\",\n...         \"properties\": {\n...             \"temperature\": {\n...                 \"type\": \"number\",\n...                 \"description\": \"Temperature in celsius degrees\",\n...             },\n...             \"weather\": {\"type\": \"string\"}\n...         },\n...     }\n... )\n>>> call_current_weather_step = ApiNode(\n...     name=\"Weather API call node\",\n...     url=\"https://example.com/weather\",\n...     http_method = \"GET\",\n...     query_params={\n...         \"location\": \"zurich\",\n...     },\n...     outputs=[weather_result_property]\n... )\n>>>\n>>> item_id_property = Property(\n...     json_schema={\"title\": \"item_id\", \"type\": \"string\"}\n... )\n>>> order_id_property = Property(\n...     json_schema={\"title\": \"order_id\", \"type\": \"string\"}\n... )\n>>> store_id_property = Property(\n...     json_schema={\"title\": \"store_id\", \"type\": \"string\"}\n... )\n>>> session_id_property = Property(\n...     json_schema={\"title\": \"session_id\", \"type\": \"string\"}\n... )\n>>> create_order_step = ApiNode(\n...     name=\"Orders api call node\",\n...     url=\"https://example.com/orders/{{ order_id }}\",\n...     http_method=\"POST\",\n...     # sending an object which will automatically be transformed into JSON\n...     data={\n...         # define a static body parameter\n...         \"topic_id\": 12345,\n...         # define a templated body parameter.\n...         # The value for {{ item_id }} will be taken from the IO system at runtime\n...         \"item_id\": \"{{ item_id }}\",\n...     },\n...     query_params={\n...         # provide one templated query parameter called \"store_id\"\n...         # which will take its value from the IO system from key \"store_id\"\n...         \"store_id\": \"{{ store_id }}\",\n...     },\n...     headers={\n...         # set header session_id. the value is coming from the IO system\n...         \"session_id\": \"{{ session_id }}\",\n...     },\n...     inputs=[item_id_property, order_id_property, store_id_property, session_id_property],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "http_method": {
+          "title": "Http Method",
+          "type": "string"
+        },
+        "api_spec_uri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Spec Uri"
+        },
+        "data": {
+          "additionalProperties": true,
+          "title": "Data",
+          "type": "object"
+        },
+        "query_params": {
+          "additionalProperties": true,
+          "title": "Query Params",
+          "type": "object"
+        },
+        "headers": {
+          "additionalProperties": true,
+          "title": "Headers",
+          "type": "object"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ApiNode"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "http_method"
+      ],
+      "title": "ApiNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseBranchingNode": {
+      "additionalProperties": false,
+      "description": "Select the next node to transition to based on a mapping.\n\nThe input is used as key for the mapping. If the input does not correspond to any of the keys\nof the mapping the branch 'default' will be selected. This node is intended to be a part of a\nFlow.\n\n- **Inputs**\n    The input value that should be used as key for the mapping.\n\n    If None is given, ``pyagentspec`` infers a string property named ``branching_mapping_key``.\n- **Outputs**\n    None.\n- **Branches**\n    One for each value in the mapping, plus a branch called ``default``,\n    which is the branch taken by the flow when mapping fails\n    (i.e., the input does not match any key in the mapping).\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> CORRECT_PASSWORD_BRANCH = \"PASSWORD_OK\"\n>>> password_property = Property(\n...     json_schema={\"title\": \"password\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"User input agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to ask the password to the user. \"\n...         \"Once you get it, submit it and end.\"\n...     ),\n...     outputs=[password_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> access_granted_end_node = EndNode(\n...     name=\"access granted end\", branch_name=\"ACCESS_GRANTED\"\n... )\n>>> access_denied_end_node = EndNode(\n...     name=\"access denied end\", branch_name=\"ACCESS_DENIED\"\n... )\n>>> branching_node = BranchingNode(\n...     name=\"password check\",\n...     mapping={\"123456\": CORRECT_PASSWORD_BRANCH},\n...     inputs=[password_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         access_granted_end_node,\n...         access_denied_end_node\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\",\n...             from_node=start_node,\n...             to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\",\n...             from_node=agent_node,\n...             to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_granted\",\n...             from_node=branching_node,\n...             from_branch=CORRECT_PASSWORD_BRANCH,\n...             to_node=access_granted_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_access_denied\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=access_denied_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"password_edge\",\n...             source_node=agent_node,\n...             source_output=\"password\",\n...             destination_node=branching_node,\n...             destination_input=\"password\",\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "mapping": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Mapping",
+          "type": "object"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "BranchingNode"
+        }
+      },
+      "required": [
+        "name",
+        "mapping"
+      ],
+      "title": "BranchingNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseClientTool": {
+      "additionalProperties": false,
+      "description": "A tool that needs to be run by the client application.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ClientTool"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ClientTool",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseClientTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RemoteTransport"
+        },
+        {
+          "$ref": "#/$defs/SSETransport"
+        },
+        {
+          "$ref": "#/$defs/SSEmTLSTransport"
+        },
+        {
+          "$ref": "#/$defs/StdioTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseComponentWithIO": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Agent"
+        },
+        {
+          "$ref": "#/$defs/AgentNode"
+        },
+        {
+          "$ref": "#/$defs/AgenticComponent"
+        },
+        {
+          "$ref": "#/$defs/ApiNode"
+        },
+        {
+          "$ref": "#/$defs/BranchingNode"
+        },
+        {
+          "$ref": "#/$defs/ClientTool"
+        },
+        {
+          "$ref": "#/$defs/EndNode"
+        },
+        {
+          "$ref": "#/$defs/Flow"
+        },
+        {
+          "$ref": "#/$defs/FlowNode"
+        },
+        {
+          "$ref": "#/$defs/InputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/LlmNode"
+        },
+        {
+          "$ref": "#/$defs/MCPTool"
+        },
+        {
+          "$ref": "#/$defs/MapNode"
+        },
+        {
+          "$ref": "#/$defs/Node"
+        },
+        {
+          "$ref": "#/$defs/OciAgent"
+        },
+        {
+          "$ref": "#/$defs/OutputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/RemoteAgent"
+        },
+        {
+          "$ref": "#/$defs/RemoteTool"
+        },
+        {
+          "$ref": "#/$defs/ServerTool"
+        },
+        {
+          "$ref": "#/$defs/StartNode"
+        },
+        {
+          "$ref": "#/$defs/Tool"
+        },
+        {
+          "$ref": "#/$defs/ToolNode"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseControlFlowEdge": {
+      "additionalProperties": false,
+      "description": "A control flow edge specifies a possible transition from a node to another in a flow.\n\nA single node can have several potential next nodes, in which case several control flow edges\nshould be present in the control flow connections of that flow.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "from_node": {
+          "$ref": "#/$defs/Node"
+        },
+        "from_branch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "From Branch"
+        },
+        "to_node": {
+          "$ref": "#/$defs/Node"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ControlFlowEdge"
+        }
+      },
+      "required": [
+        "name",
+        "from_node",
+        "to_node"
+      ],
+      "title": "ControlFlowEdge",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseDataFlowEdge": {
+      "additionalProperties": false,
+      "description": "A data flow edge specifies how the output of a node propagates as input of another node.\n\nAn outputs can be propagated as input of several nodes.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "source_node": {
+          "$ref": "#/$defs/Node"
+        },
+        "source_output": {
+          "title": "Source Output",
+          "type": "string"
+        },
+        "destination_node": {
+          "$ref": "#/$defs/Node"
+        },
+        "destination_input": {
+          "title": "Destination Input",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "DataFlowEdge"
+        }
+      },
+      "required": [
+        "name",
+        "source_node",
+        "source_output",
+        "destination_node",
+        "destination_input"
+      ],
+      "title": "DataFlowEdge",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseEndNode": {
+      "additionalProperties": false,
+      "description": "End nodes denote the end of the execution of a flow.\n\nThere might be several end nodes in a flow, in which case the executor of the flow\nshould be able to track which one was reached and pass that back to the caller.\n\n- **Inputs**\n    The list of inputs of the step. If both input and output properties are specified they\n    must be an exact match\n\n    If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.\n- **Outputs**\n    The list of outputs that should be exposed by the flow. If both input and output properties\n    are specified they must be an exact match\n\n    If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.\n- **Branches**\n    None.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import AgentNode, BranchingNode, StartNode, EndNode\n>>> from pyagentspec.property import Property\n>>> languages_to_branch_name = {\n...     \"english\": \"ENGLISH\",\n...     \"spanish\": \"SPANISH\",\n...     \"italian\": \"ITALIAN\",\n... }\n>>> language_property = Property(\n...     json_schema={\"title\": \"language\", \"type\": \"string\"}\n... )\n>>> agent = Agent(\n...     name=\"Language detector agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to understand the language spoken by the user.\"\n...         \"Please output only the language in lowercase and submit.\"\n...     ),\n...     outputs=[language_property],\n... )\n>>> start_node = StartNode(name=\"start\")\n>>> english_end_node = EndNode(\n...     name=\"english end\", branch_name=languages_to_branch_name[\"english\"]\n... )\n>>> spanish_end_node = EndNode(\n...     name=\"spanish end\", branch_name=languages_to_branch_name[\"spanish\"]\n... )\n>>> italian_end_node = EndNode(\n...     name=\"italian end\", branch_name=languages_to_branch_name[\"italian\"]\n... )\n>>> unknown_end_node = EndNode(name=\"unknown language end\", branch_name=\"unknown\")\n>>> branching_node = BranchingNode(\n...     name=\"language check\",\n...     mapping=languages_to_branch_name,\n...     inputs=[language_property]\n... )\n>>> agent_node = AgentNode(\n...     name=\"User input agent node\",\n...     agent=agent,\n... )\n>>> assistant = Flow(\n...     name=\"Check access flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         agent_node,\n...         branching_node,\n...         english_end_node,\n...         spanish_end_node,\n...         italian_end_node,\n...         unknown_end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_agent\", from_node=start_node, to_node=agent_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"agent_to_branching\", from_node=agent_node, to_node=branching_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_english_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"english\"],\n...             to_node=english_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_spanish_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"spanish\"],\n...             to_node=spanish_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_italian_end\",\n...             from_node=branching_node,\n...             from_branch=languages_to_branch_name[\"italian\"],\n...             to_node=italian_end_node,\n...         ),\n...         ControlFlowEdge(\n...             name=\"branching_to_unknown_end\",\n...             from_node=branching_node,\n...             from_branch=BranchingNode.DEFAULT_BRANCH,\n...             to_node=unknown_end_node,\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"language_edge\",\n...             source_node=agent_node,\n...             source_output=\"language\",\n...             destination_node=branching_node,\n...             destination_input=\"language\",\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "branch_name": {
+          "default": "next",
+          "title": "Branch Name",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "EndNode"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "EndNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseFlow": {
+      "additionalProperties": false,
+      "description": "A flow is a component to model sequences of operations to do in a precised order.\n\nThe operations and sequence is defined by the nodes and transitions associated to the flow.\nSteps can be deterministic, or for some use LLMs.\n\nExample\n-------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.nodes import LlmNode, StartNode, EndNode\n>>> prompt_property = Property(\n...     json_schema={\"title\": \"prompt\", \"type\": \"string\"}\n... )\n>>> llm_output_property = Property(\n...     json_schema={\"title\": \"llm_output\", \"type\": \"string\"}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[prompt_property])\n>>> end_node = EndNode(name=\"end\", outputs=[llm_output_property])\n>>> llm_node = LlmNode(\n...     name=\"simple llm node\",\n...     llm_config=llm_config,\n...     prompt_template=\"{{prompt}}\",\n...     inputs=[prompt_property],\n...     outputs=[llm_output_property],\n... )\n>>> flow = Flow(\n...     name=\"Simple prompting flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"prompt_edge\",\n...             source_node=start_node,\n...             source_output=\"prompt\",\n...             destination_node=llm_node,\n...             destination_input=\"prompt\",\n...         ),\n...         DataFlowEdge(\n...             name=\"llm_output_edge\",\n...             source_node=llm_node,\n...             source_output=\"llm_output\",\n...             destination_node=end_node,\n...             destination_input=\"llm_output\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "start_node": {
+          "$ref": "#/$defs/Node"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/Node"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "control_flow_connections": {
+          "items": {
+            "$ref": "#/$defs/ControlFlowEdge"
+          },
+          "title": "Control Flow Connections",
+          "type": "array"
+        },
+        "data_flow_connections": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/DataFlowEdge"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data Flow Connections"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "Flow"
+        }
+      },
+      "required": [
+        "name",
+        "start_node",
+        "nodes",
+        "control_flow_connections"
+      ],
+      "title": "Flow",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseFlowNode": {
+      "additionalProperties": false,
+      "description": "The flow node executes a subflow as part of a flow.\n\n- **Inputs**\n    Inferred from the inner structure. It's the sets of inputs\n    required by the StartNode of the inner flow.\n- **Outputs**\n    Inferred from the inner structure. It's the union of the\n    sets of outputs exposed by the EndNodes of the inner flow.\n- **Branches**\n    Inferred from the inner flow, one per each different value of the attribute\n    ``branch_name`` of the nodes of type EndNode in the inner flow.\n\nExample\n-------\nThe ``FlowNode`` is particularly suitable when subflows can be reused inside a project.\nLet's see an example with a flow that estimates numerical value\nusing the \"wisdowm of the crowd\" effect:\n\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.nodes import MapNode, LlmNode, ToolNode, StartNode, EndNode\n>>> from pyagentspec.tools import ServerTool\n>>> duplication_tool = ServerTool(\n...     name=\"duplication_tool\",\n...     description=\"\",\n...     inputs=[\n...         Property(\n...             json_schema={\"title\": \"element\", \"description\": \"\", \"type\": \"string\"}\n...         ),\n...         Property(\n...             json_schema={\"title\": \"n\", \"description\": \"\", \"type\": \"integer\"}\n...         ),\n...     ],\n...     outputs=[\n...         Property(\n...             json_schema={\n...                 \"title\": \"flow_iterable_queries\",\n...                 \"type\": \"array\",\n...                 \"items\": {\"type\": \"string\"}\n...             },\n...         )\n...     ],\n... )\n>>> reduce_tool = ServerTool(\n...     name=\"reduce_tool\",\n...     description=\"\",\n...     inputs=[\n...         Property(\n...             json_schema={\"title\": \"elements\", \"type\": \"array\", \"items\": {\"type\": \"string\"}}\n...         ),\n...     ],\n...     outputs=[Property(json_schema={\"title\": \"flow_processed_query\", \"type\": \"string\"})],\n... )\n>>> # Defining a simple prompt\n>>> REASONING_PROMPT_TEMPLATE = '''Provide your best numerical estimate for: {{user_input}}\n... Your answer should be a single number.\n... Do not include any units, reasoning, or extra text.'''\n>>> # Defining the subflow for the map step\n>>> user_input_property = Property(\n...     json_schema={\"title\": \"user_input\", \"type\": \"string\"}\n... )\n>>> flow_processed_query_property = Property(\n...     json_schema={\"title\": \"flow_processed_query\", \"type\": \"string\"}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[user_input_property])\n>>> end_node = EndNode(name=\"end\", outputs=[flow_processed_query_property])\n>>> llm_node = LlmNode(\n...     name=\"reasoning llm node\",\n...     llm_config=llm_config,\n...     prompt_template=REASONING_PROMPT_TEMPLATE,\n...     inputs=[user_input_property],\n...     outputs=[flow_processed_query_property],\n... )\n>>> inner_map_flow = Flow(\n...     name=\"Map flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"search_results_edge\",\n...             source_node=llm_node,\n...             source_output=\"flow_processed_query\",\n...             destination_node=end_node,\n...             destination_input=\"flow_processed_query\"\n...         ),\n...     ],\n... )\n>>> user_query_property = Property(\n...     json_schema={\"title\": \"user_query\", \"type\": \"string\"}\n... )\n>>> n_repeat_property = Property(\n...     json_schema={\"title\": \"n_repeat\", \"type\": \"integer\"}\n... )\n>>> flow_iterable_queries_property = Property(\n...     json_schema={\n...         \"title\": \"iterated_user_input\",\n...         \"type\": \"array\",\n...         \"items\": {\"type\": \"string\"},\n...     }\n... )\n>>> flow_processed_queries_property = Property(\n...     json_schema={\n...         \"title\": \"collected_flow_processed_query\",\n...         \"type\": \"array\",\n...         \"items\": {\"type\": \"string\"},\n...     }\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[user_query_property, n_repeat_property])\n>>> end_node = EndNode(name=\"end\", outputs=[flow_processed_query_property])\n>>> duplication_node = ToolNode(\n...     name=\"duplication_tool node\",\n...     tool=duplication_tool,\n... )\n>>> reduce_node = ToolNode(\n...     name=\"reduce_tool node\",\n...     tool=reduce_tool,\n... )\n>>> map_node = MapNode(\n...     name=\"map node\",\n...     subflow=inner_map_flow,\n...     inputs=[flow_iterable_queries_property],\n...     outputs=[flow_processed_queries_property],\n... )\n>>> mapreduce_flow = Flow(\n...     name=\"Map-reduce flow\",\n...     start_node=start_node,\n...     nodes=[start_node, duplication_node, map_node, reduce_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_duplication\", from_node=start_node, to_node=duplication_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"duplication_to_map\", from_node=duplication_node, to_node=map_node\n...         ),\n...         ControlFlowEdge(name=\"map_to_reduce\", from_node=map_node, to_node=reduce_node),\n...         ControlFlowEdge(name=\"reduce_to_end\", from_node=reduce_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"user_query\",\n...             destination_node=duplication_node,\n...             destination_input=\"element\",\n...         ),\n...         DataFlowEdge(\n...             name=\"n_repeat_edge\",\n...             source_node=start_node,\n...             source_output=\"n_repeat\",\n...             destination_node=duplication_node,\n...             destination_input=\"n\",\n...         ),\n...         DataFlowEdge(\n...             name=\"flow_iterables_edge\",\n...             source_node=duplication_node,\n...             source_output=\"flow_iterable_queries\",\n...             destination_node=map_node,\n...             destination_input=\"iterated_user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"flow_processed_queries_edge\",\n...             source_node=map_node,\n...             source_output=\"collected_flow_processed_query\",\n...             destination_node=reduce_node,\n...             destination_input=\"elements\",\n...         ),\n...         DataFlowEdge(\n...             name=\"flow_processed_query_edge\",\n...             source_node=reduce_node,\n...             source_output=\"flow_processed_query\",\n...             destination_node=end_node,\n...             destination_input=\"flow_processed_query\",\n...         ),\n...     ],\n... )\n\nOnce the subflow is created we can simply integrate it with the ``FlowNode``:\n\n>>> from pyagentspec.flows.nodes import FlowNode, AgentNode\n>>> from pyagentspec.agent import Agent\n>>> start_node = StartNode(name=\"start\")\n>>> end_node = EndNode(name=\"end\", outputs=[flow_processed_query_property])\n>>> flow_node = FlowNode(name=\"flow node\", subflow=mapreduce_flow)\n>>> agent = Agent(\n...     name=\"User interaction agent\",\n...     llm_config=llm_config,\n...     system_prompt=(\n...         \"Your task is to gather from the user the query and the number of times \"\n...         \"it should be asked to an LLM. Once you have this information, submit and exit.\"\n...     ),\n...     outputs=[user_query_property, n_repeat_property],\n... )\n>>> agent_node = AgentNode(name=\"flow node\", agent=agent)\n>>> flow = Flow(\n...     name=\"Map flow\",\n...     start_node=start_node,\n...     nodes=[start_node, agent_node, flow_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_agent\", from_node=start_node, to_node=agent_node),\n...         ControlFlowEdge(name=\"agent_to_flow\", from_node=agent_node, to_node=flow_node),\n...         ControlFlowEdge(name=\"flow_to_end\", from_node=flow_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=agent_node,\n...             source_output=\"user_query\",\n...             destination_node=flow_node,\n...             destination_input=\"user_query\",\n...         ),\n...         DataFlowEdge(\n...             name=\"n_rep_edge\",\n...             source_node=agent_node,\n...             source_output=\"n_repeat\",\n...             destination_node=flow_node,\n...             destination_input=\"n_repeat\"\n...         ),\n...         DataFlowEdge(\n...             name=\"n_rep_edge\",\n...             source_node=flow_node,\n...             source_output=\"flow_processed_query\",\n...             destination_node=end_node,\n...             destination_input=\"flow_processed_query\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "subflow": {
+          "$ref": "#/$defs/Flow"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "FlowNode"
+        }
+      },
+      "required": [
+        "name",
+        "subflow"
+      ],
+      "title": "FlowNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseInputMessageNode": {
+      "additionalProperties": false,
+      "description": "This node interrupts the execution of the flow in order to wait for a user input, and restarts after receiving it.\nAn agent message, if given, is appended to the conversation before waiting for input.\nUser input is appended to the conversation as a user message, and it is returned as a string property from the node.\n\n- **Inputs**\n    One per variable in the message\n- **Outputs**\n    One string property that represents the content of the input user message.\n\n    If None is given, ``pyagentspec`` infers a string property named ``user_input``.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import StartNode, EndNode, InputMessageNode, OutputMessageNode, LlmNode\n>>> from pyagentspec.property import StringProperty\n>>> start_node = StartNode(name=\"start\")\n>>> prompt_node = OutputMessageNode(name=\"ask_input\", message=\"What is the paragraph you want to rephrase?\")\n>>> input_node = InputMessageNode(name=\"user_input\", outputs=[StringProperty(title=\"user_input\")])\n>>> llm_node = LlmNode(\n...     name=\"rephrase\",\n...     llm_config=llm_config,\n...     prompt_template=\"Rephrase {{user_input}}\",\n...     outputs=[StringProperty(title=\"rephrased_user_input\")],\n... )\n>>> output_node = OutputMessageNode(name=\"ask_input\", message=\"{{rephrased_user_input}}\")\n>>> end_node = EndNode(name=\"end\")\n>>> flow = Flow(\n...     name=\"rephrase_paragraph_flow\",\n...     start_node=start_node,\n...     nodes=[start_node, prompt_node, input_node, llm_node, output_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"ce1\", from_node=start_node, to_node=prompt_node),\n...         ControlFlowEdge(name=\"ce2\", from_node=prompt_node, to_node=input_node),\n...         ControlFlowEdge(name=\"ce3\", from_node=input_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"ce4\", from_node=llm_node, to_node=output_node),\n...         ControlFlowEdge(name=\"ce5\", from_node=output_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"de1\",\n...             source_node=input_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"de2\",\n...             source_node=llm_node,\n...             source_output=\"rephrased_user_input\",\n...             destination_node=output_node,\n...             destination_input=\"rephrased_user_input\",\n...         ),\n...     ]\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "InputMessageNode"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "InputMessageNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OciGenAiConfig"
+        },
+        {
+          "$ref": "#/$defs/OllamaConfig"
+        },
+        {
+          "$ref": "#/$defs/OpenAiCompatibleConfig"
+        },
+        {
+          "$ref": "#/$defs/OpenAiConfig"
+        },
+        {
+          "$ref": "#/$defs/VllmConfig"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseLlmNode": {
+      "additionalProperties": false,
+      "description": "Execute a prompt template with a given LLM.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    One per placeholder in the prompt template.\n- **Outputs**\n    The output text generated by the LLM.\n\n    If None is given, ``pyagentspec`` infers a string property named ``generated_text``.\n- **Branches**\n    One, the default next.\n\nExample\n-------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.nodes import LlmNode, StartNode, EndNode\n>>> country_property = Property(\n...     json_schema={\"title\": \"country\", \"type\": \"string\"}\n... )\n>>> capital_property = Property(\n...     json_schema={\"title\": \"capital\", \"type\": \"string\"}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[country_property])\n>>> end_node = EndNode(name=\"end\", outputs=[capital_property])\n>>> llm_node = LlmNode(\n...     name=\"simple llm node\",\n...     llm_config=llm_config,\n...     prompt_template=\"What is the capital of {{ country }}?\",\n...     inputs=[country_property],\n...     outputs=[capital_property],\n... )\n>>> flow = Flow(\n...     name=\"Get the country's capital flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"country_edge\",\n...             source_node=start_node,\n...             source_output=\"country\",\n...             destination_node=llm_node,\n...             destination_input=\"country\",\n...         ),\n...         DataFlowEdge(\n...             name=\"capital_edge\",\n...             source_node=llm_node,\n...             source_output=\"capital\",\n...             destination_node=end_node,\n...             destination_input=\"capital\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "llm_config": {
+          "$ref": "#/$defs/LlmConfig"
+        },
+        "prompt_template": {
+          "title": "Prompt Template",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "LlmNode"
+        }
+      },
+      "required": [
+        "name",
+        "llm_config",
+        "prompt_template"
+      ],
+      "title": "LlmNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseMCPTool": {
+      "additionalProperties": false,
+      "description": "Class for tools exposed by MCP servers",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "client_transport": {
+          "$ref": "#/$defs/ClientTransport"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "MCPTool"
+        }
+      },
+      "required": [
+        "name",
+        "client_transport"
+      ],
+      "title": "MCPTool",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseMapNode": {
+      "additionalProperties": false,
+      "description": "The map node executes a subflow on each element of a given input as part of a flow.\n\n- **Inputs**\n    Inferred from the inner structure. It's the sets of inputs\n    required by the StartNode of the inner flow.\n    The names of the inputs will be the ones of the inner flow,\n    complemented with the ``iterated_`` prefix. Their type is\n    ``Union[inner_type, List[inner_type]]``, where ``inner_type``\n    is the type of the respective input in the inner flow.\n\n    If None is given, ``pyagentspec`` infers input properties directly from the inner flow,\n    specifying title and type according to the rules defined above.\n\n- **Outputs**\n    Inferred from the inner structure. It's the union of the\n    sets of outputs exposed by the EndNodes of the inner flow,\n    combined with the reducer method of each output.\n    The names of the outputs will be the ones of the inner flow,\n    complemented with the ``collected_`` prefix. Their type depends\n    on the ``reduce`` method specified for that output:\n\n    - ``List`` of the respective output type in case of ``append``\n    - same type of the respective output type in case of ``sum``, ``avg``\n\n    If None is given, ``pyagentspec`` infers outputs by exposing\n    an output property for each entry in the ``reducers`` dictionary, specifying title\n    and type according to the rules defined above.\n\n- **Branches**\n    One, the default next.\n\nExamples\n--------\nIn this example we will create a flow that returns\nan L2-normalized version of a given list of numbers.\n\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, StartNode, MapNode, ToolNode\n>>> from pyagentspec.tools import ServerTool\n\nFirst, we define a MapNode that returns the square of all the elements in a list.\nIt will be used to compute the L2-norm.\n\n>>> x_property = Property(json_schema={\"title\": \"x\", \"type\": \"number\"})\n>>> x_square_property = Property(\n...     json_schema={\"title\": \"x_square\", \"type\": \"number\"}\n... )\n>>> square_tool = ServerTool(\n...     name=\"compute_square_tool\",\n...     description=\"Computes the square of a number\",\n...     inputs=[x_property],\n...     outputs=[x_square_property],\n... )\n>>> list_of_x_property = Property(\n...     json_schema={\"title\": \"x_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[x_square_property])\n>>> square_tool_node = ToolNode(name=\"square tool node\", tool=square_tool)\n>>> square_number_flow = Flow(\n...     name=\"Square number flow\",\n...     start_node=start_node,\n...     nodes=[start_node, square_tool_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_tool\", from_node=start_node, to_node=square_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"tool_to_end\", from_node=square_tool_node, to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"x_edge\",\n...             source_node=start_node,\n...             source_output=\"x\",\n...             destination_node=square_tool_node,\n...             destination_input=\"x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_edge\",\n...             source_node=square_tool_node,\n...             source_output=\"x_square\",\n...             destination_node=end_node,\n...             destination_input=\"x_square\",\n...         ),\n...     ],\n... )\n>>> list_of_x_square_property = Property(\n...     json_schema={\"title\": \"x_square_list\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}\n... )\n>>> square_numbers_map_node = MapNode(\n...     name=\"square number map node\",\n...     subflow=square_number_flow,\n... )\n\nNow we define the MapNode responsible for normalizing the given list of input numbers.\nThe denominator is the same for all of the numbers,\nwe are going to map only the numerators (i.e., the input numbers).\n\n>>> numerator_property = Property(\n...     json_schema={\"title\": \"numerator\", \"type\": \"number\"}\n... )\n>>> denominator_property = Property(\n...     json_schema={\"title\": \"denominator\", \"type\": \"number\"}\n... )\n>>> result_property = Property(\n...     json_schema={\"title\": \"result\", \"type\": \"number\"}\n... )\n>>> division_tool = ServerTool(\n...     name=\"division_tool\",\n...     description=\"Computes the ratio between two numbers\",\n...     inputs=[numerator_property, denominator_property],\n...     outputs=[result_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[numerator_property, denominator_property])\n>>> end_node = EndNode(name=\"end\", outputs=[result_property])\n>>> divide_node = ToolNode(name=\"divide node\", tool=division_tool)\n>>> normalize_flow = Flow(\n...     name=\"Normalize flow\",\n...     start_node=start_node,\n...     nodes=[start_node, divide_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_tool\", from_node=start_node, to_node=divide_node),\n...         ControlFlowEdge(name=\"tool_to_end\", from_node=divide_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"numerator\",\n...             destination_node=divide_node,\n...             destination_input=\"numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=start_node,\n...             source_output=\"denominator\",\n...             destination_node=divide_node,\n...             destination_input=\"denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"result_edge\",\n...             source_node=divide_node,\n...             source_output=\"result\",\n...             destination_node=end_node,\n...             destination_input=\"result\",\n...         ),\n...     ],\n... )\n\nFinally, we define the overall flow:\n\n- The list of inputs is squared\n- The squared list is summed and root squared\n- The list of inputs is normalized based on the outcomes of the previous 2 steps\n\n>>> squared_sum_property = Property(\n...     json_schema={\"title\": \"squared_sum\", \"type\": \"number\"}\n... )\n>>> normalized_list_of_x_property = Property(\n...     json_schema={\n...         \"title\": \"x_list_normalized\",\n...         \"type\": \"array\",\n...         \"items\": {\"type\": \"number\"},\n...     }\n... )\n>>> normalize_map_node = MapNode(\n...     name=\"normalize map node\",\n...     subflow=normalize_flow,\n... )\n>>> squared_sum_tool = ServerTool(\n...     name=\"squared_sum_tool\",\n...     description=\"Computes the squared sum of a list of numbers\",\n...     inputs=[list_of_x_property],\n...     outputs=[squared_sum_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[list_of_x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[normalized_list_of_x_property])\n>>> squared_sum_tool_node = ToolNode(name=\"squared sum tool node\", tool=squared_sum_tool)\n>>> flow = Flow(\n...     name=\"L2 normalize flow\",\n...     start_node=start_node,\n...     nodes=[\n...         start_node,\n...         square_numbers_map_node,\n...         squared_sum_tool_node,\n...         normalize_map_node,\n...         end_node,\n...     ],\n...     control_flow_connections=[\n...         ControlFlowEdge(\n...             name=\"start_to_square_numbers\",\n...             from_node=start_node,\n...             to_node=square_numbers_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"square_numbers_to_squared_sum_tool\",\n...             from_node=square_numbers_map_node,\n...             to_node=squared_sum_tool_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"squared_sum_tool_to_normalize\",\n...             from_node=squared_sum_tool_node,\n...             to_node=normalize_map_node\n...         ),\n...         ControlFlowEdge(\n...             name=\"normalize_to_end\",\n...             from_node=normalize_map_node,\n...             to_node=end_node\n...         ),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"list_of_x_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=square_numbers_map_node,\n...             destination_input=\"iterated_x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_list_edge\",\n...             source_node=square_numbers_map_node,\n...             source_output=\"collected_x_square\",\n...             destination_node=squared_sum_tool_node,\n...             destination_input=\"x_list\",\n...         ),\n...         DataFlowEdge(\n...             name=\"numerator_edge\",\n...             source_node=start_node,\n...             source_output=\"x_list\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_numerator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"denominator_edge\",\n...             source_node=squared_sum_tool_node,\n...             source_output=\"squared_sum\",\n...             destination_node=normalize_map_node,\n...             destination_input=\"iterated_denominator\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_list_normalized_edge\",\n...             source_node=normalize_map_node,\n...             source_output=\"collected_result\",\n...             destination_node=end_node,\n...             destination_input=\"x_list_normalized\",\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "subflow": {
+          "$ref": "#/$defs/Flow"
+        },
+        "reducers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/ReductionMethod"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reducers"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "MapNode"
+        }
+      },
+      "required": [
+        "name",
+        "subflow"
+      ],
+      "title": "MapNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentNode"
+        },
+        {
+          "$ref": "#/$defs/ApiNode"
+        },
+        {
+          "$ref": "#/$defs/BranchingNode"
+        },
+        {
+          "$ref": "#/$defs/EndNode"
+        },
+        {
+          "$ref": "#/$defs/FlowNode"
+        },
+        {
+          "$ref": "#/$defs/InputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/LlmNode"
+        },
+        {
+          "$ref": "#/$defs/MapNode"
+        },
+        {
+          "$ref": "#/$defs/OutputMessageNode"
+        },
+        {
+          "$ref": "#/$defs/StartNode"
+        },
+        {
+          "$ref": "#/$defs/ToolNode"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseOciAgent": {
+      "additionalProperties": false,
+      "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nThe agent is defined on the OCI console and this is only a wrapper to connect to it.\nIt can be executed by itself, or be executed in a flow using an AgentNode.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "agent_endpoint_id": {
+          "title": "Agent Endpoint Id",
+          "type": "string"
+        },
+        "client_config": {
+          "$ref": "#/$defs/OciClientConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciAgent"
+        }
+      },
+      "required": [
+        "name",
+        "agent_endpoint_id",
+        "client_config"
+      ],
+      "title": "OciAgent",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OciClientConfigWithApiKey"
+        },
+        {
+          "$ref": "#/$defs/OciClientConfigWithInstancePrincipal"
+        },
+        {
+          "$ref": "#/$defs/OciClientConfigWithResourcePrincipal"
+        },
+        {
+          "$ref": "#/$defs/OciClientConfigWithSecurityToken"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseOciClientConfigWithApiKey": {
+      "additionalProperties": false,
+      "description": "OCI client config class for authentication using API_KEY and a config file.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "service_endpoint": {
+          "title": "Service Endpoint",
+          "type": "string"
+        },
+        "auth_type": {
+          "const": "API_KEY",
+          "default": "API_KEY",
+          "title": "Auth Type",
+          "type": "string"
+        },
+        "auth_profile": {
+          "title": "Auth Profile",
+          "type": "string"
+        },
+        "auth_file_location": {
+          "title": "Auth File Location",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciClientConfigWithApiKey"
+        }
+      },
+      "required": [
+        "name",
+        "service_endpoint",
+        "auth_profile",
+        "auth_file_location"
+      ],
+      "title": "OciClientConfigWithApiKey",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciClientConfigWithInstancePrincipal": {
+      "additionalProperties": false,
+      "description": "OCI client config class for authentication using INSTANCE_PRINCIPAL.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "service_endpoint": {
+          "title": "Service Endpoint",
+          "type": "string"
+        },
+        "auth_type": {
+          "const": "INSTANCE_PRINCIPAL",
+          "default": "INSTANCE_PRINCIPAL",
+          "title": "Auth Type",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciClientConfigWithInstancePrincipal"
+        }
+      },
+      "required": [
+        "name",
+        "service_endpoint"
+      ],
+      "title": "OciClientConfigWithInstancePrincipal",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciClientConfigWithResourcePrincipal": {
+      "additionalProperties": false,
+      "description": "OCI client config class for authentication using RESOURCE_PRINCIPAL.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "service_endpoint": {
+          "title": "Service Endpoint",
+          "type": "string"
+        },
+        "auth_type": {
+          "const": "RESOURCE_PRINCIPAL",
+          "default": "RESOURCE_PRINCIPAL",
+          "title": "Auth Type",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciClientConfigWithResourcePrincipal"
+        }
+      },
+      "required": [
+        "name",
+        "service_endpoint"
+      ],
+      "title": "OciClientConfigWithResourcePrincipal",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciClientConfigWithSecurityToken": {
+      "additionalProperties": false,
+      "description": "OCI client config class for authentication using SECURITY_TOKEN.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "service_endpoint": {
+          "title": "Service Endpoint",
+          "type": "string"
+        },
+        "auth_type": {
+          "const": "SECURITY_TOKEN",
+          "default": "SECURITY_TOKEN",
+          "title": "Auth Type",
+          "type": "string"
+        },
+        "auth_profile": {
+          "title": "Auth Profile",
+          "type": "string"
+        },
+        "auth_file_location": {
+          "title": "Auth File Location",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciClientConfigWithSecurityToken"
+        }
+      },
+      "required": [
+        "name",
+        "service_endpoint",
+        "auth_profile",
+        "auth_file_location"
+      ],
+      "title": "OciClientConfigWithSecurityToken",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciGenAiConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to a OCI GenAI hosted model.\n\nRequires to specify the model id and the client configuration to the OCI GenAI service.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "compartment_id": {
+          "title": "Compartment Id",
+          "type": "string"
+        },
+        "serving_mode": {
+          "$ref": "#/$defs/ServingMode",
+          "default": "ON_DEMAND"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelProvider"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "client_config": {
+          "$ref": "#/$defs/OciClientConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciGenAiConfig"
+        }
+      },
+      "required": [
+        "name",
+        "model_id",
+        "compartment_id",
+        "client_config"
+      ],
+      "title": "OciGenAiConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOllamaConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to a local model ran with Ollama.\n\nRequires to specify the url and port at which the model is running.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OllamaConfig"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "model_id"
+      ],
+      "title": "OllamaConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOpenAiCompatibleConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OllamaConfig"
+        },
+        {
+          "$ref": "#/$defs/VllmConfig"
+        },
+        {
+          "additionalProperties": false,
+          "description": "Class to configure a connection to an LLM that is compatible with OpenAI completions APIs.\n\nRequires to specify the url of the APIs to contact.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "default_generation_parameters": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LlmGenerationConfig"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "model_id": {
+              "title": "Model Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "url",
+            "model_id"
+          ],
+          "title": "OpenAiCompatibleConfig",
+          "type": "object"
+        }
+      ],
+      "x-abstract-component": false
+    },
+    "BaseOpenAiConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to a OpenAI LLM.\n\nRequires to specify the identity of the model to use.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OpenAiConfig"
+        }
+      },
+      "required": [
+        "name",
+        "model_id"
+      ],
+      "title": "OpenAiConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOutputMessageNode": {
+      "additionalProperties": false,
+      "description": "This node appends an agent message to the ongoing flow conversation.\n\n- **Inputs**\n    One per variable in the message.\n- **Outputs**\n    No outputs.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import StartNode, EndNode, InputMessageNode, OutputMessageNode, LlmNode\n>>> from pyagentspec.property import StringProperty\n>>> start_node = StartNode(name=\"start\")\n>>> prompt_node = OutputMessageNode(name=\"ask_input\", message=\"What is the paragraph you want to rephrase?\")\n>>> input_node = InputMessageNode(name=\"user_input\", outputs=[StringProperty(title=\"user_input\")])\n>>> llm_node = LlmNode(\n...     name=\"rephrase\",\n...     llm_config=llm_config,\n...     prompt_template=\"Rephrase {{user_input}}\",\n...     outputs=[StringProperty(title=\"rephrased_user_input\")],\n... )\n>>> output_node = OutputMessageNode(name=\"ask_input\", message=\"{{rephrased_user_input}}\")\n>>> end_node = EndNode(name=\"end\")\n>>> flow = Flow(\n...     name=\"rephrase_paragraph_flow\",\n...     start_node=start_node,\n...     nodes=[start_node, prompt_node, input_node, llm_node, output_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"ce1\", from_node=start_node, to_node=prompt_node),\n...         ControlFlowEdge(name=\"ce2\", from_node=prompt_node, to_node=input_node),\n...         ControlFlowEdge(name=\"ce3\", from_node=input_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"ce4\", from_node=llm_node, to_node=output_node),\n...         ControlFlowEdge(name=\"ce5\", from_node=output_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"de1\",\n...             source_node=input_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"de2\",\n...             source_node=llm_node,\n...             source_output=\"rephrased_user_input\",\n...             destination_node=output_node,\n...             destination_input=\"rephrased_user_input\",\n...         ),\n...     ]\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OutputMessageNode"
+        }
+      },
+      "required": [
+        "name",
+        "message"
+      ],
+      "title": "OutputMessageNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseRemoteAgent": {
+      "additionalProperties": false,
+      "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nThe agent is defined on the OCI console and this is only a wrapper to connect to it.\nIt can be executed by itself, or be executed in a flow using an AgentNode.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "agent_endpoint_id": {
+          "title": "Agent Endpoint Id",
+          "type": "string"
+        },
+        "client_config": {
+          "$ref": "#/$defs/OciClientConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "RemoteAgent"
+        }
+      },
+      "required": [
+        "name",
+        "agent_endpoint_id",
+        "client_config"
+      ],
+      "title": "OciAgent",
+      "type": "object",
+      "x-abstract-component": true
+    },
+    "BaseRemoteTool": {
+      "additionalProperties": false,
+      "description": "A tool that is run remotely and called through REST.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "http_method": {
+          "title": "Http Method",
+          "type": "string"
+        },
+        "api_spec_uri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Spec Uri"
+        },
+        "data": {
+          "additionalProperties": true,
+          "title": "Data",
+          "type": "object"
+        },
+        "query_params": {
+          "additionalProperties": true,
+          "title": "Query Params",
+          "type": "object"
+        },
+        "headers": {
+          "additionalProperties": true,
+          "title": "Headers",
+          "type": "object"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "RemoteTool"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "http_method"
+      ],
+      "title": "RemoteTool",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseRemoteTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SSETransport"
+        },
+        {
+          "$ref": "#/$defs/SSEmTLSTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPTransport"
+        },
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseSSETransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SSEmTLSTransport"
+        },
+        {
+          "additionalProperties": false,
+          "description": "Transport implementation that connects to an MCP server via Server-Sent Events.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "session_parameters": {
+              "$ref": "#/$defs/SessionParameters"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "headers": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Headers"
+            }
+          },
+          "required": [
+            "name",
+            "url"
+          ],
+          "title": "SSETransport",
+          "type": "object"
+        }
+      ],
+      "x-abstract-component": false
+    },
+    "BaseSSEmTLSTransport": {
+      "additionalProperties": false,
+      "description": "Transport layer for SSE with mTLS (mutual Transport Layer Security).\n\nThis transport establishes a secure, mutually authenticated TLS connection to the MCP server using client\ncertificates. Production deployments MUST use this transport to ensure both client and server identities\nare verified.\n\nNotes\n-----\n- Users MUST provide a valid client certificate (PEM format) and private key.\n- Users MUST provide (or trust) the correct certificate authority (CA) for the server they're connecting to.\n- The client certificate/key and CA certificate paths can be managed via secrets, config files, or secure\n  environment variables in any production system.\n- Executors should ensure that these files are rotated and managed securely.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "session_parameters": {
+          "$ref": "#/$defs/SessionParameters"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Headers"
+        },
+        "key_file": {
+          "title": "Key File",
+          "type": "string"
+        },
+        "cert_file": {
+          "title": "Cert File",
+          "type": "string"
+        },
+        "ca_file": {
+          "title": "Ca File",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "SSEmTLSTransport"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "key_file",
+        "cert_file",
+        "ca_file"
+      ],
+      "title": "SSEmTLSTransport",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseServerTool": {
+      "additionalProperties": false,
+      "description": "A tool that is registered to and executed by the orchestrator.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ServerTool"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ServerTool",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseStartNode": {
+      "additionalProperties": false,
+      "description": "Start nodes denote the start of the execution of a flow.\n\n- **Inputs**\n    The list of inputs that should be the inputs of the flow. If both input and output\n    properties are specified they must be an exact match\n\n    If None is given, ``pyagentspec`` copies the outputs provided, if any. Otherwise, no input is exposed.\n- **Outputs**\n    The list of outputs of the step. If both input and output properties are specified they\n    must be an exact match\n\n    If None is given, ``pyagentspec`` copies the inputs provided, if any. Otherwise, no output is exposed.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.property import Property\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode\n>>> user_question_property = Property(\n...     json_schema=dict(\n...         title=\"user_question\",\n...         description=\"The user question.\",\n...         type=\"string\",\n...     )\n... )\n>>> answer_property = Property(json_schema=dict(title=\"answer\", type=\"string\"))\n>>> start_node = StartNode(name=\"start\", inputs=[user_question_property])\n>>> end_node = EndNode(name=\"end\", outputs=[answer_property])\n>>> llm_node = LlmNode(\n...     name=\"llm node\",\n...     prompt_template=\"Answer the user question: {{user_question}}\",\n...     llm_config=llm_config,\n... )\n>>> flow = Flow(\n...     name=\"flow\",\n...     start_node=start_node,\n...     nodes=[start_node, llm_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_llm\", from_node=start_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"llm_to_end\", from_node=llm_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"query_edge\",\n...             source_node=start_node,\n...             source_output=\"user_question\",\n...             destination_node=llm_node,\n...             destination_input=\"user_question\",\n...         ),\n...         DataFlowEdge(\n...             name=\"answer_edge\",\n...             source_node=llm_node,\n...             source_output=\"generated_text\",\n...             destination_node=end_node,\n...             destination_input=\"answer\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "StartNode"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "StartNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseStdioTransport": {
+      "additionalProperties": false,
+      "description": "Base transport for connecting to an MCP server via subprocess with stdio.\n\nThis is a base class that can be subclassed for specific command-based\ntransports like Python, Node, Uvx, etc.\n\n.. warning::\n    Stdio should be used for local prototyping only.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "session_parameters": {
+          "$ref": "#/$defs/SessionParameters"
+        },
+        "command": {
+          "title": "Command",
+          "type": "string"
+        },
+        "args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Args",
+          "type": "array"
+        },
+        "env": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Env"
+        },
+        "cwd": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cwd"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "StdioTransport"
+        }
+      },
+      "required": [
+        "name",
+        "command"
+      ],
+      "title": "StdioTransport",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseStreamableHTTPTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StreamableHTTPmTLSTransport"
+        },
+        {
+          "additionalProperties": false,
+          "description": "Transport implementation that connects to an MCP server via Streamable HTTP.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "session_parameters": {
+              "$ref": "#/$defs/SessionParameters"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "headers": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Headers"
+            }
+          },
+          "required": [
+            "name",
+            "url"
+          ],
+          "title": "StreamableHTTPTransport",
+          "type": "object"
+        }
+      ],
+      "x-abstract-component": false
+    },
+    "BaseStreamableHTTPmTLSTransport": {
+      "additionalProperties": false,
+      "description": "Transport layer for streamable HTTP with mTLS (mutual Transport Layer Security).\n\nThis transport establishes a secure, mutually authenticated TLS connection to the MCP server using client\ncertificates. Production deployments MUST use this transport to ensure both client and server identities\nare verified.\n\nNotes\n-----\n- Users MUST provide a valid client certificate (PEM format) and private key.\n- Users MUST provide (or trust) the correct certificate authority (CA) for the server they're connecting to.\n- The client certificate/key and CA certificate paths can be managed via secrets, config files, or secure\n  environment variables in any production system.\n- Executors should ensure that these files are rotated and managed securely.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "session_parameters": {
+          "$ref": "#/$defs/SessionParameters"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Headers"
+        },
+        "key_file": {
+          "title": "Key File",
+          "type": "string"
+        },
+        "cert_file": {
+          "title": "Cert File",
+          "type": "string"
+        },
+        "ca_file": {
+          "title": "Ca File",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "StreamableHTTPmTLSTransport"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "key_file",
+        "cert_file",
+        "ca_file"
+      ],
+      "title": "StreamableHTTPmTLSTransport",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ClientTool"
+        },
+        {
+          "$ref": "#/$defs/MCPTool"
+        },
+        {
+          "$ref": "#/$defs/RemoteTool"
+        },
+        {
+          "$ref": "#/$defs/ServerTool"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseToolNode": {
+      "additionalProperties": false,
+      "description": "The tool execution node is a node that will execute a tool as part of a flow.\n\n- **Inputs**\n    Inferred from the definition of the tool to execute.\n- **Outputs**\n    Inferred from the definition of the tool to execute.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import ToolNode, StartNode, EndNode\n>>> from pyagentspec.tools import ServerTool\n>>> from pyagentspec.property import Property\n>>>\n>>> x_property = Property(json_schema={\"title\": \"x\", \"type\": \"number\"})\n>>> x_square_root_property = Property(\n...     json_schema={\"title\": \"x_square_root\", \"type\": \"number\"}\n... )\n>>> square_root_tool = ServerTool(\n...     name=\"compute_square_root\",\n...     description=\"Computes the square root of a number\",\n...     inputs=[x_property],\n...     outputs=[x_square_root_property],\n... )\n>>> start_node = StartNode(name=\"start\", inputs=[x_property])\n>>> end_node = EndNode(name=\"end\", outputs=[x_square_root_property])\n>>> tool_node = ToolNode(name=\"\", tool=square_root_tool)\n>>> flow = Flow(\n...     name=\"Compute square root flow\",\n...     start_node=start_node,\n...     nodes=[start_node, tool_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"start_to_tool\", from_node=start_node, to_node=tool_node),\n...         ControlFlowEdge(name=\"tool_to_end\", from_node=tool_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"x_edge\",\n...             source_node=start_node,\n...             source_output=\"x\",\n...             destination_node=tool_node,\n...             destination_input=\"x\",\n...         ),\n...         DataFlowEdge(\n...             name=\"x_square_root_edge\",\n...             source_node=tool_node,\n...             source_output=\"x_square_root\",\n...             destination_node=end_node,\n...             destination_input=\"x_square_root\"\n...         ),\n...     ],\n... )",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "tool": {
+          "$ref": "#/$defs/Tool"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ToolNode"
+        }
+      },
+      "required": [
+        "name",
+        "tool"
+      ],
+      "title": "ToolNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseVllmConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to a vLLM-hosted LLM.\n\nRequires to specify the url at which the instance is running.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "VllmConfig"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "model_id"
+      ],
+      "title": "VllmConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "ReferencedComponents": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/BaseAgent"
+          },
+          {
+            "$ref": "#/$defs/BaseAgentNode"
+          },
+          {
+            "$ref": "#/$defs/BaseAgenticComponent"
+          },
+          {
+            "$ref": "#/$defs/BaseApiNode"
+          },
+          {
+            "$ref": "#/$defs/BaseBranchingNode"
+          },
+          {
+            "$ref": "#/$defs/BaseClientTool"
+          },
+          {
+            "$ref": "#/$defs/BaseClientTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseComponentWithIO"
+          },
+          {
+            "$ref": "#/$defs/BaseControlFlowEdge"
+          },
+          {
+            "$ref": "#/$defs/BaseDataFlowEdge"
+          },
+          {
+            "$ref": "#/$defs/BaseEndNode"
+          },
+          {
+            "$ref": "#/$defs/BaseFlow"
+          },
+          {
+            "$ref": "#/$defs/BaseFlowNode"
+          },
+          {
+            "$ref": "#/$defs/BaseInputMessageNode"
+          },
+          {
+            "$ref": "#/$defs/BaseLlmConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseLlmNode"
+          },
+          {
+            "$ref": "#/$defs/BaseMCPTool"
+          },
+          {
+            "$ref": "#/$defs/BaseMapNode"
+          },
+          {
+            "$ref": "#/$defs/BaseNode"
+          },
+          {
+            "$ref": "#/$defs/BaseOciAgent"
+          },
+          {
+            "$ref": "#/$defs/BaseOciClientConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+          },
+          {
+            "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+          },
+          {
+            "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+          },
+          {
+            "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+          },
+          {
+            "$ref": "#/$defs/BaseOciGenAiConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOllamaConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOpenAiConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOutputMessageNode"
+          },
+          {
+            "$ref": "#/$defs/BaseRemoteAgent"
+          },
+          {
+            "$ref": "#/$defs/BaseRemoteTool"
+          },
+          {
+            "$ref": "#/$defs/BaseRemoteTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseSSETransport"
+          },
+          {
+            "$ref": "#/$defs/BaseSSEmTLSTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseServerTool"
+          },
+          {
+            "$ref": "#/$defs/BaseStartNode"
+          },
+          {
+            "$ref": "#/$defs/BaseStdioTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseStreamableHTTPTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseTool"
+          },
+          {
+            "$ref": "#/$defs/BaseToolNode"
+          },
+          {
+            "$ref": "#/$defs/BaseVllmConfig"
+          },
+          {
+            "$ref": "#/$defs/ComponentReferenceWithNestedReferences"
+          }
+        ]
+      }
+    },
+    "ComponentReference": {
+      "type": "object",
+      "properties": {
+        "$component_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "$component_ref"
+      ]
+    },
+    "ComponentReferenceWithNestedReferences": {
+      "type": "object",
+      "properties": {
+        "$component_ref": {
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "$component_ref",
+        "$referenced_components"
+      ]
+    },
+    "AgentSpecVersionEnum": {
+      "enum": [
+        "25.4.1",
+        "25.4.2"
+      ],
+      "title": "AgentSpecVersionEnum",
+      "type": "string"
+    },
+    "VersionedAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgentNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgentNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedAgenticComponent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseAgenticComponent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedApiNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseApiNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedBranchingNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseBranchingNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedClientTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedClientTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseClientTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedComponentWithIO": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseComponentWithIO"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedControlFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseControlFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedDataFlowEdge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseDataFlowEdge"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedEndNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseEndNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedFlow": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlow"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedFlowNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseFlowNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedInputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseInputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedLlmNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseLlmNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedMCPTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMCPTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedMapNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseMapNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithInstancePrincipal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithResourcePrincipal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciClientConfigWithSecurityToken": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOciGenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOciGenAiConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOllamaConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOllamaConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOpenAiCompatibleConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOpenAiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOpenAiConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedOutputMessageNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseOutputMessageNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteAgent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedRemoteTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseRemoteTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedSSETransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSETransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedSSEmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseSSEmTLSTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedServerTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseServerTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStartNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStartNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStdioTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStdioTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStreamableHTTPTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedStreamableHTTPmTLSTransport": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseTool"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedToolNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseToolNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedVllmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseVllmConfig"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      }
+    },
+    "VersionedComponentReferenceWithNestedReferences": {
+      "type": "object",
+      "properties": {
+        "$component_ref": {
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "agentspec_version": {
+          "enum": [
+            "25.4.1",
+            "25.4.2"
+          ],
+          "title": "AgentSpecVersionEnum",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "$component_ref",
+        "$referenced_components"
+      ]
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/VersionedAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgentNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedAgenticComponent"
+    },
+    {
+      "$ref": "#/$defs/VersionedApiNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedBranchingNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedClientTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedClientTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedComponentWithIO"
+    },
+    {
+      "$ref": "#/$defs/VersionedControlFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedDataFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedEndNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedFlow"
+    },
+    {
+      "$ref": "#/$defs/VersionedFlowNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedInputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedLlmConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedLlmNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedMCPTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedMapNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithInstancePrincipal"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithResourcePrincipal"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithSecurityToken"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciGenAiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOllamaConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOpenAiCompatibleConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOpenAiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOutputMessageNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedRemoteTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedSSETransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedSSEmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedServerTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedStartNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedStdioTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedStreamableHTTPTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedToolNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedVllmConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
+    }
+  ]
+}

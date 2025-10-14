@@ -19,6 +19,9 @@ or create them from object representations with the assurance of conformance to 
 
 You can download the Agent Spec technical report at the following :download:`link <../_static/agentspec_technical_report.pdf>`.
 
+You can also find the nightly version of the Agent Spec language specification
+with all the latest updates at :ref:`this link<agentspecspec_nightly>`.
+
 .. toctree::
    :maxdepth: 2
 

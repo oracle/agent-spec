@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Agent Spec |release|
+--------------------
+
+New features
+^^^^^^^^^^^^
+
+* **Structured Generation**
+
+  Formally introduced Structured Generation in the Agent Spec Language Specification.
+  Structured Generation is now supported in the LlmNode, as well as the Agent.
+
+
 Agent Spec 25.4.1 — Initial release
 -----------------------------------
 
