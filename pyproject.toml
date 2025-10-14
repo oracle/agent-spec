@@ -1,0 +1,19 @@
+[tool.isort]
+src_paths = [
+    "pyagentspec/src",
+    "pyagentspec/tests",
+    "adapter/autogenagentspecadapter/src",
+    "adapter/autogenagentspecadapter/tests",
+    "adapter/langgraphagentspecadapter/src",
+    "adapter/langgraphagentspecadapter/tests",
+]
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    'tests.*',
+    'setup',
+]
+ignore_errors = true

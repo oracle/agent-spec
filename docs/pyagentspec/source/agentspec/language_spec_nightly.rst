@@ -1,9 +1,15 @@
-.. _agentspecspec_v25.4.1:
-.. _agentspecspec:
+:orphan:
 
-=========================================
-Agent Spec specification (version 25.4.1)
-=========================================
+.. _agentspecspec_nightly:
+
+====================================================
+Agent Spec specification (nightly version |release|)
+====================================================
+
+.. warning::
+    This is the nightly version of Agent Spec, and it is currently under development.
+    It is not an official release, and it might be subject to major changes before official release.
+    Use this version only for testing purposes.
 
 Language specification
 ======================
@@ -56,8 +62,7 @@ Some other convenient classes can be defined in order to more easily
 describe the configurations of the agents (e.g., ``JSONSchemaValue``, ``LlmGenerationConfig``).
 Those classes do not have to align to the interface of a Component.
 
-
-.. _symbolic_reference:
+.. _symbolic_reference_nightly:
 
 Symbolic references (configuration components)
 ----------------------------------------------
@@ -394,8 +399,9 @@ Three concrete kinds are currently defined:
 Agent
 ~~~~~
 
-The ``Agent`` is the top-level construct that holds shared resources such as conversation memory and tools.
-It also represents the entry point for interactions with the agentic system.
+The ``Agent`` is the top-level construct that holds shared resources such
+as conversation memory and tools. It also represents the entry point
+for interactions with the agentic system.
 
 .. code-block:: python
 
@@ -404,8 +410,11 @@ It also represents the entry point for interactions with the agentic system.
      llm_configuration: LlmConfig
      tools: List[Tool]
 
-Its main goal is to fill the values for all the properties defined in
-the ``outputs``  attribute, with or without any interaction with the user.
+Its main goal is to accomplish any task assigned in the ``system_prompt`` and terminate,
+with or without any interaction with the user.
+If outputs are defined, structured generation is enabled, and the Agent should also fill the values for
+all the properties defined in the outputs attribute (or at least those that do not have a default value
+defined) before terminating.
 
 It's important to have a separate definition for Agents as components,
 so that the same Agent can be reused several times, e.g., in different flows,
@@ -419,10 +428,6 @@ If a special output format is required, users can specify a tool to fit the requ
 It is also not required to specify the presence of tools in the ``system_prompt``.
 Agent Spec assumes that the list of available tools, including their description, parameters, etc.
 is handled by the runtime implementation, that should inform the agent's LLM of their existence.
-
-The ``system_prompt`` allows the usage of placeholders, that can define inputs.
-The value of these inputs must be provided at runtime, when the Agent's execution is started.
-The input's default value, if provided, should be used if no value is provided at runtime.
 
 This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, ...).
@@ -455,6 +460,67 @@ The names are strings, while values can be of any type compatible with the JSON 
 
 Null value is equivalent to an empty dictionary, i.e., no default generation parameter is specified.
 Specific extensions of LlmConfig for the most common models are provided as well.
+
+Structured Generation
+^^^^^^^^^^^^^^^^^^^^^
+
+Structured generation in LLMs refers to the process of producing outputs that adhere to specific,
+predefined formats or structures. This approach is valuable for use cases requiring machine-readable responses,
+data extraction, program synthesis, or integrating LLM outputs with downstream systems.
+
+Structured generation in LLMs typically works by guiding the model through tailored prompts or instructions
+that specify the required format.
+In Agent Spec we allow users to define the expected output format by defining output properties in Components.
+In other words, users must define the JSON schema of the different properties that the LLM is supposed to generate.
+Each component defines if structured generation is supported, and how it is enabled.
+
+In the current version of Agent Spec, the components that support structured generation are:
+
+- LlmNode
+- Agent
+
+More information is provided in their respective definitions.
+
+.. note::
+    Note that values, despite well-structured, will be LLM-generated.
+    Therefore users should consider them untrusted, and they should perform proper validation before usage.
+
+Agent Spec Runtimes can implement structured generation by generating all the properties in the same request,
+but they should expose them as separate outputs.
+For example, assuming to have the following component that supports structured generation:
+
+.. code-block:: json5
+
+  {
+    "component_type": "ComponentWithStructuredGeneration",
+    // ...
+    "llm_config": {
+      // ...
+    },
+    "prompt": "What is the fastest italian car?",
+    "outputs": [
+      {"title": "brand", "type": "string", "description": "The brand of the car"},
+      {"title": "model", "type": "string", "description": "The name of the car's model"},
+      {"title": "hp", "type": "integer", "description": "The horsepower amount, which expresses the car's power"}
+    ]
+  }
+
+Can generate an object as follows:
+
+.. code-block:: json
+
+  {"brand": "Pininfarina", "model": "Battista", "hp": 1400}
+
+But it should then expose each property separately. Note that the descriptions of properties could be forwarded
+to LLMs to improve the quality of the generation.
+Therefore, providing a proper description might improve the quality of the final outcome.
+
+.. note::
+    The current version Agent Spec does not define how structured generation is enforced on the LLM.
+    In case structured generation is requested to an LLM that does not natively support it, it's up to
+    the Agent Spec Runtime implementation to raise an exception, or to implement it in a different form.
+
+
 
 OpenAI Compatible LLMs
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -687,8 +753,10 @@ We add the same parameters as the APINode (see the Nodes library in the
 Flows - Nodes section below), in order to perform a complete REST call
 in the right manner.
 
-Note that, similarly to the APINode, we allow users to use placeholders in all the string attributes of the
-RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values of data, query_params, and headers).
+Note that, similarly to the APINode, we allow users to use placeholders
+(as described in section 5.3.4) in all the string attributes of the
+RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
+of data, query_params, and headers).
 
 
 MCP Tools
@@ -701,7 +769,7 @@ configurations for secure, remote execution.
 Like other tools, MCP Tools define inputs, outputs, and metadata but include a
 ``client_transport`` for managing connections (e.g., via SSE or Streamable HTTP
 with mTLS) (details about the client transport can be found in
-:ref:`the MCP section <agentspecmcpspec>` below).
+:ref:`the MCP section <agentspecmcpspec_nightly>` below).
 
 .. code-block:: python
 
@@ -762,17 +830,16 @@ as no value was generated for ``output_b`` by the EndNode being executed.
 As inputs, a flow must expose all the inputs that are defined in its StartNode.
 Note that flows must have a unique StartNode, which is defined by the ``start_node`` parameter,
 and it should appear in the list of ``nodes``.
-The value for these inputs should be provided at runtime, when the flow's execution starts.
-The input's default value, if provided, should be used if no value is provided at runtime.
 
 Conversation
 ^^^^^^^^^^^^
 
-At the core of the execution of any Agentic Component, including flows, there is the conversation itself.
-The conversation is composed of the list of messages being produced by the different nodes:
-each node in a flow and each agent can append messages to the conversation if needed.
-Messages should have, at least, a type (e.g., system, agent, user), content, and the sender.
-The conversation is implicitly passed to all the components throughout the flow.
+At the core of the execution of a conversational agent there's the
+conversation itself. The conversation is implicitly passed to all the
+components throughout the flow. It contains the messages being produced
+by the different nodes: each node in a flow and each agent can append
+messages to the conversation if needed. Messages should have, at least,
+a type (e.g., system, agent, user), content, the sender, and the recipient.
 
 Sub-flows and sub-agents contained in a Flow (i.e., as part of AgentNode and FlowNode,
 see the Node section for more information) share the same conversation of the Flow they belong to.
@@ -786,29 +853,6 @@ of the sub-flow/sub-agent.
     The conversation of the parent Flow is shared with sub-flows and sub-agents and vice-versa.
     Do not use sub-flows or sub-agents for information isolation purposes.
     For example, if a sub-agent calls a remote model, it may forward the entire conversation to that model.
-
-I/O Data Space
-^^^^^^^^^^^^^^
-
-Alongside the conversation, flows have another data space composed of inputs and outputs generated by nodes.
-
-Depending to their definition, nodes can require inputs and generate outputs.
-When a node generates an output, this is exposed by the node itself, so that other nodes can consume it if needed.
-In order to use an output's value as a component's input, there are two options:
-
-- A data flow edge between the output and the input is created (see :ref:`Data relationships <dataflow>`);
-- In case the data flow is not defined (see :ref:`Optionality of data relationships <dataflow_optionality>`),
-  the input and output property names match.
-
-An output must be generated before it can be used to fulfil an input.
-In other words, the node generating an output must be executed before the node consuming it as input.
-An exception is made if the input property has a default value defined.
-In that case, if the respective output was not generated, the default value is used instead.
-
-.. note::
-    The Conversation and the I/O Data Space concepts are disjoint and independent from each other.
-    Agent Spec Runtimes are free to implement them separately or not (e.g., with the conversation
-    as a special entry in the I/O space), as long as the Agent Spec language semantic is respected.
 
 Node
 ^^^^
@@ -903,14 +947,8 @@ The from_branch attribute of a ControlFlowEdge is set to null by
 default, which means that it will connect the default branch (i.e.,
 ``next`` ) of the source node.
 
-.. _dataflow:
-
 Data relationships (I/O system components)
 ''''''''''''''''''''''''''''''''''''''''''
-
-A data relationship connects a component's input to a component's output,
-and it defines which output value generated by a component should fill
-the component's input linked.
 
 Considering the I/O system, a component id alone is not sufficient to
 identify a data relationship. A component may take multiple input
@@ -953,8 +991,6 @@ was executed and that has an output connected to the input will have the priorit
 In other words, the behavior is similar to having the input exposed as a public
 variable, and every node that has an output connected to that input updates its value.
 
-.. _dataflow_optionality:
-
 Optionality of data relationships
 '''''''''''''''''''''''''''''''''
 
@@ -995,7 +1031,7 @@ flow connections in the flow in order to account for overwrites.
 
     As a basic approach, this translation can be done by simply connecting
     all the outputs to all the inputs with the same name. The priority-based
-    solution for value updates explained in previous sections will
+    solution for value updates explained in previous section 5.4.4.4.3 will
     ensure the correct behavior of the data flow.
 
     In order to minimize the amount of connections created, it's possible to
@@ -1025,8 +1061,6 @@ of the from_node of a ControlFlowEdge, then also from_branch must be set
 to one of the values in branches. GUIs will show the different branches
 as output flows of the node, so that each of them can be connected in a
 1-to-1 manner with another node's flow input.
-
-.. _agentspecnodesspec:
 
 Standard library of nodes to use in flows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1063,7 +1097,7 @@ A more detailed description of each node follows.
       - Output
       - Outgoing branches
     * - LlmNode
-      - * Uses a LLM to generate some text from a prompt
+      - * Uses a LLM to generate some text or a structured output from a prompt
         * Configured with a prompt template, a LLM and optionally generation parameters (number of tokens, etc)
         * Single round
       - .. list-table::
@@ -1088,7 +1122,11 @@ A more detailed description of each node follows.
               - -
 
       - One per variable in the prompt template
-      - The output text generated by the LLM
+      - Two alternatives are available:
+
+        * A single string property, that represents the raw text generated by the LLM
+        * A non-string property, or multiple properties. In this case, structured generation is triggered, following the property schemas provided as outputs
+
       - One, the default next
     * - ApiNode
       - * Performs an API call with the given settings and inputs
@@ -1465,7 +1503,7 @@ but it should not be done in patch releases, unless required for security reason
 
 In any case, removed features must be announced in the release notes.
 
-.. _agentspecmcpspec:
+.. _agentspecmcpspec_nightly:
 
 MCP (Model Context Protocol)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1608,8 +1646,6 @@ Streamable HTTP Transport with mTLS
     mutual authentication.
 
 
-.. _plugin-ecosystem:
-
 Ecosystem of plugins
 --------------------
 
@@ -1637,7 +1673,7 @@ unmodified attributes as the parent type and can only add new attributes.
     :language: JSON5
 
 Assuming an SDK in the Python programming language, as an example (see
-:ref:`the sdk detailed below <sdk-agent-spec>`), the abstract interface
+:ref:`the sdk detailed below <sdk-agent-spec_nightly>`), the abstract interface
 implemented for a plugin should be similar to this:
 
 .. code-block:: python
@@ -1707,7 +1743,7 @@ Additional disaggregated components that are not part of any exported configurat
 potentially sensitive information) can be additionally provided at deserialization time by the SDK or the Runtime
 performing it.
 
-The disaggregated components references follow the same :ref:`reference system <symbolic_reference>` described for components, based on ID matching.
+The disaggregated components references follow the same :ref:`reference system <symbolic_reference_nightly>` described for components, based on ID matching.
 The ID used for matching the disaggregated component is, by default, the key used in the ``$referenced_components`` dictionary.
 Users can override this behavior at deserialization time by mapping it to a different ID to match a component reference.
 A component reference and its matched disaggregated component must be type-compatible.
@@ -1879,7 +1915,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_25_4_1.json
+    .. literalinclude:: json_spec/agentspec_json_spec_25_4_2.json
         :language: json
 
 Note about serialization of components
@@ -2021,7 +2057,7 @@ representation generated in JSON. We use PyAgentSpec in order to define the Agen
     .. literalinclude:: ../agentspec_config_examples/pyagentspec_example_config.json
         :language: json
 
-.. _sdk-agent-spec:
+.. _sdk-agent-spec_nightly:
 
 SDKs for consuming/producing Agent Spec
 =======================================

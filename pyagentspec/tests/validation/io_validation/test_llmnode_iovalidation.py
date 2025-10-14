@@ -9,6 +9,7 @@ import pytest
 from pyagentspec.flows.nodes.llmnode import LlmNode
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.property import Property
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 def test_llm_node_has_inputs_from_placeholders_and_one_output(
@@ -51,13 +52,14 @@ def test_llm_node_accepts_renaming_of_output(default_llm_config: LlmConfig) -> N
     assert llm_node.outputs == [output_override]
 
 
-def test_llm_node_raises_when_specifying_multiple_outputs(default_llm_config: LlmConfig) -> None:
+def test_llm_node_supports_specifying_multiple_outputs(default_llm_config: LlmConfig) -> None:
     age_property = Property(json_schema={"title": "age", "type": "integer"})
     birthday_property = Property(json_schema={"title": "birthday", "type": "string"})
-    with pytest.raises(ValueError, match="birthday"):
-        LlmNode(
-            name="node",
-            llm_config=default_llm_config,
-            prompt_template="Hi {{name}}! {{question}}?",
-            outputs=[age_property, birthday_property],
-        )
+    node = LlmNode(
+        name="node",
+        llm_config=default_llm_config,
+        prompt_template="Hi {{name}}! {{question}}?",
+        outputs=[age_property, birthday_property],
+    )
+    assert len(node.outputs or []) == 2
+    assert node.min_agentspec_version == AgentSpecVersionEnum.v25_4_2

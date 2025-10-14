@@ -167,6 +167,11 @@ class Component(AbstractableModel, abstract=True):
         default=AgentSpecVersionEnum.current_version, init=False, exclude=True
     )
 
+    def model_post_init(self, __context: Any) -> None:
+        """Override of the method used by Pydantic as post-init."""
+        super().model_post_init(__context)
+        self.min_agentspec_version = self._infer_min_agentspec_version_from_configuration()
+
     @computed_field
     def component_type(self) -> str:
         """Return the name of this Component's type."""
@@ -178,9 +183,19 @@ class Component(AbstractableModel, abstract=True):
 
         return cls.__name__ in BUILTIN_CLASS_MAP
 
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        """
+        Returns the minimum agentspec version needed to correctly represent
+        this Component and its behavior based on its configuration.
+        """
+        # By default, we just return the min_agentspec_version defined for the Component
+        # If a Component changes its behavior based on the spec version, it should override this method accordingly
+        return self.min_agentspec_version
+
     @property
     def model_fields_set(self) -> set[str]:
-        """Returns the set of fields that have been explicitly set on this model instance,
+        """
+        Returns the set of fields that have been explicitly set on this model instance,
         except the min_agentspec_version which is manually specified.
         """
         return super().model_fields_set.difference({"min_agentspec_version"})
@@ -292,7 +307,9 @@ class Component(AbstractableModel, abstract=True):
             queue.extend(new_subclasses)
             all_subclasses.update(new_subclasses)
         return tuple(
-            s for s in all_subclasses if not only_core_components or s._is_builtin_component()
+            s
+            for s in sorted(all_subclasses, key=lambda subclass: subclass.__name__)
+            if not only_core_components or s._is_builtin_component()
         )
 
     def __eq__(self, other: Any) -> bool:

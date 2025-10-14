@@ -260,9 +260,11 @@ def test_component_schema_corresponds_to_agentspec_schema_in_docs() -> None:
     # If this test fails because the Agent Spec json schema was updated, please update
     # the reference json schema displayed in the docs at the path specified below
     # It should be updated with the json dump of Component.model_json_schema()
+    agentspec_version = AgentSpecVersionEnum.current_version.value.replace(".", "_")
+    agentspec_version_file = f"agentspec_json_spec_{agentspec_version}.json"
     component_json_schema = Component.model_json_schema(only_core_components=True)
     docs_dir = Path(__file__).parents[2] / "docs" / "pyagentspec" / "source"
-    agentspec_spec_json_path = docs_dir / "agentspec_config_examples" / "agentspec_json_spec.json"
+    agentspec_spec_json_path = docs_dir / "agentspec" / "json_spec" / agentspec_version_file
     with open(agentspec_spec_json_path, "r") as spec_file:
         docs_component_schema = json.load(spec_file)
 
