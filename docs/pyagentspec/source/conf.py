@@ -129,6 +129,14 @@ autodoc_typehints = "description"
 
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
+    "icon_links": [
+        {
+            "name": "WayFlow GitHub repository",
+            "url": "https://github.com/oracle/agent-spec",
+            "icon": "_static/icons/github-icon.svg",
+            "type": "local",
+        },
+    ],
     "show_toc_level": 1,
     "header_links_before_dropdown": 4,
     "navbar_align": "left",
