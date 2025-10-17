@@ -12,6 +12,10 @@ New features
   Formally introduced Structured Generation in the Agent Spec Language Specification.
   Structured Generation is now supported in the LlmNode, as well as the Agent.
 
+* **Swarm**
+
+  Introduced Swarm in the Agent Spec Language Specification.
+  For more information check out the corresponding :doc:`swarm how-to guide <howtoguides/howto_swarm>` or read the :doc:`API Reference <api/swarm>`.
 
 Agent Spec 25.4.1 — Initial release
 -----------------------------------

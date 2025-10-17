@@ -29,11 +29,11 @@ These how-to guides demonstrate how to use the main Agent Spec features to creat
    Specify the Generation Configuration when Using LLMs <howto_generation_config>
    Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
    Use OCI Generative AI Agents <howto_ociagent>
+   Build a Swarm of Agents <howto_swarm>
 
 Additionally, we link the how-to guides offered by the `WayFlow documentation <https://github.com/oracle/wayflow/>`_.
 WayFlow is a reference runtime of Agent Spec, and among its how-to guides it proposes
 several examples of how to create common patterns using WayFlow and export them in Agent Spec.
-
 
 Executing Assistants
 --------------------

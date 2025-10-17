@@ -55,6 +55,7 @@ from pyagentspec.mcp.clienttransport import (
 from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.ociagent import OciAgent
 from pyagentspec.remoteagent import RemoteAgent
+from pyagentspec.swarm import Swarm
 from pyagentspec.tools.clienttool import ClientTool
 from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
@@ -105,4 +106,5 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Tool": Tool,
     "ToolNode": ToolNode,
     "VllmConfig": VllmConfig,
+    "Swarm": Swarm,
 }

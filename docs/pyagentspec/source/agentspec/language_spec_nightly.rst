@@ -344,7 +344,7 @@ following goals :
       - Example
     * - Agentic Component
       - A top-level, interactive entity that can **receive messages** and **produce
-        messages**.  ``Flow``, ``Agent`` and ``RemoteAgent`` are all specialisations
+        messages**.  ``Flow``, ``Agent``, ``RemoteAgent``, and ``Swarm`` are all specialisations
         of this family.
       - * A multi-step approval flow
         * A ReACT Agent
@@ -394,7 +394,7 @@ Three concrete kinds are currently defined:
    tools, and maintain state.
 3. ``RemoteAgent`` – a conversational entity that is defined **remotely** and
    invoked through an RPC or REST call.
-
+4. ``Swarm`` – a multi-agent conversational component in which each agent can call to other agents based on a list of pre-defined relationships.
 
 Agent
 ~~~~~
@@ -1430,6 +1430,38 @@ Oracle Cloud Infrastructure. It adds OCI-specific authentication and connection 
    class OciAgent(ComponentWithIO):
       agent_endpoint_id: str
       client_config: OciClientConfig  # contains all OCI authentication related configurations
+
+Swarm
+~~~~~
+
+A ``Swarm`` is an ``AgenticComponent`` that enables multi-agent collaboration.
+Unlike a single agent, a Swarm defines a group of agents that can communicate
+and delegate tasks among each other based on a set of predefined relationships.
+Swarm preserves the standard messaging and execution semantics of ``AgenticComponent``.
+
+.. code-block:: python
+
+  class Swarm(AgenticComponent):
+    first_agent: Agent
+    relationships: List[Tuple[Agent, Agent]]
+    handoff: bool
+
+When a Swarm is initalized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
+
+From there, the ``first_agent`` may:
+
+1. Response directly to the user's query, or
+2. Call another agent (that it has a defined relationship with) to handle a specialized subtask.
+
+The human user remains in conversation with the ``first agent`` during this time.
+The called agent can, in turn, call other agents it has relationships with to further handle a subtask.
+
+Alternatively, if ``handoff=True``, the first agent can also decide to handoff the conversation with human user to another agent.
+In this mode, the receiving agent takes over the conversation entirely, meanings it now becomes the one interacting directly with the human user.
+This handoof mechanism reduces latency by eliminating unnecessary message relays between agents.
+
+Each relationship is defined as a tuple ``(caller_agent, recipient_agent)``
+which represents a one-way communication link from ``caller_agent`` to ``recipient_agent``.
 
 Versioning
 ----------

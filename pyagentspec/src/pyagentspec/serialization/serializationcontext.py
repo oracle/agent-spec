@@ -234,7 +234,7 @@ class _SerializationContextImpl(SerializationContext):
             return value.model_dump(context=self)
         elif isinstance(value, Enum) and isinstance(value.value, str):
             return value.value
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(value, tuple):
             return [self.dump_field(x, None) for x in value]
         elif isinstance(value, dict):
             return {k: self.dump_field(v, None) for k, v in value.items()}

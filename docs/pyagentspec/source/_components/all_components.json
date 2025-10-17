@@ -226,5 +226,12 @@
             {"path": "pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin", "name": "pyagentspec.serialization.ComponentDeserializationPlugin"},
             {"path": "pyagentspec.serialization.pydanticdeserializationplugin.PydanticComponentDeserializationPlugin", "name": "pyagentspec.serialization.PydanticComponentDeserializationPlugin"}
         ]
+    },
+    {
+        "name": "Swarm",
+        "path": "swarm",
+        "classes": [
+            {"path": "pyagentspec.swarm.Swarm"}
+        ]
     }
 ]
