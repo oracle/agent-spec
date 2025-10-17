@@ -1,0 +1,175 @@
+component_type: Swarm
+id: 23ba0146-c92c-418f-bde1-fc00542d6977
+name: Swarm
+description: null
+metadata: {}
+inputs: []
+outputs: []
+first_agent:
+  $component_ref: 8e1822a0-645b-4003-a015-63b522c4a623
+relationships:
+- - $component_ref: 8e1822a0-645b-4003-a015-63b522c4a623
+  - $component_ref: de3c64d9-b267-41a9-b228-f351d1400c27
+- - $component_ref: 8e1822a0-645b-4003-a015-63b522c4a623
+  - $component_ref: 736b005d-67ee-4578-9382-eadb53c99267
+- - $component_ref: 736b005d-67ee-4578-9382-eadb53c99267
+  - $component_ref: de3c64d9-b267-41a9-b228-f351d1400c27
+handoff: true
+$referenced_components:
+  8e1822a0-645b-4003-a015-63b522c4a623:
+    component_type: Agent
+    id: 8e1822a0-645b-4003-a015-63b522c4a623
+    name: GeneralPractitioner
+    description: General Practitioner. Primary point of contact for patients, handles
+      general medical inquiries, provides initial diagnoses, and manages referrals.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: d15e3ccc-245d-4d7b-84d8-fef645cac07c
+    system_prompt: "You are an helpful general practitioner LLM doctor responsible\
+      \ for handling patient consultations.\nYour goal is to assess patients' symptoms,\
+      \ provide initial diagnoses, pescribe medication for\nmild conditions or refer\
+      \ to other specialists as needed.\n\n## When to Use Each Tool\n- symptoms_checker:\
+      \ Use this to look up possible conditions based on symptoms reported by the\
+      \ patient.\n\n## When to query other Agents\n- Pharmacist: Every time you need\
+      \ to prescribe some medication, give the condition description and prescription\
+      \ to the Pharmacist.\n- Dermatologist: If the patient has a skin condition,\
+      \ ask expert advice/diagnosis to the Dermatologist after the initial exchange.\n\
+      \n# Specific instructions\n## Initial exchange\nWhen a patient first shares\
+      \ symptoms ask about for exactly 1 round of questions, consisting of asking\
+      \ about medical history and\nsimple questions (e.g. do they have known allergies,\
+      \ when did the symptoms started, did they already tried some treatment/medication,\
+      \ etc)).\nAlways ask for this one round of information to the user before prescribing\
+      \ medication / referring to other agents.\n\n## Identifying condition\nUse the\
+      \ symptoms checker to confirm the condition (for mild conditions only. For other\
+      \ conditions, refer to specialists).\n\n## Mild conditions\n* If the patient\
+      \ has a mild cold, prescribe medicationA.\n    - Give the condition description\
+      \ and prescription to the Pharmacist.\n\n## Skin conditions\n* If the patient\
+      \ has a skin condition, ask for expert advice/diagnosis from the Dermatologist.\n\
+      Here, you don't need to ask for the user confirmation. Directly call the Dermatologist\n\
+      \    - Provide the patient's symptoms/initial hypothesis to the Dermatologist\
+      \ and ask for a diagnosis.\n    - The Dermatologist may query the Pharmacist\
+      \ to confirm the availability of the prescribed medication.\n    - Once the\
+      \ treatment is confirmed, pass on the prescription to the patient and ask them\
+      \ to follow the instructions."
+    tools:
+    - component_type: ServerTool
+      id: 2d0545fd-6a08-48fc-8769-5f52b900d6a5
+      name: Symptoms checker
+      description: Checks symptoms against the medical knowledge base.
+      metadata: {}
+      inputs:
+      - title: symptoms
+        items:
+          type: string
+        type: array
+      outputs:
+      - title: possible_conditions
+        items:
+          type: string
+        type: array
+  d15e3ccc-245d-4d7b-84d8-fef645cac07c:
+    component_type: VllmConfig
+    id: d15e3ccc-245d-4d7b-84d8-fef645cac07c
+    name: meta.llama-3.3-70b-instruct
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: LLAMA_PLACEHOLDER_LINK
+    model_id: model_id
+  de3c64d9-b267-41a9-b228-f351d1400c27:
+    component_type: Agent
+    id: de3c64d9-b267-41a9-b228-f351d1400c27
+    name: Pharmacist
+    description: Pharmacist. Gives availability and information about specific medication.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: d15e3ccc-245d-4d7b-84d8-fef645cac07c
+    system_prompt: 'You are an helpful Pharmacist LLM Agent responsible for giving
+      information about medication.
+
+      Your goal is to answer queries from the General Practitioner Doctor about medication
+      information
+
+      and availabilities.
+
+
+      ## When to Use Each Tool
+
+      - get_medication_info: Use this to look up availability and information about
+      a specific medication.'
+    tools:
+    - component_type: ServerTool
+      id: f280e806-7608-41f8-8588-495aa5996974
+      name: Get medication info
+      description: Provides availability and information about a medication.
+      metadata: {}
+      inputs:
+      - title: drug_name
+        type: string
+      outputs:
+      - title: medication_info
+        type: string
+  736b005d-67ee-4578-9382-eadb53c99267:
+    component_type: Agent
+    id: 736b005d-67ee-4578-9382-eadb53c99267
+    name: Dermatologist
+    description: Dermatologist. Diagnoses and treats skin conditions.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: d15e3ccc-245d-4d7b-84d8-fef645cac07c
+    system_prompt: 'You are an helpful Dermatologist LLM Agent responsible for diagnosing
+      and treating skin conditions.
+
+      Your goal is to assess patients'' symptoms, provide accurate diagnoses, and
+      prescribe effective treatments.
+
+
+      ## When to Use Each Tool
+
+      - knowledge_tool: Use this to look up diagnosis and treatment information for
+      specific skin conditions.
+
+
+      ## When to query other Agents
+
+      - Pharmacist: Every time you need to prescribe some medication, give the condition
+      description and prescription to the Pharmacist.
+
+
+      # Specific instructions
+
+      ## Initial exchange
+
+      When a patient''s symptoms are referred to you by the General Practitioner,
+      review the symptoms and use the knowledge tool to confirm the diagnosis.
+
+      ## Prescription
+
+      Prescribe the recommended treatment for the diagnosed condition and query the
+      Pharmacist to confirm the availability of the prescribed medication.
+
+
+      When answering back to the General Practitioner, describe your diagnosis and
+      the prescription.
+
+      Tell the General Practitioner that you already checked with the pharmacist for
+      availability.'
+    tools:
+    - component_type: ServerTool
+      id: 23f121c5-e43b-46b9-ad71-34c081d55d05
+      name: Knowledge tool
+      description: ' Provides diagnosis and treatment information for skin conditions.'
+      metadata: {}
+      inputs:
+      - title: condition
+        type: string
+      outputs:
+      - title: treatment_info
+        type: string
+agentspec_version: 25.4.2

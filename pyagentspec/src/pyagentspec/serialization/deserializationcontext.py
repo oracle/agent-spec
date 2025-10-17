@@ -275,6 +275,18 @@ class _DeserializationContextImpl(DeserializationContext):
                 )
 
             return origin_type(self._load_field(v, list_value_annotation) for v in content)
+        elif origin_type == tuple:
+            value_annotations = get_args(annotation)
+
+            if not (isinstance(content, origin_type) or isinstance(content, list)):
+                raise ValueError(
+                    f"Expected the content to be {origin_type}, but got {type(content).__name__}"
+                )
+
+            return origin_type(
+                self._load_field(x, value_annotation)
+                for x, value_annotation in zip(content, value_annotations)
+            )
         elif origin_type == Union:
 
             # order-preserving deduplicated list

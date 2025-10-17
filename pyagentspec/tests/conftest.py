@@ -24,6 +24,11 @@ def read_agentspec_config_file(filename: str) -> str:
 
 
 @pytest.fixture
+def example_serialized_swarm() -> str:
+    return read_agentspec_config_file("example_serialized_swarm.yaml")
+
+
+@pytest.fixture
 def example_serialized_llm_node() -> str:
     return read_agentspec_config_file("example_serialized_llm_node.yaml")
 

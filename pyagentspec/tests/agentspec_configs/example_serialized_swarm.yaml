@@ -1,0 +1,65 @@
+component_type: Swarm
+id: swarm
+name: Swarm
+description: null
+metadata: {}
+inputs: []
+outputs: []
+first_agent:
+  $component_ref: general_practitioner
+relationships:
+- - $component_ref: general_practitioner
+  - $component_ref: pharmacist
+- - $component_ref: general_practitioner
+  - $component_ref: dermatologist
+- - $component_ref: dermatologist
+  - $component_ref: pharmacist
+handoff: true
+$referenced_components:
+  general_practitioner:
+    component_type: Agent
+    id: general_practitioner
+    name: GeneralPractitioner
+    description: General Practitioner. Primary point of contact for patients, handles
+      general medical inquiries, provides initial diagnoses, and manages referrals.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: vllm
+    system_prompt: You are a general practitioner
+    tools: []
+  vllm:
+    component_type: VllmConfig
+    id: vllm
+    name: model_name
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: LLAMA_PLACEHOLDER_LINK
+    model_id: model_id
+  pharmacist:
+    component_type: Agent
+    id: pharmacist
+    name: Pharmacist
+    description: Pharmacist. Gives availability and information about specific medication.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: vllm
+    system_prompt: You are a pharmacist
+    tools: []
+  dermatologist:
+    component_type: Agent
+    id: dermatologist
+    name: Dermatologist
+    description: Dermatologist. Diagnoses and treats skin conditions.
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: vllm
+    system_prompt: You are a dermatologist
+    tools: []
+agentspec_version: 25.4.2

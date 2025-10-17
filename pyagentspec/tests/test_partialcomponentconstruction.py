@@ -146,6 +146,7 @@ def test_swarm_without_relations_returns_validation_errors() -> None:
         "name": "My Swarm",
         "first_agent": first_agent,
         "relationships": [],
+        "handoff": False,
     }
     swarm = Swarm.build_from_partial_config(partial_config)
     assert isinstance(swarm, Swarm)
@@ -158,23 +159,6 @@ def test_swarm_without_relations_returns_validation_errors() -> None:
         ),
     )
     assert no_relations in validation_errors
-
-
-def test_swarm_wit_one_empty_relation_has_no_validation_error() -> None:
-    first_agent = Agent(
-        name="first_agent",
-        system_prompt="Be Good!!",
-        llm_config=OpenAiConfig(name="default", model_id="test_model"),
-    )
-    partial_config = {
-        "name": "My Swarm",
-        "first_agent": first_agent,
-        "relationships": [[]],
-    }
-    swarm = Swarm.build_from_partial_config(partial_config)
-    assert isinstance(swarm, Swarm)
-    validation_errors = Swarm.get_validation_errors(partial_config)
-    assert validation_errors == []
 
 
 def test_flow_can_return_multiple_validation_errors() -> None:
