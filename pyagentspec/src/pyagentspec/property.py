@@ -166,7 +166,7 @@ class Property(BaseModel):
         """
         Overwrite the json schema for Property.
 
-        The schema has to be aligned becasue ``parse_obj`` and ``serialize_model`` are overwritten
+        The schema has to be aligned because ``parse_obj`` and ``serialize_model`` are overwritten
 
         Parameters
         ----------

@@ -1542,7 +1542,7 @@ Swarm preserves the standard messaging and execution semantics of ``AgenticCompo
     relationships: List[Tuple[Agent, Agent]]
     handoff: bool
 
-When a Swarm is initalized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
+When a Swarm is initialized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
 
 From there, the ``first_agent`` may:
 
@@ -1668,7 +1668,7 @@ Stdio Transport
 
 The ``StdioTransport`` component should be used for connecting to an MCP server via
 subprocess with stdio. This transport must support being passed a the executable
-commmand to run to start the servers as well as a list of command line arguments to
+command to run to start the servers as well as a list of command line arguments to
 pass to the executable. It can also support being passed environment variables as
 well as the working directory to use when spawning the process.
 

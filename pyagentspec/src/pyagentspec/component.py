@@ -197,7 +197,7 @@ class Component(AbstractableModel, abstract=True):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         """Returns the set of model fields names to exclude for the component.
-        Can be overriden by components to include version-specific fields.
+        Can be overridden by components to include version-specific fields.
         """
         return set()
 
@@ -635,7 +635,7 @@ def replace_abstract_models_and_hierarchical_definitions(
         abstract types are appended to the stack ``abstract_types_to_resolve``. For
         example: the abstract type ``Node`` definition requires the definition of concrete
         ``LlmNode``, which has the attribute ``llm_config`` of abstract type ``LlmConfig``, thus
-        the defintion of the ``Node`` abstract type requires to get the definition of the
+        the definition of the ``Node`` abstract type requires to get the definition of the
         ``LlmConfig`` abstract type.
     """
     if "$defs" in json_schema:

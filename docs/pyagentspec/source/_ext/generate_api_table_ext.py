@@ -27,7 +27,7 @@ API Reference
 
 On this page, you will find the ``pyagentspec`` API reference, ordered by component.
 
-Click on the components and section names to acccess the complete API documentation pages.
+Click on the components and section names to access the complete API documentation pages.
 
 
 """

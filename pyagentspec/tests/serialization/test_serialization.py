@@ -331,7 +331,7 @@ def test_json_and_yaml_serializations_have_the_right_order(
     priority_keys = ["component_type", "id", "name", "description"]
 
     def assert_is_in_right_order(obj_dump: Union[Dict[str, Any], List[Any], Any]) -> None:
-        "Recursively checks that every dict in obj has priority_keys fisrt."
+        "Recursively checks that every dict in obj has priority_keys first."
         if isinstance(obj_dump, dict):
             # Check if it is a dict of a component
             if "component_type" in obj_dump:
