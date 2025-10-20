@@ -1,8 +1,8 @@
 # Copyright (C) 2024, 2025 Oracle and/or its affiliates.
 #
-# This software is under the Universal Permissive License
-# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl) or Apache License
-# 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0), at your option.
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import io
 import os.path
@@ -29,7 +29,7 @@ setup(
     name=NAME,
     version=VERSION,
     description="Package defining the PyAgentSpec library for Agents and LLM fixed-flows abstractions.",
-    license="UPL-1.0 OR Apache-2.0",
+    license="Apache-2.0 OR UPL-1.0",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url="",
