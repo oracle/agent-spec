@@ -52,7 +52,7 @@ from pyagentspec.mcp.clienttransport import (
     StreamableHTTPmTLSTransport,
     StreamableHTTPTransport,
 )
-from pyagentspec.mcp.tools import MCPTool
+from pyagentspec.mcp.tools import MCPTool, MCPToolBox, MCPToolSpec
 from pyagentspec.ociagent import OciAgent
 from pyagentspec.remoteagent import RemoteAgent
 from pyagentspec.swarm import Swarm
@@ -60,6 +60,7 @@ from pyagentspec.tools.clienttool import ClientTool
 from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
 from pyagentspec.tools.tool import Tool
+from pyagentspec.tools.toolbox import ToolBox
 
 BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Agent": Agent,
@@ -81,6 +82,8 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "LlmNode": LlmNode,
     "MapNode": MapNode,
     "MCPTool": MCPTool,
+    "MCPToolBox": MCPToolBox,
+    "MCPToolSpec": MCPToolSpec,
     "Node": Node,
     "OciAgent": OciAgent,
     "OciClientConfig": OciClientConfig,
@@ -104,6 +107,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "StreamableHTTPTransport": StreamableHTTPTransport,
     "StreamableHTTPmTLSTransport": StreamableHTTPmTLSTransport,
     "Tool": Tool,
+    "ToolBox": ToolBox,
     "ToolNode": ToolNode,
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,

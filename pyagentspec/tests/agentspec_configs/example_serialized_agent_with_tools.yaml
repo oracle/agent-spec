@@ -50,13 +50,13 @@ tools:
   http_method: POST
   id: city_newsletter_subscribe_tool
   inputs:
-    - title: city_name
-      type: string
+  - title: city_name
+    type: string
   metadata: {}
   name: subscribe_to_city_newsletter
   outputs:
-    - title: subscription_success
-      type: boolean
+  - title: subscription_success
+    type: boolean
   query_params:
     my_query_param: abc
   url: https://my.url/tool

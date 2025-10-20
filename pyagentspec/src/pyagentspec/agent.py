@@ -15,6 +15,8 @@ from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.property import Property
 from pyagentspec.templating import get_placeholder_properties_from_string
 from pyagentspec.tools.tool import Tool
+from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 class Agent(AgenticComponent):
@@ -48,6 +50,8 @@ class Agent(AgenticComponent):
     """Initial system prompt used for the initialization of the agent's context"""
     tools: List[SerializeAsAny[Tool]] = Field(default_factory=list)
     """List of tools that the agent can use to fulfil user requests"""
+    toolboxes: List[SerializeAsAny[ToolBox]] = Field(default_factory=list)
+    """List of toolboxes that are passed to the agent."""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
@@ -55,3 +59,18 @@ class Agent(AgenticComponent):
 
     def _get_inferred_outputs(self) -> List[Property]:
         return self.outputs or []
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = set()
+        if agentspec_version < AgentSpecVersionEnum.v25_4_2:
+            fields_to_exclude.add("toolboxes")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        if self.toolboxes:
+            # We first check if the component requires toolboxes)
+            # If that's the case, we set the min version to 25.4.2, when toolboxes were introduced
+            return AgentSpecVersionEnum.v25_4_2
+        return super()._infer_min_agentspec_version_from_configuration()

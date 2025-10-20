@@ -50,7 +50,8 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
         """Serialize a Pydantic component."""
         serialized_component: Dict[str, Any] = {}
 
-        for field_name, field_info in component.__class__.model_fields.items():
+        model_fields = component.get_versioned_model_fields(serialization_context.agentspec_version)
+        for field_name, field_info in model_fields.items():
             if getattr(field_info, "exclude", False):  # To not include AIR version
                 continue
 

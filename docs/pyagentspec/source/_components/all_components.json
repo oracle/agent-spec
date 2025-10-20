@@ -159,6 +159,18 @@
             {
                 "path": "pyagentspec.mcp.tools.MCPTool",
                 "name": "pyagentspec.mcp.MCPTool"
+            },
+            {
+                "path": "pyagentspec.tools.toolbox.ToolBox",
+                "name": "pyagentspec.tools.ToolBox"
+            },
+            {
+                "path": "pyagentspec.mcp.tools.MCPToolSpec",
+                "name": "pyagentspec.mcp.MCPToolSpec"
+            },
+            {
+                "path": "pyagentspec.mcp.tools.MCPToolBox",
+                "name": "pyagentspec.mcp.MCPToolBox"
             }
         ]
     },

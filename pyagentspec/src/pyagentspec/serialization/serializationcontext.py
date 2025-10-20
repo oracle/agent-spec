@@ -41,6 +41,8 @@ FieldInfoTypeT = TypeVar("FieldInfoTypeT", bound=Any)
 class SerializationContext:
     """Interface for the serialization of Components."""
 
+    agentspec_version: AgentSpecVersionEnum
+
     @abstractmethod
     def _dump_component_to_dict(self, component: Component) -> ComponentAsDictT:
         pass
@@ -304,6 +306,7 @@ class _SerializationContextImpl(SerializationContext):
                 f"(upper bounded by component '{_max_component.name}')"
             )
 
+        self.agentspec_version = chosen_version
         # Pydantic will inline all inner components, potentially many times the same component
         # if it is used in many places, but we want to avoid that, and use references instead
         self._referencing_structure = _compute_referencing_structure(component)

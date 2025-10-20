@@ -29,6 +29,7 @@ $referenced_components:
       $component_ref: vllm
     system_prompt: You are a general practitioner
     tools: []
+    toolboxes: []
   vllm:
     component_type: VllmConfig
     id: vllm
@@ -50,6 +51,7 @@ $referenced_components:
       $component_ref: vllm
     system_prompt: You are a pharmacist
     tools: []
+    toolboxes: []
   dermatologist:
     component_type: Agent
     id: dermatologist
@@ -62,4 +64,5 @@ $referenced_components:
       $component_ref: vllm
     system_prompt: You are a dermatologist
     tools: []
+    toolboxes: []
 agentspec_version: 25.4.2
