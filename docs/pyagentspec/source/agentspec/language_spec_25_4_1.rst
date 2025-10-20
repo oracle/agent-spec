@@ -1502,7 +1502,7 @@ Stdio Transport
 
 The ``StdioTransport`` component should be used for connecting to an MCP server via
 subprocess with stdio. This transport must support being passed a the executable
-commmand to run to start the servers as well as a list of command line arguments to
+command to run to start the servers as well as a list of command line arguments to
 pass to the executable. It can also support being passed environment variables as
 well as the working directory to use when spawning the process.
 

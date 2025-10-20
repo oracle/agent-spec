@@ -14,7 +14,7 @@ as showcased in the diagram below.
 .. image:: ../_static/howto/hierarchical_vs_swarm.svg
    :align: center
    :scale: 70%
-   :alt: How the Swarm pattern compares to hierachical multi-agent pattern
+   :alt: How the Swarm pattern compares to hierarchical multi-agent pattern
 
 In the **hierarchical pattern**, a route User → Agent K → User will require:
 
