@@ -34,7 +34,7 @@ class MCPToolBox(ToolBox):
     client_transport: ClientTransport
     """Transport to use for establishing and managing connections to the MCP server."""
 
-    tool_filter: Optional[List[Union[str, MCPToolSpec]]] = None
+    tool_filter: Optional[List[Union[MCPToolSpec, str]]] = None
     """
 	Optional filter to select specific tools.
 

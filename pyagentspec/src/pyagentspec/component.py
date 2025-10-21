@@ -333,7 +333,7 @@ class Component(AbstractableModel, abstract=True):
             if not only_core_components or s._is_builtin_component()
         )
 
-    def __eq__(self, other: Any) -> bool:
+    def _is_equal(self, other: Any, fields_to_exclude: Optional[List[str]] = None) -> bool:
         # The default __eq__ of pydantic's BaseModel has worst case exponential time complexity.
         #
         # For example, on the component with the nested definition:
@@ -361,9 +361,14 @@ class Component(AbstractableModel, abstract=True):
                 continue
             visited.add((id(value_a), id(value_b)))
             if isinstance(value_a, Component):
+                field_names = [
+                    f_name
+                    for f_name in value_a.__class__.model_fields.keys()
+                    if f_name not in (fields_to_exclude or [])
+                ]
                 values_to_check.extend(
-                    (getattr(value_a, field_name), getattr(value_b, field_name))
-                    for field_name in value_a.__class__.model_fields.keys()
+                    (getattr(value_a, field_name_), getattr(value_b, field_name_))
+                    for field_name_ in field_names
                 )
             elif isinstance(value_a, (list, tuple)):
                 if len(value_a) != len(value_b):
@@ -377,6 +382,9 @@ class Component(AbstractableModel, abstract=True):
                 if value_a != value_b:
                     return False
         return True
+
+    def __eq__(self, other: Any) -> bool:
+        return self._is_equal(other)
 
     def __repr__(self) -> str:
         # The default __repr__ of pydantic's BaseModel may produce representations of exponential
