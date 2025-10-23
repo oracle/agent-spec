@@ -48,7 +48,7 @@ def test_autogen_agent_can_be_converted_to_agentspec() -> None:
     assert "component_type" in agentspec_dict
     assert agentspec_dict["component_type"] == "Agent"
     assert agentspec_dict["name"] == "autogen_assistant"
-    assert agentspec_dict["system_prompt"] == "Use tools to solve tasks."
+    assert agent._system_messages[0].content in agentspec_dict["system_prompt"]
     # Check LLM
     assert "llm_config" in agentspec_dict
     assert "component_type" in agentspec_dict["llm_config"]

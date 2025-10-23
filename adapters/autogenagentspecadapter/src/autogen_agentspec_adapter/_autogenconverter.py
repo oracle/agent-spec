@@ -10,6 +10,8 @@ import functools
 import inspect
 import typing
 import warnings
+import re
+import keyword
 from functools import partial
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
@@ -87,6 +89,18 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
     }
 
     return mapping.get(json_schema["type"], "Any")
+
+# Autogen requires that agent names be valid Python identifiers. Thus, we sanitize names to make sure they are valid.
+def _sanitize_agent_name(name: str) -> str:
+    # Replace non-identifier characters with underscores
+    sanitized = re.sub(r'\W', '_', name or "")
+    # Prefix underscore if it starts with a digit
+    if sanitized and sanitized[0].isdigit():
+        sanitized = f"_{sanitized}"
+    # Ensure it's a valid identifier and not a Python keyword
+    if not sanitized or not sanitized.isidentifier() or keyword.iskeyword(sanitized):
+        sanitized = f"agent_{abs(hash(name)) % 10**8}"
+    return sanitized
 
 
 class AgentSpecToAutogenConverter:
@@ -196,8 +210,7 @@ class AgentSpecToAutogenConverter:
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
             args_model=_create_pydantic_model_from_properties(
-                agentspec_client_tool.name.title() + "InputSchema",
-                agentspec_client_tool.inputs or [],
+                agentspec_client_tool.name.title() + "InputSchema", agentspec_client_tool.inputs or []
             ),
             func=client_tool,
         )
@@ -274,7 +287,7 @@ class AgentSpecToAutogenConverter:
             # We interpret the name as the `name` of the agent in Autogen agent,
             # the system prompt as the `system_message`
             # This interpretation comes from the analysis of Autogen Agent definition examples
-            name=agentspec_agent.name,
+            name = _sanitize_agent_name(agentspec_agent.name),
             system_message=agentspec_agent.system_prompt,
             model_client=(
                 self.convert(
