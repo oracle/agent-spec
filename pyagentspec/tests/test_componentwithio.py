@@ -70,7 +70,7 @@ def test_component_with_inputs_raises_when_missing_inputs_are_not_passed() -> No
 def test_component_with_non_unique_inputs_raises() -> None:
     with pytest.raises(
         ValueError,
-        match="Found multiple instance of the same title in properties of a ComponentWithIO",
+        match=r".*Found multiple instances of properties \(inputs or outputs\) with the same title in a ComponentWithIO.*",
     ):
         component_cls = create_mock_component_cls_with_defaults(
             [StringProperty(title="input_1"), StringProperty(title="input_2")], []
@@ -116,7 +116,7 @@ def test_component_raises_when_specified_outputs_are_incomplete() -> None:
 def test_component_with_non_unique_outputs_raises() -> None:
     with pytest.raises(
         ValueError,
-        match="Found multiple instance of the same title in properties of a ComponentWithIO",
+        match=r".*Found multiple instances of properties \(inputs or outputs\) with the same title in a ComponentWithIO.*",
     ):
         component_cls = create_mock_component_cls_with_defaults(
             [], [StringProperty(title="output_1"), StringProperty(title="output_2")]

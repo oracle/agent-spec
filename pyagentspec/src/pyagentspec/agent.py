@@ -52,6 +52,8 @@ class Agent(AgenticComponent):
     """List of tools that the agent can use to fulfil user requests"""
     toolboxes: List[SerializeAsAny[ToolBox]] = Field(default_factory=list)
     """List of toolboxes that are passed to the agent."""
+    human_in_the_loop: bool = True
+    """Flag that determines if the Agent can request input from the user."""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
@@ -66,11 +68,14 @@ class Agent(AgenticComponent):
         fields_to_exclude = set()
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("toolboxes")
+            fields_to_exclude.add("human_in_the_loop")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
-        if self.toolboxes:
+        if self.toolboxes or not self.human_in_the_loop:
             # We first check if the component requires toolboxes)
             # If that's the case, we set the min version to 25.4.2, when toolboxes were introduced
+            # Similarly, human_in_the_loop was only added in 25.4.2 (human_in_the_loop=True was
+            # the de-facto default before)
             return AgentSpecVersionEnum.v25_4_2
         return super()._infer_min_agentspec_version_from_configuration()

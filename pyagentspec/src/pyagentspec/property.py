@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines the base class for the definition of inputs and outputs in Components."""
+from collections import defaultdict
 from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 
 from jsonschema.validators import Draft202012Validator
@@ -542,3 +543,31 @@ def value_is_of_compatible_type(value: Any, json_schema: JsonSchemaValue) -> boo
                 if not value_is_of_compatible_type(inner_value, additional_properties_type):
                     return False
     return True
+
+
+def deduplicate_properties_by_title_and_type(properties: List[Property]) -> List[Property]:
+    """Deduplicates all properties with the same title and type in a list."""
+
+    properties_by_title: Dict[str, List[Property]] = defaultdict(list)
+    for property_ in properties:
+        properties_by_title[property_.title].append(property_)
+
+    deduplicated_properties: List[Property] = []
+
+    for title, property_list in properties_by_title.items():
+        distinct_property_types: List[Property] = []
+        for property_ in property_list:
+            new_property_type = True
+            for already_deduplicated_property in distinct_property_types:
+                if json_schemas_have_same_type(
+                    property_.json_schema, already_deduplicated_property.json_schema
+                ):
+                    new_property_type = False
+                    break
+
+            if new_property_type:
+                distinct_property_types.append(property_)
+
+        deduplicated_properties.extend(distinct_property_types)
+
+    return deduplicated_properties

@@ -61,4 +61,5 @@ $referenced_components:
       read_timeout_seconds: 60
     url: https://some.where/sse
     headers: null
+human_in_the_loop: true
 agentspec_version: 25.4.2

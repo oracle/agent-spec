@@ -343,14 +343,15 @@ following goals :
       - Notes
       - Example
     * - Agentic Component
-      - A top-level, interactive entity that can **receive messages** and **produce
-        messages**.  ``Flow``, ``Agent``, ``RemoteAgent``, and ``Swarm`` are all specialisations
-        of this family.
+      - A top-level, interactive entity that can **receive messages** and **produce messages**.
+        ``Flow``, ``Agent``, ``RemoteAgent``, ``Swarm``, and ``SpecializedAgent``  are
+        all specialisations of this family.
       - * A multi-step approval flow
         * A ReACT Agent
         * A remotely-hosted OCI Generative AI Agent
     * - Agent
       - An agent is an interactive entity that can converse and use tools.
+        Generic Agents can be specialized for specific tasks and use-cases.
       - * A ReACT agent with tools
     * - Remote Agent
       - An ``AgenticComponent`` whose implementation is **defined and executed
@@ -416,6 +417,7 @@ for interactions with the agentic system.
      llm_configuration: LlmConfig
      tools: List[Tool]
      toolboxes: List[ToolBox]
+     human_in_the_loop: bool
 
 Its main goal is to accomplish any task assigned in the ``system_prompt`` and terminate,
 with or without any interaction with the user.
@@ -448,6 +450,65 @@ registry for the Agent. In case of tool name collisions across different sources
 
 This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, ...).
+
+Human-in-the-Loop in Agents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The concept of human-in-the-loop in agents refers to integrating user
+oversight or intervention points into automated processes.
+When an agent is designed with a human in the loop, it pauses at defined
+moments, such as (but not limited to) before taking key actions or making
+critical decisions, to allow a human user to review, approve, or modify the outcome.
+There are many possible ways to implement this concept,
+such as (but not limited to) introducing special
+tools, intercepting large language model (LLM) outputs, or pausing
+execution before certain actions. The specific implementation details
+are left to the runtime; the essential requirement is
+that user control is provided at the appropriate time when requested by
+the agent. In contrast, agents without human-in-the-loop capability
+operate fully autonomously, without waiting for user input.
+
+Agent Specialization for Reusability and Flexibility
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In complex automation and orchestration tasks, agent reusability is
+vital for maintainability and scalability. The Open Agent Specification
+introduces an extension mechanism where a base agent can be tailored for
+specialized tasks, enhancing its core capabilities with refined
+instructions and additional toolsets. This approach promotes building
+simple, generic agents that can be flexibly adapted to diverse use cases
+within a flow or as standalone agents.
+
+A ``SpecializedAgent`` is created using the ``AgentSpecializationParameters``.
+The base ``agent``'s instructions are refined by merging them with the
+``additional_instructions`` in the specialization parameters, and its tools
+can be extended with the ``additional_tools``. Specialization can optionally
+override the behaviour  of the agent from human-in-the-loop to fully autonomous,
+or vice versa (``human_in_the_loop=None`` in the specialization parameters
+preserves the base agent's behavior).
+
+.. code-block:: python
+
+  class AgentSpecializationParameters(ComponentWithIO):
+    additional_instructions: Optional[str] = None
+    additional_tools: Optional[List[Tool]] = None
+    human_in_the_loop: Optional[bool] = None
+
+  class SpecializedAgent(AgenticComponent):
+    agent: Agent
+    agent_specialization_parameters: AgentSpecializationParameters
+
+
+``AgentSpecializationParameters`` can use placeholders (as introduced in the previous sections)
+in the ``additional_instructions``, which will define the inputs to the
+``AgentSpecializationParameters`` component.
+The inputs of the ``SpecializiedAgent`` will be the union of the specialization parameters' inputs
+and the ones of the base agent.
+If the same input or output property is defined in both the agent and the
+specialization parameters, the respective instances must have the same type.
+``AgentSpecializationParameters`` do not define any outputs, therefore the outptus of the
+``SpecializiedAgent`` will be the same as the ones of the underlying base ``Agent``.
+
 
 LLM
 ~~~
@@ -1574,6 +1635,7 @@ For example, the JSON serialized version of an Agent should look like the follow
     "name": "my agent",
     "id": "my_agent_id",
     "description": "",
+    "human_in_the_loop": true,
     "llm_config": {
        "component_type": "VllmConfig",
        "name": "my llm",
@@ -1584,7 +1646,7 @@ For example, the JSON serialized version of an Agent should look like the follow
        "url": "my.llm.url"
     }
     "tools": [],
-    "agentspec_version": "25.4.1"
+    "agentspec_version": "25.4.2"
   }
 
 For release versioning, Agent Spec follows the format YEAR.QUARTER.PATCH. Agent Spec follows a
@@ -1891,6 +1953,7 @@ Here's an example of an Agent Spec configuration that uses disaggregated compone
       "id": "powerful_agent_id",
       "name": "Powerful agent",
       "description": null,
+      "human_in_the_loop": true
       "metadata": {},
       "llm_config": {
         "component_type": "VllmConfig",
@@ -2112,6 +2175,7 @@ Examples of JSON serialization for a few common Components follow.
         }
       ],
       "outputs": [],
+      "human_in_the_loop": true
       "llm_config": {
         "id": "llama_model_id",
         "name": "Llama 3.1 8B instruct",
@@ -2125,7 +2189,7 @@ Examples of JSON serialization for a few common Components follow.
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
       "component_type": "Agent",
-      "agentspec_version": "25.4.1"
+      "agentspec_version": "25.4.2"
     }
 
 

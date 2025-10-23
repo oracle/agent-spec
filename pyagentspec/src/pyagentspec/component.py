@@ -896,8 +896,8 @@ class ComponentWithIO(Component, abstract=True):
         ]
         if any(duplicated_property_titles):
             raise ValueError(
-                f"Found multiple instance of the same title in properties of a ComponentWithIO."
-                f" Please ensure titles are unique: {duplicated_property_titles}"
+                "Found multiple instances of properties (inputs or outputs) with the same title in "
+                f"a ComponentWithIO. Please ensure titles are unique: {duplicated_property_titles}"
             )
 
     @staticmethod

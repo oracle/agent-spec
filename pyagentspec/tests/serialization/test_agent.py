@@ -4,8 +4,11 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from typing import cast
+
 import pytest
 
+from pyagentspec import Component
 from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.mcp.clienttransport import SSETransport
@@ -20,9 +23,13 @@ from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
 
 
-def test_agent_can_be_serialized() -> None:
-    vllmconfig = VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
+@pytest.fixture()
+def vllmconfig():
+    yield VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
 
+
+@pytest.fixture()
+def tools():
     city_input = StringProperty(
         title="city_name",
         default="zurich",
@@ -63,13 +70,16 @@ def test_agent_can_be_serialized() -> None:
         # inputs=[city_input],  #  This is going to be inferred by the tool
         outputs=[subscription_success_output],
     )
+    yield [weather_tool, history_tool, newsletter_subscribe_tool]
 
+
+def test_agent_can_be_serialized(vllmconfig, tools) -> None:
     agent = Agent(
         id="agent1",
         name="Funny agent",
         llm_config=vllmconfig,
         system_prompt="No matter what the user asks, don't reply but make a joke instead",
-        tools=[weather_tool, history_tool, newsletter_subscribe_tool],
+        tools=tools,
     )
     serializer = AgentSpecSerializer()
     serialized_agent = serializer.to_yaml(agent)
@@ -77,6 +87,65 @@ def test_agent_can_be_serialized() -> None:
         "example_serialized_agent_with_tools.yaml"
     )
     assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+
+def test_agent_with_human_in_the_loop(vllmconfig, tools):
+    serializer = AgentSpecSerializer()
+    deserializer = AgentSpecDeserializer()
+
+    # The min supported version for this agent is 25.4.1 (human in the loop was the default)
+    # So this agent must serialize as 25.4.1
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        tools=tools,
+        human_in_the_loop=True,
+    )
+    serialized_agent = serializer.to_yaml(agent)
+    example_serialized_agent = read_agentspec_config_file(
+        "example_serialized_agent_with_tools.yaml"
+    )
+    assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+    # Human in the loop should be set (and true!) when deserializing a 25.4.1 agent into 25.4.2
+    deserialized_agent = deserializer.from_yaml(example_serialized_agent)
+    assert deserialized_agent.human_in_the_loop
+
+    # But the human_in_the_loop properties should be there when serializing to 25.4.2
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        tools=tools,
+        human_in_the_loop=True,
+    )
+    serialized_agent = serializer.to_yaml(agent, AgentSpecVersionEnum.v25_4_2)
+    example_serialized_agent = read_agentspec_config_file(
+        "example_serialized_agent_with_tools_25_4_2.yaml"
+    )
+    assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+    # The minimum version for which we support human_in_the_loop=False is 25.4.2, so this is the
+    # default serialization version in that case
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        tools=tools,
+        human_in_the_loop=False,
+    )
+    serialized_agent = serializer.to_yaml(agent)
+    example_serialized_agent = read_agentspec_config_file(
+        "example_serialized_agent_with_tools_no_human_in_the_loop.yaml"
+    )
+    assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = serializer.to_yaml(agent, agentspec_version=AgentSpecVersionEnum.v25_4_1)
 
 
 def test_agent_with_toolbox_can_be_serialized() -> None:

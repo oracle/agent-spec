@@ -1,0 +1,84 @@
+component_type: SpecializedAgent
+id: specialized-cat-agent
+name: Funny cat agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+agent:
+  component_type: Agent
+  id: agent1
+  name: Funny agent
+  description: null
+  metadata: {}
+  inputs: []
+  outputs: []
+  llm_config:
+    component_type: VllmConfig
+    id: agi1
+    name: agi1
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: http://some.where
+    model_id: agi_model1
+  system_prompt: No matter what the user asks, don't reply but make a joke instead
+  toolboxes: []
+  tools:
+  - component_type: ClientTool
+    id: weather_tool
+    name: get_weather
+    description: Gets the weather in specified city
+    metadata: {}
+    inputs:
+    - title: city_name
+      default: zurich
+      type: string
+    outputs:
+    - title: forecast
+      type: string
+  - component_type: ServerTool
+    id: history_tool
+    name: get_city_history_info
+    description: Gets information about the city history
+    metadata: {}
+    inputs:
+    - title: city_name
+      default: zurich
+      type: string
+    outputs:
+    - title: forecast
+      type: string
+  human_in_the_loop: true
+agent_specialization_parameters:
+  component_type: AgentSpecializationParameters
+  id: cat-specialization-params
+  name: cat specialization
+  description: null
+  metadata: {}
+  inputs: []
+  outputs: []
+  additional_instructions: Only ever tell jokes about cats. You are all about cats
+  additional_tools:
+  - component_type: RemoteTool
+    id: cat_newsletter_subscribe_tool
+    name: subscribe_to_cat_newsletter
+    description: Subscribe to the newsletter of a cat shelter
+    metadata: {}
+    inputs:
+    - title: cat_name
+      type: string
+    outputs:
+    - title: subscription_success
+      type: boolean
+    url: https://my.url/tool
+    http_method: POST
+    api_spec_uri: https://my.api.spec.url/tool
+    data:
+      cat_name: '{{cat_name}}'
+    query_params:
+      my_query_param: abc
+    headers:
+      my_header: '123'
+  human_in_the_loop: null
+agentspec_version: 25.4.2
