@@ -55,6 +55,7 @@ from pyagentspec.mcp.clienttransport import (
 from pyagentspec.mcp.tools import MCPTool, MCPToolBox, MCPToolSpec
 from pyagentspec.ociagent import OciAgent
 from pyagentspec.remoteagent import RemoteAgent
+from pyagentspec.specialized_agent import AgentSpecializationParameters, SpecializedAgent
 from pyagentspec.swarm import Swarm
 from pyagentspec.tools.clienttool import ClientTool
 from pyagentspec.tools.remotetool import RemoteTool
@@ -66,6 +67,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Agent": Agent,
     "AgenticComponent": AgenticComponent,
     "AgentNode": AgentNode,
+    "AgentSpecializationParameters": AgentSpecializationParameters,
     "ApiNode": ApiNode,
     "BranchingNode": BranchingNode,
     "ClientTransport": ClientTransport,
@@ -100,6 +102,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "RemoteTransport": RemoteTransport,
     "RemoteAgent": RemoteAgent,
     "ServerTool": ServerTool,
+    "SpecializedAgent": SpecializedAgent,
     "SSETransport": SSETransport,
     "SSEmTLSTransport": SSEmTLSTransport,
     "StartNode": StartNode,

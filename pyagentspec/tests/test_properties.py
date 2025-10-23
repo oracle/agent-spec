@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, Dict, Type
+from typing import Any, Dict, List, Type
 
 import pytest
 from pydantic import ValidationError
@@ -24,6 +24,7 @@ from pyagentspec.property import (
     Property,
     StringProperty,
     UnionProperty,
+    deduplicate_properties_by_title_and_type,
     json_schema_is_castable_to,
     json_schemas_have_same_type,
     value_is_of_compatible_type,
@@ -933,3 +934,91 @@ def test_value_is_compatible_with_type(
     value: Any, json_schema: JsonSchemaValue, expected_match: bool
 ) -> None:
     assert value_is_of_compatible_type(value, json_schema) == expected_match
+
+
+@pytest.mark.parametrize(
+    "properties, expected_deduplication",
+    [
+        ([StringProperty(title="a"), StringProperty(title="a")], [StringProperty(title="a")]),
+        (
+            [StringProperty(title="a"), StringProperty(title="b")],
+            [StringProperty(title="a"), StringProperty(title="b")],
+        ),
+        (
+            [StringProperty(title="a"), Property(json_schema={"title": "a", "type": "string"})],
+            [StringProperty(title="a")],
+        ),
+        (
+            [
+                DictProperty(title="a", value_type=IntegerProperty()),
+                DictProperty(title="a", value_type=IntegerProperty()),
+            ],
+            [DictProperty(title="a", value_type=IntegerProperty())],
+        ),
+        (
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+            ],
+            [ObjectProperty(title="a", properties={"b": StringProperty(title="b")})],
+        ),
+        (
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                ObjectProperty(title="c", properties={"b": StringProperty(title="b")}),
+            ],
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                ObjectProperty(title="c", properties={"b": StringProperty(title="b")}),
+            ],
+        ),
+        (
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                ObjectProperty(title="a", properties={"c": StringProperty(title="c")}),
+            ],
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                ObjectProperty(title="a", properties={"c": StringProperty(title="c")}),
+            ],
+        ),
+        (
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                DictProperty(title="a", value_type=StringProperty()),
+            ],
+            [
+                ObjectProperty(title="a", properties={"b": StringProperty(title="b")}),
+                DictProperty(title="a", value_type=StringProperty()),
+            ],
+        ),
+        (
+            [StringProperty(title="a"), FloatProperty(title="a")],
+            [StringProperty(title="a"), FloatProperty(title="a")],
+        ),
+        (
+            [IntegerProperty(title="a"), FloatProperty(title="a")],
+            [IntegerProperty(title="a"), FloatProperty(title="a")],
+        ),
+        (
+            [
+                IntegerProperty(title="a"),
+                FloatProperty(title="a"),
+                Property(json_schema={"title": "a", "type": "string"}),
+                Property(json_schema={"title": "b", "type": "string"}),
+            ],
+            [
+                IntegerProperty(title="a"),
+                FloatProperty(title="a"),
+                Property(json_schema={"title": "a", "type": "string"}),
+                Property(json_schema={"title": "b", "type": "string"}),
+            ],
+        ),
+    ],
+)
+def test_property_deduplication(properties: List[Property], expected_deduplication: List[Property]):
+    if isinstance(expected_deduplication, list):
+        assert deduplicate_properties_by_title_and_type(properties) == expected_deduplication
+    else:
+        with pytest.raises(expected_deduplication):
+            print(deduplicate_properties_by_title_and_type(properties))

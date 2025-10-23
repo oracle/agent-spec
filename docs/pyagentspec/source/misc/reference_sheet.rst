@@ -149,8 +149,9 @@ Example configuration:
       },
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
+      "human_in_the_loop": true,
       "component_type": "Agent",
-      "agentspec_version": "25.4.1"
+      "agentspec_version": "25.4.2"
     }
 
 .. note::
