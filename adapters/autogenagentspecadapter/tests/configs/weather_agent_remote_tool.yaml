@@ -37,4 +37,3 @@ tools:
     type: string
   query_params: {}
   url: "[[remote_tools_server]]/api/weather/{{city}}"
-agentspec_version: "25.4.1"
