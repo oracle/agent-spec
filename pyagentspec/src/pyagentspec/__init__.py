@@ -16,6 +16,7 @@ import pyagentspec.tools  # noqa: F401
 from ._openaiagent import OpenAiAgent
 from .agent import Agent
 from .component import Component
+from .managerworkers import ManagerWorkers
 from .ociagent import OciAgent
 from .property import Property
 from .serialization import AgentSpecDeserializer, AgentSpecSerializer
@@ -30,6 +31,7 @@ __all__ = [
     "OpenAiAgent",
     "OciAgent",
     "Swarm",
+    "ManagerWorkers",
 ]
 # Get the version from the information set in the setup of this package
 __version__ = version("pyagentspec")

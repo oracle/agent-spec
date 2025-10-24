@@ -30,6 +30,7 @@ These how-to guides demonstrate how to use the main Agent Spec features to creat
    Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
    Use OCI Generative AI Agents <howto_ociagent>
    Build a Swarm of Agents <howto_swarm>
+   Build a Manager-Worker Multi-Agent System <howto_managerworkers>
 
 Additionally, we link the how-to guides offered by the `WayFlow documentation <https://github.com/oracle/wayflow/>`_.
 WayFlow is a reference runtime of Agent Spec, and among its how-to guides it proposes

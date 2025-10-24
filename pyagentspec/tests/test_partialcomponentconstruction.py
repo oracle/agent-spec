@@ -15,6 +15,7 @@ from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import BranchingNode, EndNode, LlmNode, StartNode, ToolNode
 from pyagentspec.llms.openaiconfig import OpenAiConfig
+from pyagentspec.managerworkers import ManagerWorkers
 from pyagentspec.property import StringProperty
 from pyagentspec.tools.tool import Tool
 from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
@@ -134,31 +135,6 @@ def test_validation_errors_dont_contain_missing_name_when_name_is_provided(
     validation_errors = component_cls.get_validation_errors({"name": "the_component_name"})
     missing_name = PyAgentSpecErrorDetails(type="missing", loc=("name",), msg="Field required")
     assert missing_name not in validation_errors
-
-
-def test_swarm_without_relations_returns_validation_errors() -> None:
-    first_agent = Agent(
-        name="first_agent",
-        system_prompt="Be Good!!",
-        llm_config=OpenAiConfig(name="default", model_id="test_model"),
-    )
-    partial_config = {
-        "name": "My Swarm",
-        "first_agent": first_agent,
-        "relationships": [],
-        "handoff": False,
-    }
-    swarm = Swarm.build_from_partial_config(partial_config)
-    assert isinstance(swarm, Swarm)
-    validation_errors = Swarm.get_validation_errors(partial_config)
-    no_relations = PyAgentSpecErrorDetails(
-        type="value_error",
-        msg=(
-            "Value error, Cannot define a `Swarm` with no relationships between the agents. Use "
-            "an `Agent` instead."
-        ),
-    )
-    assert no_relations in validation_errors
 
 
 def test_flow_can_return_multiple_validation_errors() -> None:

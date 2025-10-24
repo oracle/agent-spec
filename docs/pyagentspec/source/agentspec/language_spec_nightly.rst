@@ -344,7 +344,7 @@ following goals :
       - Example
     * - Agentic Component
       - A top-level, interactive entity that can **receive messages** and **produce messages**.
-        ``Flow``, ``Agent``, ``RemoteAgent``, ``Swarm``, and ``SpecializedAgent``  are
+        ``Flow``, ``Agent``, ``RemoteAgent``, ``Swarm``, ``ManagerWorkers`` and ``SpecializedAgent``  are
         all specialisations of this family.
       - * A multi-step approval flow
         * A ReACT Agent
@@ -402,6 +402,7 @@ Three concrete kinds are currently defined:
 3. ``RemoteAgent`` – a conversational entity that is defined **remotely** and
    invoked through an RPC or REST call.
 4. ``Swarm`` – a multi-agent conversational component in which each agent can call to other agents based on a list of pre-defined relationships.
+5. ``ManagerWorkers`` – a multi-agent conversational component in which a manager agent can assign tasks to worker agents.
 
 Agent
 ~~~~~
@@ -1594,13 +1595,14 @@ Swarm
 A ``Swarm`` is an ``AgenticComponent`` that enables multi-agent collaboration.
 Unlike a single agent, a Swarm defines a group of agents that can communicate
 and delegate tasks among each other based on a set of predefined relationships.
+Agents in Swarm can be any ``AgenticComponent``.
 Swarm preserves the standard messaging and execution semantics of ``AgenticComponent``.
 
 .. code-block:: python
 
   class Swarm(AgenticComponent):
-    first_agent: Agent
-    relationships: List[Tuple[Agent, Agent]]
+    first_agent: AgenticComponent
+    relationships: List[Tuple[AgenticComponent, AgenticComponent]]
     handoff: bool
 
 When a Swarm is initialized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
@@ -1619,6 +1621,32 @@ This handoof mechanism reduces latency by eliminating unnecessary message relays
 
 Each relationship is defined as a tuple ``(caller_agent, recipient_agent)``
 which represents a one-way communication link from ``caller_agent`` to ``recipient_agent``.
+
+ManagerWorkers
+~~~~~~~~~~~~~~
+
+A ``ManagerWorkers`` is an ``AgenticComponent`` designed for manager-worker style collaboration among multiple agents.
+It consists of a manager agent that coordinates and assigns tasks to a group of worker agents.
+Agents in ManagerWorkers can be any ``AgenticComponent``.
+The ManagerWorkers component maintains the standard messaging and execution semantics of an ``AgenticComponent``.
+
+.. code-block:: python
+
+  class ManagerWorkers(AgenticComponent):
+    group_manager: AgenticComponent
+    workers: List[AgenticComponent]
+
+The ManagerWorkers has two main parameters:
+
+- ``group_manager``
+  An agentic component (e.g. Agent) that is used as the group manager,
+  responsible for coordinating and assigning tasks to the workers.
+
+- ``workers`` - List of agentic components
+  These agentic components serve as the workers within the group and are coordinated by the group manager.
+
+  - Workers cannot interact with the end user directly.
+  - When invoked, each worker can leverage its equipped tools to complete the assigned task and report the result back to the group manager.
 
 Versioning
 ----------

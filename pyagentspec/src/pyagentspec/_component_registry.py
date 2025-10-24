@@ -43,6 +43,7 @@ from pyagentspec.llms.ociclientconfig import (
     OciClientConfigWithResourcePrincipal,
     OciClientConfigWithSecurityToken,
 )
+from pyagentspec.managerworkers import ManagerWorkers
 from pyagentspec.mcp.clienttransport import (
     ClientTransport,
     RemoteTransport,
@@ -114,4 +115,5 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "ToolNode": ToolNode,
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,
+    "ManagerWorkers": ManagerWorkers,
 }

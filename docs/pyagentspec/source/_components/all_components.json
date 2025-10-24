@@ -240,10 +240,11 @@
         ]
     },
     {
-        "name": "Swarm",
-        "path": "swarm",
+        "name": "Agentic Patterns",
+        "path": "agenticpatterns",
         "classes": [
-            {"path": "pyagentspec.swarm.Swarm"}
+            {"path": "pyagentspec.swarm.Swarm"},
+            {"path": "pyagentspec.managerworkers.ManagerWorkers"}
         ]
     }
 ]

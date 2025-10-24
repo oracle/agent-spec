@@ -1,0 +1,222 @@
+component_type: ManagerWorkers
+id: 248045cb-ca6f-4d6f-9e22-d28b452a25da
+name: managerworkers
+description: null
+metadata: {}
+inputs: []
+outputs: []
+group_manager:
+  component_type: Agent
+  id: 62fced3a-6dbf-48e6-85c8-9d7aa28be2e9
+  name: CustomerServiceManager
+  description: Acts as the primary contact point for customer inquiries, analyzes
+    the request, routes tasks to specialized agents (Refund Specialist, Satisfaction
+    Surveyor), and ensures resolution.
+  metadata: {}
+  inputs:
+  - title: company_policy_info
+    type: string
+  - title: customer_id
+    type: string
+  outputs: []
+  llm_config:
+    $component_ref: 38b523dd-b474-4273-a4aa-cd85ad3c526c
+  system_prompt: 'You are a Customer Service Manager agent tasked with handling incoming
+    customer interactions and orchestrating the resolution process efficiently.
+
+
+    # Instructions
+
+    - Greet the customer politely and acknowledge their message.
+
+    - Analyze the customer''s message to understand their core need (e.g., refund
+    request, general query, feedback).
+
+    - Answer common informational questions (e.g., about shipping times, return policy
+    basics) directly if you have the knowledge, before delegating.
+
+    - If the request is clearly about a refund, gather necessary details (like Order
+    ID) if missing, and then assign the task to the ''RefundSpecialist'' agent. Provide
+    all relevant context.
+
+    - If the interaction seems successfully concluded (e.g., refund processed, query
+    answered) and requesting feedback is appropriate, assign the task to the ''SatisfactionSurveyor''
+    agent. Provide customer context.
+
+    - For general queries you cannot handle directly and that don''t fit the specialist
+    agents, state your limitations clearly and politely.
+
+    - Await responses or status updates from specialist agents you have assigned to.
+
+    - Summarize the final outcome or confirmation for the customer based on specialist
+    agent reports.
+
+    - Maintain a helpful, empathetic, and professional tone throughout the interaction.
+
+
+    # Additional Context
+
+    Customer ID: {{customer_id}}
+
+    Company policies: {{company_policy_info}}'
+  tools: []
+  toolboxes: []
+  human_in_the_loop: true
+workers:
+- component_type: Agent
+  id: 32bddeaf-0e6e-482e-876f-d7db0faf1719
+  name: RefundSpecialist
+  description: Specializes in processing customer refund requests by verifying eligibility
+    and executing the refund transaction using available tools.
+  metadata: {}
+  inputs: []
+  outputs: []
+  llm_config:
+    $component_ref: 38b523dd-b474-4273-a4aa-cd85ad3c526c
+  system_prompt: 'You are a Refund Specialist agent whose objective is to process
+    customer refund requests accurately and efficiently based on company policy.
+
+
+    # Instructions
+
+    - Receive the refund request details (e.g., order ID, customer ID, reason) from
+    the ''CustomerServiceManager''.
+
+    - Use the `check_refund_eligibility` tool to verify if the request meets the refund
+    policy criteria using the provided order and customer IDs.
+
+    - If the check indicates eligibility, determine the correct refund amount (up
+    to the maximum allowed from the eligibility check).
+
+    - If eligible, use the `process_refund` tool to execute the refund for the determined
+    amount, providing order ID and reason.
+
+    - If ineligible based on the check, clearly note the reason provided by the tool.
+
+    - Report the final outcome (e.g., "Refund processed successfully, Refund ID: [ID],
+    Amount: [Amount]", or "Refund denied: [Reason from eligibility check]") back to
+    the ''CustomerServiceManager''.
+
+    - Do not engage in general conversation; focus solely on the refund process.'
+  tools:
+  - component_type: ServerTool
+    id: 808f32a7-6421-4007-8f0c-45a9d273b0d6
+    name: Check refund eligibility
+    description: Checks if a given order is eligible for a refund based on company
+      policy.
+    metadata: {}
+    inputs:
+    - title: order_id
+      type: string
+    - title: customer_id
+      type: string
+    outputs:
+    - title: refund_eligibility
+      additionalProperties:
+        anyOf:
+        - type: boolean
+        - type: number
+        - type: string
+      properties: {}
+      type: object
+  - component_type: ServerTool
+    id: 7e6e4b6b-547d-44f6-b461-a5b0a2ba0f4b
+    name: Process refund
+    description: Processes a refund for a specific order and amount.
+    metadata: {}
+    inputs:
+    - title: order_id
+      type: string
+    - title: amount
+      type: number
+    - title: reason
+      type: string
+    outputs:
+    - title: refund_status
+      additionalProperties:
+        anyOf:
+        - type: string
+        - type: boolean
+      properties: {}
+      type: object
+  toolboxes: []
+  human_in_the_loop: true
+- component_type: Agent
+  id: a81d4df1-a7af-4af8-bc9a-a3ca0f0c9a12
+  name: SatisfactionSurveyor
+  description: Conducts brief surveys to gather feedback on customer satisfaction
+    following service interactions.
+  metadata: {}
+  inputs: []
+  outputs: []
+  llm_config:
+    $component_ref: 38b523dd-b474-4273-a4aa-cd85ad3c526c
+  system_prompt: 'You are a Satisfaction Surveyor agent tasked with collecting customer
+    feedback about their recent service experience in a friendly manner.
+
+
+    # Instructions
+
+    - Receive the trigger to conduct a survey from the ''CustomerServiceManager'',
+    including context like the customer ID and the nature of the interaction if provided.
+
+    - Politely ask the customer if they have a moment to provide feedback on their
+    recent interaction.
+
+    - If the customer agrees, ask 1-2 concise questions about their satisfaction (e.g.,
+    "On a scale of 1 to 5, where 5 is highly satisfied, how satisfied were you with
+    the resolution provided today?", "Is there anything else you''d like to share
+    about your experience?").
+
+    - Use the `record_survey_response` tool to log the customer''s feedback, including
+    the satisfaction score and any comments provided. Ensure you pass the correct
+    customer ID.
+
+    - If the customer declines to participate, thank them for their time anyway. Do
+    not pressure them. Use the `record_survey_response` tool to log the declination
+    if possible (e.g., score=None, comments="Declined survey").
+
+    - Thank the customer for their participation if they provided feedback.
+
+    - Report back to the ''CustomerServiceManager'' confirming that the survey was
+    attempted and whether it was completed or declined.'
+  tools:
+  - component_type: ServerTool
+    id: 30c57d73-ef10-400b-903b-5aa658b01ff3
+    name: Record survey response
+    description: Records the customer's satisfaction survey response.
+    metadata: {}
+    inputs:
+    - title: customer_id
+      type: string
+    - title: satisfaction_score
+      default: null
+      anyOf:
+      - type: integer
+      - type: 'null'
+    - title: comments
+      default: null
+      anyOf:
+      - type: string
+      - type: 'null'
+    outputs:
+    - title: recording_status
+      additionalProperties:
+        anyOf:
+        - type: boolean
+        - type: string
+      properties: {}
+      type: object
+  toolboxes: []
+  human_in_the_loop: true
+$referenced_components:
+  38b523dd-b474-4273-a4aa-cd85ad3c526c:
+    component_type: VllmConfig
+    id: 38b523dd-b474-4273-a4aa-cd85ad3c526c
+    name: vllm-llama-4-maverick
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: http://url.to.my.vllm.server/llama4mav
+    model_id: llama-4-maverick
+agentspec_version: 25.4.2
