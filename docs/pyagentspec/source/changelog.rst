@@ -21,12 +21,17 @@ New features
 * **Swarm**
 
   Introduced Swarm in the Agent Spec Language Specification.
-  For more information check out the corresponding :doc:`swarm how-to guide <howtoguides/howto_swarm>` or read the :doc:`API Reference <api/swarm>`.
+  For more information check out the corresponding :doc:`swarm how-to guide <howtoguides/howto_swarm>` or read the :ref:`API Reference <swarm>`.
 
 * **AgentSpecialization**
 
   Introduced the concept of agent specialization in the Agent Spec Language Specification, which allows to tailor general-purpose :ref:`Agents <agent>` to specific use-cases.
   For more information read the :doc:`API Reference <api/agent_specialization>`.
+
+* **ManagerWorkers**
+
+  Introduced ManagerWorkers in the Agent Spec Language Specification
+  For more information check out the corresponding :doc:`managerworkers how-to guide <howtoguides/howto_managerworkers>` or read the :ref:`API Reference <managerworkers>`.
 
 Agent Spec 25.4.1 — Initial release
 -----------------------------------

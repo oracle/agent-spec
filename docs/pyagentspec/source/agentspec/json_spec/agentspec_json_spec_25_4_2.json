@@ -244,6 +244,16 @@
                 }
             ]
         },
+        "ManagerWorkers": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ComponentReference"
+                },
+                {
+                    "$ref": "#/$defs/BaseManagerWorkers"
+                }
+            ]
+        },
         "MapNode": {
             "anyOf": [
                 {
@@ -908,6 +918,9 @@
                     "$ref": "#/$defs/Flow"
                 },
                 {
+                    "$ref": "#/$defs/ManagerWorkers"
+                },
+                {
                     "$ref": "#/$defs/OciAgent"
                 },
                 {
@@ -1287,6 +1300,9 @@
                 },
                 {
                     "$ref": "#/$defs/MCPToolSpec"
+                },
+                {
+                    "$ref": "#/$defs/ManagerWorkers"
                 },
                 {
                     "$ref": "#/$defs/MapNode"
@@ -2107,10 +2123,10 @@
                             "items": {
                                 "anyOf": [
                                     {
-                                        "type": "string"
+                                        "$ref": "#/$defs/MCPToolSpec"
                                     },
                                     {
-                                        "$ref": "#/$defs/MCPToolSpec"
+                                        "type": "string"
                                     }
                                 ]
                             },
@@ -2215,6 +2231,98 @@
                 "name"
             ],
             "title": "MCPToolSpec",
+            "type": "object",
+            "x-abstract-component": false
+        },
+        "BaseManagerWorkers": {
+            "additionalProperties": false,
+            "description": "Defines a ``ManagerWorkers`` conversational component.\n\nA ``ManagerWorkers`` is a multi-agent conversational component in which a group manager\nassigns tasks to the workers. The group manager and workers can be instantiated from\nany ``AgenticComponent`` type.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.managerworkers import ManagerWorkers\n>>> manager_agent = Agent(\n...     name=\"manager_agent\",\n...     description=\"Agent that manages a group of math agents\",\n...     llm_config=llm_config,\n...     system_prompt=\"You are the manager of a group of math agents\"\n... )\n>>> multiplication_agent = Agent(\n...     name=\"multiplication_agent\",\n...     description=\"Agent that can do multiplication\",\n...     llm_config=llm_config,\n...     system_prompt=\"You can do multiplication.\"\n... )\n>>> division_agent = Agent(\n...     name=\"division_agent\",\n...     description=\"Agent that can do division\",\n...     llm_config=llm_config,\n...     system_prompt=\"You can do division.\"\n... )\n>>> group = ManagerWorkers(\n...     name=\"managerworkers\",\n...     group_manager=manager_agent,\n...     workers=[multiplication_agent, division_agent],\n... )",
+            "properties": {
+                "id": {
+                    "title": "Id",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "description": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Description"
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "title": "Metadata"
+                },
+                "inputs": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/Property"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Inputs"
+                },
+                "outputs": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/Property"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Outputs"
+                },
+                "group_manager": {
+                    "$ref": "#/$defs/AgenticComponent"
+                },
+                "workers": {
+                    "items": {
+                        "$ref": "#/$defs/AgenticComponent"
+                    },
+                    "title": "Workers",
+                    "type": "array"
+                },
+                "$referenced_components": {
+                    "$ref": "#/$defs/ReferencedComponents"
+                },
+                "component_type": {
+                    "const": "ManagerWorkers"
+                }
+            },
+            "required": [
+                "name",
+                "group_manager",
+                "workers"
+            ],
+            "title": "ManagerWorkers",
             "type": "object",
             "x-abstract-component": false
         },
@@ -3959,7 +4067,7 @@
         },
         "BaseSwarm": {
             "additionalProperties": false,
-            "description": "Defines a ``Swarm`` conversational component.\n\nA ``Swarm`` is a multi-agent conversational component in which each agent determines\nthe next agent to be executed, based on a list of pre-defined relationships.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.swarm import Swarm\n>>> addition_agent = Agent(name=\"addition_agent\", description=\"Agent that can do additions\", llm_config=llm_config, system_prompt=\"You can do additions.\")\n>>> multiplication_agent = Agent(name=\"multiplication_agent\", description=\"Agent that can do multiplication\", llm_config=llm_config, system_prompt=\"You can do multiplication.\")\n>>> division_agent = Agent(name=\"division_agent\", description=\"Agent that can do division\", llm_config=llm_config, system_prompt=\"You can do division.\")\n>>>\n>>> swarm = Swarm(\n...     name=\"swarm\",\n...     first_agent=addition_agent,\n...     relationships=[\n...         (addition_agent, multiplication_agent),\n...         (addition_agent, division_agent),\n...         (multiplication_agent, division_agent),\n...     ]\n... )",
+            "description": "Defines a ``Swarm`` conversational component.\n\nA ``Swarm`` is a multi-agent conversational component in which each agent determines\nthe next agent to be executed, based on a list of pre-defined relationships.\nAgents in Swarm can be any ``AgenticComponent``.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.swarm import Swarm\n>>> addition_agent = Agent(name=\"addition_agent\", description=\"Agent that can do additions\", llm_config=llm_config, system_prompt=\"You can do additions.\")\n>>> multiplication_agent = Agent(name=\"multiplication_agent\", description=\"Agent that can do multiplication\", llm_config=llm_config, system_prompt=\"You can do multiplication.\")\n>>> division_agent = Agent(name=\"division_agent\", description=\"Agent that can do division\", llm_config=llm_config, system_prompt=\"You can do division.\")\n>>>\n>>> swarm = Swarm(\n...     name=\"swarm\",\n...     first_agent=addition_agent,\n...     relationships=[\n...         (addition_agent, multiplication_agent),\n...         (addition_agent, division_agent),\n...         (multiplication_agent, division_agent),\n...     ]\n... )",
             "properties": {
                 "id": {
                     "title": "Id",
@@ -4024,7 +4132,7 @@
                     "title": "Outputs"
                 },
                 "first_agent": {
-                    "$ref": "#/$defs/Agent"
+                    "$ref": "#/$defs/AgenticComponent"
                 },
                 "relationships": {
                     "items": {
@@ -4032,10 +4140,10 @@
                         "minItems": 2,
                         "prefixItems": [
                             {
-                                "$ref": "#/$defs/Agent"
+                                "$ref": "#/$defs/AgenticComponent"
                             },
                             {
-                                "$ref": "#/$defs/Agent"
+                                "$ref": "#/$defs/AgenticComponent"
                             }
                         ],
                         "type": "array"
@@ -4057,7 +4165,8 @@
             },
             "required": [
                 "name",
-                "first_agent"
+                "first_agent",
+                "relationships"
             ],
             "title": "Swarm",
             "type": "object",
@@ -4313,6 +4422,9 @@
                     },
                     {
                         "$ref": "#/$defs/BaseMCPToolSpec"
+                    },
+                    {
+                        "$ref": "#/$defs/BaseManagerWorkers"
                     },
                     {
                         "$ref": "#/$defs/BaseMapNode"
@@ -4830,6 +4942,26 @@
                 },
                 {
                     "$ref": "#/$defs/BaseMCPToolSpec"
+                }
+            ],
+            "properties": {
+                "agentspec_version": {
+                    "enum": [
+                        "25.4.2",
+                        "25.4.1"
+                    ],
+                    "title": "AgentSpecVersionEnum",
+                    "type": "string"
+                }
+            }
+        },
+        "VersionedManagerWorkers": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ComponentReference"
+                },
+                {
+                    "$ref": "#/$defs/BaseManagerWorkers"
                 }
             ],
             "properties": {
@@ -5508,6 +5640,9 @@
         },
         {
             "$ref": "#/$defs/VersionedMCPToolSpec"
+        },
+        {
+            "$ref": "#/$defs/VersionedManagerWorkers"
         },
         {
             "$ref": "#/$defs/VersionedMapNode"
