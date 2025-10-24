@@ -16,7 +16,7 @@ from pyagentspec.component import Component
 class SessionParameters(BaseModel):
     """Class to specify parameters of the MCP client session."""
 
-    read_timeout_seconds: float = 60
+    read_timeout_seconds: float = 60.0
     """How long, in seconds, to wait for a network read before
     aborting the operation."""
 
