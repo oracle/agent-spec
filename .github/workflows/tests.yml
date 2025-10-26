@@ -1,0 +1,79 @@
+name: PyAgentSpec Tests and Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  checks-and-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/setup.py', '**/requirements*.txt', '**/constraints/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Run install-all-dev script
+        run: bash install-all-dev.sh
+
+      # Static Checks Stage
+      - name: Run black formatting check on pyagentspec
+        run: black --config pyagentspec/pyproject.toml --check pyagentspec/
+
+      - name: Run black formatting check on adapters
+        run: black --config pyagentspec/pyproject.toml --check adapters/
+
+      - name: Run isort import sorting check on pyagentspec
+        run: isort --settings-path pyagentspec/pyproject.toml --check-only pyagentspec/
+
+      - name: Run isort import sorting check on adapters
+        run: isort --settings-path pyagentspec/pyproject.toml --check-only adapters/
+
+      - name: Run flake8 linter checks on pyagentspec
+        run: flake8 --select C801 pyagentspec/
+
+      - name: Run flake8 linter checks on adapters
+        run: flake8 --select C801 adapters/
+
+      - name: Run flake8 copyright checks on pyagentspec
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \(C\) [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." pyagentspec/
+
+      - name: Run flake8 copyright checks on adapters
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \(C\) [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." adapters/
+
+      - name: Run bandit security checks on pyagentspec
+        run: bandit -c bandit.yaml -r pyagentspec/
+
+      - name: Run bandit security checks on adapters
+        run: bandit -c bandit.yaml -r adapters/
+
+      - name: Run mypy type checking on pyagentspec
+        run: mypy pyagentspec/
+
+      - name: Run mypy type checking on adapters
+        run: mypy adapters/
+
+      # Tests Stage
+      - name: Run pyagentspec tests
+        run: sh pyagentspec/tests/run_tests.sh
+
+      - name: Run langgraphagentspecadapter tests
+        run: sh adapters/langgraphagentspecadapter/tests/run_tests.sh
+
+      - name: Run autogenagentspecadapter tests
+        run: sh adapters/autogenagentspecadapter/tests/run_tests.sh
