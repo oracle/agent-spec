@@ -1653,7 +1653,9 @@ Versioning
 
 Every Agent Spec configuration should include a property called ``agentspec_version`` at the top level.
 The value of ``agentspec_version`` specifies the Agent Spec specification version the configuration is
-written for.
+written for. When this field is missing from the configuration, the latest (current) Agent Spec version
+is used instead.
+
 For example, the JSON serialized version of an Agent should look like the following:
 
 .. code-block:: json

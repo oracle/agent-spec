@@ -457,11 +457,12 @@ class _DeserializationContextImpl(DeserializationContext):
             and _LEGACY_VERSION_FIELD_NAME not in content
         ):
             warnings.warn(
-                "Missing `agentspec_version` field at the top level of the configuration\n"
-                "Leaving this unset may cause the configuration to fail in newer versions",
+                "Missing `agentspec_version` field at the top level of the configuration. "
+                f"The current Agent Spec version {AgentSpecVersionEnum.current_version} will be used.\n"
+                "Note that leaving this unset may cause the configuration to fail in newer versions.",
                 UserWarning,
             )
-            self._agentspec_version = Component.model_fields["min_agentspec_version"].default
+            self._agentspec_version = AgentSpecVersionEnum.current_version
         else:
             self._agentspec_version = AgentSpecVersionEnum(
                 value=content.get(
