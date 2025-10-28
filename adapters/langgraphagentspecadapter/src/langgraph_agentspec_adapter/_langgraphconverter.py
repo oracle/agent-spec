@@ -91,7 +91,6 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
 
     return mapping.get(json_schema["type"], "Any")
 
-
 class AgentSpecToLangGraphConverter:
     def convert(
         self,
@@ -339,7 +338,7 @@ class AgentSpecToLangGraphConverter:
         from langgraph_agentspec_adapter._utils import StartNodeExecutor
 
         return StartNodeExecutor(start_node)
-
+    
     def _remote_tool_convert_to_langgraph(
         self,
         remote_tool: AgentSpecRemoteTool,
@@ -362,28 +361,60 @@ class AgentSpecToLangGraphConverter:
             )
             return response.json()
 
-        args_schema = {}
-        for i in remote_tool.inputs or []:
-            args_schema[i.title] = i.json_schema
+        # Use a Pydantic model for args_schema
+        args_model = _create_pydantic_model_from_properties(
+            f"{remote_tool.name}Args",
+            remote_tool.inputs or [],
+        )
 
         structured_tool = StructuredTool(
             name=remote_tool.name,
             description=remote_tool.description or "",
-            args_schema=args_schema,
+            args_schema=args_model,
             func=_remote_tool,
         )
         return structured_tool
-
+    
     def _server_tool_convert_to_langgraph(
-        self, agentspec_server_tool: AgentSpecServerTool, tool_registry: Dict[str, LangGraphTool]
+        self,
+        agentspec_server_tool: AgentSpecServerTool,
+        tool_registry: Dict[str, LangGraphTool],
     ) -> LangGraphTool:
+        # Ensure the tool exists in the registry
         if agentspec_server_tool.name not in tool_registry:
             raise ValueError(
-                f"The Agent Spec representation includes a tool '{agentspec_server_tool.name}' but this"
-                f" tool does not appear in the tool registry"
+                f"The Agent Spec representation includes a tool '{agentspec_server_tool.name}' "
+                f"but this tool does not appear in the tool registry"
             )
-        return tool_registry[agentspec_server_tool.name]
 
+        tool_obj = tool_registry[agentspec_server_tool.name]
+
+        # If it’s already a LangChain tool (StructuredTool or compatible), return as-is
+        if isinstance(tool_obj, StructuredTool):
+            return tool_obj
+
+        # If it's a plain callable, wrap it with a Pydantic args schema
+        if callable(tool_obj):
+            # Use a Pydantic model (not a dict) for args_schema
+            args_model = _create_pydantic_model_from_properties(
+                f"{agentspec_server_tool.name}Args",
+                agentspec_server_tool.inputs or [],
+            )
+            description = agentspec_server_tool.description or ""
+            wrapped = StructuredTool(
+                name=agentspec_server_tool.name,
+                description=description,
+                args_schema=args_model,  # model class, not a dict
+                func=tool_obj,
+            )
+            return wrapped
+
+        # Otherwise unsupported tool type
+        raise TypeError(
+            f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
+            "Expected a callable or a StructuredTool."
+        )
+    
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
     ) -> LangGraphTool:
@@ -400,14 +431,16 @@ class AgentSpecToLangGraphConverter:
             response = interrupt(tool_request)
             return response
 
-        args_schema = {}
-        for i in agentspec_client_tool.inputs or []:
-            args_schema[i.title] = i.json_schema
+        # Use a Pydantic model for args_schema
+        args_model = _create_pydantic_model_from_properties(
+            f"{agentspec_client_tool.name}Args",
+            agentspec_client_tool.inputs or [],
+        )
 
         structured_tool = StructuredTool(
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
-            args_schema=args_schema,
+            args_schema=args_model,
             func=client_tool,
         )
         return structured_tool
