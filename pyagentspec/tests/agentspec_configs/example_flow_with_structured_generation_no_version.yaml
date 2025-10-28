@@ -1,0 +1,319 @@
+$referenced_components:
+  08c03afc-05a0-4912-a384-68da6022cb79:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: 4af8d991-3498-4588-bc50-02b719da36ea
+    id: 08c03afc-05a0-4912-a384-68da6022cb79
+    metadata: {}
+    name: is_code_ready_decision_to_is_code_ready_branching_control_edge
+    to_node:
+      $component_ref: f7713311-8219-483a-bced-601dba820ce5
+  0b7b0fcf-d94b-4cd0-a9cc-121a27c64970:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    id: 0b7b0fcf-d94b-4cd0-a9cc-121a27c64970
+    metadata: {}
+    name: generate_code_to_review_control_edge
+    to_node:
+      $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+  0d128d9d-e6bb-4e83-9ed8-18a335a1362b:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: 'no'
+    from_node:
+      $component_ref: f7713311-8219-483a-bced-601dba820ce5
+    id: 0d128d9d-e6bb-4e83-9ed8-18a335a1362b
+    metadata: {}
+    name: is_code_ready_branching_to_generate_code_control_edge
+    to_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+  1c5ebb4b-f72a-4b88-bfb5-b7603b95d140:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: review
+    destination_node:
+      $component_ref: 4af8d991-3498-4588-bc50-02b719da36ea
+    id: 1c5ebb4b-f72a-4b88-bfb5-b7603b95d140
+    metadata: {}
+    name: review_code_to_is_code_ready_review_data_edge
+    source_node:
+      $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+    source_output: review
+  21af1d22-b605-41f4-995c-749357e41845:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: is_code_ready
+    destination_node:
+      $component_ref: f7713311-8219-483a-bced-601dba820ce5
+    id: 21af1d22-b605-41f4-995c-749357e41845
+    metadata: {}
+    name: review_code_to_is_code_ready_flag_data_edge
+    source_node:
+      $component_ref: 4af8d991-3498-4588-bc50-02b719da36ea
+    source_output: is_code_ready
+  404edba4-a285-4b27-ae76-0b3c18463acd:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: code
+    destination_node:
+      $component_ref: fa3a6298-cf04-41dc-84c7-713e3cc257d6
+    id: 404edba4-a285-4b27-ae76-0b3c18463acd
+    metadata: {}
+    name: generate_code_to_end_code_data_edge
+    source_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    source_output: code
+  45df2aa4-3e0a-45a5-aa88-5d19ef8a749c:
+    branches:
+      - next
+    component_type: LlmNode
+    description: null
+    id: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    inputs:
+      - title: user_request
+        type: string
+      - default: ''
+        title: code
+        type: string
+      - default: ''
+        title: review
+        type: string
+    llm_config:
+      $component_ref: d6de2132-469e-49af-8f68-515839474472
+    metadata: {}
+    name: Generate code node
+    outputs:
+      - default: ''
+        title: code
+        type: string
+    prompt_template: "You are a great code python software engineer.\n\n    Please\
+      \ write the python code to satisfy the following user request: \"{{user_request}}\"\
+      .\n\n    You previously generated the following snippet of code:\n    ```\n\
+      \    {{code}}\n    ```\n    Take inspiration from the snippet of code.\n\n \
+      \   The code reviewer gave the following feedback:\n    {{review}}\n    Take\
+      \ also into account the comments in the review\n\n    Write only the python\
+      \ code.\n    "
+  47c515cb-47cf-47a4-b737-13cd851e4541:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: ff35218d-bff3-49a7-82ba-e51bf80d68c2
+    id: 47c515cb-47cf-47a4-b737-13cd851e4541
+    metadata: {}
+    name: start_to_generate_code_control_edge
+    to_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+  4af8d991-3498-4588-bc50-02b719da36ea:
+    branches:
+      - next
+    component_type: LlmNode
+    description: null
+    id: 4af8d991-3498-4588-bc50-02b719da36ea
+    inputs:
+      - default: ''
+        title: review
+        type: string
+    llm_config:
+      $component_ref: d6de2132-469e-49af-8f68-515839474472
+    metadata: {}
+    name: Check if code is ready node
+    outputs:
+      - default: false
+        title: is_code_ready
+        type: boolean
+    prompt_template: "You are a software engineer with 20 years of experience. You\
+      \ have to take a decision.\n    Based on the following code review, do you think\
+      \ that the code is ready to be deployed?\n    ```\n    {{review}}\n    ```\n\
+      \    Please answer only with `yes` or `no`.\n    "
+  4e378613-0731-4bd2-9734-c3ef288d8ffb:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: review
+    destination_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    id: 4e378613-0731-4bd2-9734-c3ef288d8ffb
+    metadata: {}
+    name: review_code_to_generate_code_review_data_edge
+    source_node:
+      $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+    source_output: review
+  62f015ff-7421-447b-aa38-80c5fe20dad3:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+    id: 62f015ff-7421-447b-aa38-80c5fe20dad3
+    metadata: {}
+    name: review_to_is_code_ready_decision_control_edge
+    to_node:
+      $component_ref: 4af8d991-3498-4588-bc50-02b719da36ea
+  931df8b7-db1d-4306-b40a-f90c7c9b908e:
+    branches:
+      - next
+    component_type: LlmNode
+    description: null
+    id: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+    inputs:
+      - default: ''
+        title: code
+        type: string
+    llm_config:
+      $component_ref: d6de2132-469e-49af-8f68-515839474472
+    metadata: {}
+    name: Review code node
+    outputs:
+      - default: ''
+        title: review
+        type: string
+    prompt_template: "You are a great code python software engineer, and a highly\
+      \ skilled code reviewer.\n    Please review the following snippet of python\
+      \ code:\n    ```\n    {{code}}\n    ```\n    "
+  a1dafe83-de23-4cca-bbd5-6ebdbaf3c2ab:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: code
+    destination_node:
+      $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+    id: a1dafe83-de23-4cca-bbd5-6ebdbaf3c2ab
+    metadata: {}
+    name: generate_code_to_review_code_data_edge
+    source_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    source_output: code
+  b67e41cb-e78f-404e-9f87-752ec8ab8135:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: 'yes'
+    from_node:
+      $component_ref: f7713311-8219-483a-bced-601dba820ce5
+    id: b67e41cb-e78f-404e-9f87-752ec8ab8135
+    metadata: {}
+    name: is_code_ready_branching_to_end_control_edge
+    to_node:
+      $component_ref: fa3a6298-cf04-41dc-84c7-713e3cc257d6
+  b80aa289-3af4-4f07-90e2-0947d0e23933:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: user_request
+    destination_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    id: b80aa289-3af4-4f07-90e2-0947d0e23933
+    metadata: {}
+    name: start_to_generate_code_user_request_data_edge
+    source_node:
+      $component_ref: ff35218d-bff3-49a7-82ba-e51bf80d68c2
+    source_output: user_request
+  b8b36e92-3b5c-47bf-a1c5-4cc52d8023f4:
+    component_type: DataFlowEdge
+    description: null
+    destination_input: code
+    destination_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    id: b8b36e92-3b5c-47bf-a1c5-4cc52d8023f4
+    metadata: {}
+    name: generate_code_to_generate_code_code_data_edge
+    source_node:
+      $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+    source_output: code
+  d6de2132-469e-49af-8f68-515839474472:
+    component_type: VllmConfig
+    default_generation_parameters: null
+    description: null
+    id: d6de2132-469e-49af-8f68-515839474472
+    metadata: {}
+    model_id: model_id
+    name: llama-3.3-70b-instruct
+    url: http://url.to.model
+  f7713311-8219-483a-bced-601dba820ce5:
+    branches:
+      - default
+      - 'no'
+      - 'yes'
+    component_type: BranchingNode
+    description: null
+    id: f7713311-8219-483a-bced-601dba820ce5
+    inputs:
+      - default: false
+        title: is_code_ready
+        type: boolean
+    mapping:
+      'no': 'no'
+      'yes': 'yes'
+    metadata: {}
+    name: Is code ready branching node
+    outputs: []
+  fa3a6298-cf04-41dc-84c7-713e3cc257d6:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: fa3a6298-cf04-41dc-84c7-713e3cc257d6
+    inputs:
+      - default: ''
+        title: code
+        type: string
+    metadata: {}
+    name: End node
+    outputs:
+      - default: ''
+        title: code
+        type: string
+  ff35218d-bff3-49a7-82ba-e51bf80d68c2:
+    branches:
+      - next
+    component_type: StartNode
+    description: null
+    id: ff35218d-bff3-49a7-82ba-e51bf80d68c2
+    inputs:
+      - title: user_request
+        type: string
+    metadata: {}
+    name: Start node
+    outputs:
+      - title: user_request
+        type: string
+component_type: Flow
+control_flow_connections:
+  - $component_ref: 47c515cb-47cf-47a4-b737-13cd851e4541
+  - $component_ref: 0b7b0fcf-d94b-4cd0-a9cc-121a27c64970
+  - $component_ref: 62f015ff-7421-447b-aa38-80c5fe20dad3
+  - $component_ref: 08c03afc-05a0-4912-a384-68da6022cb79
+  - $component_ref: b67e41cb-e78f-404e-9f87-752ec8ab8135
+  - $component_ref: 0d128d9d-e6bb-4e83-9ed8-18a335a1362b
+data_flow_connections:
+  - $component_ref: b80aa289-3af4-4f07-90e2-0947d0e23933
+  - $component_ref: 404edba4-a285-4b27-ae76-0b3c18463acd
+  - $component_ref: b8b36e92-3b5c-47bf-a1c5-4cc52d8023f4
+  - $component_ref: a1dafe83-de23-4cca-bbd5-6ebdbaf3c2ab
+  - $component_ref: 4e378613-0731-4bd2-9734-c3ef288d8ffb
+  - $component_ref: 1c5ebb4b-f72a-4b88-bfb5-b7603b95d140
+  - $component_ref: 21af1d22-b605-41f4-995c-749357e41845
+description: Flow that given a user request, generates a python code snippet to satisfy
+  it and passes it through a code review before returning it
+id: 73bb8383-f071-4379-9e40-aba52c75e377
+inputs:
+  - title: user_request
+    type: string
+metadata: {}
+name: Generate code and review flow
+nodes:
+  - $component_ref: ff35218d-bff3-49a7-82ba-e51bf80d68c2
+  - $component_ref: 45df2aa4-3e0a-45a5-aa88-5d19ef8a749c
+  - $component_ref: 931df8b7-db1d-4306-b40a-f90c7c9b908e
+  - $component_ref: 4af8d991-3498-4588-bc50-02b719da36ea
+  - $component_ref: f7713311-8219-483a-bced-601dba820ce5
+  - $component_ref: fa3a6298-cf04-41dc-84c7-713e3cc257d6
+outputs:
+  - default: ''
+    title: code
+    type: string
+start_node:
+  $component_ref: ff35218d-bff3-49a7-82ba-e51bf80d68c2
+state: []

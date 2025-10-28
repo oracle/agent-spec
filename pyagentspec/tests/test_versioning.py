@@ -27,6 +27,7 @@ from pyagentspec.versioning import (
     _version_lt,
 )
 
+from .conftest import read_agentspec_config_file
 from .serialization.conftest import simplest_flow  # noqa: F401
 
 
@@ -385,3 +386,19 @@ def test_legacy_version_spec_can_be_loaded_and_warns(simplest_flow: Flow) -> Non
     with pytest.warns(UserWarning, match="Using a pre-release `agentspec_version`"):
         deserialized_flow = AgentSpecDeserializer().from_dict(serialized_flow)
     assert deserialized_flow == simplest_flow
+
+
+def test_flow_config_with_structured_generation_no_version_loads() -> None:
+    # fixing failure from f8452bd8
+    CONFIG_NAME = "example_flow_with_structured_generation_no_version.yaml"
+    serialized_flow = read_agentspec_config_file(CONFIG_NAME)
+
+    with pytest.warns(
+        UserWarning,
+        match=(
+            "Missing `agentspec_version` field.*The current Agent Spec "
+            f"version {AgentSpecVersionEnum.current_version} will be used"
+        ),
+    ):
+        flow = AgentSpecDeserializer().from_yaml(serialized_flow)
+        assert flow.min_agentspec_version == AgentSpecVersionEnum.current_version
