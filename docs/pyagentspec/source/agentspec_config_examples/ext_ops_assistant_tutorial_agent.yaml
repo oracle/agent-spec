@@ -1,0 +1,120 @@
+component_type: Agent
+id: 9c50a8f1-0035-4258-8a93-c7ad7ba7874b
+name: Operation_Assistant_Agent
+description: Agent equipped with tools to assist with operation incidents
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: OpenAiConfig
+  id: 2e54e613-3171-4a6c-a74f-d5987b5c08be
+  name: openai-llm
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  model_id: model-id
+system_prompt: "You are an LLM-based operations assistant. You have four tools available:\n\
+  read_jira_ticket, read_runbook, get_alarm_status, read_logs\n\nDefault investigation\
+  \ flow (starting with a Jira ID)\n1) Retrieve ticket\n    - Call read_jira_ticket(jira_issue_id).\n\
+  \    - If the ticket is \u201Cnot found,\u201D ask the user to confirm the ID.\n\
+  \n2) Load runbook\n    - If \u201CSuggested runbook\u201D is present, call read_runbook(runbook_name).\n\
+  \    - Extract key steps and validation criteria.\n\n3) Verify alarm status\n  \
+  \  - If alarm_id and region are known, call get_alarm_status(region, alarm_id).\n\
+  \    - Record \u201Cfiring\u201D vs \u201Cnot firing\u201D as part of the state.\n\
+  \n4) Inspect logs\n    - Determine sensible parameters from the ticket, call read_logs\
+  \ with those fields.\n    - If logs return \u201CNo logs matched,\u201D consider\
+  \ adjusting the fields.\n    - Summarize key patterns, errors, and timestamps from\
+  \ logs.\n\n5) Form a hypothesis and recommended actions\n    - Synthesize alarm\
+  \ status, logs, runbook guidance, and notes from the ticket.\n    - Provide a clear,\
+  \ probable cause hypothesis with confidence qualifiers.\n    - Recommend next steps\
+  \ aligned to the runbook.\n\n6) Report results in a structured format\nUse this\
+  \ output template:\n- Incident: <jira_issue_id>\n- Summary: <one-liner from Jira\
+  \ or your concise rewrite>\n- Scope: Project=<project>, Fleet=<fleet>, Compartment=<compartment>,\
+  \ Region=<region>\n- Time window: <start_ts> to <end_ts> (from ticket or adjusted)\n\
+  - Alarm: <alarm_id> \u2014 Status: <firing|not firing|unknown>\n- Evidence:\n- Ticket\
+  \ highlights: <key notes, deployments, flags>\n- Logs (top 3-6 lines or patterns):\
+  \ <short bullets with timestamps and error types>\n- Runbook: <name> \u2014 Key\
+  \ steps considered: <bulleted list of most relevant steps>\n- Hypothesis: <probable\
+  \ cause and rationale>\n- Recommended actions: <ordered list; include rollback/failover/tuning/monitoring>\n\
+  - Validation: <what success looks like (e.g., P95 < threshold for X min)>\n- Open\
+  \ questions/next checks: <only if needed>\n- Artifacts: <any identifiers: deployment\
+  \ IDs, feature flags, trace IDs seen in logs>"
+tools:
+- component_type: ServerTool
+  id: 8b3535ea-53ca-4cf8-b626-19a7ee83ddeb
+  name: read_jira_ticket
+  description: Return a plain-text summary of the Jira incident.
+  metadata: {}
+  inputs:
+  - description: The Jira issue key, e.g., "INC-12345"
+    title: jira_issue_id
+    type: string
+  outputs:
+  - description: A human-readable incident summary including scope, runbook, and time
+      window.
+    title: incident_summary
+    type: string
+- component_type: ServerTool
+  id: cb1b8d22-6905-4cf1-a4ea-68348e6b824d
+  name: read_logs
+  description: Return log lines for the given filters as a single plain string.
+  metadata: {}
+  inputs:
+  - description: Host or group selector (e.g., 'asg:payments-api-*', 'host:inventory-svc-3')
+    title: from_machine
+    type: string
+  - description: Owning project (e.g., 'payments', 'inventory')
+    title: from_project
+    type: string
+  - description: Service/fleet name
+    title: from_fleet
+    type: string
+  - description: Environment/compartment (e.g., 'prod')
+    title: from_compartment
+    type: string
+  - description: Cloud region
+    title: from_region
+    type: string
+  - description: Minimum log level (string)
+    title: log_level
+    type: string
+  - description: ISO8601 start timestamp
+    title: start_ts
+    type: string
+  - description: ISO8601 end timestamp
+    title: end_ts
+    type: string
+  outputs:
+  - description: Concatenated log lines or a friendly 'no logs' message.
+    title: log_lines
+    type: string
+- component_type: ServerTool
+  id: be920342-ffa1-408f-9131-f156340f4eab
+  name: read_runbook
+  description: Return the markdown content of a runbook by name.
+  metadata: {}
+  inputs:
+  - description: The canonical runbook name.
+    title: runbook_name
+    type: string
+  outputs:
+  - description: Markdown content of the runbook.
+    title: runbook_markdown
+    type: string
+- component_type: ServerTool
+  id: f117c570-f325-46ea-93ff-c10eb38944e0
+  name: get_alarm_status
+  description: 'Return the current status of an alarm: ''firing'' or ''not firing''.'
+  metadata: {}
+  inputs:
+  - description: Cloud region (e.g., 'us-west-1', 'eu-frankfurt-1')
+    title: region
+    type: string
+  - description: Alarm identifier (e.g., 'cw:payments-latency-high')
+    title: alarm_id
+    type: string
+  outputs:
+  - description: '''firing'' or ''not firing'''
+    title: alarm_status
+    type: string
+agentspec_version: 25.4.1
