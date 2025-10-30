@@ -1,0 +1,22 @@
+{
+    "component_type": "OciAgent",
+    "id": "0a1817a0-2ed0-4fed-9c7b-87b5547d35e4",
+    "name": "oci_agent",
+    "description": null,
+    "metadata": {},
+    "inputs": [],
+    "outputs": [],
+    "agent_endpoint_id": "AGENT_ENDPOINT",
+    "client_config": {
+        "component_type": "OciClientConfigWithApiKey",
+        "id": "b7eb33c7-fecb-4f28-85bc-2d85f8baca5f",
+        "name": "oci_client_config",
+        "description": null,
+        "metadata": {},
+        "service_endpoint": "https://inference.generativeai.<oci region>.oci.oraclecloud.com",
+        "auth_type": "API_KEY",
+        "auth_profile": "DEFAULT",
+        "auth_file_location": "~/.oci/config"
+    },
+    "agentspec_version": "25.4.1"
+}

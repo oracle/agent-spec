@@ -34,6 +34,33 @@ Once these are in place, you can create your agent in a few lines:
 Note that the ``OciAgent`` is an extension of ``RemoteAgent`` in Agent Spec, which is considered an ``AgenticComponent``.
 It follows that OCI agents can be used in ``AgentNodes`` inside Agent Spec flows.
 
+Agent Spec Serialization
+========================
+
+You can export the agent configuration using :ref:`AgentSpecSerializer <serialize>`.
+
+.. literalinclude:: ../code_examples/howto_ociagent.py
+    :language: python
+    :start-after: .. start-##_Export_serialization
+    :end-before: .. end-##_Export_serialization
+
+Here is what the **Agent Spec representation will look like ↓**
+
+.. collapse:: Click here to see the assistant configuration.
+
+   .. tabs::
+
+      .. tab:: JSON
+
+         .. literalinclude:: ../agentspec_config_examples/howto_ociagent.json
+            :language: json
+
+      .. tab:: YAML
+
+         .. literalinclude:: ../agentspec_config_examples/howto_ociagent.yaml
+            :language: yaml
+
+
 Recap
 =====
 
@@ -50,5 +77,5 @@ This how-to guide covered how to define an OCI Generative AI Agent in Agent Spec
 Next steps
 ==========
 
-Now that you have learned how to use OCI agents in `WayFlow <https://github.com/oracle/wayflow>`_,
+Now that you have learned how to use OCI agents in Agent Spec,
 you may proceed to :doc:`How to Use Agents in Flows <howto_orchestrator_agent>`.

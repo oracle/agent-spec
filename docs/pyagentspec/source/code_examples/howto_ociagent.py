@@ -30,3 +30,11 @@ agent = OciAgent(
     client_config=oci_config,
 )
 # .. end-##_Creating_the_agent
+
+# .. start-##_Export_serialization
+from pyagentspec.serialization import AgentSpecSerializer
+
+serialized_agent = AgentSpecSerializer().to_json(agent)
+
+print(serialized_agent)
+# .. end-##_Export_serialization

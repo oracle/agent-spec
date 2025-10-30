@@ -246,5 +246,13 @@
             {"path": "pyagentspec.swarm.Swarm"},
             {"path": "pyagentspec.managerworkers.ManagerWorkers"}
         ]
+    },
+    {
+        "name": "Agent Specialization",
+        "path": "agent_specialization",
+        "classes": [
+            {"path": "pyagentspec.specialized_agent.SpecializedAgent"},
+            {"path": "pyagentspec.specialized_agent.AgentSpecializationParameters"}
+        ]
     }
 ]

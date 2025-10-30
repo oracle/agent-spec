@@ -73,7 +73,7 @@ class ManagerWorkers(AgenticComponent):
 
     @model_validator_with_error_accumulation
     def _validate_group_manager_is_not_included_as_a_worker(self) -> Self:
-        if self.group_manager in self.workers:
+        if any(self.group_manager is agent for agent in self.workers):
             raise ValueError("Group manager cannot be a worker.")
         return self
 
