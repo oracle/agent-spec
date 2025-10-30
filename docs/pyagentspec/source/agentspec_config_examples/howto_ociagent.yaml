@@ -1,0 +1,19 @@
+component_type: OciAgent
+id: 905c6f9a-3786-475c-83ac-a438563f0b86
+name: oci_agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+agent_endpoint_id: AGENT_ENDPOINT
+client_config:
+  component_type: OciClientConfigWithApiKey
+  id: 2b24375c-cedc-46fc-bb4b-af2944a5f83a
+  name: oci_client_config
+  description: null
+  metadata: {}
+  service_endpoint: https://inference.generativeai.<oci region>.oci.oraclecloud.com
+  auth_type: API_KEY
+  auth_profile: DEFAULT
+  auth_file_location: ~/.oci/config
+agentspec_version: 25.4.1
