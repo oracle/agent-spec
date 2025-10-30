@@ -1568,6 +1568,18 @@ A more detailed description of each node follows.
       - No outputs
       - One, the default next
 
+A2AAgent
+~~~~~~~~
+
+``A2AAgent`` is an implementation of ``AgenticComponent`` which uses the A2A protocol to communicate with a remote server agent. It handles all necessary data transformation and communication logic to and from the server agent.
+
+.. code-block:: python
+
+  class A2AAgent(AgenticComponent):
+    agent_url: str
+
+`agent_url` specifies the server agent's URL used for establishing a connection.
+
 RemoteAgent
 ~~~~~~~~~~~
 
