@@ -19,7 +19,8 @@
         "path": "remoteagent",
         "classes": [
             {"path": "pyagentspec.remoteagent.RemoteAgent"},
-            {"path": "pyagentspec.ociagent.OciAgent"}
+            {"path": "pyagentspec.ociagent.OciAgent"},
+            {"path": "pyagentspec.a2aagent.A2AAgent"}
         ]
     },
     {

@@ -1,0 +1,9 @@
+component_type: A2AAgent
+id: f48c79a1-ca6e-4281-b1b0-c8e602ec50e9
+name: Test A2A Agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+agent_url: <IP ADDRESS>
+agentspec_version: 25.4.2

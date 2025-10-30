@@ -1,5 +1,15 @@
 {
     "$defs": {
+        "A2AAgent": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ComponentReference"
+                },
+                {
+                    "$ref": "#/$defs/BaseA2AAgent"
+                }
+            ]
+        },
         "Agent": {
             "anyOf": [
                 {
@@ -591,6 +601,91 @@
                 }
             ]
         },
+        "BaseA2AAgent": {
+            "additionalProperties": false,
+            "description": "Component which communicates with a remote server agent using the A2A Protocol.",
+            "properties": {
+                "id": {
+                    "title": "Id",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "description": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Description"
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "title": "Metadata"
+                },
+                "inputs": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/Property"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Inputs"
+                },
+                "outputs": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/Property"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Outputs"
+                },
+                "agent_url": {
+                    "title": "Agent Url",
+                    "type": "string"
+                },
+                "$referenced_components": {
+                    "$ref": "#/$defs/ReferencedComponents"
+                },
+                "component_type": {
+                    "const": "A2AAgent"
+                }
+            },
+            "required": [
+                "name",
+                "agent_url"
+            ],
+            "title": "A2AAgent",
+            "type": "object",
+            "x-abstract-component": false
+        },
         "BaseAgent": {
             "additionalProperties": false,
             "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nIt can be executed by itself, or be executed in a flow using an AgentNode.\n\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.property import Property\n>>> expertise_property=Property(\n...     json_schema={\"title\": \"domain_of_expertise\", \"type\": \"string\"}\n... )\n>>> system_prompt = '''You are an expert in {{domain_of_expertise}}.\n... Please help the users with their requests.'''\n>>> agent = Agent(\n...     name=\"Adaptive expert agent\",\n...     system_prompt=system_prompt,\n...     llm_config=llm_config,\n...     inputs=[expertise_property],\n... )",
@@ -911,6 +1006,9 @@
         },
         "BaseAgenticComponent": {
             "anyOf": [
+                {
+                    "$ref": "#/$defs/A2AAgent"
+                },
                 {
                     "$ref": "#/$defs/Agent"
                 },
@@ -1259,6 +1357,9 @@
         },
         "BaseComponentWithIO": {
             "anyOf": [
+                {
+                    "$ref": "#/$defs/A2AAgent"
+                },
                 {
                     "$ref": "#/$defs/Agent"
                 },
@@ -3243,6 +3344,9 @@
         "BaseRemoteAgent": {
             "anyOf": [
                 {
+                    "$ref": "#/$defs/A2AAgent"
+                },
+                {
                     "$ref": "#/$defs/OciAgent"
                 }
             ],
@@ -4364,6 +4468,9 @@
             "additionalProperties": {
                 "anyOf": [
                     {
+                        "$ref": "#/$defs/BaseA2AAgent"
+                    },
+                    {
                         "$ref": "#/$defs/BaseAgent"
                     },
                     {
@@ -4554,6 +4661,26 @@
             ],
             "title": "AgentSpecVersionEnum",
             "type": "string"
+        },
+        "VersionedA2AAgent": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ComponentReference"
+                },
+                {
+                    "$ref": "#/$defs/BaseA2AAgent"
+                }
+            ],
+            "properties": {
+                "agentspec_version": {
+                    "enum": [
+                        "25.4.2",
+                        "25.4.1"
+                    ],
+                    "title": "AgentSpecVersionEnum",
+                    "type": "string"
+                }
+            }
         },
         "VersionedAgent": {
             "anyOf": [
@@ -5581,6 +5708,9 @@
         }
     },
     "anyOf": [
+        {
+            "$ref": "#/$defs/VersionedA2AAgent"
+        },
         {
             "$ref": "#/$defs/VersionedAgent"
         },

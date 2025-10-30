@@ -8,6 +8,7 @@
 
 from typing import Mapping
 
+from pyagentspec.a2aagent import A2AAgent
 from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
 from pyagentspec.component import Component, ComponentWithIO
@@ -65,6 +66,7 @@ from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
 
 BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
+    "A2AAgent": A2AAgent,
     "Agent": Agent,
     "AgenticComponent": AgenticComponent,
     "AgentNode": AgentNode,
