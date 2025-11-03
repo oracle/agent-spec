@@ -1,0 +1,123 @@
+name: PyAgentSpec Tests and Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  checks-and-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10','3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/setup.py', '**/requirements*.txt', '**/constraints/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Run install-all-dev script
+        run: bash install-all-dev.sh
+
+      - name: Verify tools installation
+        run: |
+          python -m pip list | grep -E "black|isort|flake8|bandit|mypy"
+          which black isort flake8 bandit mypy
+
+      # PyAgentSpec Checks and Tests
+      - name: "[PyAgentSpec] Black formatting check"
+        run: black --config pyagentspec/pyproject.toml --check pyagentspec/
+
+      - name: "[PyAgentSpec] Isort import sorting check"
+        run: isort --settings-path pyagentspec/pyproject.toml --check-only pyagentspec/
+
+      - name: "[PyAgentSpec] Flake8 linter checks"
+        run: flake8 --select C801 pyagentspec/
+
+      - name: "[PyAgentSpec] Flake8 copyright checks"
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." pyagentspec/
+
+      - name: "[PyAgentSpec] Bandit security checks"
+        run: bandit -c bandit.yaml -r pyagentspec/
+
+      - name: "[PyAgentSpec] Mypy type checking"
+        run: mypy pyagentspec/ --config-file ./pyproject.toml --exclude 'pyagentspec/tests_fuzz'
+
+      - name: "[PyAgentSpec] Run tests"
+        env:
+          SKIP_LLM_TESTS: "1"
+          SKIP_A2A_TESTS: "1"
+        run: |
+          cd pyagentspec
+          bash tests/run_tests.sh
+
+      # LangGraph Adapter Checks and Tests
+      - name: "[LangGraph Adapter] Black formatting check"
+        run: black --config adapters/langgraphagentspecadapter/pyproject.toml --check adapters/langgraphagentspecadapter/
+
+      - name: "[AutoGen Adapter] Isort import sorting check"
+        run: isort --settings-path adapters/langgraphagentspecadapter/pyproject.toml --check-only adapters/langgraphagentspecadapter/
+
+      - name: "[LangGraph Adapter] Flake8 linter checks"
+        run: flake8 --select C801 adapters/langgraphagentspecadapter/
+
+      - name: "[LangGraph Adapter] Flake8 copyright checks"
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." adapters/langgraphagentspecadapter/
+
+      - name: "[LangGraph Adapter] Bandit security checks"
+        run: bandit -c bandit.yaml -r adapters/langgraphagentspecadapter/
+
+      - name: "[LangGraph Adapter] Mypy type checking"
+        run: mypy adapters/langgraphagentspecadapter/ --config-file ./pyproject.toml
+
+      - name: "[LangGraph Adapter] Run tests"
+        env:
+          SKIP_LLM_TESTS: "1"
+        run: |
+          cd adapters/langgraphagentspecadapter
+          bash tests/run_tests.sh
+
+      # AutoGen Adapter Checks and Tests
+      - name: "[AutoGen Adapter] Black formatting check"
+        run: black --config adapters/autogenagentspecadapter/pyproject.toml --check adapters/autogenagentspecadapter/
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Isort import sorting check"
+        run: isort --settings-path adapters/langgraphagentspecadapter/pyproject.toml --check-only adapters/langgraphagentspecadapter/
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Flake8 linter checks"
+        run: flake8 --select C801 adapters/autogenagentspecadapter/
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Flake8 copyright checks"
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." adapters/autogenagentspecadapter/
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Bandit security checks"
+        run: bandit -c bandit.yaml -r adapters/autogenagentspecadapter/
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Mypy type checking"
+        run: mypy adapters/autogenagentspecadapter/ --config-file ./pyproject.toml
+        if: matrix.python-version != '3.13'
+
+      - name: "[AutoGen Adapter] Run tests"
+        env:
+          SKIP_LLM_TESTS: "1"
+        run: |
+          cd adapters/autogenagentspecadapter
+          bash tests/run_tests.sh
+        if: matrix.python-version != '3.13'

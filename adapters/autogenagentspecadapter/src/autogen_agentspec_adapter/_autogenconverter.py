@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -8,10 +8,10 @@
 import asyncio
 import functools
 import inspect
+import keyword
+import re
 import typing
 import warnings
-import re
-import keyword
 from functools import partial
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
@@ -19,7 +19,6 @@ from urllib.parse import urljoin
 
 import httpx
 from autogen_agentchat.agents import AssistantAgent as AutogenAssistantAgent
-from autogen_agentspec_adapter._utils import render_template
 from autogen_core.models import ChatCompletionClient as AutogenChatCompletionClient
 from autogen_core.models import ModelFamily, ModelInfo
 from autogen_core.tools import BaseTool
@@ -31,8 +30,6 @@ from autogen_ext.models.ollama import (
 from autogen_ext.models.openai import (
     OpenAIChatCompletionClient as AutogenOpenAIChatCompletionClient,
 )
-from pydantic import BaseModel, Field, create_model
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -44,7 +41,9 @@ from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
+from pydantic import BaseModel, Field, create_model
 
+from ._utils import render_template
 from .functiontool import FunctionTool
 
 _AutoGenTool = Union[AutogenFunctionTool, Callable[..., Any]]
@@ -90,10 +89,11 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
 
     return mapping.get(json_schema["type"], "Any")
 
+
 # Autogen requires that agent names be valid Python identifiers. Thus, we sanitize names to make sure they are valid.
 def _sanitize_agent_name(name: str) -> str:
     # Replace non-identifier characters with underscores
-    sanitized = re.sub(r'\W', '_', name or "")
+    sanitized = re.sub(r"\W", "_", name or "")
     # Prefix underscore if it starts with a digit
     if sanitized and sanitized[0].isdigit():
         sanitized = f"_{sanitized}"
@@ -210,7 +210,8 @@ class AgentSpecToAutogenConverter:
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
             args_model=_create_pydantic_model_from_properties(
-                agentspec_client_tool.name.title() + "InputSchema", agentspec_client_tool.inputs or []
+                agentspec_client_tool.name.title() + "InputSchema",
+                agentspec_client_tool.inputs or [],
             ),
             func=client_tool,
         )
@@ -287,7 +288,7 @@ class AgentSpecToAutogenConverter:
             # We interpret the name as the `name` of the agent in Autogen agent,
             # the system prompt as the `system_message`
             # This interpretation comes from the analysis of Autogen Agent definition examples
-            name = _sanitize_agent_name(agentspec_agent.name),
+            name=_sanitize_agent_name(agentspec_agent.name),
             system_message=agentspec_agent.system_prompt,
             model_client=(
                 self.convert(
@@ -300,7 +301,9 @@ class AgentSpecToAutogenConverter:
             ),
             tools=[
                 self.convert(
-                    tool, tool_registry=tool_registry, converted_components=converted_components
+                    tool,
+                    tool_registry=tool_registry,
+                    converted_components=converted_components,
                 )
                 for tool in agentspec_agent.tools
             ],

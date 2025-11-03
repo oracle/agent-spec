@@ -1,4 +1,4 @@
-# Copyright (C) 2024, 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -6,7 +6,7 @@
 
 """This module defines the class for specifying LLM generation parameters."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -27,12 +27,12 @@ class LlmGenerationConfig(BaseModel):
     # This allows arbitrary attributes to be accepted and appear in the serialization
     model_config = {"extra": "allow"}
 
-    def model_dump(self, *args, **kwargs):
+    def model_dump(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         # By default, we exclude from the serialization all the values that are not set
         kwargs.setdefault("exclude_none", True)
         return super().model_dump(*args, **kwargs)
 
-    def model_dump_json(self, *args, **kwargs):
+    def model_dump_json(self, *args: Any, **kwargs: Any) -> str:
         # By default, we exclude from the serialization all the values that are not set
         kwargs.setdefault("exclude_none", True)
         return super().model_dump_json(*args, **kwargs)

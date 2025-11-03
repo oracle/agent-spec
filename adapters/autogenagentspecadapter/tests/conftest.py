@@ -1,9 +1,10 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import os
 import random
 import socket
 import subprocess  # nosec, test-only code, args are trusted
@@ -16,6 +17,8 @@ from autogen_agentchat.teams import GraphFlow as AutogenGraphFlow
 
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.nodes import AgentNode, BranchingNode, EndNode, StartNode, ToolNode
+
+SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
 
 
 def is_port_busy(port: Optional[int]):
@@ -138,3 +141,30 @@ def inspect_names_and_nodes_and_branching_mappings_of_generated_agentspec_flow(
             f"Branching node '{branch_node_name}' expected {num_conditions} branches "
             f"(from original AutoGen conditions), but found {num_agentspec_branches} in AgentSpec."
         )
+
+
+def should_skip_llm_test() -> bool:
+    return SKIP_LLM_TESTS_ENV_VAR in os.environ
+
+
+def _replace_config_placeholders(yaml_config: str) -> str:
+    """
+    Adapter tests load YAMLs with {{LLAMA_API_URL}} / {{LLAMA70BV33_API_URL}}.
+    - if SKIP_LLM_TESTS=1 and env vars are missing → skip
+    - otherwise → assert (fail early)
+    """
+    llama_api_url = os.environ.get("LLAMA_API_URL")
+    llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
+
+    if (not llama_api_url or not llama70bv33_api_url) and should_skip_llm_test():
+        pytest.skip(
+            "Skipping LLM-dependent adapter test: LLAMA_API_URL / LLAMA70BV33_API_URL "
+            "not set and SKIP_LLM_TESTS=1"
+        )
+
+    assert llama_api_url, "Please set LLAMA_API_URL"
+    assert llama70bv33_api_url, "Please set LLAMA70BV33_API_URL"
+
+    return yaml_config.replace("{{LLAMA_API_URL}}", llama_api_url).replace(
+        "{{LLAMA70BV33_API_URL}}", llama70bv33_api_url
+    )

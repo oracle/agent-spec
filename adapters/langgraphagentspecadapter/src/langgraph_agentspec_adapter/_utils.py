@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -13,10 +13,7 @@ import httpx
 from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
 from langgraph.graph import StateGraph
-from langgraph.graph.state import CompiledStateGraph, RunnableConfig
-from pydantic import SerializeAsAny
-from typing_extensions import TypeAlias
-
+from langgraph.graph.state import CompiledStateGraph, RunnableConfig  # type: ignore[attr-defined]
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
 from pyagentspec.flows.nodes import AgentNode as AgentSpecAgentNode
@@ -30,6 +27,8 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.templating import TEMPLATE_PLACEHOLDER_REGEXP
 from pyagentspec.tools import Tool
+from pydantic import SerializeAsAny
+from typing_extensions import TypeAlias
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
 LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]
@@ -68,7 +67,8 @@ ControlFlow: TypeAlias = Dict[SourceNodeId, Dict[BranchName, TargetNodeId]]
 def render_template(template: str, inputs: Dict[str, Any]) -> str:
     """Render a prompt template using inputs."""
     return _recursive_template_splitting_rendering(
-        template, [(input_title, input_value) for input_title, input_value in inputs.items()]
+        template,
+        [(input_title, input_value) for input_title, input_value in inputs.items()],
     )
 
 

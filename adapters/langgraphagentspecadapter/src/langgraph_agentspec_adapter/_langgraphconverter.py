@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -14,19 +14,9 @@ from langchain_core.messages import SystemMessage
 from langchain_core.tools import StructuredTool
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph, RunnableConfig
+from langgraph.graph.state import CompiledStateGraph, RunnableConfig  # type: ignore[attr-defined]
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Checkpointer, interrupt
-from langgraph_agentspec_adapter._utils import (
-    ControlFlow,
-    FlowStateSchema,
-    LangGraphComponent,
-    LangGraphTool,
-    NodeExecutor,
-    render_template,
-)
-from pydantic import BaseModel, Field, SecretStr, create_model
-
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
@@ -49,6 +39,16 @@ from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
+from pydantic import BaseModel, Field, SecretStr, create_model
+
+from langgraph_agentspec_adapter._utils import (
+    ControlFlow,
+    FlowStateSchema,
+    LangGraphComponent,
+    LangGraphTool,
+    NodeExecutor,
+    render_template,
+)
 
 
 def _create_pydantic_model_from_properties(
@@ -91,6 +91,7 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
 
     return mapping.get(json_schema["type"], "Any")
 
+
 class AgentSpecToLangGraphConverter:
     def convert(
         self,
@@ -109,7 +110,11 @@ class AgentSpecToLangGraphConverter:
             config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
         if agentspec_component.id not in converted_components:
             converted_components[agentspec_component.id] = self._convert(
-                agentspec_component, tool_registry, converted_components, checkpointer, config
+                agentspec_component,
+                tool_registry,
+                converted_components,
+                checkpointer,
+                config,
             )
         return converted_components[agentspec_component.id]
 
@@ -338,7 +343,7 @@ class AgentSpecToLangGraphConverter:
         from langgraph_agentspec_adapter._utils import StartNodeExecutor
 
         return StartNodeExecutor(start_node)
-    
+
     def _remote_tool_convert_to_langgraph(
         self,
         remote_tool: AgentSpecRemoteTool,
@@ -374,7 +379,7 @@ class AgentSpecToLangGraphConverter:
             func=_remote_tool,
         )
         return structured_tool
-    
+
     def _server_tool_convert_to_langgraph(
         self,
         agentspec_server_tool: AgentSpecServerTool,
@@ -414,7 +419,7 @@ class AgentSpecToLangGraphConverter:
             f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
             "Expected a callable or a StructuredTool."
         )
-    
+
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
     ) -> LangGraphTool:

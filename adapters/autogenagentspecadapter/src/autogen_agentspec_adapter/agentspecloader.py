@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -7,7 +7,6 @@
 from typing import Dict, List, Optional
 
 from autogen_agentchat.agents import AssistantAgent as AutogenAssistantAgent
-
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 

@@ -2,10 +2,10 @@
 src_paths = [
     "pyagentspec/src",
     "pyagentspec/tests",
-    "adapter/autogenagentspecadapter/src",
-    "adapter/autogenagentspecadapter/tests",
-    "adapter/langgraphagentspecadapter/src",
-    "adapter/langgraphagentspecadapter/tests",
+    "adapters/autogenagentspecadapter/src",
+    "adapters/autogenagentspecadapter/tests",
+    "adapters/langgraphagentspecadapter/src",
+    "adapters/langgraphagentspecadapter/tests",
 ]
 
 [tool.mypy]
@@ -15,5 +15,14 @@ strict = true
 module = [
     'tests.*',
     'setup',
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "fastapi",
+    "fastapi.*",
+    "uvicorn",
+    "uvicorn.*",
 ]
 ignore_errors = true

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,19 +11,15 @@ from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, MapNode, StartNode, ToolNode
 from pyagentspec.property import FloatProperty, ListProperty, Property, UnionProperty
 from pyagentspec.tools import ServerTool
 
-from .conftest import (
-    IS_JSON_SERVER_RUNNING,
-    JSON_SERVER_PORT,
-    get_weather,
-)
+from langgraph_agentspec_adapter import AgentSpecLoader
+
+from .conftest import IS_JSON_SERVER_RUNNING, JSON_SERVER_PORT, get_weather
 
 
 def test_weather_agent_with_server_tool(weather_agent_server_tool_yaml: str) -> None:
@@ -99,7 +95,8 @@ def test_client_tool_with_two_inputs(ancestry_agent_with_client_tool_yaml: str) 
 
 
 @pytest.mark.skipif(
-    not IS_JSON_SERVER_RUNNING, reason="Skipping test because json server is not running"
+    not IS_JSON_SERVER_RUNNING,
+    reason="Skipping test because json server is not running",
 )
 def test_remote_tool_with_agent(json_server, weather_agent_remote_tool_yaml: str) -> None:
     yaml_content = weather_agent_remote_tool_yaml
@@ -142,10 +139,14 @@ def test_mapnode() -> None:
             nodes=[inner_start_node, square_tool_node, inner_end_node],
             control_flow_connections=[
                 ControlFlowEdge(
-                    name="start_to_tool", from_node=inner_start_node, to_node=square_tool_node
+                    name="start_to_tool",
+                    from_node=inner_start_node,
+                    to_node=square_tool_node,
                 ),
                 ControlFlowEdge(
-                    name="tool_to_end", from_node=square_tool_node, to_node=inner_end_node
+                    name="tool_to_end",
+                    from_node=square_tool_node,
+                    to_node=inner_end_node,
                 ),
             ],
             data_flow_connections=[
@@ -194,7 +195,11 @@ def test_mapnode() -> None:
         )
 
         list_x_property = Property(
-            json_schema={"title": "input_list", "type": "array", "items": {"type": "number"}}
+            json_schema={
+                "title": "input_list",
+                "type": "array",
+                "items": {"type": "number"},
+            }
         )
         collected_x_square_property = ListProperty(
             title="collected_input_square",

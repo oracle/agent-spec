@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -10,13 +10,13 @@ import yaml
 from langchain_ollama import ChatOllama
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import create_react_agent
-from langgraph_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
-
 from pyagentspec import Agent
 from pyagentspec.llms import OllamaConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ServerTool
+
+from langgraph_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 
 
 def mock_tool() -> str:

@@ -1,3 +1,9 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 component_type: Flow
 id: 9f172d92-f64b-4545-8297-4afa830088e6
 name: flow
