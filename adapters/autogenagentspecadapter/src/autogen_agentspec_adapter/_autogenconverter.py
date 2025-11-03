@@ -1,8 +1,9 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 
 import keyword
 import re
@@ -51,7 +52,7 @@ def fits_literal(value, literal_type) -> bool:
 
 
 def _create_pydantic_model_from_properties(
-    model_name: str, properties: List[AgentSpecProperty]
+        model_name: str, properties: List[AgentSpecProperty]
 ) -> type[BaseModel]:
     # Create a pydantic model whose attributes are the given properties
     fields: Dict[str, Any] = {}
@@ -112,10 +113,10 @@ def _sanitize_agent_name(name: str) -> str:
 class AgentSpecToAutogenConverter:
 
     def convert(
-        self,
-        agentspec_component: AgentSpecComponent,
-        tool_registry: Dict[str, _AutoGenTool],
-        converted_components: Optional[Dict[str, Any]] = None,
+            self,
+            agentspec_component: AgentSpecComponent,
+            tool_registry: Dict[str, _AutoGenTool],
+            converted_components: Optional[Dict[str, Any]] = None,
     ) -> Any:
         """Convert the given PyAgentSpec component object into the corresponding WayFlow component"""
         if converted_components is None:
@@ -152,14 +153,14 @@ class AgentSpecToAutogenConverter:
         return converted_components[agentspec_component.id]
 
     def _llm_convert_to_autogen(
-        self,
-        agentspec_llm: AgentSpecLlmConfig,
-        tool_registry: Dict[str, _AutoGenTool],
-        converted_components: Optional[Dict[str, Any]] = None,
+            self,
+            agentspec_llm: AgentSpecLlmConfig,
+            tool_registry: Dict[str, _AutoGenTool],
+            converted_components: Optional[Dict[str, Any]] = None,
     ) -> AutogenChatCompletionClient:
 
         def _prepare_llm_args(
-            agentspec_llm_: Union[AgentSpecVllmModel, AgentSpecOllamaModel],
+                agentspec_llm_: Union[AgentSpecVllmModel, AgentSpecOllamaModel],
         ) -> Dict[str, Any]:
             metadata = getattr(agentspec_llm_, "metadata", {}) or {}
             base_url = agentspec_llm_.url
@@ -205,7 +206,7 @@ class AgentSpecToAutogenConverter:
             )
 
     def _client_tool_convert_to_autogen(
-        self, agentspec_client_tool: AgentSpecClientTool
+            self, agentspec_client_tool: AgentSpecClientTool
     ) -> FunctionTool:
         def client_tool(**kwargs: Any) -> Any:
             tool_request = {
@@ -225,15 +226,15 @@ class AgentSpecToAutogenConverter:
             args_model=_create_pydantic_model_from_properties(
                 agentspec_client_tool.name.title() + "InputSchema",
                 agentspec_client_tool.inputs or [],
-            ),
+                ),
             func=client_tool,
         )
 
     def _tool_convert_to_autogen(
-        self,
-        agentspec_tool: AgentSpecTool,
-        tool_registry: Dict[str, _AutoGenTool],
-        converted_components: Optional[Dict[str, Any]] = None,
+            self,
+            agentspec_tool: AgentSpecTool,
+            tool_registry: Dict[str, _AutoGenTool],
+            converted_components: Optional[Dict[str, Any]] = None,
     ) -> AutogenBaseTool[Any, Any]:
         if agentspec_tool.name in tool_registry:
             tool = tool_registry[agentspec_tool.name]
@@ -249,7 +250,7 @@ class AgentSpecToAutogenConverter:
                     args_model=_create_pydantic_model_from_properties(
                         agentspec_tool.name.title() + "InputSchema",
                         agentspec_tool.inputs or [],
-                    ),
+                        ),
                     func=tool,
                 )
             else:
@@ -299,10 +300,10 @@ class AgentSpecToAutogenConverter:
         )
 
     def _agent_convert_to_autogen(
-        self,
-        agentspec_agent: AgentSpecAgent,
-        tool_registry: Dict[str, _AutoGenTool],
-        converted_components: Optional[Dict[str, Any]] = None,
+            self,
+            agentspec_agent: AgentSpecAgent,
+            tool_registry: Dict[str, _AutoGenTool],
+            converted_components: Optional[Dict[str, Any]] = None,
     ) -> AutogenAssistantAgent:
         return AutogenAssistantAgent(
             # We interpret the name as the `name` of the agent in Autogen agent,

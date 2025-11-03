@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -30,9 +30,9 @@ from pyagentspec.tools import Tool as AgentSpecTool
 
 class LangGraphToAgentSpecConverter:
     def convert(
-        self,
-        langgraph_component: LangGraphComponent,
-        referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+            self,
+            langgraph_component: LangGraphComponent,
+            referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
     ) -> AgentSpecComponent:
         """Convert the given LangGraph component object into the corresponding PyAgentSpec component"""
         if referenced_objects is None:
@@ -50,9 +50,9 @@ class LangGraphToAgentSpecConverter:
         return referenced_objects[object_reference]
 
     def _convert(
-        self,
-        langgraph_component: LangGraphComponent,
-        referenced_objects: Dict[str, AgentSpecComponent],
+            self,
+            langgraph_component: LangGraphComponent,
+            referenced_objects: Dict[str, AgentSpecComponent],
     ) -> AgentSpecComponent:
         agentspec_component: Optional[AgentSpecComponent] = None
         if self._is_react_agent(langgraph_component):
@@ -70,8 +70,8 @@ class LangGraphToAgentSpecConverter:
         return agentspec_component
 
     def _is_react_agent(
-        self,
-        langgraph_component: LangGraphComponent,
+            self,
+            langgraph_component: LangGraphComponent,
     ) -> bool:
         if isinstance(langgraph_component, CompiledStateGraph):
             langgraph_component = langgraph_component.builder
@@ -80,7 +80,7 @@ class LangGraphToAgentSpecConverter:
         return node is not None and hasattr(node.runnable, "get_graph")
 
     def _extract_llm_config_from_runnables_closures(
-        self, agent_node: StateNodeSpec[Any]
+            self, agent_node: StateNodeSpec[Any]
     ) -> LangGraphLlmConfig:
         nodes = cast(Any, agent_node.runnable).get_graph().nodes
 
@@ -128,7 +128,7 @@ class LangGraphToAgentSpecConverter:
         )
 
     def _extract_prompt_from_react_agent_node(
-        self, langgraph_agent_node: StateNodeSpec[Any]
+            self, langgraph_agent_node: StateNodeSpec[Any]
     ) -> str:
         # The agent_node's runnable corresponds to the `call_model` function, that contains the prompt somewhere
         call_model_function = langgraph_agent_node.runnable.func  # type: ignore
@@ -145,7 +145,7 @@ class LangGraphToAgentSpecConverter:
         return str(system_message.content)
 
     def _langgraph_tools_to_agentspec_tools(
-        self, tools: List[Dict[str, Any]]
+            self, tools: List[Dict[str, Any]]
     ) -> List[AgentSpecTool]:
         return [
             ServerTool(
@@ -157,7 +157,7 @@ class LangGraphToAgentSpecConverter:
         ]
 
     def _build_agentspec_llm_from_config(
-        self, langgraph_llm_config: LangGraphLlmConfig
+            self, langgraph_llm_config: LangGraphLlmConfig
     ) -> AgentSpecLlmConfig:
         if langgraph_llm_config.model_type == "ollama":
             return AgentSpecOllamaConfig(
@@ -182,9 +182,9 @@ class LangGraphToAgentSpecConverter:
         )
 
     def _langgraph_agent_convert_to_agentspec(
-        self,
-        langgraph_component: LangGraphComponent,
-        referenced_objects: Dict[str, AgentSpecComponent],
+            self,
+            langgraph_component: LangGraphComponent,
+            referenced_objects: Dict[str, AgentSpecComponent],
     ) -> AgentSpecAgent:
         if isinstance(langgraph_component, CompiledStateGraph):
             agent_name = langgraph_component.get_name()

@@ -40,7 +40,7 @@ repos:
         verbose: true
     -   id: flake8-linter-hook-copyright
         name: Run Flake8 linter to check for the copyright
-        entry: bash -xc 'flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \(C\) [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." -- "$@"' --
+        entry: bash -xc 'flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging

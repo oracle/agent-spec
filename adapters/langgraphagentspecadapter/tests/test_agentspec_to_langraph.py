@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -45,7 +45,7 @@ def test_weather_agent_with_server_tool_ollama(weather_ollama_agent_yaml: str) -
 
 
 def test_weather_agent_with_server_tool_with_output_descriptors(
-    weather_agent_with_outputs_yaml: str,
+        weather_agent_with_outputs_yaml: str,
 ) -> None:
     agent = AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
         weather_agent_with_outputs_yaml

@@ -1,4 +1,4 @@
-# Copyright (C) 2024, 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -16,7 +16,19 @@ As the resident RootLogger suppresses all downstream logging initialization via 
 import logging
 import os
 
+SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
+DUMMY_LLM_URL = "http://dummy-llm"
 # Must not import packages outside the Python Standard Library here
+
+
+def _get_llama_endpoint() -> str:
+    llama_endpoint = os.environ.get("LLAMA_API_URL")
+    if llama_endpoint:
+        return llama_endpoint
+    if SKIP_LLM_TESTS_ENV_VAR in os.environ:
+        # match pytest conftest behavior: in skip mode, we don’t fail
+        return DUMMY_LLM_URL
+    raise Exception("LLAMA_API_URL is not set in the environment")
 
 
 def listloggers():
@@ -41,9 +53,7 @@ def import_pyagentspec():
 
     serializer = AgentSpecSerializer()
     deserializer = AgentSpecDeserializer()
-    llama_endpoint = os.environ.get("LLAMA_API_URL")
-    if not llama_endpoint:
-        raise Exception("LLAMA_API_URL is not set in the environment")
+    llama_endpoint = _get_llama_endpoint()
     llm_config = VllmConfig(
         name="llm",
         url=llama_endpoint,

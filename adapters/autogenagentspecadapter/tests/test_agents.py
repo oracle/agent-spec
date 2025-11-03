@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,10 +11,10 @@ from pathlib import Path
 import pytest
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import ToolCallSummaryMessage
-from autogen_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 from autogen_ext.models.ollama import OllamaChatCompletionClient
-
 from pyagentspec.agent import Agent as AgentSpecAgent
+
+from autogen_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 
 from .conftest import IS_JSON_SERVER_RUNNING, JSON_SERVER_PORT
 
@@ -80,7 +80,8 @@ def test_autogen_agent_with_2_tools_can_be_converted_to_agentspec() -> None:
 
 
 @pytest.mark.skipif(
-    not IS_JSON_SERVER_RUNNING, reason="Skipping test because json server is not running"
+    not IS_JSON_SERVER_RUNNING,
+    reason="Skipping test because json server is not running",
 )
 def test_remote_tool_with_agent(json_server) -> None:
     async def test_func():
