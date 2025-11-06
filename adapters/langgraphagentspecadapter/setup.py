@@ -32,7 +32,7 @@ setup(
     license="Apache-2.0 OR UPL-1.0",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    url="",
+    url="https://github.com/oracle/agent-spec",
     author="Oracle",
     author_email="",
     classifiers=[
