@@ -13,7 +13,7 @@ from langgraph.graph.state import (  # type: ignore[attr-defined]
     CompiledStateGraph,
     StateNodeSpec,
 )
-from langgraph_agentspec_adapter._utils import LangGraphComponent
+from langgraph_agentspec_adapter._types import LangGraphComponent
 from pydantic import BaseModel, TypeAdapter, create_model
 
 from pyagentspec import Property

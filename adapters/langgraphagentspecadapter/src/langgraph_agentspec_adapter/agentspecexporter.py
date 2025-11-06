@@ -7,7 +7,7 @@
 
 from langgraph.graph.state import CompiledStateGraph, StateGraph
 from langgraph_agentspec_adapter._agentspecconverter import LangGraphToAgentSpecConverter
-from langgraph_agentspec_adapter._utils import LangGraphComponent
+from langgraph_agentspec_adapter._types import LangGraphComponent
 
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecSerializer as PyAgentSpecSerializer

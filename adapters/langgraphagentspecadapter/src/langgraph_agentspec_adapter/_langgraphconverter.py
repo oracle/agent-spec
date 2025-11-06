@@ -12,18 +12,19 @@ import httpx
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import StructuredTool
-from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph, RunnableConfig
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Checkpointer, interrupt
-from langgraph_agentspec_adapter._utils import (
+from langgraph_agentspec_adapter._node_execution import NodeExecutor
+from langgraph_agentspec_adapter._template_rendering import render_template
+from langgraph_agentspec_adapter._types import (
     ControlFlow,
+    FlowInputSchema,
+    FlowOutputSchema,
     FlowStateSchema,
     LangGraphComponent,
     LangGraphTool,
-    NodeExecutor,
-    render_template,
 )
 from pydantic import BaseModel, Field, SecretStr, create_model
 
@@ -37,18 +38,26 @@ from pyagentspec.flows.nodes import ApiNode as AgentSpecApiNode
 from pyagentspec.flows.nodes import BranchingNode as AgentSpecBranchingNode
 from pyagentspec.flows.nodes import EndNode as AgentSpecEndNode
 from pyagentspec.flows.nodes import FlowNode as AgentSpecFlowNode
+from pyagentspec.flows.nodes import InputMessageNode as AgentSpecInputMessageNode
 from pyagentspec.flows.nodes import LlmNode as AgentSpecLlmNode
 from pyagentspec.flows.nodes import MapNode as AgentSpecMapNode
+from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageNode
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.property import DictProperty as AgentSpecDictProperty
+from pyagentspec.property import IntegerProperty as AgentSpecIntegerProperty
+from pyagentspec.property import ListProperty as AgentSpecListProperty
 from pyagentspec.property import Property as AgentSpecProperty
+from pyagentspec.property import _empty_default as _agentspec_empty_default
+from pyagentspec.property import json_schemas_have_same_type
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
+from pyagentspec.tools import Tool as AgentSpecTool
 
 
 def _create_pydantic_model_from_properties(
@@ -57,10 +66,14 @@ def _create_pydantic_model_from_properties(
     # Create a pydantic model whose attributes are the given properties
     fields: Dict[str, Any] = {}
     for property_ in properties:
+        field_parameters: Dict[str, Any] = {}
         param_name = property_.title
-        default = property_.default
+        if property_.default is not _agentspec_empty_default:
+            field_parameters["default"] = property_.default
+        if property_.description:
+            field_parameters["description"] = property_.description
         annotation = _json_schema_type_to_python_annotation(property_.json_schema)
-        fields[param_name] = (annotation, Field(default=default))
+        fields[param_name] = (annotation, Field(**field_parameters))
     return cast(type[BaseModel], create_model(model_name, **fields))
 
 
@@ -71,14 +84,15 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
             for inner_json_schema_type in json_schema["anyOf"]
         )
         return f"Union[{','.join(possible_types)}]"
-    if isinstance(json_schema["type"], list):
+    json_schema_type = json_schema.get("type", "")
+    if isinstance(json_schema_type, list):
         possible_types = set(
             _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema["type"]
+            for inner_json_schema_type in json_schema_type
         )
         return f"Union[{','.join(possible_types)}]"
 
-    if json_schema["type"] == "array":
+    if json_schema_type == "array":
         return f"List[{_json_schema_type_to_python_annotation(json_schema['items'])}]"
     mapping = {
         "string": "str",
@@ -89,7 +103,8 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
         "object": "Dict[str, Any]",
     }
 
-    return mapping.get(json_schema["type"], "Any")
+    return mapping.get(json_schema_type, "Any")
+
 
 class AgentSpecToLangGraphConverter:
     def convert(
@@ -103,9 +118,7 @@ class AgentSpecToLangGraphConverter:
         """Convert the given PyAgentSpec component object into the corresponding LangGraph component"""
         if converted_components is None:
             converted_components = {}
-        if checkpointer is None:
-            checkpointer = InMemorySaver()
-        if config is None:
+        if config is None and checkpointer is not None:
             config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
         if agentspec_component.id not in converted_components:
             converted_components[agentspec_component.id] = self._convert(
@@ -118,34 +131,44 @@ class AgentSpecToLangGraphConverter:
         agentspec_component: AgentSpecComponent,
         tool_registry: Dict[str, LangGraphTool],
         converted_components: Dict[str, Any],
-        checkpointer: Checkpointer,
+        checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> Any:
         if isinstance(agentspec_component, AgentSpecAgent):
             return self._agent_convert_to_langgraph(
-                agentspec_component, tool_registry, converted_components, checkpointer
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
         elif isinstance(agentspec_component, AgentSpecLlmConfig):
             return self._llm_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecServerTool):
             return self._server_tool_convert_to_langgraph(agentspec_component, tool_registry)
         elif isinstance(agentspec_component, AgentSpecClientTool):
+            if checkpointer is None:
+                raise ValueError(
+                    "A Checkpointer must be provided when the Agent Spec configuration contains client tools"
+                )
             return self._client_tool_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecRemoteTool):
             return self._remote_tool_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecFlow):
             return self._flow_convert_to_langgraph(
                 agentspec_component,
-                tool_registry,
-                converted_components,
-                checkpointer,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
         elif isinstance(agentspec_component, AgentSpecNode):
             return self._node_convert_to_langgraph(
                 agentspec_component,
-                tool_registry,
-                checkpointer,
-                config,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
         elif isinstance(agentspec_component, AgentSpecComponent):
             raise NotImplementedError(
@@ -166,7 +189,7 @@ class AgentSpecToLangGraphConverter:
             if source_node_id not in control_flow:
                 control_flow[source_node_id] = {}
 
-            branch_name = control_flow_edge.from_branch or AgentSpecBranchingNode.DEFAULT_BRANCH
+            branch_name = control_flow_edge.from_branch or AgentSpecNode.DEFAULT_NEXT_BRANCH
             control_flow[source_node_id][branch_name] = control_flow_edge.to_node.id
 
         return control_flow
@@ -174,11 +197,11 @@ class AgentSpecToLangGraphConverter:
     def _add_conditional_edges_to_graph(
         self,
         control_flow: "ControlFlow",
-        graph_builder: StateGraph["FlowStateSchema"],
+        graph_builder: StateGraph["FlowStateSchema", None, "FlowInputSchema", "FlowOutputSchema"],
     ) -> None:
         for source_node_id, control_flow_mapping in control_flow.items():
             get_branch = lambda state: state["node_execution_details"].get(
-                "branch", AgentSpecBranchingNode.DEFAULT_BRANCH
+                "branch", AgentSpecNode.DEFAULT_NEXT_BRANCH
             )
             graph_builder.add_conditional_edges(source_node_id, get_branch, control_flow_mapping)
 
@@ -187,16 +210,53 @@ class AgentSpecToLangGraphConverter:
         flow: AgentSpecFlow,
         tool_registry: Dict[str, "LangGraphTool"],
         converted_components: Dict[str, Any],
-        checkpointer: Checkpointer,
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
     ) -> "LangGraphComponent":
-        from langgraph_agentspec_adapter._utils import FlowStateSchema
+        from langgraph_agentspec_adapter._node_execution import FlowStateSchema
 
-        graph_builder = StateGraph(FlowStateSchema)
+        graph_builder = StateGraph(
+            FlowStateSchema, input_schema=FlowInputSchema, output_schema=FlowOutputSchema
+        )
         graph_builder.add_edge(START, flow.start_node.id)
 
         node_executors = {
-            node.id: self.convert(node, tool_registry, converted_components) for node in flow.nodes
+            node.id: self.convert(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
+            for node in flow.nodes
         }
+
+        def _find_property(properties: List[AgentSpecProperty], name: str) -> AgentSpecProperty:
+            return next((property_ for property_ in properties if property_.title == name))
+
+        # We tell the MapNodes which inputs they should iterate over
+        # Based on the type of the outputs they are connected to
+        for agentspec_node in flow.nodes:
+            if isinstance(agentspec_node, AgentSpecMapNode):
+                inputs_to_iterate = []
+                for data_flow_edge in flow.data_flow_connections or []:
+                    if data_flow_edge.destination_node is agentspec_node:
+                        source_property = _find_property(
+                            data_flow_edge.source_node.outputs or [],
+                            data_flow_edge.source_output,
+                        )
+                        inner_flow_input_property = _find_property(
+                            agentspec_node.subflow.inputs or [],
+                            data_flow_edge.destination_input.replace("iterated_", "", 1),
+                        )
+                        if json_schemas_have_same_type(
+                            source_property.json_schema,
+                            AgentSpecListProperty(item_type=inner_flow_input_property).json_schema,
+                        ):
+                            inputs_to_iterate.append(data_flow_edge.destination_input)
+                node_executors[agentspec_node.id].set_inputs_to_iterate(inputs_to_iterate)
+            elif isinstance(agentspec_node, AgentSpecEndNode):
+                node_executors[agentspec_node.id].set_flow_outputs(flow.outputs)
 
         for node_id, node_executor in node_executors.items():
             graph_builder.add_node(node_id, node_executor)
@@ -212,7 +272,8 @@ class AgentSpecToLangGraphConverter:
         self,
         node: AgentSpecNode,
         tool_registry: Dict[str, "LangGraphTool"],
-        checkpointer: Checkpointer,
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
         if isinstance(node, AgentSpecStartNode):
@@ -220,41 +281,91 @@ class AgentSpecToLangGraphConverter:
         elif isinstance(node, AgentSpecEndNode):
             return self._end_node_convert_to_langgraph(node)
         elif isinstance(node, AgentSpecToolNode):
-            return self._tool_node_convert_to_langgraph(node, tool_registry)
+            return self._tool_node_convert_to_langgraph(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
         elif isinstance(node, AgentSpecLlmNode):
-            return self._llm_node_convert_to_langgraph(node)
+            return self._llm_node_convert_to_langgraph(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
         elif isinstance(node, AgentSpecAgentNode):
-            return self._agent_node_convert_to_langgraph(node, tool_registry, checkpointer, config)
+            return self._agent_node_convert_to_langgraph(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
         elif isinstance(node, AgentSpecBranchingNode):
             return self._branching_node_convert_to_langgraph(node)
         elif isinstance(node, AgentSpecApiNode):
             return self._api_node_convert_to_langgraph(node)
         elif isinstance(node, AgentSpecFlowNode):
-            return self._flow_node_convert_to_langgraph(node, tool_registry, checkpointer, config)
+            return self._flow_node_convert_to_langgraph(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
+        elif isinstance(node, AgentSpecInputMessageNode):
+            return self._input_message_node_convert_to_langgraph(node)
+        elif isinstance(node, AgentSpecOutputMessageNode):
+            return self._output_message_node_convert_to_langgraph(node)
         elif isinstance(node, AgentSpecMapNode):
             return self._map_node_convert_to_langgraph(
                 node,
-                tool_registry,
-                checkpointer,
-                config,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
         else:
             raise NotImplementedError(
                 f"The AgentSpec component of type {type(node)} is not yet supported for conversion"
             )
 
+    def _input_message_node_convert_to_langgraph(
+        self,
+        node: AgentSpecInputMessageNode,
+    ) -> "NodeExecutor":
+        from langgraph_agentspec_adapter._node_execution import InputMessageNodeExecutor
+
+        return InputMessageNodeExecutor(node)
+
+    def _output_message_node_convert_to_langgraph(
+        self,
+        node: AgentSpecOutputMessageNode,
+    ) -> "NodeExecutor":
+        from langgraph_agentspec_adapter._node_execution import OutputMessageNodeExecutor
+
+        return OutputMessageNodeExecutor(node)
+
     def _map_node_convert_to_langgraph(
         self,
         map_node: AgentSpecMapNode,
         tool_registry: Dict[str, "LangGraphTool"],
-        checkpointer: Checkpointer,
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
         from langgraph_agentspec_adapter._langgraphconverter import AgentSpecToLangGraphConverter
-        from langgraph_agentspec_adapter._utils import MapNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import MapNodeExecutor
 
         subflow = AgentSpecToLangGraphConverter().convert(
-            map_node.subflow, tool_registry, checkpointer=checkpointer
+            map_node.subflow,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
         )
         if not isinstance(subflow, CompiledStateGraph):
             raise TypeError("MapNodeExecutor can only be initialized with MapNode")
@@ -265,14 +376,19 @@ class AgentSpecToLangGraphConverter:
         self,
         flow_node: AgentSpecFlowNode,
         tool_registry: Dict[str, "LangGraphTool"],
-        checkpointer: Checkpointer,
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
         from langgraph_agentspec_adapter._langgraphconverter import AgentSpecToLangGraphConverter
-        from langgraph_agentspec_adapter._utils import FlowNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import FlowNodeExecutor
 
         subflow = AgentSpecToLangGraphConverter().convert(
-            flow_node.subflow, tool_registry, checkpointer=checkpointer
+            flow_node.subflow,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
         )
         if not isinstance(subflow, CompiledStateGraph):
             raise TypeError("FlowNodeExecutor can only initialize FlowNode")
@@ -284,14 +400,14 @@ class AgentSpecToLangGraphConverter:
         )
 
     def _api_node_convert_to_langgraph(self, api_node: AgentSpecApiNode) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import ApiNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import ApiNodeExecutor
 
         return ApiNodeExecutor(api_node)
 
     def _branching_node_convert_to_langgraph(
         self, branching_node: AgentSpecBranchingNode
     ) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import BranchingNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import BranchingNodeExecutor
 
         return BranchingNodeExecutor(branching_node)
 
@@ -299,46 +415,69 @@ class AgentSpecToLangGraphConverter:
         self,
         agent_node: AgentSpecAgentNode,
         tool_registry: Dict[str, "LangGraphTool"],
-        checkpointer: Checkpointer,
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import AgentNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import AgentNodeExecutor
 
-        agent = AgentSpecToLangGraphConverter().convert(
-            agent_node, tool_registry, checkpointer=checkpointer
+        return AgentNodeExecutor(
+            agent_node,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
         )
-        if not isinstance(agent, CompiledStateGraph):
-            raise TypeError("AgentNodeExecutor can only execute AgentNode")
-        return AgentNodeExecutor(agent_node, agent, config)
 
-    def _llm_node_convert_to_langgraph(self, llm_node: AgentSpecLlmNode) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import LlmNodeExecutor
+    def _llm_node_convert_to_langgraph(
+        self,
+        llm_node: AgentSpecLlmNode,
+        tool_registry: Dict[str, "LangGraphTool"],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+    ) -> "NodeExecutor":
+        from langgraph_agentspec_adapter._node_execution import LlmNodeExecutor
 
-        llm: BaseChatModel = AgentSpecToLangGraphConverter().convert(llm_node.llm_config, {})
+        llm: BaseChatModel = self.convert(
+            llm_node.llm_config,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+        )
         return LlmNodeExecutor(llm_node, llm)
 
     def _tool_node_convert_to_langgraph(
-        self, tool_node: AgentSpecToolNode, tool_registry: Dict[str, "LangGraphTool"]
+        self,
+        tool_node: AgentSpecToolNode,
+        tool_registry: Dict[str, "LangGraphTool"],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
     ) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import ToolNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import ToolNodeExecutor
 
-        try:
-            tool = tool_registry[tool_node.tool.name]
-        except KeyError:
-            raise RuntimeError(f"Tool {tool_node.tool.id} was not found in the tool registry.")
+        tool = self.convert(
+            tool_node.tool,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+        )
 
         return ToolNodeExecutor(tool_node, tool)
 
     def _end_node_convert_to_langgraph(self, end_node: AgentSpecEndNode) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import EndNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import EndNodeExecutor
 
         return EndNodeExecutor(end_node)
 
     def _start_node_convert_to_langgraph(self, start_node: AgentSpecStartNode) -> "NodeExecutor":
-        from langgraph_agentspec_adapter._utils import StartNodeExecutor
+        from langgraph_agentspec_adapter._node_execution import StartNodeExecutor
 
         return StartNodeExecutor(start_node)
-    
+
     def _remote_tool_convert_to_langgraph(
         self,
         remote_tool: AgentSpecRemoteTool,
@@ -356,7 +495,7 @@ class AgentSpecToLangGraphConverter:
                 method=remote_tool.http_method,
                 url=remote_tool_url,
                 params=remote_tool_query_params,
-                data=remote_tool_data,
+                json=remote_tool_data,
                 headers=remote_tool_headers,
             )
             return response.json()
@@ -374,7 +513,7 @@ class AgentSpecToLangGraphConverter:
             func=_remote_tool,
         )
         return structured_tool
-    
+
     def _server_tool_convert_to_langgraph(
         self,
         agentspec_server_tool: AgentSpecServerTool,
@@ -414,7 +553,7 @@ class AgentSpecToLangGraphConverter:
             f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
             "Expected a callable or a StructuredTool."
         )
-    
+
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
     ) -> LangGraphTool:
@@ -445,44 +584,93 @@ class AgentSpecToLangGraphConverter:
         )
         return structured_tool
 
-    def _agent_convert_to_langgraph(
+    def _create_react_agent_with_given_info(
         self,
-        agentspec_component: AgentSpecAgent,
+        name: str,
+        system_prompt: str,
+        llm_config: AgentSpecLlmConfig,
+        tools: List[AgentSpecTool],
+        inputs: List[AgentSpecProperty],
+        outputs: List[AgentSpecProperty],
         tool_registry: Dict[str, LangGraphTool],
         converted_components: Dict[str, Any],
-        checkpointer: Checkpointer,
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
     ) -> CompiledStateGraph[Any, Any, Any]:
-        if agentspec_component.llm_config is None:
-            raise ValueError(
-                f"LangGraph create_react_agent requires an LLM configuration, was ``None``"
+        model = self.convert(
+            llm_config,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+        )
+        langgraph_tools = [
+            self.convert(
+                t,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
-        model = self.convert(agentspec_component.llm_config, tool_registry, converted_components)
-        tools = [
-            self.convert(t, tool_registry, converted_components) for t in agentspec_component.tools
+            for t in tools
         ]
-        prompt = SystemMessage(agentspec_component.system_prompt)
+        prompt = SystemMessage(system_prompt)
         output_model: Optional[type[BaseModel]] = None
         input_model: Optional[type[BaseModel]] = None
 
-        if agentspec_component.inputs:
+        if inputs:
             input_model = _create_pydantic_model_from_properties(
-                "AgentInputModel", agentspec_component.inputs
-            )
-        if agentspec_component.outputs:
-            output_model = _create_pydantic_model_from_properties(
-                "AgentOutputModel", agentspec_component.outputs
+                "AgentInputModel",
+                inputs
+                + [
+                    # Properties required by langgraph
+                    AgentSpecIntegerProperty(title="remaining_steps"),
+                    AgentSpecListProperty(title="messages", item_type=AgentSpecProperty()),
+                ]
+                + (
+                    [
+                        AgentSpecDictProperty(
+                            title="structured_response", value_type=AgentSpecProperty()
+                        )
+                    ]
+                    if outputs
+                    else []
+                ),
             )
 
-        agent = create_react_agent(
-            name=agentspec_component.name,
+        if outputs:
+            output_model = _create_pydantic_model_from_properties("AgentOutputModel", outputs)
+
+        return create_react_agent(
+            name=name,
             model=model,
-            tools=tools,
+            tools=langgraph_tools,
             prompt=prompt,
             checkpointer=checkpointer,
             response_format=output_model,
             state_schema=input_model,
         )
-        return agent
+
+    def _agent_convert_to_langgraph(
+        self,
+        agentspec_component: AgentSpecAgent,
+        tool_registry: Dict[str, LangGraphTool],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+    ) -> CompiledStateGraph[Any, Any, Any]:
+        return self._create_react_agent_with_given_info(
+            name=agentspec_component.name,
+            system_prompt=agentspec_component.system_prompt,
+            llm_config=agentspec_component.llm_config,
+            tools=agentspec_component.tools,
+            inputs=agentspec_component.inputs or [],
+            outputs=agentspec_component.outputs or [],
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+        )
 
     def _llm_convert_to_langgraph(self, llm_config: AgentSpecLlmConfig) -> BaseChatModel:
         """Create the LLM model object for the chosen llm configuration."""
