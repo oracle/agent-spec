@@ -8,6 +8,7 @@
 
 
 from pyagentspec.component import ComponentWithIO
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 class Tool(ComponentWithIO, abstract=True):
@@ -18,4 +19,21 @@ class Tool(ComponentWithIO, abstract=True):
     It can be used in a flow by a dedicated tool execution step
     """
 
-    pass
+    requires_confirmation: bool = False
+    """Flag to make tool require user confirmation before execution."""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = set()
+        if agentspec_version < AgentSpecVersionEnum.v25_4_2:
+            fields_to_exclude.add("requires_confirmation")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        if self.requires_confirmation:
+            # If the tool requires confirmation, then we need to use the new AgentSpec version
+            # If not, the old version will work as it was the de-facto
+            return AgentSpecVersionEnum.v25_4_2
+
+        return super()._infer_min_agentspec_version_from_configuration()

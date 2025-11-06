@@ -29,6 +29,7 @@ tools:
   outputs:
   - title: forecast
     type: string
+  requires_confirmation: false
 - component_type: ServerTool
   description: Gets information about the city history
   id: history_tool
@@ -41,6 +42,7 @@ tools:
   outputs:
   - title: forecast
     type: string
+  requires_confirmation: false
 - api_spec_uri: https://my.api.spec.url/tool
   component_type: RemoteTool
   data:
@@ -61,5 +63,6 @@ tools:
   query_params:
     my_query_param: abc
   url: https://my.url/tool
+  requires_confirmation: false
 human_in_the_loop: true
 agentspec_version: 25.4.2

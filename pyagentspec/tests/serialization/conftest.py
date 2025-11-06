@@ -12,6 +12,7 @@ import yaml
 from pyagentspec.flows.edges import ControlFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode
+from pyagentspec.llms.vllmconfig import VllmConfig
 
 
 def assert_serialized_representations_are_equal(
@@ -40,3 +41,8 @@ def simplest_flow() -> Flow:
             ControlFlowEdge(name="start::end", from_node=start_node, to_node=end_node),
         ],
     )
+
+
+@pytest.fixture()
+def vllmconfig():
+    yield VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")

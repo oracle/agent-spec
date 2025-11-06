@@ -24,11 +24,6 @@ from .conftest import assert_serialized_representations_are_equal
 
 
 @pytest.fixture()
-def vllmconfig():
-    yield VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
-
-
-@pytest.fixture()
 def tools():
     city_input = StringProperty(
         title="city_name",

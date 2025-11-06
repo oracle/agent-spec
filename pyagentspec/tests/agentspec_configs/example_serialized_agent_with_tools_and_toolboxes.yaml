@@ -25,6 +25,7 @@ tools:
   outputs: []
   client_transport:
     $component_ref: mcp_transport
+  requires_confirmation: false
 toolboxes:
 - component_type: MCPToolBox
   id: mcptoolbox_no_filter
