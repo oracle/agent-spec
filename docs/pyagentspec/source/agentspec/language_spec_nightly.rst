@@ -785,6 +785,11 @@ specified in the outputs. The key of the dictionary entry must match the
 name of the property specified in the outputs. The runtime will parse the
 dictionary in order to extract the different outputs and bind them correctly.
 
+Tools also include a boolean ``requires_confirmation`` attribute.
+When set to true, this signals that execution environments should require
+user/operator approval before running the tool, which is especially relevant
+for tools performing critical or sensitive actions.
+
 While ServerTool and ClientTool do not require specific additional
 parameters, the RemoteTool requires to include also the details needed
 to perform the remote call to the tool.
@@ -792,7 +797,8 @@ to perform the remote call to the tool.
 .. code-block:: python
 
    class Tool(ComponentWithIO):
-     pass
+     # Flag to make tool require user confirmation before execution.
+     requires_confirmation: bool
 
    class ClientTool(Tool):
      pass

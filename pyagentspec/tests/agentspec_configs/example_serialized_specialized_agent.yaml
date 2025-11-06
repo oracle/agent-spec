@@ -37,6 +37,7 @@ agent:
     outputs:
     - title: forecast
       type: string
+    requires_confirmation: false
   - component_type: ServerTool
     id: history_tool
     name: get_city_history_info
@@ -49,6 +50,7 @@ agent:
     outputs:
     - title: forecast
       type: string
+    requires_confirmation: false
   human_in_the_loop: true
 agent_specialization_parameters:
   component_type: AgentSpecializationParameters
@@ -80,5 +82,6 @@ agent_specialization_parameters:
       my_query_param: abc
     headers:
       my_header: '123'
+    requires_confirmation: false
   human_in_the_loop: null
 agentspec_version: 25.4.2

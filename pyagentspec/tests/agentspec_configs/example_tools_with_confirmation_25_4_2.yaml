@@ -1,0 +1,69 @@
+component_type: Agent
+id: dummy_agent
+name: Dummy Agent With All Tools
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: VllmConfig
+  id: agi1
+  name: agi1
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: http://some.where
+  model_id: agi_model1
+system_prompt: Testing tools with requires_confirmation in v25.4.2
+tools:
+- component_type: ClientTool
+  id: tool123
+  name: tool
+  description: Tool requiring confirmation
+  metadata: {}
+  inputs: []
+  outputs: []
+  requires_confirmation: true
+- component_type: ServerTool
+  id: server123
+  name: server_tool
+  description: Server tool requiring confirmation
+  metadata: {}
+  inputs: []
+  outputs: []
+  requires_confirmation: true
+- component_type: RemoteTool
+  id: remote123
+  name: remote_tool
+  description: Remote tool requiring confirmation
+  metadata: {}
+  inputs: []
+  outputs: []
+  requires_confirmation: true
+  url: https://example.com/api
+  http_method: POST
+  api_spec_uri: https://example.com/openapi.yaml
+  data: {}
+  query_params: {}
+  headers: {}
+- component_type: MCPTool
+  id: mcp123
+  name: mcp_tool
+  description: MCP tool requiring confirmation
+  metadata: {}
+  inputs: []
+  outputs: []
+  requires_confirmation: true
+  client_transport:
+    component_type: SSETransport
+    id: sse1
+    name: mcp_transport
+    description: null
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60.0
+    url: https://example.com/sse
+    headers: null
+toolboxes: []
+human_in_the_loop: true
+agentspec_version: 25.4.2

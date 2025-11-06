@@ -7,6 +7,11 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **Tools with User Confirmation**
+
+  Tools now have a new flag named `requires_confirmation`, which can be set to require user/operator approval before running the tool.
+  For more information read the :doc:`API Reference <api/tools>`.
+
 * **ToolBoxes**
 
   Toolboxes are now available in the Agent Spec Language Specification and can be

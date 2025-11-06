@@ -1318,7 +1318,12 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "$referenced_components": {
+                "requires_confirmation":{
+          "default":false,
+          "title":"Requires Confirmation",
+          "type":"boolean"
+        },
+        "$referenced_components": {
                     "$ref": "#/$defs/ReferencedComponents"
                 },
                 "component_type": {
@@ -2161,7 +2166,12 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "client_transport": {
+                "requires_confirmation":{
+          "default":false,
+          "title":"Requires Confirmation",
+          "type":"boolean"
+        },
+        "client_transport": {
                     "$ref": "#/$defs/ClientTransport"
                 },
                 "$referenced_components": {
@@ -3418,7 +3428,12 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "url": {
+                "requires_confirmation":{
+          "default":false,
+          "title":"Requires Confirmation",
+          "type":"boolean"
+        },
+        "url": {
                     "title": "Url",
                     "type": "string"
                 },
@@ -3720,7 +3735,12 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "$referenced_components": {
+                "requires_confirmation":{
+          "default":false,
+          "title":"Requires Confirmation",
+          "type":"boolean"
+        },
+        "$referenced_components": {
                     "$ref": "#/$defs/ReferencedComponents"
                 },
                 "component_type": {
