@@ -15,7 +15,7 @@ from langgraph.graph.state import CompiledStateGraph, StateNodeSpec
 from langgraph_agentspec_adapter._agentspec_converter_flow import (
     _langgraph_graph_convert_to_agentspec,
 )
-from langgraph_agentspec_adapter._utils import LangGraphComponent, LangGraphLlmConfig
+from langgraph_agentspec_adapter._types import LangGraphComponent, LangGraphLlmConfig
 
 from pyagentspec import Property
 from pyagentspec.agent import Agent as AgentSpecAgent

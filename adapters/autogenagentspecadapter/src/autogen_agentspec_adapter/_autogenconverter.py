@@ -4,17 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-
-import asyncio
-import functools
-import inspect
 import keyword
 import re
-import typing
-import warnings
-from functools import partial
-from textwrap import dedent
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Union, cast, get_args
 from urllib.parse import urljoin
 
 import httpx
@@ -22,7 +14,6 @@ from autogen_agentchat.agents import AssistantAgent as AutogenAssistantAgent
 from autogen_agentspec_adapter._utils import render_template
 from autogen_core.models import ChatCompletionClient as AutogenChatCompletionClient
 from autogen_core.models import ModelFamily, ModelInfo
-from autogen_core.tools import BaseTool
 from autogen_core.tools import BaseTool as AutogenBaseTool
 from autogen_core.tools import FunctionTool as AutogenFunctionTool
 from autogen_ext.models.ollama import (
@@ -49,6 +40,14 @@ from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
 from .functiontool import FunctionTool
 
 _AutoGenTool = Union[AutogenFunctionTool, Callable[..., Any]]
+
+
+def literal_values(literal_type):
+    return get_args(literal_type)
+
+
+def fits_literal(value, literal_type) -> bool:
+    return value in get_args(literal_type)
 
 
 def _create_pydantic_model_from_properties(
@@ -172,7 +171,14 @@ class AgentSpecToAutogenConverter:
             vision = model_info.get("vision", True)
             function_calling = model_info.get("function_calling", True)
             json_output = model_info.get("json_output", True)
-            family = model_info.get("family", ModelFamily.UNKNOWN)
+            family = model_info.get(
+                "family",
+                (
+                    agentspec_llm_.model_id
+                    if fits_literal(agentspec_llm_.model_id, ModelFamily.ANY)
+                    else ModelFamily.UNKNOWN
+                ),
+            )
             structured_output = model_info.get("structured_output", True)
             return dict(
                 model=agentspec_llm_.model_id,
@@ -304,6 +310,7 @@ class AgentSpecToAutogenConverter:
             # This interpretation comes from the analysis of Autogen Agent definition examples
             name=_sanitize_agent_name(agentspec_agent.name),
             system_message=agentspec_agent.system_prompt,
+            reflect_on_tool_use=len(agentspec_agent.tools) > 0,
             model_client=(
                 self.convert(
                     agentspec_agent.llm_config,

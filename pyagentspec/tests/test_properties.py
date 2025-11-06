@@ -523,6 +523,19 @@ def test_property_can_be_serialized_and_deserialized(property_cls, init_kwargs):
             {"anyOf": [{"type": "number"}, {"type": "string"}, {"type": "integer"}]},
             True,
         ),
+        (
+            {
+                "type": "object",
+                "properties": {"a": {"type": "number", "default": 1}},
+                "additionalProperties": False,
+            },
+            {
+                "type": "object",
+                "properties": {"a": {"type": "number", "default": 1}},
+                "additionalProperties": True,
+            },
+            False,
+        ),
     ],
 )
 def test_json_schemas_have_same_type(
@@ -713,6 +726,19 @@ def test_json_schemas_have_same_type(
             },
             {"anyOf": [{"type": "array", "items": {"type": "integer"}}, {"type": "number"}]},
             True,
+        ),
+        (
+            {
+                "type": "object",
+                "properties": {"a": {"type": "number", "default": 1}},
+                "additionalProperties": False,
+            },
+            {
+                "type": "object",
+                "properties": {"a": {"type": "number", "default": 1}},
+                "additionalProperties": True,
+            },
+            False,
         ),
     ],
 )

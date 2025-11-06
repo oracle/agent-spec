@@ -49,7 +49,9 @@ def _validate_schema_titles(json_schema: JsonSchemaValue) -> None:
         _validate_schema_titles(json_schema["items"])
     for inner_schema in json_schema.get("anyOf", []):
         _validate_schema_titles(inner_schema)
-    if "additionalProperties" in json_schema:
+    if "additionalProperties" in json_schema and not isinstance(
+        json_schema["additionalProperties"], bool
+    ):
         _validate_schema_titles(json_schema["additionalProperties"])
     for inner_schema in json_schema.get("properties", {}).values():
         _validate_schema_titles(inner_schema)
@@ -413,9 +415,15 @@ def json_schemas_have_same_type(
             ):
                 return False
     if "additionalProperties" in json_schema_a or "additionalProperties" in json_schema_b:
+        json_schema_a_additional_properties = json_schema_a.get("additionalProperties", {})
+        json_schema_b_additional_properties = json_schema_b.get("additionalProperties", {})
+        # If any of the two additional properties is a boolean, we check strict equality (bool == dict is always false)
+        if isinstance(json_schema_a_additional_properties, bool) or isinstance(
+            json_schema_b_additional_properties, bool
+        ):
+            return bool(json_schema_a_additional_properties == json_schema_b_additional_properties)
         if not json_schemas_have_same_type(
-            json_schema_a.get("additionalProperties", {}),
-            json_schema_b.get("additionalProperties", {}),
+            json_schema_a_additional_properties, json_schema_b_additional_properties
         ):
             return False
     return True
@@ -481,9 +489,16 @@ def json_schema_is_castable_to(schema_a: JsonSchemaValue, schema_b: JsonSchemaVa
                 properties_a[property_name], property_type
             ):
                 return False
+
+        schema_a_additional_properties = schema_a.get("additionalProperties", {})
+        schema_b_additional_properties = schema_b.get("additionalProperties", {})
+        # If any of the two additional properties is a boolean, we check strict equality (bool == dict is always false)
+        if isinstance(schema_a_additional_properties, bool) or isinstance(
+            schema_b_additional_properties, bool
+        ):
+            return bool(schema_a_additional_properties == schema_b_additional_properties)
         if not json_schema_is_castable_to(
-            schema_a.get("additionalProperties", {}),
-            schema_b.get("additionalProperties", {}),
+            schema_a_additional_properties, schema_b_additional_properties
         ):
             return False
         return True
