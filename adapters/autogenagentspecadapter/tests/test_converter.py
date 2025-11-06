@@ -86,3 +86,53 @@ def test_agentspec_agent_can_be_converted_to_autogen() -> None:
     assert autogen_assistant._system_messages[0].content == "Use tools to solve tasks."
     assert len(autogen_assistant._tools) == 1
     assert isinstance(autogen_assistant._model_client, OllamaChatCompletionClient)
+
+
+def test_tool_descriptions_are_preserved_when_converted_to_autogen() -> None:
+    tool_name = "get_user_info"
+    tool_description = "Fetch information about a user."
+    tool_param_name = "username"
+    tool_param_description = "GitHub user name to look up."
+
+    agent = Agent(
+        name="autogen_assistant",
+        llm_config=OllamaConfig(
+            name="agi_model",
+            model_id="agi_model",
+            url="url_to_my_agi_model",
+        ),
+        tools=[
+            ServerTool(
+                name=tool_name,
+                description=tool_description,
+                inputs=[StringProperty(title=tool_param_name, description=tool_param_description)],
+                outputs=[StringProperty(title="result")],
+            )
+        ],
+        system_prompt="Use tools to solve tasks.",
+    )
+    agentspec_yaml = AgentSpecSerializer().to_yaml(agent)
+
+    def tool_callable(username: str) -> str:
+        """Not the right docstring"""
+        return "hello world"
+
+    # Convert to an AutoGen AssistantAgent using a callable from the registry for the tool
+    autogen_assistant = AgentSpecLoader(tool_registry={tool_name: tool_callable}).load_yaml(
+        agentspec_yaml
+    )
+    assert isinstance(autogen_assistant, AssistantAgent)
+    assert len(autogen_assistant._tools) == 1
+
+    tool = autogen_assistant._tools[0]
+    # Top-level tool description should match the AgentSpec tool description
+    assert tool.name == tool_name
+    assert tool.description == tool_description
+    # The args model should preserve parameter descriptions
+    assert tool.schema["name"] == tool_name
+    assert tool.schema["description"] == tool_description
+    assert tool_param_name in tool.schema["parameters"]["properties"]
+    assert (
+        tool.schema["parameters"]["properties"][tool_param_name]["description"]
+        == tool_param_description
+    )

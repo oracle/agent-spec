@@ -8,10 +8,10 @@
 import asyncio
 import functools
 import inspect
+import keyword
+import re
 import typing
 import warnings
-import re
-import keyword
 from functools import partial
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
@@ -40,6 +40,7 @@ from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
 from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
 from pyagentspec.property import Property as AgentSpecProperty
+from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
@@ -56,10 +57,15 @@ def _create_pydantic_model_from_properties(
     # Create a pydantic model whose attributes are the given properties
     fields: Dict[str, Any] = {}
     for property_ in properties:
+        field_parameters: Dict[str, Any] = {}
         param_name = property_.title
-        default = property_.default
+        if property_.default is not _agentspec_empty_default:
+            field_parameters["default"] = property_.default
+        if property_.description:
+            field_parameters["description"] = property_.description
         annotation = _json_schema_type_to_python_annotation(property_.json_schema)
-        fields[param_name] = (annotation, Field(default=default))
+        # Preserve description from spec so runtimes see the intended guidance
+        fields[param_name] = (annotation, Field(**field_parameters))
     return cast(type[BaseModel], create_model(model_name, **fields))
 
 
@@ -90,10 +96,11 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
 
     return mapping.get(json_schema["type"], "Any")
 
+
 # Autogen requires that agent names be valid Python identifiers. Thus, we sanitize names to make sure they are valid.
 def _sanitize_agent_name(name: str) -> str:
     # Replace non-identifier characters with underscores
-    sanitized = re.sub(r'\W', '_', name or "")
+    sanitized = re.sub(r"\W", "_", name or "")
     # Prefix underscore if it starts with a digit
     if sanitized and sanitized[0].isdigit():
         sanitized = f"_{sanitized}"
@@ -210,7 +217,8 @@ class AgentSpecToAutogenConverter:
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
             args_model=_create_pydantic_model_from_properties(
-                agentspec_client_tool.name.title() + "InputSchema", agentspec_client_tool.inputs or []
+                agentspec_client_tool.name.title() + "InputSchema",
+                agentspec_client_tool.inputs or [],
             ),
             func=client_tool,
         )
@@ -224,11 +232,18 @@ class AgentSpecToAutogenConverter:
         if agentspec_tool.name in tool_registry:
             tool = tool_registry[agentspec_tool.name]
             if isinstance(tool, AutogenFunctionTool):
+                # If the registry already supplies an Autogen tool, use it as-is.
+                # Note: this will keep the tool's own description/schema.
                 return tool
             elif callable(tool):
-                return AutogenFunctionTool(
+                # Build a FunctionTool that enforces the spec's description and input schema
+                return FunctionTool(
                     name=agentspec_tool.name,
                     description=agentspec_tool.description or "",
+                    args_model=_create_pydantic_model_from_properties(
+                        agentspec_tool.name.title() + "InputSchema",
+                        agentspec_tool.inputs or [],
+                    ),
                     func=tool,
                 )
             else:
@@ -287,7 +302,7 @@ class AgentSpecToAutogenConverter:
             # We interpret the name as the `name` of the agent in Autogen agent,
             # the system prompt as the `system_message`
             # This interpretation comes from the analysis of Autogen Agent definition examples
-            name = _sanitize_agent_name(agentspec_agent.name),
+            name=_sanitize_agent_name(agentspec_agent.name),
             system_message=agentspec_agent.system_prompt,
             model_client=(
                 self.convert(
