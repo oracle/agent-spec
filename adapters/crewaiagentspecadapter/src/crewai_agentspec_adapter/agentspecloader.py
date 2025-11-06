@@ -4,22 +4,26 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Dict, List, Optional
 
-from autogen_agentchat.agents import AssistantAgent as AutogenAssistantAgent
+from typing import Dict, List, Optional, Union
+
+from crewai import Agent as CrewAIAgent
+from crewai import Flow as CrewAIFlow
 
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 
-from ._autogenconverter import AgentSpecToAutogenConverter, _AutoGenTool
+from ._crewaiconverter import AgentSpecToCrewAIConverter, _CrewAIServerToolType
+
+_CrewAIComponent = Union[CrewAIAgent, CrewAIFlow]
 
 
 class AgentSpecLoader:
-    """Helper class to convert Agent Spec configurations to AutoGen objects."""
+    """Helper class to convert Agent Spec configurations to CrewAI objects."""
 
     def __init__(
         self,
-        tool_registry: Optional[Dict[str, _AutoGenTool]] = None,
+        tool_registry: Optional[Dict[str, _CrewAIServerToolType]] = None,
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
     ):
         """
@@ -37,51 +41,47 @@ class AgentSpecLoader:
         self.tool_registry = tool_registry or {}
         self.plugins = plugins
 
-    def load_yaml(self, serialized_assistant: str) -> AutogenAssistantAgent:
+    def load_yaml(self, serialized_assistant: str) -> _CrewAIComponent:
         """
-        Transform the given Agent Spec YAML representation into the respective AutoGen Component
+        Transform the given Agent Spec YAML representation into the respective CrewAI Component
 
         Parameters
         ----------
 
         serialized_assistant:
-            Serialized Agent Spec configuration to be converted to an AutoGen Component.
+            Serialized Agent Spec configuration to be converted to a CrewAI Component.
         """
         agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_yaml(
             serialized_assistant
         )
         return self.load_component(agentspec_assistant)
 
-    def load_json(self, serialized_assistant: str) -> AutogenAssistantAgent:
+    def load_json(self, serialized_assistant: str) -> _CrewAIComponent:
         """
-        Transform the given Agent Spec JSON representation into the respective AutoGen Component
+        Transform the given Agent Spec JSON representation into the respective CrewAI Component
 
         Parameters
         ----------
 
         serialized_assistant:
-            Serialized Agent Spec configuration to be converted to an AutoGen Component.
+            Serialized Agent Spec configuration to be converted to a CrewAI Component.
         """
         agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_json(
             serialized_assistant
         )
         return self.load_component(agentspec_assistant)
 
-    def load_component(self, agentspec_component: AgentSpecComponent) -> AutogenAssistantAgent:
+    def load_component(self, agentspec_component: AgentSpecComponent) -> _CrewAIComponent:
         """
-        Transform the given PyAgentSpec Component into the respective AutoGen Component
+        Transform the given PyAgentSpec Component into the respective CrewAI Component
 
         Parameters
         ----------
 
         agentspec_component:
-            PyAgentSpec Component to be converted to an AutoGen Component.
+            PyAgentSpec Component to be converted to a CrewAI Component.
         """
-        autogen_component = AgentSpecToAutogenConverter().convert(
+        crewai_component = AgentSpecToCrewAIConverter().convert(
             agentspec_component, self.tool_registry
         )
-        if not isinstance(autogen_component, AutogenAssistantAgent):
-            raise TypeError(
-                f"Expected an AutoGen AssistantAgent, but got '{type(autogen_component)}' instead"
-            )
-        return autogen_component
+        return crewai_component

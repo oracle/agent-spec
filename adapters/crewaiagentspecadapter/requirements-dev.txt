@@ -1,0 +1,5 @@
+-c constraints/constraints.txt
+-e .
+
+# For remote tool tests
+fastapi[standard-no-fastapi-cloud-cli]

@@ -1,0 +1,266 @@
+# Copyright (C) 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+from typing import Any, Callable, Dict, List, Optional, Union, cast
+
+import httpx
+from crewai import LLM as CrewAILlm
+from crewai import Agent as CrewAIAgent
+from crewai.tools import BaseTool as CrewAITool
+from crewai.tools.base_tool import Tool as CrewAIServerTool
+from pydantic import BaseModel, Field, create_model
+
+from pyagentspec.agent import Agent as AgentSpecAgent
+from pyagentspec.component import Component as AgentSpecComponent
+from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
+from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
+from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
+from pyagentspec.property import Property as AgentSpecProperty
+from pyagentspec.property import _empty_default as _agentspec_empty_default
+from pyagentspec.tools import Tool as AgentSpecTool
+from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
+from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
+from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
+
+_CrewAIServerToolType = Union[CrewAIServerTool, Callable[..., Any]]
+
+from crewai_agentspec_adapter._utils import render_template
+
+
+def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
+    if "anyOf" in json_schema:
+        possible_types = set(
+            _json_schema_type_to_python_annotation(inner_json_schema_type)
+            for inner_json_schema_type in json_schema["anyOf"]
+        )
+        return f"Union[{','.join(possible_types)}]"
+    if isinstance(json_schema["type"], list):
+        possible_types = set(
+            _json_schema_type_to_python_annotation(inner_json_schema_type)
+            for inner_json_schema_type in json_schema["type"]
+        )
+        return f"Union[{','.join(possible_types)}]"
+    mapping = {
+        "string": "str",
+        "number": "float",
+        "integer": "int",
+        "boolean": "bool",
+        "null": "None",
+    }
+    if json_schema["type"] == "object":
+        # We could do better in inferring the type of values, for now we just use Any
+        return "Dict[str, Any]"
+    if json_schema["type"] == "array":
+        return f"List[{_json_schema_type_to_python_annotation(json_schema['items'])}]"
+    return mapping.get(json_schema["type"], "Any")
+
+
+def _create_pydantic_model_from_properties(
+    model_name: str, properties: List[AgentSpecProperty]
+) -> BaseModel:
+    # Create a pydantic model whose attributes are the given properties
+    fields: Dict[str, Any] = {}
+    for property_ in properties:
+        field_parameters: Dict[str, Any] = {}
+        param_name = property_.title
+        if property_.default is not _agentspec_empty_default:
+            field_parameters["default"] = property_.default
+        if property_.description:
+            field_parameters["description"] = property_.description
+        annotation = _json_schema_type_to_python_annotation(property_.json_schema)
+        fields[param_name] = (annotation, Field(**field_parameters))
+    return create_model(model_name, **fields)  # type: ignore
+
+
+class AgentSpecToCrewAIConverter:
+
+    def convert(
+        self,
+        agentspec_component: AgentSpecComponent,
+        tool_registry: Dict[str, _CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        """Convert the given PyAgentSpec component object into the corresponding CrewAI component"""
+        if converted_components is None:
+            converted_components = {}
+
+        if agentspec_component.id in converted_components:
+            return converted_components[agentspec_component.id]
+
+        # If we did not find the object, we create it, and we record it in the referenced_objects registry
+        crewai_component: Any
+        if isinstance(agentspec_component, AgentSpecLlmConfig):
+            crewai_component = self._llm_convert_to_crewai(
+                agentspec_component, tool_registry, converted_components
+            )
+        elif isinstance(agentspec_component, AgentSpecAgent):
+            crewai_component = self._agent_convert_to_crewai(
+                agentspec_component, tool_registry, converted_components
+            )
+        elif isinstance(agentspec_component, AgentSpecTool):
+            crewai_component = self._tool_convert_to_crewai(
+                agentspec_component, tool_registry, converted_components
+            )
+        elif isinstance(agentspec_component, AgentSpecComponent):
+            raise NotImplementedError(
+                f"The AgentSpec Component type '{agentspec_component.__class__.__name__}' is not yet supported "
+                f"for conversion. Please contact the AgentSpec team."
+            )
+        else:
+            raise TypeError(
+                f"Expected object of type 'pyagentspec.component.Component',"
+                f" but got {type(agentspec_component)} instead"
+            )
+        converted_components[agentspec_component.id] = crewai_component
+        return converted_components[agentspec_component.id]
+
+    def _llm_convert_to_crewai(
+        self,
+        agentspec_llm: AgentSpecLlmConfig,
+        tool_registry: Dict[str, _CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> CrewAILlm:
+
+        def parse_url(url: str) -> str:
+            if not url.endswith("/v1"):
+                url += "/v1"
+            if not url.startswith("http"):
+                url = "http://" + url
+            return url
+
+        llm_parameters: Dict[str, Any] = {}
+        if isinstance(agentspec_llm, AgentSpecOpenAiConfig):
+            llm_parameters["model"] = "openai/" + agentspec_llm.model_id
+        elif isinstance(agentspec_llm, AgentSpecVllmModel):
+            # CrewAI uses lite llm underneath:
+            # https://community.crewai.com/t/help-how-to-use-a-custom-local-llm-with-vllm/5746
+            llm_parameters["model"] = "hosted_vllm/" + agentspec_llm.model_id
+            llm_parameters["api_base"] = parse_url(agentspec_llm.url)
+        elif isinstance(agentspec_llm, AgentSpecOllamaModel):
+            llm_parameters["model"] = "ollama/" + agentspec_llm.model_id
+            llm_parameters["base_url"] = parse_url(agentspec_llm.url)
+        else:
+            raise NotImplementedError()
+
+        if agentspec_llm.default_generation_parameters is not None:
+            llm_parameters["top_p"] = agentspec_llm.default_generation_parameters.top_p
+            llm_parameters["temperature"] = agentspec_llm.default_generation_parameters.temperature
+            llm_parameters["max_tokens"] = agentspec_llm.default_generation_parameters.max_tokens
+
+        return CrewAILlm(**llm_parameters)
+
+    def _tool_convert_to_crewai(
+        self,
+        agentspec_tool: AgentSpecTool,
+        tool_registry: Dict[str, _CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> CrewAITool:
+        if agentspec_tool.name in tool_registry:
+            tool = tool_registry[agentspec_tool.name]
+            if isinstance(tool, CrewAIServerTool):
+                return tool
+            elif callable(tool):
+                return CrewAIServerTool(
+                    name=agentspec_tool.name,
+                    description=agentspec_tool.description or "",
+                    args_schema=_create_pydantic_model_from_properties(
+                        agentspec_tool.name.title() + "InputSchema", agentspec_tool.inputs or []
+                    ),
+                    func=tool,
+                )
+            else:
+                raise ValueError(
+                    f"Unsupported type of ServerTool `{agentspec_tool.name}`: {type(tool)}"
+                )
+        if isinstance(agentspec_tool, AgentSpecServerTool):
+            raise ValueError(
+                f"The implementation of the ServerTool `{agentspec_tool.name}` "
+                f"must be provided in the tool registry"
+            )
+        elif isinstance(agentspec_tool, AgentSpecClientTool):
+
+            def client_tool(**kwargs: Any) -> Any:
+                tool_request = {
+                    "type": "client_tool_request",
+                    "name": agentspec_tool.name,
+                    "description": agentspec_tool.description,
+                    "inputs": kwargs,
+                }
+                response = input(f"{tool_request} -> ")
+                return response
+
+            client_tool.__name__ = agentspec_tool.name
+            client_tool.__doc__ = agentspec_tool.description
+            return CrewAIServerTool(
+                name=agentspec_tool.name,
+                description=agentspec_tool.description or "",
+                args_schema=_create_pydantic_model_from_properties(
+                    agentspec_tool.name.title() + "InputSchema", agentspec_tool.inputs or []
+                ),
+                func=client_tool,
+            )
+        elif isinstance(agentspec_tool, AgentSpecRemoteTool):
+            return self._remote_tool_convert_to_crewai(agentspec_tool)
+        raise ValueError(
+            f"Tools of type {type(agentspec_tool)} are not yet supported for translation to CrewAI"
+        )
+
+    def _remote_tool_convert_to_crewai(self, remote_tool: AgentSpecRemoteTool) -> CrewAITool:
+        def _remote_tool(**kwargs: Any) -> Any:
+            remote_tool_data = {k: render_template(v, kwargs) for k, v in remote_tool.data.items()}
+            remote_tool_headers = {
+                k: render_template(v, kwargs) for k, v in remote_tool.headers.items()
+            }
+            remote_tool_query_params = {
+                k: render_template(v, kwargs) for k, v in remote_tool.query_params.items()
+            }
+            remote_tool_url = render_template(remote_tool.url, kwargs)
+            response = httpx.request(
+                method=remote_tool.http_method,
+                url=remote_tool_url,
+                params=remote_tool_query_params,
+                data=remote_tool_data,
+                headers=remote_tool_headers,
+            )
+            return response.json()
+
+        _remote_tool.__name__ = remote_tool.name
+        _remote_tool.__doc__ = remote_tool.description
+        return CrewAIServerTool(
+            name=remote_tool.name,
+            description=remote_tool.description or "",
+            args_schema=_create_pydantic_model_from_properties(
+                remote_tool.name.title() + "InputSchema", remote_tool.inputs or []
+            ),
+            func=_remote_tool,
+        )
+
+    def _agent_convert_to_crewai(
+        self,
+        agentspec_agent: AgentSpecAgent,
+        tool_registry: Dict[str, _CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> CrewAIAgent:
+        return CrewAIAgent(
+            # We interpret the name as the `role` of the agent in CrewAI,
+            # the description as the `backstory`, and the system prompt as the `goal`, as they are all required
+            # This interpretation comes from the analysis of CrewAI Agent definition examples
+            role=agentspec_agent.name,
+            goal=agentspec_agent.system_prompt,
+            backstory=agentspec_agent.description or "",
+            llm=self.convert(
+                agentspec_agent.llm_config,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+            ),
+            tools=[
+                self.convert(
+                    tool, tool_registry=tool_registry, converted_components=converted_components
+                )
+                for tool in agentspec_agent.tools
+            ],
+        )
