@@ -3,7 +3,8 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
-from typing import Any, Dict, List, Union
+import json
+from typing import Any, Dict, List, Tuple, Union
 from unittest.mock import patch
 
 import pytest
@@ -19,7 +20,8 @@ from pyagentspec.flows.nodes.llmnode import LlmNode
 from pyagentspec.flows.nodes.startnode import StartNode
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
-from pyagentspec.versioning import AgentSpecVersionEnum
+from pyagentspec.tools import ClientTool, ServerTool
+from pyagentspec.versioning import AGENTSPEC_VERSION_FIELD_NAME, AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
@@ -326,7 +328,6 @@ def test_dict_serialization_and_deserialization(simplest_flow: Flow) -> None:
 def test_json_and_yaml_serializations_have_the_right_order(
     outer_flow_with_complex_nested_structure: Agent,
 ) -> None:
-    import json
 
     priority_keys = ["component_type", "id", "name", "description"]
 
@@ -352,3 +353,83 @@ def test_json_and_yaml_serializations_have_the_right_order(
 
     assert_is_in_right_order(loaded_yaml)
     assert_is_in_right_order(loaded_json)
+
+
+@pytest.mark.parametrize(
+    "partial_component",
+    [
+        VllmConfig.build_from_partial_config({"name": "llm", "model_id": "agi_model"}),
+        LlmNode.build_from_partial_config(
+            {
+                "llm_config": VllmConfig.build_from_partial_config(
+                    {"name": "llm", "model_id": "agi_model"}
+                )
+            }
+        ),
+        Agent.build_from_partial_config(
+            {
+                "name": "agent",
+                "llm_config": VllmConfig(name="llm", model_id="agi_model", url="my.url"),
+                "tools": [
+                    ClientTool.build_from_partial_config({}),
+                    ServerTool(name="server_tool", inputs=[]),
+                ],
+            }
+        ),
+    ],
+)
+def test_partial_model_serialization(partial_component: Component) -> None:
+    serializer = AgentSpecSerializer(_allow_partial_model_serialization=True)
+    str_serialized_component = serializer.to_json(partial_component)
+    serialized_component = json.loads(str_serialized_component)
+    assert isinstance(serialized_component, dict)
+    assert "component_type" in serialized_component
+    assert serialized_component["component_type"] == partial_component.component_type
+
+
+@pytest.mark.parametrize(
+    "partial_component_dict, expected_validation_error_locs",
+    [
+        ({"component_type": "VllmConfig", "name": "llm", "model_id": "agi_model"}, [("url",)]),
+        (
+            {
+                "component_type": "LlmNode",
+                "llm_config": {
+                    "component_type": "VllmConfig",
+                    "name": "llm",
+                    "model_id": "agi_model",
+                },
+            },
+            [("name",), ("prompt_template",), ("llm_config", "url")],
+        ),
+        (
+            {
+                "component_type": "Agent",
+                "name": "agent",
+                "llm_config": {
+                    "component_type": "VllmConfig",
+                    "name": "llm",
+                    "model_id": "agi_model",
+                    "url": "my.url",
+                },
+                "tools": [
+                    {"component_type": "ClientTool"},
+                    {"component_type": "ServerTool", "name": "server_tool", "inputs": []},
+                ],
+            },
+            [("system_prompt",), ("tools", 0, "name")],
+        ),
+    ],
+)
+def test_partial_model_deserialization(
+    partial_component_dict: Dict[str, Any], expected_validation_error_locs: List[Tuple[str, ...]]
+) -> None:
+    partial_component_dict[AGENTSPEC_VERSION_FIELD_NAME] = AgentSpecVersionEnum.current_version
+    deserializer = AgentSpecDeserializer()
+    deserialized_component, validation_errors = deserializer.from_partial_dict(
+        partial_component_dict
+    )
+    assert isinstance(deserialized_component, Component)
+    assert deserialized_component.component_type == partial_component_dict["component_type"]
+    validation_error_locs = {e.loc for e in validation_errors}
+    assert validation_error_locs == set(expected_validation_error_locs)

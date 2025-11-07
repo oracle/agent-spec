@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Type
+from typing import List, Type
 
 import pytest
 
@@ -14,11 +14,12 @@ from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import BranchingNode, EndNode, LlmNode, StartNode, ToolNode
+from pyagentspec.flows.nodes.mapnode import MapNode, ReductionMethod
 from pyagentspec.llms.openaiconfig import OpenAiConfig
-from pyagentspec.managerworkers import ManagerWorkers
 from pyagentspec.property import StringProperty
 from pyagentspec.tools.tool import Tool
 from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 def test_flow_partially_constructed_infers_inputs() -> None:
@@ -103,7 +104,7 @@ with_all_concrete_component_types = pytest.mark.parametrize(
     "component_cls",
     [
         component_cls
-        for component_cls in Component._get_all_subclasses()
+        for component_cls in Component._get_all_subclasses(only_core_components=True)
         if not component_cls._is_abstract
     ],
 )
@@ -135,6 +136,52 @@ def test_validation_errors_dont_contain_missing_name_when_name_is_provided(
     validation_errors = component_cls.get_validation_errors({"name": "the_component_name"})
     missing_name = PyAgentSpecErrorDetails(type="missing", loc=("name",), msg="Field required")
     assert missing_name not in validation_errors
+
+
+def test_swarm_without_relations_returns_validation_errors() -> None:
+    first_agent = Agent(
+        name="first_agent",
+        system_prompt="Be Good!!",
+        llm_config=OpenAiConfig(name="default", model_id="test_model"),
+    )
+    partial_config = {
+        "name": "My Swarm",
+        "first_agent": first_agent,
+        "relationships": [],
+    }
+    swarm = Swarm.build_from_partial_config(partial_config)
+    assert isinstance(swarm, Swarm)
+    validation_errors = Swarm.get_validation_errors(partial_config)
+    no_relations = PyAgentSpecErrorDetails(
+        type="value_error",
+        msg=(
+            "Value error, Cannot define a `Swarm` with no relationships between the agents. Use "
+            "an `Agent` instead."
+        ),
+    )
+    assert no_relations in validation_errors
+
+
+def test_swarm_with_one_relation_has_no_validation_error() -> None:
+    first_agent = Agent(
+        name="first_agent",
+        system_prompt="Be Good!!",
+        llm_config=OpenAiConfig(name="default", model_id="test_model"),
+    )
+    second_agent = Agent(
+        name="second_agent",
+        system_prompt="Be Great!!",
+        llm_config=OpenAiConfig(name="default", model_id="test_model"),
+    )
+    partial_config = {
+        "name": "My Swarm",
+        "first_agent": first_agent,
+        "relationships": [(first_agent, second_agent)],
+    }
+    swarm = Swarm.build_from_partial_config(partial_config)
+    assert isinstance(swarm, Swarm)
+    validation_errors = Swarm.get_validation_errors(partial_config)
+    assert validation_errors == []
 
 
 def test_flow_can_return_multiple_validation_errors() -> None:
@@ -259,3 +306,21 @@ def test_complex_nested_component_returns_validation_errors() -> None:
         PyAgentSpecErrorDetails(type="missing", msg="Field required", loc=("tools", 1, "name"))
         in validation_errors
     )
+
+
+def test_partial_build_works_with_enums() -> None:
+    node = MapNode.build_from_partial_config(
+        dict(
+            name="mapnode",
+            reducers={
+                "collected_output": "average",
+            },
+            min_agentspec_version="25.4.1",
+            max_agentspec_version=AgentSpecVersionEnum.v25_4_1,
+        )
+    )
+    assert isinstance(node.reducers, dict)
+    assert "collected_output" in node.reducers
+    assert node.reducers["collected_output"] == ReductionMethod.AVERAGE
+    assert node.min_agentspec_version == AgentSpecVersionEnum.v25_4_1
+    assert node.max_agentspec_version == AgentSpecVersionEnum.v25_4_1

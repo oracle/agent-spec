@@ -12,7 +12,7 @@ The class provides entry points to read Agent Spec from a serialized form.
 """
 
 import json
-from typing import Dict, List, Literal, Optional, Union, overload
+from typing import Dict, List, Literal, Optional, Tuple, Union, overload
 
 import yaml
 
@@ -20,6 +20,7 @@ from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import _DeserializationContextImpl
 from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
 from pyagentspec.serialization.types import ComponentAsDictT, ComponentsRegistryT
+from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
 
 
 class AgentSpecDeserializer:
@@ -388,8 +389,57 @@ class AgentSpecDeserializer:
                     "valid Agent Spec Component. To load a disaggregated configuration, "
                     "make sure that `import_only_referenced_components` is `True`"
                 )
-            main_deserialization_context = _DeserializationContextImpl(plugins=self.plugins)
-            return main_deserialization_context._load_from_dict(
+            main_deserialization_context = _DeserializationContextImpl(
+                plugins=self.plugins, partial_model_build=False
+            )
+            return main_deserialization_context.load_config_dict(
+                dict_content, components_registry=components_registry
+            )[0]
+
+        # Else, loading the disaggregated components
+        if "$referenced_components" not in all_keys:
+            raise ValueError(
+                "Disaggregated component config should have the "
+                "'$referenced_components' field, but it is missing. "
+                "Make sure that you are passing the disaggregated config."
+            )
+        if all_keys != {"$referenced_components"}:
+            raise ValueError(
+                "Found extra fields on disaggregated components configuration: "
+                "Disaggregated components configuration should "
+                "only have the '$referenced_components' field, but "
+                f"got fields: {all_keys}"
+            )
+        referenced_components: Dict[str, Component] = {}
+        for component_id, component_as_dict in dict_content["$referenced_components"].items():
+            disag_deserialization_context = _DeserializationContextImpl(
+                plugins=self.plugins, partial_model_build=False
+            )
+            referenced_components[component_id] = disag_deserialization_context.load_config_dict(
+                component_as_dict, components_registry=components_registry
+            )[0]
+
+        return referenced_components
+
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        components_registry: Optional[ComponentsRegistryT] = None,
+        import_only_referenced_components: bool = False,
+    ) -> Tuple[Union[Component, Dict[str, Component]], List[PyAgentSpecErrorDetails]]:
+        all_keys = set(dict_content.keys())
+        if not import_only_referenced_components:
+            # Loading as a Main Component
+            if all_keys == {"$referenced_components"}:
+                raise ValueError(
+                    "Cannot deserialize the given content, it doesn't seem to be a "
+                    "valid Agent Spec Component. To load a disaggregated configuration, "
+                    "make sure that `import_only_referenced_components` is `True`"
+                )
+            main_deserialization_context = _DeserializationContextImpl(
+                plugins=self.plugins, partial_model_build=True
+            )
+            return main_deserialization_context.load_config_dict(
                 dict_content, components_registry=components_registry
             )
 
@@ -408,10 +458,16 @@ class AgentSpecDeserializer:
                 f"got fields: {all_keys}"
             )
         referenced_components: Dict[str, Component] = {}
+        all_validation_errors: List[PyAgentSpecErrorDetails] = []
         for component_id, component_as_dict in dict_content["$referenced_components"].items():
-            disag_deserialization_context = _DeserializationContextImpl(plugins=self.plugins)
-            referenced_components[component_id] = disag_deserialization_context._load_from_dict(
-                component_as_dict, components_registry=components_registry
+            disag_deserialization_context = _DeserializationContextImpl(
+                plugins=self.plugins, partial_model_build=True
             )
+            referenced_components[component_id], validation_errors = (
+                disag_deserialization_context.load_config_dict(
+                    component_as_dict, components_registry=components_registry
+                )
+            )
+            all_validation_errors.extend(validation_errors)
 
-        return referenced_components
+        return referenced_components, all_validation_errors

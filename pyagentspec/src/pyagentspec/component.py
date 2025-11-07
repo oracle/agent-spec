@@ -12,6 +12,7 @@ from copy import deepcopy
 from enum import Enum
 from operator import itemgetter
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     List,
@@ -21,6 +22,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
     get_args,
     get_origin,
 )
@@ -56,6 +58,9 @@ from pyagentspec.versioning import (
     AGENTSPEC_VERSION_FIELD_NAME,
     AgentSpecVersionEnum,
 )
+
+if TYPE_CHECKING:
+    from pyagentspec.serialization import ComponentDeserializationPlugin
 
 EnumType = TypeVar("EnumType", bound=Enum)
 SerializeAsEnum = Annotated[EnumType, PlainSerializer(lambda x: x.value)]
@@ -161,10 +166,10 @@ class Component(AbstractableModel, abstract=True):
     metadata: Optional[Dict[str, Any]] = Field(default_factory=lambda: dict())
     """Optional, additional metadata related to this Component"""
 
-    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+    min_agentspec_version: SkipJsonSchema[SerializeAsEnum["AgentSpecVersionEnum"]] = Field(
         default=AgentSpecVersionEnum.v25_4_1, init=False, exclude=True
     )
-    max_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+    max_agentspec_version: SkipJsonSchema[SerializeAsEnum["AgentSpecVersionEnum"]] = Field(
         default=AgentSpecVersionEnum.current_version, init=False, exclude=True
     )
 
@@ -248,17 +253,20 @@ class Component(AbstractableModel, abstract=True):
         min_agentspec_version: AgentSpecVersionEnum = self.min_agentspec_version
         min_component: Component = self
         for field_name in self.__class__.model_fields:
-            field_value = getattr(self, field_name)
-            sub_components = _get_children_direct_from_field_value(field_value)
-            items: List[Tuple[AgentSpecVersionEnum, Component]] = [
-                (min_agentspec_version, min_component)
-            ]
-            for component in sub_components:
-                if component.id in visited:
-                    continue
-                visited.add(component.id)
-                items.append(component._get_min_agentspec_version_and_component(visited=visited))
-            min_agentspec_version, min_component = max(items, key=itemgetter(0))
+            field_value = getattr(self, field_name, None)
+            if field_value is not None:
+                sub_components = _get_children_direct_from_field_value(field_value)
+                items: List[Tuple[AgentSpecVersionEnum, Component]] = [
+                    (min_agentspec_version, min_component)
+                ]
+                for component in sub_components:
+                    if component.id in visited:
+                        continue
+                    visited.add(component.id)
+                    items.append(
+                        component._get_min_agentspec_version_and_component(visited=visited)
+                    )
+                min_agentspec_version, min_component = max(items, key=itemgetter(0))
         return min_agentspec_version, min_component
 
     def _get_max_agentspec_version_and_component(
@@ -278,17 +286,20 @@ class Component(AbstractableModel, abstract=True):
         max_agentspec_version: AgentSpecVersionEnum = self.max_agentspec_version
         max_component = self
         for field_name in self.__class__.model_fields:
-            field_value = getattr(self, field_name)
-            sub_components = _get_children_direct_from_field_value(field_value)
-            items: List[Tuple[AgentSpecVersionEnum, Component]] = [
-                (max_agentspec_version, max_component)
-            ]
-            for component in sub_components:
-                if component.id in visited:
-                    continue
-                visited.add(component.id)
-                items.append(component._get_max_agentspec_version_and_component(visited=visited))
-            max_agentspec_version, max_component = min(items, key=itemgetter(0))
+            field_value = getattr(self, field_name, None)
+            if field_value is not None:
+                sub_components = _get_children_direct_from_field_value(field_value)
+                items: List[Tuple[AgentSpecVersionEnum, Component]] = [
+                    (max_agentspec_version, max_component)
+                ]
+                for component in sub_components:
+                    if component.id in visited:
+                        continue
+                    visited.add(component.id)
+                    items.append(
+                        component._get_max_agentspec_version_and_component(visited=visited)
+                    )
+                max_agentspec_version, max_component = min(items, key=itemgetter(0))
         return max_agentspec_version, max_component
 
     @staticmethod
@@ -474,72 +485,10 @@ class Component(AbstractableModel, abstract=True):
         raise ValueError("Missing proper serialization context")
 
     @classmethod
-    def _build_value(
-        cls,
-        value: Any,
-        field_annotation: Any,
-        validation_errors: Optional[List[PyAgentSpecErrorDetails]] = None,
-    ) -> Any:
-        nested_validation_errors: Optional[List[PyAgentSpecErrorDetails]] = (
-            [] if validation_errors is not None else None
-        )
-        if isinstance(value, dict):
-            sub_cls: Optional[Type[Component]] = _get_class_from_component_config(value)
-            if sub_cls is not None:
-                # The dictionary is a Component, so we build it accordingly collecting validation errors if needed
-                if validation_errors is not None:
-                    validation_errors.extend(sub_cls.get_validation_errors(value))
-                return sub_cls.build_from_partial_config(value)
-            elif issubclass(field_annotation, BaseModel):
-                # The dictionary should be used to build a pydantic model
-                return field_annotation.model_construct(**value)
-            else:
-                # The dictionary is an actual dictionary of values
-                # We need to go over the entries of the dictionary to build the values correctly
-                inner_values_dict: Dict[str, Any] = {}
-                elem_ann = _get_collection_element_type(value)
-                for name, inner_value in value.items():
-                    inner_values_dict[name] = cls._build_value(
-                        inner_value, elem_ann, validation_errors=nested_validation_errors
-                    )
-                    if nested_validation_errors and validation_errors is not None:
-                        # We enhance the location of the validation error by adding the entry key
-                        validation_errors.extend(
-                            [
-                                PyAgentSpecErrorDetails(
-                                    type=nested_error_details.type,
-                                    msg=nested_error_details.msg,
-                                    loc=(name, *nested_error_details.loc),
-                                )
-                                for nested_error_details in nested_validation_errors
-                            ]
-                        )
-                return inner_values_dict
-        elif isinstance(value, (list, tuple, set)):
-            elem_ann = _get_collection_element_type(field_annotation)
-            inner_values_list: List[Any] = []
-            for i, item in enumerate(value):
-                inner_values_list.append(
-                    cls._build_value(item, elem_ann, validation_errors=nested_validation_errors)
-                )
-                if nested_validation_errors and validation_errors is not None:
-                    # We enhance the location of the validation error by adding the index
-                    validation_errors.extend(
-                        [
-                            PyAgentSpecErrorDetails(
-                                type=nested_error_details.type,
-                                msg=nested_error_details.msg,
-                                loc=(i, *nested_error_details.loc),
-                            )
-                            for nested_error_details in nested_validation_errors
-                        ]
-                    )
-            return type(value)(inner_values_list)
-        return value
-
-    @classmethod
     def build_from_partial_config(
-        cls: Type[ComponentT], partial_config: Dict[str, Any]
+        cls: Type[ComponentT],
+        partial_config: Dict[str, Any],
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
     ) -> ComponentT:
         """
         Build the component without running any validation.
@@ -548,27 +497,44 @@ class Component(AbstractableModel, abstract=True):
         ----------
         partial_config:
             A dictionary containing an incomplete configuration that should be used to build this Component
+        plugins:
+            The list of ``ComponentDeserializationPlugin`` instances needed to build the component
 
         Returns
         -------
             The constructed component
         """
-        # Use model_construct to build from partial config without validation
-        # Source:
-        # https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel.model_construct
+        from pyagentspec.serialization import AgentSpecDeserializer
+        from pyagentspec.versioning import AGENTSPEC_VERSION_FIELD_NAME, AgentSpecVersionEnum
 
-        fields: Dict[str, Any] = {}
-        for name, value in partial_config.items():
-            if name in cls.model_fields:
-                fields[name] = cls._build_value(
-                    value=value,
-                    field_annotation=cls.model_fields[name].annotation,
-                )
-        return cls.model_construct(**fields)
+        deserializer = AgentSpecDeserializer(plugins=plugins)
+        # Deserialization needs an agentspec_version to deserialized for
+        # If it is given, we use that, otherwise we use the current version
+        if AGENTSPEC_VERSION_FIELD_NAME not in partial_config:
+            if "min_agentspec_version" in partial_config:
+                partial_config[AGENTSPEC_VERSION_FIELD_NAME] = partial_config[
+                    "min_agentspec_version"
+                ]
+            else:
+                partial_config[AGENTSPEC_VERSION_FIELD_NAME] = AgentSpecVersionEnum.current_version
+        partial_config["component_type"] = cls.__name__
+        partial_component, validation_errors = deserializer.from_partial_dict(partial_config)
+        # Deserialization ignores min and max agentspec versions (besides validation), so we set them manually
+        if "min_agentspec_version" in partial_config:
+            partial_component.min_agentspec_version = AgentSpecVersionEnum(  # type: ignore
+                partial_config["min_agentspec_version"]
+            )
+        if "max_agentspec_version" in partial_config:
+            partial_component.max_agentspec_version = AgentSpecVersionEnum(  # type: ignore
+                partial_config["max_agentspec_version"]
+            )
+        return cast(ComponentT, partial_component)
 
     @classmethod
     def get_validation_errors(
-        cls: Type[ComponentT], partial_config: Dict[str, Any]
+        cls: Type[ComponentT],
+        partial_config: Dict[str, Any],
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
     ) -> List[PyAgentSpecErrorDetails]:
         """
         Return a list of validation errors for this Component.
@@ -577,41 +543,22 @@ class Component(AbstractableModel, abstract=True):
         ----------
         partial_config:
             The partial configuration of the Component.
+        plugins:
+            The list of ``ComponentDeserializationPlugin`` instances needed to build the component
 
         Returns
         -------
             The list of validation errors for this Component. If the returned list is empty, the
             component can be constructed without any additional validation.
         """
-        validation_errors = []
-        fields = {}
-        for name, value in partial_config.items():
-            if name in cls.model_fields:
-                nested_validation_errors: List[PyAgentSpecErrorDetails] = []
-                fields[name] = cls._build_value(
-                    value=value,
-                    field_annotation=cls.model_fields[name].annotation,
-                    validation_errors=nested_validation_errors,
-                )
-                validation_errors.extend(
-                    [
-                        PyAgentSpecErrorDetails(
-                            type=nested_error_details.type,
-                            msg=nested_error_details.msg,
-                            loc=(name, *nested_error_details.loc),
-                        )
-                        for nested_error_details in nested_validation_errors
-                    ]
-                )
-        try:
-            cls(**fields)
-        except ValidationError as e:
-            validation_errors.extend(
-                [
-                    PyAgentSpecErrorDetails(**error_details)  # type: ignore
-                    for error_details in e.errors()
-                ]
-            )
+        from pyagentspec.serialization import AgentSpecDeserializer
+        from pyagentspec.versioning import AGENTSPEC_VERSION_FIELD_NAME, AgentSpecVersionEnum
+
+        deserializer = AgentSpecDeserializer(plugins=plugins)
+        if AGENTSPEC_VERSION_FIELD_NAME not in partial_config:
+            partial_config[AGENTSPEC_VERSION_FIELD_NAME] = AgentSpecVersionEnum.current_version
+        partial_config["component_type"] = cls.__name__
+        _, validation_errors = deserializer.from_partial_dict(partial_config)
         return validation_errors
 
 

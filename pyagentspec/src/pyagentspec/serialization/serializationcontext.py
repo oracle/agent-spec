@@ -91,19 +91,24 @@ class _SerializationContextImpl(SerializationContext):
         plugins: Optional[List["ComponentSerializationPlugin"]] = None,
         resolved_components: Optional[Dict[str, ComponentAsDictT]] = None,
         components_id_mapping: Optional[WatchingDict] = None,
+        _allow_partial_model_serialization: bool = False,
     ) -> None:
 
+        self._allow_partial_model_serialization = _allow_partial_model_serialization
         self.plugins = list(plugins) if plugins is not None else []
 
         from pyagentspec.serialization.builtinserializationplugin import (
             BuiltinsComponentSerializationPlugin,
         )
 
-        self.plugins.append(BuiltinsComponentSerializationPlugin())
+        self.plugins.append(
+            BuiltinsComponentSerializationPlugin(
+                _allow_partial_model_serialization=self._allow_partial_model_serialization
+            )
+        )
         self.component_types_to_plugins = self._build_component_types_to_plugins(self.plugins)
         # To avoid repeating the serialization for the same component multiple times, we
-        # store in this mapping the intermediary serializations, using component ids as
-        # the keys.
+        # store in this mapping the intermediary serializations, using component ids as the keys.
         self._resolved_components: Dict[str, ComponentAsDictT] = resolved_components or {}
         self._referencing_structure: Dict[str, str] = {}
         self._components_id_mapping: WatchingDict = components_id_mapping or WatchingDict()

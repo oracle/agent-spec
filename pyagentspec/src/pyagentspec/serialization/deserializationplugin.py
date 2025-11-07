@@ -12,10 +12,11 @@ process of Agent Spec configurations.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import DeserializationContext
+from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
 
 
 class ComponentDeserializationPlugin(ABC):
@@ -48,3 +49,9 @@ class ComponentDeserializationPlugin(ABC):
     def __str__(self) -> str:
         """Return the deserialization plugin name and version."""
         return f"{self.plugin_name} (version: {self.plugin_version})"
+
+    def _partial_deserialize(
+        self, serialized_component: Dict[str, Any], deserialization_context: DeserializationContext
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
+        # By default, the partial deserialization coincides with the full one
+        return self.deserialize(serialized_component, deserialization_context), []
