@@ -18,15 +18,22 @@ from pyagentspec.serialization.serializationplugin import ComponentSerialization
 class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
     """Serialization plugin for Pydantic Components."""
 
-    def __init__(self, component_types_and_models: Mapping[str, Type[BaseModel]]) -> None:
+    def __init__(
+        self,
+        component_types_and_models: Mapping[str, Type[BaseModel]],
+        _allow_partial_model_serialization: bool = False,
+    ) -> None:
         """
         Instantiate a Pydantic serialization plugin.
 
         component_types_and_models:
             Mapping of component classes by their class name.
+        _allow_partial_model_serialization:
+            Whether to raise an exception during serialization if the BaseModel is missing some fields
         """
         self._supported_component_types = list(component_types_and_models.keys())
         self.component_types_and_models = dict(component_types_and_models)
+        self._allow_partial_model_serialization = _allow_partial_model_serialization
 
     @property
     def plugin_name(self) -> str:
@@ -55,10 +62,14 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
             if getattr(field_info, "exclude", False):  # To not include AIR version
                 continue
 
-            field_value = getattr(component, field_name)
-
-            serialized_component[field_name] = serialization_context.dump_field(
-                value=field_value, info=field_info
-            )
+            try:
+                field_value = getattr(component, field_name)
+                serialized_component[field_name] = serialization_context.dump_field(
+                    value=field_value, info=field_info
+                )
+            except AttributeError as e:
+                if self._allow_partial_model_serialization:
+                    continue
+                raise e
 
         return serialized_component

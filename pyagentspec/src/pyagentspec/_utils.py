@@ -6,12 +6,16 @@
 
 """This module defines helpers for Agent Spec components."""
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
+from typing import Any, Dict, List, Type, TypeVar
 
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from pyagentspec import Property
+from pyagentspec.serialization.pydanticdeserializationplugin import (
+    PydanticComponentDeserializationPlugin,
+)
+from pyagentspec.serialization.pydanticserializationplugin import (
+    PydanticComponentSerializationPlugin,
+)
 
 ComponentTypeT = TypeVar("ComponentTypeT", bound=Type[BaseModel])
 
@@ -41,3 +45,30 @@ def beta(cls: ComponentTypeT) -> ComponentTypeT:
 
     cls.__init__ = modified_init  # type: ignore
     return cls
+
+
+class BetaComponentSerializationPlugin(PydanticComponentSerializationPlugin):
+    """Serialization plugin for beta Components."""
+
+    def __init__(self, _allow_partial_model_serialization: bool = False) -> None:
+        from pyagentspec._openaiagent import OpenAiAgent
+
+        super().__init__(
+            component_types_and_models={
+                component_class.__name__: component_class for component_class in (OpenAiAgent,)
+            },
+            _allow_partial_model_serialization=_allow_partial_model_serialization,
+        )
+
+
+class BetaComponentDeserializationPlugin(PydanticComponentDeserializationPlugin):
+    """Deserialization plugin for beta Components."""
+
+    def __init__(self) -> None:
+        from pyagentspec._openaiagent import OpenAiAgent
+
+        super().__init__(
+            component_types_and_models={
+                component_class.__name__: component_class for component_class in (OpenAiAgent,)
+            }
+        )

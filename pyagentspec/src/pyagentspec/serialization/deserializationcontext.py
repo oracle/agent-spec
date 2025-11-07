@@ -18,13 +18,14 @@ from typing import (
     List,
     Literal,
     Optional,
+    Tuple,
     Type,
     Union,
     get_args,
     get_origin,
 )
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from typing_extensions import TypeGuard
 
 from pyagentspec.component import Component
@@ -36,6 +37,7 @@ from pyagentspec.versioning import (
     AgentSpecVersionEnum,
 )
 
+from ..validation_helpers import PyAgentSpecErrorDetails
 from .types import (
     BaseModelAsDictT,
     ComponentAsDictT,
@@ -53,7 +55,16 @@ class DeserializationContext(ABC):
 
     @abstractmethod
     def get_component_type(self, content: Dict[str, Any]) -> str:
-        """Get the type of a component from the dedicated special field."""
+        """Get the type of component from the dedicated special field."""
+        pass
+
+    @abstractmethod
+    def load_config_dict(
+        self,
+        content: ComponentAsDictT,
+        components_registry: Optional[ComponentsRegistryT],
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
+        """Load an Agent Spec configuration in dictionary form."""
         pass
 
     @abstractmethod
@@ -65,9 +76,23 @@ class DeserializationContext(ABC):
         """Load a field based on its serialized field content and annotated type."""
         pass
 
+    def _partial_load_field(
+        self,
+        content: BaseModelAsDictT,
+        annotation: Optional[type],
+    ) -> Tuple[Any, List[PyAgentSpecErrorDetails]]:
+        """Load a field based on its serialized field content and annotated type, allowing incomplete configurations."""
+        raise NotImplementedError(
+            "Partial configuration deserialization is not implemented in this Context class"
+        )
+
 
 class _DeserializationContextImpl(DeserializationContext):
-    def __init__(self, plugins: Optional[List["ComponentDeserializationPlugin"]] = None) -> None:
+    def __init__(
+        self,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        partial_model_build: bool = False,
+    ) -> None:
 
         self.plugins = list(plugins) if plugins is not None else []
 
@@ -86,6 +111,7 @@ class _DeserializationContextImpl(DeserializationContext):
         self.loaded_references: LoadedReferencesT = {}
         self.referenced_components: Dict[str, ComponentAsDictT] = {}
         self._agentspec_version: Optional[AgentSpecVersionEnum] = None
+        self.partial_model_build = partial_model_build
 
     def _build_component_types_to_plugins(
         self, plugins: List["ComponentDeserializationPlugin"]
@@ -204,7 +230,8 @@ class _DeserializationContextImpl(DeserializationContext):
             raise ValueError(f"Unknown Agent Spec Component type {component_type}")
         return component_class
 
-    def _load_reference(self, reference_id: str) -> Component:
+    def _load_reference(self, reference_id: str) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
+        validation_errors: List[PyAgentSpecErrorDetails] = []
         if reference_id not in self.loaded_references:
             self.loaded_references[reference_id] = _DeserializationInProgressMarker()
             if self.referenced_components is None:
@@ -212,7 +239,9 @@ class _DeserializationContextImpl(DeserializationContext):
             if reference_id not in self.referenced_components:
                 raise KeyError(f"Missing reference for ID: {reference_id}")
             ref_content = self.referenced_components[reference_id]
-            self.loaded_references[reference_id] = self._load_component_from_dict(ref_content)
+            self.loaded_references[reference_id], validation_errors = (
+                self._load_component_from_dict(ref_content)
+            )
 
         loaded_reference = self.loaded_references[reference_id]
         if isinstance(loaded_reference, _DeserializationInProgressMarker):
@@ -221,20 +250,27 @@ class _DeserializationContextImpl(DeserializationContext):
                 f"'{reference_id}'"
             )
         else:
-            return loaded_reference
+            return loaded_reference, validation_errors
 
     def load_field(
         self,
         content: BaseModelAsDictT,
         annotation: Optional[type],
     ) -> Any:
+        return self._load_field(content=content, annotation=annotation)[0]
+
+    def _partial_load_field(
+        self,
+        content: BaseModelAsDictT,
+        annotation: Optional[type],
+    ) -> Tuple[Any, List[PyAgentSpecErrorDetails]]:
         return self._load_field(content=content, annotation=annotation)
 
     def _load_field(
         self,
         content: BaseModelAsDictT,
         annotation: Optional[type],
-    ) -> Any:
+    ) -> Tuple[Any, List[PyAgentSpecErrorDetails]]:
         origin_type = get_origin(annotation)
 
         if origin_type is Annotated:
@@ -244,15 +280,18 @@ class _DeserializationContextImpl(DeserializationContext):
         if origin_type is None:
             # might be None when we have a primitive type, or the type of a component
             if self._is_component_type(annotation):
+                # if it is already a component instance, we just return it
+                if annotation and isinstance(content, annotation):
+                    return content, []
                 # if it is a component, we might have refs
                 return self._load_component_from_dict(content, annotation)
             elif annotation is not None and issubclass(annotation, Property):
-                return Property(json_schema=content)
+                return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
                 return self._load_pydantic_model_from_dict(content, annotation)
             elif inspect.isclass(annotation) and issubclass(annotation, Enum):
-                return annotation(content)
-            return content
+                return annotation(content), []
+            return content, []
 
         if origin_type == dict:
             dict_key_annotation, dict_value_annotation = get_args(annotation)
@@ -263,30 +302,50 @@ class _DeserializationContextImpl(DeserializationContext):
                 raise ValueError(
                     f"expected the content to be a dictionary, but got {type(content).__name__}"
                 )
-
-            return {k: self._load_field(v, dict_value_annotation) for k, v in content.items()}
-
-        elif origin_type == list or origin_type == set:
-            (list_value_annotation,) = get_args(annotation)
-
-            if not isinstance(content, origin_type):
-                raise ValueError(
-                    f"Expected the content to be {origin_type}, but got {type(content).__name__}"
+            result_dictionary = dict()
+            all_validation_errors = []
+            for k, v in content.items():
+                result_dictionary[k], nested_validation_errors = self._load_field(
+                    v, dict_value_annotation
                 )
+                all_validation_errors.extend(
+                    [
+                        PyAgentSpecErrorDetails(
+                            type=nested_error_details.type,
+                            msg=nested_error_details.msg,
+                            loc=(k, *nested_error_details.loc),
+                        )
+                        for nested_error_details in nested_validation_errors
+                    ]
+                )
+            return result_dictionary, all_validation_errors
 
-            return origin_type(self._load_field(v, list_value_annotation) for v in content)
-        elif origin_type == tuple:
-            value_annotations = get_args(annotation)
+        elif origin_type in {list, set, tuple}:
+            list_value_annotation = get_args(annotation)
+            if isinstance(list_value_annotation, tuple):
+                list_value_annotation = list_value_annotation[0]
 
             if not (isinstance(content, origin_type) or isinstance(content, list)):
                 raise ValueError(
                     f"Expected the content to be {origin_type}, but got {type(content).__name__}"
                 )
 
-            return origin_type(
-                self._load_field(x, value_annotation)
-                for x, value_annotation in zip(content, value_annotations)
-            )
+            result_list = list()
+            all_validation_errors = []
+            for i, v in enumerate(content):
+                loaded_value, nested_validation_errors = self._load_field(v, list_value_annotation)  # type: ignore
+                result_list.append(loaded_value)
+                all_validation_errors.extend(
+                    [
+                        PyAgentSpecErrorDetails(
+                            type=nested_error_details.type,
+                            msg=nested_error_details.msg,
+                            loc=(i, *nested_error_details.loc),
+                        )
+                        for nested_error_details in nested_validation_errors
+                    ]
+                )
+            return origin_type(result_list), all_validation_errors
         elif origin_type == Union:
 
             # order-preserving deduplicated list
@@ -301,7 +360,7 @@ class _DeserializationContextImpl(DeserializationContext):
             # Therefore, we must isolate this case to make the type inference work as intended
             if self._is_optional_type(annotation):
                 if content is None:
-                    return None
+                    return None, []
                 inner_annotations.remove(type(None))
 
             # Try to deserialize components/pydantic models according to any of the annotations
@@ -317,7 +376,7 @@ class _DeserializationContextImpl(DeserializationContext):
             # We tried all the components and pydantic models, and it did not work out,
             # only python type is left. If it is only normal python types, just return the content
             if self._is_python_type(annotation):
-                return content
+                return content, []
             else:
                 # If even python type fails, then we do not support this,
                 # or there's an error in the representation
@@ -326,7 +385,7 @@ class _DeserializationContextImpl(DeserializationContext):
                     f" python and Agent Spec types which is not supported."
                 )
         elif origin_type == Literal:
-            return content
+            return content, []
 
         raise ValueError(
             f"It looks like we don't support annotation {annotation} "
@@ -337,34 +396,77 @@ class _DeserializationContextImpl(DeserializationContext):
         self,
         content: BaseModelAsDictT,
         model_class: Type[BaseModel],
-    ) -> BaseModel:
+    ) -> Tuple[BaseModel, List[PyAgentSpecErrorDetails]]:
         resolved_content: BaseModelAsDictT = {}
+        all_validation_errors: List[PyAgentSpecErrorDetails] = []
         for field_name, field_info in model_class.model_fields.items():
             annotation = field_info.annotation
             if field_name in content:
-                resolved_content[field_name] = self._load_field(content[field_name], annotation)
+                resolved_content[field_name], nested_validation_errors = self._load_field(
+                    content[field_name], annotation
+                )
+                all_validation_errors.extend(
+                    [
+                        PyAgentSpecErrorDetails(
+                            type=nested_error_details.type,
+                            msg=nested_error_details.msg,
+                            loc=(field_name, *nested_error_details.loc),
+                        )
+                        for nested_error_details in nested_validation_errors
+                    ]
+                )
         # If the pydantic model allows extra attributes, we load them
         if model_class.model_config.get("extra", "deny") == "allow":
             for content_key, content_value in content.items():
                 if content_key not in resolved_content:
-                    resolved_content[content_key] = self._load_field(
+                    resolved_content[content_key], nested_validation_errors = self._load_field(
                         content_value, type(content_value)
                     )
-        return model_class(**resolved_content)
+                    all_validation_errors.extend(
+                        [
+                            PyAgentSpecErrorDetails(
+                                type=nested_error_details.type,
+                                msg=nested_error_details.msg,
+                                loc=(content_key, *nested_error_details.loc),
+                            )
+                            for nested_error_details in nested_validation_errors
+                        ]
+                    )
+        # We try to build the BaseModel
+        try:
+            return model_class(**resolved_content), all_validation_errors
+        except ValidationError as e:
+            # if we fail due to validation, and we are ok with partial build, we do partial build and return the errors
+            if self.partial_model_build:
+                all_validation_errors += [
+                    PyAgentSpecErrorDetails(**error_details)  # type: ignore
+                    for error_details in e.errors()
+                ]
+                return model_class.model_construct(**resolved_content), all_validation_errors
+            # If we are not ok with partial build, we forward the exception
+            raise e
 
     def _load_component_with_plugin(
         self,
         plugin: "ComponentDeserializationPlugin",
         content: ComponentAsDictT,
-    ) -> Component:
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
         if not self._agentspec_version:
             raise ValueError(
                 "Internal error: `_agentspec_version is not specified. "
-                "Make sure that `_load_from_dict` is called."
+                "Make sure that `load_config_dict` is called."
             )
         agentspec_version = self._agentspec_version
 
-        component = plugin.deserialize(serialized_component=content, deserialization_context=self)
+        if self.partial_model_build:
+            component, validation_errors = plugin._partial_deserialize(
+                serialized_component=content, deserialization_context=self
+            )
+        else:
+            validation_errors = []
+            component = plugin.deserialize(
+                serialized_component=content, deserialization_context=self
+            )
 
         # Validate air version is allowed
         min_agentspec_version, _min_component = component._get_min_agentspec_version_and_component()
@@ -383,13 +485,13 @@ class _DeserializationContextImpl(DeserializationContext):
             )
 
         component.min_agentspec_version = agentspec_version
-        return component
+        return component, validation_errors
 
     def _load_component_from_dict(
         self,
         content: ComponentAsDictT,
         annotation: Optional[type] = None,
-    ) -> Component:
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
 
         if "$referenced_components" in content:
             new_referenced_components = content["$referenced_components"]
@@ -405,7 +507,7 @@ class _DeserializationContextImpl(DeserializationContext):
 
         if "$component_ref" in content:
             component_ref = content["$component_ref"]
-            cached_component = self._load_reference(component_ref)
+            cached_component, validation_errors = self._load_reference(component_ref)
             if (
                 annotation
                 and issubclass(annotation, Component)
@@ -416,7 +518,7 @@ class _DeserializationContextImpl(DeserializationContext):
                     f"'{annotation.__name__}', got '{cached_component.__class__.__name__}'. "
                     "If using a component registry, make sure that the components are correct."
                 )
-            return cached_component
+            return cached_component, validation_errors
 
         component_type = self.get_component_type(content)
 
@@ -447,11 +549,11 @@ class _DeserializationContextImpl(DeserializationContext):
                     f"Type mismatch for ID {field_id}: expected Component, got {type(config_).__name__}"
                 )
 
-    def _load_from_dict(
+    def load_config_dict(
         self,
         content: ComponentAsDictT,
         components_registry: Optional[ComponentsRegistryT],
-    ) -> Component:
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
         if (
             AGENTSPEC_VERSION_FIELD_NAME not in content
             and _LEGACY_VERSION_FIELD_NAME not in content
@@ -483,7 +585,7 @@ class _DeserializationContextImpl(DeserializationContext):
 
         self._load_component_registry(components_registry)
         # the top level object has to be a component, this method will check for that
-        component = self._load_component_from_dict(content)
+        component, validation_errors = self._load_component_from_dict(content)
 
         self._agentspec_version = None
-        return component
+        return component, validation_errors

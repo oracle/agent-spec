@@ -6,13 +6,14 @@
 
 """This module defines the deserialization plugin for Pydantic Components."""
 
-from typing import Any, Dict, List, Mapping, Type, cast
+from typing import Any, Dict, List, Mapping, Tuple, Type, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import DeserializationContext
 from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
+from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
 
 
 class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
@@ -48,18 +49,63 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
         self, serialized_component: Dict[str, Any], deserialization_context: DeserializationContext
     ) -> Component:
         """Deserialize a serialized Pydantic model."""
+        component, validation_errors = self._resolve_content_and_build(
+            serialized_component=serialized_component,
+            deserialization_context=deserialization_context,
+        )
+        if len(validation_errors) > 0:
+            raise ValidationError(
+                "Error during the validation of the component",
+                [dict(e) for e in validation_errors],
+            )
+        return cast(Component, component)
+
+    def _partial_deserialize(
+        self, serialized_component: Dict[str, Any], deserialization_context: DeserializationContext
+    ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
+        """Deserialize a serialized Pydantic model, including incomplete ones. Uses model_construct."""
+        component, validation_errors = self._resolve_content_and_build(
+            serialized_component=serialized_component,
+            deserialization_context=deserialization_context,
+        )
+        return cast(Component, component), validation_errors
+
+    def _resolve_content_and_build(
+        self, serialized_component: Dict[str, Any], deserialization_context: DeserializationContext
+    ) -> Tuple[BaseModel, List[PyAgentSpecErrorDetails]]:
+        # resolve the content leveraging the pydantic annotations
+        all_validation_errors: List[PyAgentSpecErrorDetails] = []
         component_type = deserialization_context.get_component_type(serialized_component)
         model_class = self.component_types_and_models[component_type]
-
-        # resolve the content leveraging the pydantic annotations
         resolved_content: Dict[str, Any] = {}
         for field_name, field_info in model_class.model_fields.items():
             annotation = field_info.annotation
             if field_name in serialized_component:
-                resolved_content[field_name] = deserialization_context.load_field(
-                    serialized_component[field_name], annotation
+                # We always do partial build, and we raise in the caller function
+                # if we are not allowed to have validation issues
+                resolved_content[field_name], nested_validation_errors = (
+                    deserialization_context._partial_load_field(
+                        serialized_component[field_name], annotation
+                    )
+                )
+                all_validation_errors.extend(
+                    [
+                        PyAgentSpecErrorDetails(
+                            type=nested_error_details.type,
+                            msg=nested_error_details.msg,
+                            loc=(field_name, *nested_error_details.loc),
+                        )
+                        for nested_error_details in nested_validation_errors
+                    ]
                 )
 
-        # create the component
-        component = model_class(**resolved_content)
-        return cast(Component, component)
+        try:
+            return model_class(**resolved_content), all_validation_errors
+        except ValidationError as e:
+            all_validation_errors.extend(
+                [
+                    PyAgentSpecErrorDetails(**error_details)  # type: ignore
+                    for error_details in e.errors()
+                ]
+            )
+            return model_class.model_construct(**resolved_content), all_validation_errors

@@ -33,15 +33,26 @@ from .types import (
 class AgentSpecSerializer:
     """Provides methods to serialize Agent Spec Components."""
 
-    def __init__(self, plugins: Optional[List[ComponentSerializationPlugin]] = None) -> None:
+    def __init__(
+        self,
+        plugins: Optional[List[ComponentSerializationPlugin]] = None,
+        _allow_partial_model_serialization: bool = False,
+    ) -> None:
         """
         Instantiate an Agent Spec Serializer.
 
         plugins:
             List of plugins to serialize additional components.
+        _allow_partial_model_serialization:
+            Whether to raise an exception during serialization if a BaseModel (including Components) is missing some fields
         """
-        _SerializationContextImpl(plugins=plugins)  # for early failure when using incorrect plugins
+        # for early failure when using incorrect plugins
+        _SerializationContextImpl(
+            plugins=plugins,
+            _allow_partial_model_serialization=_allow_partial_model_serialization,
+        )
         self.plugins = plugins
+        self._allow_partial_model_serialization = _allow_partial_model_serialization
 
     @overload
     def to_yaml(
@@ -498,7 +509,10 @@ class AgentSpecSerializer:
         for disag_component, mapped_component_id in converted_config:
             if disag_component is component:
                 raise ValueError(f"Disaggregating the root component is not allowed")
-            disag_serialization_context = _SerializationContextImpl(plugins=self.plugins)
+            disag_serialization_context = _SerializationContextImpl(
+                plugins=self.plugins,
+                _allow_partial_model_serialization=self._allow_partial_model_serialization,
+            )
             model_dump = disag_serialization_context._save_to_dict(
                 disag_component, agentspec_version=agentspec_version
             )
@@ -514,6 +528,7 @@ class AgentSpecSerializer:
             plugins=self.plugins,
             resolved_components=copy(disaggregated_components_as_dict),
             components_id_mapping=watched_components_id_mapping,
+            _allow_partial_model_serialization=self._allow_partial_model_serialization,
         )
 
         main_model_dump = main_serialization_context._save_to_dict(

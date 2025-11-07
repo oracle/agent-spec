@@ -1,8 +1,8 @@
 # Copyright (C) 2024, 2025 Oracle and/or its affiliates.
 #
-# This software is under the Universal Permissive License
-# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl) or Apache License
-# 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0), at your option.
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from typing import List, Optional
 
@@ -36,7 +36,9 @@ class AgentSpecializationParameters(ComponentWithIO):
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
-        return get_placeholder_properties_from_string(getattr(self, "additional_instructions", ""))
+        return get_placeholder_properties_from_string(
+            getattr(self, "additional_instructions", "") or ""
+        )
 
     def _get_inferred_outputs(self) -> List[Property]:
         return []
@@ -89,15 +91,23 @@ class SpecializedAgent(AgenticComponent):
     )
 
     def _get_inferred_inputs(self) -> List[Property]:
-        inputs_from_agent = self.agent.inputs or []
-        inputs_from_specialization_parameters = self.agent_specialization_parameters.inputs or []
+        inputs_from_agent = (self.agent.inputs or []) if getattr(self, "agent", None) else []
+        inputs_from_specialization_parameters = (
+            (self.agent_specialization_parameters.inputs or [])
+            if getattr(self, "agent_specialization_parameters", None)
+            else []
+        )
         return deduplicate_properties_by_title_and_type(
             inputs_from_agent + inputs_from_specialization_parameters
         )
 
     def _get_inferred_outputs(self) -> List[Property]:
-        outputs_from_agent = self.agent.outputs or []
-        outputs_from_specialization_parameters = self.agent_specialization_parameters.outputs or []
+        outputs_from_agent = (self.agent.outputs or []) if getattr(self, "agent", None) else []
+        outputs_from_specialization_parameters = (
+            (self.agent_specialization_parameters.outputs or [])
+            if getattr(self, "agent_specialization_parameters", None)
+            else []
+        )
         return deduplicate_properties_by_title_and_type(
             outputs_from_agent + outputs_from_specialization_parameters
         )
