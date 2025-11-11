@@ -1,0 +1,174 @@
+{
+    "component_type": "Flow",
+    "id": "706309d4-b73c-4b6a-930e-0703c8074f5f",
+    "name": "Ten words summary",
+    "description": null,
+    "metadata": {},
+    "inputs": [
+        {
+            "title": "article",
+            "type": "string"
+        }
+    ],
+    "outputs": [
+        {
+            "title": "summary",
+            "type": "string"
+        }
+    ],
+    "start_node": {
+        "$component_ref": "96a49908-e3dc-48ab-9541-15fcc43024af"
+    },
+    "nodes": [
+        {
+            "$component_ref": "96a49908-e3dc-48ab-9541-15fcc43024af"
+        },
+        {
+            "$component_ref": "80b98b71-d921-4478-b661-e3f84f61bb8e"
+        },
+        {
+            "$component_ref": "e06346e7-5da1-48e4-b417-cd336e9803ef"
+        }
+    ],
+    "control_flow_connections": [
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "f51e3d03-f2a7-4972-8b44-3709f5e7c6f7",
+            "name": "control_edge_1",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "96a49908-e3dc-48ab-9541-15fcc43024af"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "80b98b71-d921-4478-b661-e3f84f61bb8e"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "d3377598-fa1d-4e58-bbd2-ed0bc0b6e8f2",
+            "name": "control_edge_2",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "80b98b71-d921-4478-b661-e3f84f61bb8e"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "e06346e7-5da1-48e4-b417-cd336e9803ef"
+            }
+        }
+    ],
+    "data_flow_connections": [
+        {
+            "component_type": "DataFlowEdge",
+            "id": "9bf0e3c9-e5d4-430d-9ec9-204b613eeb36",
+            "name": "data_edge_1",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "96a49908-e3dc-48ab-9541-15fcc43024af"
+            },
+            "source_output": "article",
+            "destination_node": {
+                "$component_ref": "80b98b71-d921-4478-b661-e3f84f61bb8e"
+            },
+            "destination_input": "article"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "ba04a336-89d1-4ec3-b903-5fc746573b08",
+            "name": "data_edge_2",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "80b98b71-d921-4478-b661-e3f84f61bb8e"
+            },
+            "source_output": "summary",
+            "destination_node": {
+                "$component_ref": "e06346e7-5da1-48e4-b417-cd336e9803ef"
+            },
+            "destination_input": "summary"
+        }
+    ],
+    "$referenced_components": {
+        "96a49908-e3dc-48ab-9541-15fcc43024af": {
+            "component_type": "StartNode",
+            "id": "96a49908-e3dc-48ab-9541-15fcc43024af",
+            "name": "start_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "branches": [
+                "next"
+            ]
+        },
+        "80b98b71-d921-4478-b661-e3f84f61bb8e": {
+            "component_type": "LlmNode",
+            "id": "80b98b71-d921-4478-b661-e3f84f61bb8e",
+            "name": "summarize_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "summary",
+                    "type": "string"
+                }
+            ],
+            "branches": [
+                "next"
+            ],
+            "llm_config": {
+                "component_type": "VllmConfig",
+                "id": "127e0dc5-582a-484c-a011-b76b2c373880",
+                "name": "llm",
+                "description": null,
+                "metadata": {},
+                "default_generation_parameters": null,
+                "url": "url",
+                "model_id": "model_id"
+            },
+            "prompt_template": "Summarize this article in 10 words:\n {{article}}"
+        },
+        "e06346e7-5da1-48e4-b417-cd336e9803ef": {
+            "component_type": "EndNode",
+            "id": "e06346e7-5da1-48e4-b417-cd336e9803ef",
+            "name": "end_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "summary",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "summary",
+                    "type": "string"
+                }
+            ],
+            "branches": [],
+            "branch_name": "next"
+        }
+    },
+    "agentspec_version": "25.4.1"
+}

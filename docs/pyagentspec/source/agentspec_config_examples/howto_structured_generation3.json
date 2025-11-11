@@ -1,0 +1,301 @@
+{
+    "component_type": "Flow",
+    "id": "a7eea168-e593-4ee0-8da9-2e198e2054c1",
+    "name": "Animal and its danger level and exposed threats",
+    "description": null,
+    "metadata": {},
+    "inputs": [
+        {
+            "title": "article",
+            "type": "string"
+        }
+    ],
+    "outputs": [
+        {
+            "description": "name of the animal",
+            "title": "animal_name",
+            "type": "string"
+        },
+        {
+            "description": "level of danger of the animal. Can be \"HIGH\", \"MEDIUM\" or \"LOW\"",
+            "title": "danger_level",
+            "type": "string"
+        },
+        {
+            "description": "list of threats for the animal",
+            "title": "threats",
+            "items": {
+                "title": "threat",
+                "type": "string"
+            },
+            "type": "array"
+        }
+    ],
+    "start_node": {
+        "$component_ref": "b16a4c2f-8502-4fe1-9a69-2f720f0d6418"
+    },
+    "nodes": [
+        {
+            "$component_ref": "b16a4c2f-8502-4fe1-9a69-2f720f0d6418"
+        },
+        {
+            "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+        },
+        {
+            "$component_ref": "baa3b5c3-9016-42b8-a059-4b749894eae4"
+        }
+    ],
+    "control_flow_connections": [
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "010817c2-4e2a-4cc8-a0b2-e5a86d64c920",
+            "name": "control_edge_1",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "b16a4c2f-8502-4fe1-9a69-2f720f0d6418"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "595021fc-8d0e-4896-8944-b63acedad793",
+            "name": "control_edge_2",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "baa3b5c3-9016-42b8-a059-4b749894eae4"
+            }
+        }
+    ],
+    "data_flow_connections": [
+        {
+            "component_type": "DataFlowEdge",
+            "id": "dc171b1e-002c-4a75-a4ef-ac20a54ef142",
+            "name": "data_edge_1",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "b16a4c2f-8502-4fe1-9a69-2f720f0d6418"
+            },
+            "source_output": "article",
+            "destination_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            },
+            "destination_input": "article"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "639e85ae-4674-45df-af8f-57408cd2414b",
+            "name": "data_edge_2",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            },
+            "source_output": "animal_name",
+            "destination_node": {
+                "$component_ref": "baa3b5c3-9016-42b8-a059-4b749894eae4"
+            },
+            "destination_input": "animal_name"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "1cbcf149-11bf-4dbc-8280-70a64b743af0",
+            "name": "data_edge_3",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            },
+            "source_output": "danger_level",
+            "destination_node": {
+                "$component_ref": "baa3b5c3-9016-42b8-a059-4b749894eae4"
+            },
+            "destination_input": "danger_level"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "c012de76-b170-47b0-9c2b-acc730e619c6",
+            "name": "data_edge_4",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "197c0a3b-5661-4ea9-bae5-d1a201ab3197"
+            },
+            "source_output": "threats",
+            "destination_node": {
+                "$component_ref": "baa3b5c3-9016-42b8-a059-4b749894eae4"
+            },
+            "destination_input": "threats"
+        }
+    ],
+    "$referenced_components": {
+        "b16a4c2f-8502-4fe1-9a69-2f720f0d6418": {
+            "component_type": "StartNode",
+            "id": "b16a4c2f-8502-4fe1-9a69-2f720f0d6418",
+            "name": "start_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "branches": [
+                "next"
+            ]
+        },
+        "197c0a3b-5661-4ea9-bae5-d1a201ab3197": {
+            "component_type": "AgentNode",
+            "id": "197c0a3b-5661-4ea9-bae5-d1a201ab3197",
+            "name": "summarize_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "article",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "description": "name of the animal",
+                    "title": "animal_name",
+                    "type": "string"
+                },
+                {
+                    "description": "level of danger of the animal. Can be \"HIGH\", \"MEDIUM\" or \"LOW\"",
+                    "title": "danger_level",
+                    "type": "string"
+                },
+                {
+                    "description": "list of threats for the animal",
+                    "title": "threats",
+                    "items": {
+                        "title": "threat",
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            ],
+            "branches": [
+                "next"
+            ],
+            "agent": {
+                "component_type": "Agent",
+                "id": "857ebdca-d1e3-47e0-9b5f-813859a84d68",
+                "name": "Summarizing agent",
+                "description": null,
+                "metadata": {},
+                "inputs": [
+                    {
+                        "title": "article",
+                        "type": "string"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "description": "name of the animal",
+                        "title": "animal_name",
+                        "type": "string"
+                    },
+                    {
+                        "description": "level of danger of the animal. Can be \"HIGH\", \"MEDIUM\" or \"LOW\"",
+                        "title": "danger_level",
+                        "type": "string"
+                    },
+                    {
+                        "description": "list of threats for the animal",
+                        "title": "threats",
+                        "items": {
+                            "title": "threat",
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                ],
+                "llm_config": {
+                    "component_type": "VllmConfig",
+                    "id": "127e0dc5-582a-484c-a011-b76b2c373880",
+                    "name": "llm",
+                    "description": null,
+                    "metadata": {},
+                    "default_generation_parameters": null,
+                    "url": "url",
+                    "model_id": "model_id"
+                },
+                "system_prompt": "Extract from the following article the name of the animal, its danger level and the threats it's subject to. The article:\n\n {{article}}",
+                "tools": [],
+                "toolboxes": [],
+                "human_in_the_loop": false
+            }
+        },
+        "baa3b5c3-9016-42b8-a059-4b749894eae4": {
+            "component_type": "EndNode",
+            "id": "baa3b5c3-9016-42b8-a059-4b749894eae4",
+            "name": "end_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "description": "name of the animal",
+                    "title": "animal_name",
+                    "type": "string"
+                },
+                {
+                    "description": "level of danger of the animal. Can be \"HIGH\", \"MEDIUM\" or \"LOW\"",
+                    "title": "danger_level",
+                    "type": "string"
+                },
+                {
+                    "description": "list of threats for the animal",
+                    "title": "threats",
+                    "items": {
+                        "title": "threat",
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            ],
+            "outputs": [
+                {
+                    "description": "name of the animal",
+                    "title": "animal_name",
+                    "type": "string"
+                },
+                {
+                    "description": "level of danger of the animal. Can be \"HIGH\", \"MEDIUM\" or \"LOW\"",
+                    "title": "danger_level",
+                    "type": "string"
+                },
+                {
+                    "description": "list of threats for the animal",
+                    "title": "threats",
+                    "items": {
+                        "title": "threat",
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            ],
+            "branches": [],
+            "branch_name": "next"
+        }
+    },
+    "agentspec_version": "25.4.1"
+}

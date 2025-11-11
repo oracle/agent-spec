@@ -1,0 +1,180 @@
+component_type: Flow
+id: a3872d14-d9fa-4af6-a1f8-97d76dacec72
+name: Animal and its danger level and exposed threats
+description: null
+metadata: {}
+inputs:
+- title: article
+  type: string
+outputs:
+- description: information about the animal
+  title: animal_object
+  type: object
+  properties:
+    animal_name:
+      description: name of the animal
+      type: string
+      default: ''
+    danger_level:
+      description: level of danger of the animal. Can be "HIGH", "MEDIUM" or "LOW"
+      type: string
+      default: ''
+    threats:
+      description: list of threats for the animal
+      type: array
+      items:
+        type: string
+      default: []
+start_node:
+  $component_ref: 8e78f954-748e-4007-a242-89971bbef05d
+nodes:
+- $component_ref: 8e78f954-748e-4007-a242-89971bbef05d
+- $component_ref: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+- $component_ref: c7a932a5-1690-4537-98c7-d6e03e4c80ec
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 7b034c11-5532-488c-9245-02cdaf843828
+  name: control_edge_1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 8e78f954-748e-4007-a242-89971bbef05d
+  from_branch: null
+  to_node:
+    $component_ref: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+- component_type: ControlFlowEdge
+  id: 31fc7e5e-9c91-401d-b42d-33dbfd266366
+  name: control_edge_2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+  from_branch: null
+  to_node:
+    $component_ref: c7a932a5-1690-4537-98c7-d6e03e4c80ec
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 3e2ff8af-1c93-4ad3-8438-729469adb611
+  name: data_edge_1
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 8e78f954-748e-4007-a242-89971bbef05d
+  source_output: article
+  destination_node:
+    $component_ref: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+  destination_input: article
+- component_type: DataFlowEdge
+  id: cef7465f-55be-4745-b7cc-c0096e2a228d
+  name: data_edge_2
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+  source_output: animal_object
+  destination_node:
+    $component_ref: c7a932a5-1690-4537-98c7-d6e03e4c80ec
+  destination_input: animal_object
+$referenced_components:
+  8e78f954-748e-4007-a242-89971bbef05d:
+    component_type: StartNode
+    id: 8e78f954-748e-4007-a242-89971bbef05d
+    name: start_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: article
+      type: string
+    outputs:
+    - title: article
+      type: string
+    branches:
+    - next
+  991da1c9-5b84-44cd-aee8-c00b5f833e11:
+    component_type: LlmNode
+    id: 991da1c9-5b84-44cd-aee8-c00b5f833e11
+    name: summarize_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: article
+      type: string
+    outputs:
+    - description: information about the animal
+      title: animal_object
+      type: object
+      properties:
+        animal_name:
+          description: name of the animal
+          type: string
+          default: ''
+        danger_level:
+          description: level of danger of the animal. Can be "HIGH", "MEDIUM" or "LOW"
+          type: string
+          default: ''
+        threats:
+          description: list of threats for the animal
+          type: array
+          items:
+            type: string
+          default: []
+    branches:
+    - next
+    llm_config:
+      component_type: VllmConfig
+      id: 127e0dc5-582a-484c-a011-b76b2c373880
+      name: llm
+      description: null
+      metadata: {}
+      default_generation_parameters: null
+      url: url
+      model_id: model_id
+    prompt_template: "Extract from the following article the name of the animal, its\
+      \ danger level and the threats it's subject to. The article:\n\n {{article}}"
+  c7a932a5-1690-4537-98c7-d6e03e4c80ec:
+    component_type: EndNode
+    id: c7a932a5-1690-4537-98c7-d6e03e4c80ec
+    name: end_node
+    description: null
+    metadata: {}
+    inputs:
+    - description: information about the animal
+      title: animal_object
+      type: object
+      properties:
+        animal_name:
+          description: name of the animal
+          type: string
+          default: ''
+        danger_level:
+          description: level of danger of the animal. Can be "HIGH", "MEDIUM" or "LOW"
+          type: string
+          default: ''
+        threats:
+          description: list of threats for the animal
+          type: array
+          items:
+            type: string
+          default: []
+    outputs:
+    - description: information about the animal
+      title: animal_object
+      type: object
+      properties:
+        animal_name:
+          description: name of the animal
+          type: string
+          default: ''
+        danger_level:
+          description: level of danger of the animal. Can be "HIGH", "MEDIUM" or "LOW"
+          type: string
+          default: ''
+        threats:
+          description: list of threats for the animal
+          type: array
+          items:
+            type: string
+          default: []
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1
