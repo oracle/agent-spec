@@ -1318,11 +1318,11 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "requires_confirmation":{
-          "default":false,
-          "title":"Requires Confirmation",
-          "type":"boolean"
-        },
+                "requires_confirmation": {
+                    "default":false,
+                    "title":"Requires Confirmation",
+                    "type":"boolean"
+                },
         "$referenced_components": {
                     "$ref": "#/$defs/ReferencedComponents"
                 },
@@ -2166,11 +2166,11 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "requires_confirmation":{
-          "default":false,
-          "title":"Requires Confirmation",
-          "type":"boolean"
-        },
+                "requires_confirmation": {
+                    "default":false,
+                    "title":"Requires Confirmation",
+                    "type":"boolean"
+                },
         "client_transport": {
                     "$ref": "#/$defs/ClientTransport"
                 },
@@ -2330,6 +2330,11 @@
                     ],
                     "default": null,
                     "title": "Outputs"
+                },
+                "requires_confirmation": {
+                    "default":false,
+                    "title":"Requires Confirmation",
+                    "type":"boolean"
                 },
                 "$referenced_components": {
                     "$ref": "#/$defs/ReferencedComponents"
@@ -3428,11 +3433,11 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "requires_confirmation":{
-          "default":false,
-          "title":"Requires Confirmation",
-          "type":"boolean"
-        },
+                "requires_confirmation": {
+                    "default":false,
+                    "title":"Requires Confirmation",
+                    "type":"boolean"
+                },
         "url": {
                     "title": "Url",
                     "type": "string"
@@ -3735,11 +3740,11 @@
                     "default": null,
                     "title": "Outputs"
                 },
-                "requires_confirmation":{
-          "default":false,
-          "title":"Requires Confirmation",
-          "type":"boolean"
-        },
+                "requires_confirmation": {
+                    "default":false,
+                    "title":"Requires Confirmation",
+                    "type":"boolean"
+                },
         "$referenced_components": {
                     "$ref": "#/$defs/ReferencedComponents"
                 },

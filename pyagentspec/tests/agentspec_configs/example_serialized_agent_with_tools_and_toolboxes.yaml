@@ -51,6 +51,7 @@ toolboxes:
     metadata: {}
     inputs: []
     outputs: []
+    requires_confirmation: true
 $referenced_components:
   mcp_transport:
     component_type: SSETransport

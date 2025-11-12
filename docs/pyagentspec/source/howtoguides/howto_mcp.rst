@@ -98,6 +98,10 @@ Specify the :doc:`transport <../api/mcp>` to use to handle the connection to the
 as well as the name of the specific tool you want to use. Additionally, you can override the tool
 description (exposed by the MCP server) by specifying the ``description`` parameter.
 
+.. note::
+    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
+    This signals that execution environments should require user approval before running the tool, which is useful
+    for tools performing sensitive actions.
 
 Agent Serialization
 -------------------

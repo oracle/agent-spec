@@ -13,6 +13,7 @@ from pydantic import SerializeAsAny
 from pyagentspec.component import ComponentWithIO
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .clienttransport import ClientTransport
 
@@ -26,6 +27,25 @@ class MCPTool(Tool):
 
 class MCPToolSpec(ComponentWithIO):
     """Specification of MCP tool"""
+
+    requires_confirmation: bool = False
+    """Flag to make tool require user confirmation before execution."""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = set()
+        if agentspec_version < AgentSpecVersionEnum.v25_4_2:
+            fields_to_exclude.add("requires_confirmation")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        if self.requires_confirmation:
+            # If the tool requires confirmation, then we need to use the new AgentSpec version
+            # If not, the old version will work as it was the de-facto
+            return AgentSpecVersionEnum.v25_4_2
+
+        return super()._infer_min_agentspec_version_from_configuration()
 
 
 class MCPToolBox(ToolBox):
@@ -46,5 +66,5 @@ class MCPToolBox(ToolBox):
   		* Specifying a non-empty description will override the description of the tool from the MCP Server.
 		* Inputs can be provided with description of each input. The names and types should match the MCP tool schema.
         * If provided, the outputs must be a single ``StringProperty`` with the expected tool output name and optional description.
-
+        * If the tool requires confirmation before use, it overrides the exposed tool's confirmation flag.
     """

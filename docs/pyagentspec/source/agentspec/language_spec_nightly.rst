@@ -921,6 +921,7 @@ exposes the listed tools. For each entry in the list:
     On mismatch, the configuration is invalid.
   - If outputs are provided, they MUST consist of exactly one string-typed property with the expected tool output
     name and optional description.
+  - If the :ref:`tool confirmation flag <mcp_tool_spec_def>` is provided, its value is used; otherwise, it defaults to False.
 
 The ``tool_filter`` information should be validated against the exposed MCP tools each time the tools
 are provided to the consuming component (as the toolbox content may change dynamically). If any of the
@@ -938,11 +939,11 @@ MCPToolSpec
 ``MCPToolSpec`` is a declarative tool signature used inside ``MCPToolBox.tool_filter`` to
 pin and validate specific remote MCP tools.
 
+.. _mcp_tool_spec_def:
 .. code-block:: python
 
    class MCPToolSpec(ComponentWithIO):
-     pass
-
+    requires_confirmation: bool
 
 See the :ref:`filter rules for the MCPToolBox <mcp_toolfilter_rules>` to see how the ``MCPToolSpec``
 is used.
