@@ -48,6 +48,11 @@ API Reference: :ref:`RemoteTool <remotetool>`
     Never commit sensitive data such as API keys or authentication tokens when using :ref:`RemoteTool <remotetool>`.
     Use secret management solutions instead.
 
+.. note::
+    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
+    This signals that execution environments should require user approval before running the tool, which is useful
+    for tools performing sensitive actions.
+
 
 3. Define a LLM model
 ----------------------

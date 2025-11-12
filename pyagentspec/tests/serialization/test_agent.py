@@ -159,7 +159,12 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
         client_transport=_mcp_client,
         tool_filter=[
             "tool_name1",
-            MCPToolSpec(id="tool_id2", name="tool_name2", description="description for tool2"),
+            MCPToolSpec(
+                id="tool_id2",
+                name="tool_name2",
+                description="description for tool2",
+                requires_confirmation=True,
+            ),
         ],
     )
 

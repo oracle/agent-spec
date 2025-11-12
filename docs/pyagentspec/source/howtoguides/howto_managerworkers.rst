@@ -69,6 +69,11 @@ API Reference: :ref:`ServerTool <servertool>`
 The first tool is used to check whether a given order is eligible for a refund,
 while the second is used to process the specific refund.
 
+.. note::
+    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
+    This signals that execution environments should require user approval before running the tool, which is useful
+    for tools performing sensitive actions.
+
 The system prompt is defined as follows:
 
 .. literalinclude:: ../code_examples/howto_managerworkers.py

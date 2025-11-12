@@ -185,12 +185,15 @@ Example with a ServerTool:
           "type": "string"
         }
       ],
+      "requires_confirmation": true,
       "component_type": "ServerTool",
-      "agentspec_version": "25.4.1"
+      "agentspec_version": "25.4.2"
     }
 
 .. note::
     Flows and agents contained in an Agent are executed in isolation. Sub-agents and sub-flows use separate conversations, independent from the top-level Agent's conversation.
+.. note::
+    Setting ``requires_confirmation=True`` in the :ref:`ServerTool<servertool>` signals that execution environments should require user approval before running the tool.
 
 For more details on Agents, see the :ref:`Agent Spec Language Specification <agentspecspec>`.
 

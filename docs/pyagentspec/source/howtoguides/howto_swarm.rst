@@ -70,6 +70,11 @@ Start by defining the LLM configuration to be shared across all agents.
 
 API Reference: :ref:`ServerTool <servertool>`
 
+.. note::
+    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
+    This signals that execution environments should require user approval before running the tool, which is useful
+    for tools performing sensitive actions.
+
 3. Define agents equipped with tools
 ------------------------------------
 

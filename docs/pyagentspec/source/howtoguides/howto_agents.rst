@@ -54,6 +54,11 @@ You can simply define them, and add them to the Agent's instantiation.
     :start-after: .. start-tools
     :end-before: .. end-tools
 
+.. note::
+    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
+    This signals that execution environments should require user approval before running the tool, which is useful
+    for tools performing sensitive actions.
+
 Agent Spec Serialization
 ========================
 
