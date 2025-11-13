@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -61,8 +61,8 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
 
 def _create_pydantic_model_from_properties(
     model_name: str, properties: List[AgentSpecProperty]
-) -> BaseModel:
-    # Create a pydantic model whose attributes are the given properties
+) -> type[BaseModel]:
+    """Create a Pydantic model CLASS whose attributes are the given properties."""
     fields: Dict[str, Any] = {}
     for property_ in properties:
         field_parameters: Dict[str, Any] = {}
@@ -73,7 +73,7 @@ def _create_pydantic_model_from_properties(
             field_parameters["description"] = property_.description
         annotation = _json_schema_type_to_python_annotation(property_.json_schema)
         fields[param_name] = (annotation, Field(**field_parameters))
-    return create_model(model_name, **fields)  # type: ignore
+    return create_model(model_name, **fields)
 
 
 class AgentSpecToCrewAIConverter:
