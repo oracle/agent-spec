@@ -8,12 +8,12 @@ from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, InputMessageNode, StartNode
 from pyagentspec.property import StringProperty
+
+from langgraph_agentspec_adapter import AgentSpecLoader
 
 
 def test_inputmessagenode_can_be_imported_and_executed() -> None:

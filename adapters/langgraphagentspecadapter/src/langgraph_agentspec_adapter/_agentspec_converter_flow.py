@@ -14,7 +14,6 @@ from langgraph.graph.state import (  # type: ignore[attr-defined]
     CompiledStateGraph,
     StateNodeSpec,
 )
-
 from pyagentspec import Property
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge

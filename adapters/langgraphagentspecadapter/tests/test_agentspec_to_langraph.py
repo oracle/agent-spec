@@ -13,6 +13,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
+
 from langgraph_agentspec_adapter import AgentSpecLoader
 
 from .conftest import (
@@ -45,7 +46,7 @@ def test_weather_agent_with_server_tool_ollama(weather_ollama_agent_yaml: str) -
 
 
 def test_weather_agent_with_server_tool_with_output_descriptors(
-        weather_agent_with_outputs_yaml: str,
+    weather_agent_with_outputs_yaml: str,
 ) -> None:
     agent = AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
         weather_agent_with_outputs_yaml

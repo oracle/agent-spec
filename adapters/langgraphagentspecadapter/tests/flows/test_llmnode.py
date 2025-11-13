@@ -8,13 +8,13 @@ import os
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
 from pyagentspec.llms import VllmConfig
 from pyagentspec.property import StringProperty
+
+from langgraph_agentspec_adapter import AgentSpecLoader
 
 
 def test_llmnode_can_be_imported_and_executed() -> None:

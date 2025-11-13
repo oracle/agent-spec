@@ -4,13 +4,13 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, MapNode, StartNode, ToolNode
 from pyagentspec.property import FloatProperty, ListProperty, Property, UnionProperty
 from pyagentspec.tools import ServerTool
+
+from langgraph_agentspec_adapter import AgentSpecLoader
 
 
 def test_mapnode_can_be_imported_and_executed() -> None:

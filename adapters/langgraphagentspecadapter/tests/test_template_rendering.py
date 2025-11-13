@@ -7,6 +7,7 @@
 from typing import Any, Dict
 
 import pytest
+
 from langgraph_agentspec_adapter._template_rendering import render_template
 
 
