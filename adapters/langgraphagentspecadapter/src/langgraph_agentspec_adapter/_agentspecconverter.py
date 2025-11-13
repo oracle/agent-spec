@@ -11,7 +11,8 @@ from typing import Any, Dict, List, Optional, cast
 from langchain_core.runnables import RunnableBinding
 from langchain_ollama import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
-from langgraph.graph.state import CompiledStateGraph, StateNodeSpec
+from langgraph.graph.state import CompiledStateGraph
+from langgraph.graph._node import StateNodeSpec
 from pyagentspec import Property
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent

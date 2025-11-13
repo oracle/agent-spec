@@ -25,7 +25,7 @@ from pyagentspec.property import StringProperty, UnionProperty
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
 from pydantic import BaseModel, TypeAdapter, create_model
 
-from langgraph_agentspec_adapter._utils import LangGraphComponent
+from langgraph_agentspec_adapter._types import LangGraphComponent
 
 if TYPE_CHECKING:
     from langgraph_agentspec_adapter._agentspecconverter import LangGraphToAgentSpecConverter
