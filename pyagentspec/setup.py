@@ -30,7 +30,7 @@ setup(
     version=VERSION,
     description="Package defining the PyAgentSpec library for Agents and LLM fixed-flows abstractions.",
     license="UPL-1.0 OR Apache-2.0",
-    long_description=read("README"),
+    long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url="",
     author="Oracle",
@@ -52,7 +52,7 @@ setup(
     python_requires=">=3.10,<3.14",
     install_requires=[
         "jsonschema>=4.23.0,<5",
-        "pydantic>=2.10,<3",
+        "pydantic>=2.10,<2.12",
         "pyyaml>=6,<7",
     ],
     test_suite="tests",

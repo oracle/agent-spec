@@ -30,3 +30,4 @@ sphinxcontrib.qthelp<1.0.7
 sphinx_toolbox<=3.8.0
 
 -e .
+-c constraints/constraints.txt
