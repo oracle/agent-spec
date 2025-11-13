@@ -11,9 +11,10 @@ from uuid import uuid4
 import httpx
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph, RunnableConfig
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Checkpointer, interrupt
 from pyagentspec import Component as AgentSpecComponent
@@ -122,7 +123,7 @@ class AgentSpecToLangGraphConverter:
         if config is None and checkpointer is not None:
             config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
         if agentspec_component.id not in converted_components:
-            converted_components[agentspec_component.id] = self._convert(
+            converted_components[agentspec_component.id] = self._convert(  # type: ignore[arg-type]
                 agentspec_component, tool_registry, converted_components, checkpointer, config
             )
         return converted_components[agentspec_component.id]
@@ -214,7 +215,6 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "LangGraphComponent":
-        from langgraph_agentspec_adapter._node_execution import FlowStateSchema
 
         graph_builder = StateGraph(
             FlowStateSchema, input_schema=FlowInputSchema, output_schema=FlowOutputSchema
