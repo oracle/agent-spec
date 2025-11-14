@@ -162,12 +162,10 @@ def _seed_llm_env_for_skip():
 
 LLM_MOCKED_METHODS = [
     "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
-    "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
-    "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
 ]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def skip_llm_construction():
     """
     When SKIP_LLM_TESTS=1, any attempt to construct an LLM config triggers a skip.

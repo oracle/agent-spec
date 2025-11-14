@@ -19,24 +19,6 @@ from pyagentspec.llms import VllmConfig
 CONFIGS_DIR = Path(os.path.dirname(__file__)) / "agentspec_configs"
 
 SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
-SKIP_A2A_TESTS_ENV_VAR = "SKIP_A2A_TESTS"
-
-
-def should_skip_a2a_test() -> bool:
-    """Return True if A2A-related tests should be skipped."""
-    return os.environ.get(SKIP_A2A_TESTS_ENV_VAR) == "1"
-
-
-@pytest.fixture(autouse=True)
-def skip_a2a_tests(request):
-    """
-    Automatically skip tests that depend on A2A components
-    when SKIP_A2A_TESTS=1 (for CI environments that don't load A2A plugins).
-    """
-    if should_skip_a2a_test():
-        # detect if test name or nodeid contains 'a2a'
-        if "a2a" in request.node.name.lower() or "a2a" in request.node.nodeid.lower():
-            pytest.skip("Skipping A2A test because SKIP_A2A_TESTS=1")
 
 
 def should_skip_llm_test() -> bool:
@@ -45,12 +27,10 @@ def should_skip_llm_test() -> bool:
 
 LLM_MOCKED_METHODS = [
     "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
-    "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
-    "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
 ]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def skip_test_fixture():
     """
     When SKIP_LLM_TESTS=1, any attempt to build/use an LLM config will skip the test.

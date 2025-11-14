@@ -88,7 +88,7 @@ def _get_free_tcp_port(host: str = "127.0.0.1") -> int:
         return s.getsockname()[1]
 
 
-def _wait_for_port(host: str, port: int, timeout: float = 5.0) -> None:
+def _wait_until_hostport_is_alive(host: str, port: int, timeout: float = 5.0) -> None:
     """Wait until host:port is ready to accept connections."""
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -119,7 +119,7 @@ def _start_json_server_in_thread(host: str, port: int) -> tuple[uvicorn.Server, 
     thread = threading.Thread(target=server.run, name="json-test-server", daemon=True)
     thread.start()
 
-    _wait_for_port(host, port)
+    _wait_until_hostport_is_alive(host, port)
     return server, thread
 
 
@@ -174,12 +174,10 @@ def _seed_llm_env_for_skip():
 
 LLM_MOCKED_METHODS = [
     "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
-    "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
-    "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
 ]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def skip_llm_construction():
     """
     When SKIP_LLM_TESTS=1, any attempt to construct an LLM config triggers a skip.
