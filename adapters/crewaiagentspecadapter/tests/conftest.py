@@ -4,14 +4,18 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import os
 import random
 import socket
 import subprocess  # nosec, test-only code, args are trusted
 import time
 from pathlib import Path
 from typing import Optional
+from unittest.mock import patch
 
 import pytest
+
+SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
 
 
 def is_port_busy(port: Optional[int]):
@@ -50,6 +54,51 @@ def _start_json_server() -> subprocess.Popen:
     )
     time.sleep(3)
     return process
+
+
+def should_skip_llm_test() -> bool:
+    """Return True if LLM-related tests should be skipped."""
+    return os.environ.get(SKIP_LLM_TESTS_ENV_VAR) == "1"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _seed_llm_env_for_skip():
+    """
+    When SKIP_LLM_TESTS=1, seed harmless dummy endpoints so imports/deserialization
+    never crash on missing env vars.
+    """
+    if should_skip_llm_test():
+        os.environ.setdefault("LLAMA_API_URL", "http://dummy-llm.local")
+        os.environ.setdefault("LLAMA70BV33_API_URL", "http://dummy-llm70.local")
+    yield
+
+
+LLM_MOCKED_METHODS = [
+    "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
+]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def skip_llm_construction():
+    """
+    When SKIP_LLM_TESTS=1, any attempt to construct an LLM config triggers a skip.
+    """
+
+    def _skip(*_args, **_kwargs):
+        pytest.skip("LLM called, skipping test (SKIP_LLM_TESTS=1)")
+
+    patches = []
+    if should_skip_llm_test():
+        for dotted in LLM_MOCKED_METHODS:
+            p = patch(dotted, side_effect=_skip)
+            p.start()
+            patches.append(p)
+
+    try:
+        yield
+    finally:
+        for p in patches:
+            p.stop()
 
 
 @pytest.fixture(scope="session")
