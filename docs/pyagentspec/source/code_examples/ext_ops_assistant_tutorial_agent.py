@@ -19,7 +19,7 @@ Building an LLM Operations Agent with Open Agent Spec and WayFlow
 # source venv-agentspec/bin/activate # On Windows: venv-agentspec\Scripts\activate
 # pip install pyagentspec wayflowcore
 
-# 2. Configuring your LLM
+# 2. Configuring your LLM
 from pyagentspec.llms import OpenAiConfig
 
 llm_config = OpenAiConfig(
@@ -28,7 +28,7 @@ llm_config = OpenAiConfig(
 )
 
 
-# Step 3. Creating tools for the Agent
+# Step 3. Creating tools for the Agent
 from pyagentspec.property import StringProperty
 from pyagentspec.tools import ServerTool
 
@@ -71,7 +71,7 @@ def read_jira_ticket(jira_issue_id: str) -> str:
             "Suggested runbook: inventory-5xx-triage\n"
             "Notes: Recent DB maintenance in compartment prod-db."
         )
-    return f"Ticket not found: {jira_issue_id}"
+    return f"Ticket not found"
 
 
 read_runbook_tool = ServerTool(
@@ -135,7 +135,6 @@ read_logs_tool = ServerTool(
     name="read_logs",
     description="Return log lines for the given filters as a single plain string.",
     inputs=[
-        StringProperty(title="from_machine", description="Host or group selector (e.g., 'asg:payments-api-*', 'host:inventory-svc-3')"),
         StringProperty(title="from_project", description="Owning project (e.g., 'payments', 'inventory')"),
         StringProperty(title="from_fleet", description="Service/fleet name"),
         StringProperty(title="from_compartment", description="Environment/compartment (e.g., 'prod')"),
@@ -148,7 +147,6 @@ read_logs_tool = ServerTool(
 )
 
 def read_logs(
-    from_machine: str,
     from_project: str,
     from_fleet: str,
     from_compartment: str,
@@ -160,8 +158,7 @@ def read_logs(
     """Return log lines for the given filters as a single plain string."""
     # Scenario 1: Payments latency WARN logs
     if (
-        from_machine == "asg:payments-api-*"
-        and from_project == "payments"
+        from_project == "payments"
         and from_fleet == "payments-api"
         and from_compartment == "prod"
         and from_region == "us-west-1"
@@ -178,8 +175,7 @@ def read_logs(
 
     # Scenario 2: Inventory ERROR logs
     if (
-        from_machine == "host:inventory-svc-3"
-        and from_project == "inventory"
+        from_project == "inventory"
         and from_fleet == "inventory-service"
         and from_compartment == "prod"
         and from_region == "eu-frankfurt-1"
@@ -197,7 +193,7 @@ def read_logs(
 
 
 
-# Step 4. Writing the instructions for the Agent
+# Step 4. Writing the instructions for the Agent
 
 CUSTOM_INSTRUCTIONS = """
 You are an LLM-based operations assistant. You have four tools available:
@@ -245,7 +241,7 @@ Use this output template:
 """.strip()
 
 
-# Step 5. Assembling the Agent
+# Step 5. Assembling the Agent
 
 from pyagentspec.agent import Agent
 
@@ -263,7 +259,7 @@ from pyagentspec.serialization import AgentSpecSerializer
 
 serialized_agent = AgentSpecSerializer().to_json(agent)
 
-# Step 7. Running the Agent
+# Step 7. Running the Agent
 
 ## With WayFlow
 # from wayflowcore.agentspec import AgentSpecLoader
