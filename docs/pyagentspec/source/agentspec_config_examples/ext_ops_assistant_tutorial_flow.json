@@ -1,0 +1,1127 @@
+{
+  "component_type": "Flow",
+  "id": "fc98de0a-d218-4b84-bcfa-7e771088b8a7",
+  "name": "Operator_Assistant_Flow",
+  "description": null,
+  "metadata": {},
+  "inputs": [],
+  "outputs": [],
+  "start_node": {
+    "$component_ref": "4a2f601f-f80c-4eee-92df-b9a9ea1ab02a"
+  },
+  "nodes": [
+    {
+      "$component_ref": "4a2f601f-f80c-4eee-92df-b9a9ea1ab02a"
+    },
+    {
+      "$component_ref": "ea6618d7-0249-448a-a2dd-8d23eea5a574"
+    },
+    {
+      "$component_ref": "529712e9-d6da-49bd-9bb0-340dfc7b8ce6"
+    },
+    {
+      "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+    },
+    {
+      "$component_ref": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c"
+    },
+    {
+      "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+    },
+    {
+      "$component_ref": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628"
+    },
+    {
+      "$component_ref": "b807c425-d031-4126-928b-55d8879235a9"
+    },
+    {
+      "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+    },
+    {
+      "$component_ref": "919eb856-b841-4cc8-a4ae-bad403a5178b"
+    },
+    {
+      "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+    },
+    {
+      "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+    },
+    {
+      "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+    }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "4aabc524-6169-4cfd-93ac-133e7bacaa7f",
+      "name": "start_node_presentation_message_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "4a2f601f-f80c-4eee-92df-b9a9ea1ab02a"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "529712e9-d6da-49bd-9bb0-340dfc7b8ce6"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "69b92711-e82b-4dad-aae9-f415088ab433",
+      "name": "presentation_message_get_jira_issue_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "529712e9-d6da-49bd-9bb0-340dfc7b8ce6"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "a37a0fb0-e03a-43f0-9cc9-dd5e443d79eb",
+      "name": "get_jira_issue_exit_branching_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "d6d5045d-02f6-43de-acd3-c942f1293bb1",
+      "name": "exit_branching_exit_node_exit",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c"
+      },
+      "from_branch": "exit",
+      "to_node": {
+        "$component_ref": "ea6618d7-0249-448a-a2dd-8d23eea5a574"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "3583321a-3bbd-435a-9922-b4ce61f08ed4",
+      "name": "exit_branching_read_jira_ticket_tool_node_default",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c"
+      },
+      "from_branch": "default",
+      "to_node": {
+        "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "b55a0b85-81e5-45fb-a6e0-ea35258d0262",
+      "name": "read_jira_ticket_tool_node_was_jira_issue_found_branching_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "1f34ebb2-b764-4495-86ff-b7c93c1d0932",
+      "name": "was_jira_issue_found_branching_jira_issue_not_found_not_found",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628"
+      },
+      "from_branch": "not_found",
+      "to_node": {
+        "$component_ref": "b807c425-d031-4126-928b-55d8879235a9"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "f6f64645-16fb-460b-ae28-54f3fe18575a",
+      "name": "jira_issue_not_found_get_jira_issue_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "b807c425-d031-4126-928b-55d8879235a9"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "89822eb0-dc15-4c2b-8047-55db00c6402a",
+      "name": "was_jira_issue_found_branching_parse_incident_summary_tool_node_default",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628"
+      },
+      "from_branch": "default",
+      "to_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "f858a2f5-a448-49e4-b5bb-0457f6ddc541",
+      "name": "parse_incident_summary_tool_node_read_runbook_tool_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "919eb856-b841-4cc8-a4ae-bad403a5178b"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "45f7ad69-1fba-4dc2-97cc-702e03b9a209",
+      "name": "read_runbook_tool_node_get_alarm_status_tool_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "919eb856-b841-4cc8-a4ae-bad403a5178b"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "94f64241-9bb4-4662-bd0f-3373dd7d36ce",
+      "name": "get_alarm_status_tool_node_read_logs_tool_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "11ad6c02-b825-4d0a-b25d-12fc230b3815",
+      "name": "read_logs_tool_node_operator_assistant_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "90e6cec8-397f-42fd-ba99-1db05c761290",
+      "name": "operator_assistant_node_exit_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "ea6618d7-0249-448a-a2dd-8d23eea5a574"
+      }
+    }
+  ],
+  "data_flow_connections": [
+    {
+      "component_type": "DataFlowEdge",
+      "id": "040fe6ee-97b0-40e7-a8c0-9e57cedf0ab5",
+      "name": "get_jira_issue_exit_branching_jira_issue_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      },
+      "source_output": "jira_issue_id",
+      "destination_node": {
+        "$component_ref": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c"
+      },
+      "destination_input": "jira_issue_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "cf0e0c7e-4a88-407c-b70e-67c7a483c9f4",
+      "name": "get_jira_issue_read_jira_ticket_tool_node_jira_issue_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      },
+      "source_output": "jira_issue_id",
+      "destination_node": {
+        "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+      },
+      "destination_input": "jira_issue_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "73a4416a-befc-4212-8eab-94de4ef44dbc",
+      "name": "read_jira_ticket_tool_node_was_jira_issue_found_branching_incident_summary",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+      },
+      "source_output": "incident_summary",
+      "destination_node": {
+        "$component_ref": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628"
+      },
+      "destination_input": "incident_summary"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "94d85b2c-0661-4688-9053-61c28ca33439",
+      "name": "get_jira_issue_jira_issue_not_found_jira_issue_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      },
+      "source_output": "jira_issue_id",
+      "destination_node": {
+        "$component_ref": "b807c425-d031-4126-928b-55d8879235a9"
+      },
+      "destination_input": "jira_issue_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "7336535a-afe0-4cae-8afc-f155163c3500",
+      "name": "read_jira_ticket_tool_node_parse_incident_summary_tool_node_incident_summary",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "71e09592-a4f5-4d53-a4a4-722a3e28d838"
+      },
+      "source_output": "incident_summary",
+      "destination_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "destination_input": "incident_summary"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "9db38db6-5c7e-4d66-8dc1-dbc3c858cd97",
+      "name": "parse_incident_summary_tool_node_read_runbook_tool_node_runbook_name",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "runbook_name",
+      "destination_node": {
+        "$component_ref": "919eb856-b841-4cc8-a4ae-bad403a5178b"
+      },
+      "destination_input": "runbook_name"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "b9a1a93e-b452-4da5-aec0-125c2e0755d1",
+      "name": "parse_incident_summary_tool_node_get_alarm_status_tool_node_alarm_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "alarm_id",
+      "destination_node": {
+        "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+      },
+      "destination_input": "alarm_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "9891341f-db59-41d4-ba8e-d17801abd5f0",
+      "name": "parse_incident_summary-read_logs_tool-region",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "from_region",
+      "destination_node": {
+        "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+      },
+      "destination_input": "region"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "804d2adb-111b-437f-ace3-5e9ee40e4994",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_from_project",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "from_project",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "from_project"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "af59328d-8d03-45e7-a804-1053d3d4ef35",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_from_fleet",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "from_fleet",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "from_fleet"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "6f19eb5a-b3e2-4d60-a8bc-7f604c651612",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_from_compartment",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "from_compartment",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "from_compartment"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "ffc59ae0-c50b-4899-8fc7-cc0744aba44f",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_from_region",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "from_region",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "from_region"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "7a53e246-e6ae-46d4-b629-f612809d466a",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_log_level",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "log_level",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "log_level"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "cad48f06-7d78-448c-b91a-3ccb53bac10c",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_start_ts",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "start_ts",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "start_ts"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "bc547ded-3dc0-4dcb-9ccc-15142269d924",
+      "name": "parse_incident_summary_tool_node_read_logs_tool_node_end_ts",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "00a79651-e4ac-4497-aa50-03ec4ea637f3"
+      },
+      "source_output": "end_ts",
+      "destination_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "destination_input": "end_ts"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "da7fd714-82dd-4133-aee2-e4c75ed53b23",
+      "name": "get_jira_issue_operator_assistant_node_jira_issue_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "9a5763be-8088-407d-8f37-66d4896f2dd7"
+      },
+      "source_output": "jira_issue_id",
+      "destination_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      },
+      "destination_input": "jira_issue_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "e9ca8f6e-7bc3-405a-a258-2c97848a0421",
+      "name": "read_runbook_tool_node_operator_assistant_node_runbook_markdown",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "919eb856-b841-4cc8-a4ae-bad403a5178b"
+      },
+      "source_output": "runbook_markdown",
+      "destination_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      },
+      "destination_input": "runbook_markdown"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "431a118c-6b1d-4064-80c4-efa539e5b56a",
+      "name": "get_alarm_status_tool_node_operator_assistant_node_alarm_status",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "9b654a3c-30eb-4498-b467-927bfe24cb55"
+      },
+      "source_output": "alarm_status",
+      "destination_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      },
+      "destination_input": "alarm_status"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "4be9e1c1-fa5a-4b6a-867a-6c730a79ffd3",
+      "name": "read_logs_tool_node_operator_assistant_node_log_lines",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d3d183ad-897d-435a-ade5-62e7aa909e58"
+      },
+      "source_output": "log_lines",
+      "destination_node": {
+        "$component_ref": "dd1a7635-9c49-4054-8ded-036bc70d8d9a"
+      },
+      "destination_input": "log_lines"
+    }
+  ],
+  "$referenced_components": {
+    "4a2f601f-f80c-4eee-92df-b9a9ea1ab02a": {
+      "component_type": "StartNode",
+      "id": "4a2f601f-f80c-4eee-92df-b9a9ea1ab02a",
+      "name": "start_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ]
+    },
+    "9a5763be-8088-407d-8f37-66d4896f2dd7": {
+      "component_type": "InputMessageNode",
+      "id": "9a5763be-8088-407d-8f37-66d4896f2dd7",
+      "name": "get_jira_issue",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [
+        {
+          "description": "The Jira issue key, e.g., \"INC-12345\"",
+          "title": "jira_issue_id",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "message": null
+    },
+    "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c": {
+      "component_type": "BranchingNode",
+      "id": "c62ae8f9-9ecf-4f38-a5b5-df0409a52d3c",
+      "name": "exit_branching",
+      "description": "Exit the flow if the user writes `exit`",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "The Jira issue key, e.g., \"INC-12345\"",
+          "title": "jira_issue_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "default",
+        "exit"
+      ],
+      "mapping": {
+        "exit": "exit"
+      }
+    },
+    "71e09592-a4f5-4d53-a4a4-722a3e28d838": {
+      "component_type": "ToolNode",
+      "id": "71e09592-a4f5-4d53-a4a4-722a3e28d838",
+      "name": "read_jira_ticket_tool_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "The Jira issue key, e.g., \"INC-12345\"",
+          "title": "jira_issue_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "A human-readable incident summary including scope, runbook, and time window.",
+          "title": "incident_summary",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "fb5b520e-922f-4a93-bbea-2a842941b383",
+        "name": "read_jira_ticket",
+        "description": "Return a plain-text summary of the Jira incident.",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "The Jira issue key, e.g., \"INC-12345\"",
+            "title": "jira_issue_id",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "A human-readable incident summary including scope, runbook, and time window.",
+            "title": "incident_summary",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "5a04cb4a-b3f7-485f-bb31-da70b1a4c628": {
+      "component_type": "BranchingNode",
+      "id": "5a04cb4a-b3f7-485f-bb31-da70b1a4c628",
+      "name": "was_jira_issue_found_branching",
+      "description": "Continue if we found the jira ticket details, loop back if we did not",
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "incident_summary",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "default",
+        "not_found"
+      ],
+      "mapping": {
+        "Ticket not found": "not_found"
+      }
+    },
+    "b807c425-d031-4126-928b-55d8879235a9": {
+      "component_type": "OutputMessageNode",
+      "id": "b807c425-d031-4126-928b-55d8879235a9",
+      "name": "jira_issue_not_found",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "The Jira issue key, e.g., \"INC-12345\"",
+          "title": "jira_issue_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "Jira issue with ID `{{jira_issue_id}}` was not found. Please try again or type 'exit' to quit."
+    },
+    "00a79651-e4ac-4497-aa50-03ec4ea637f3": {
+      "component_type": "ToolNode",
+      "id": "00a79651-e4ac-4497-aa50-03ec4ea637f3",
+      "name": "parse_incident_summary_tool_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "A human-readable incident summary including scope, runbook, and time window.",
+          "title": "incident_summary",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Owning project (e.g., 'payments', 'inventory')",
+          "title": "from_project",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "Service/fleet name",
+          "title": "from_fleet",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "Environment/compartment (e.g., 'prod')",
+          "title": "from_compartment",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "Cloud region",
+          "title": "from_region",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "Minimum log level (string)",
+          "title": "log_level",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "ISO8601 start timestamp",
+          "title": "start_ts",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "ISO8601 end timestamp",
+          "title": "end_ts",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "The canonical runbook name.",
+          "title": "runbook_name",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "description": "Alarm identifier (e.g., 'cw:payments-latency-high')",
+          "title": "alarm_id",
+          "default": "",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "b76cd793-7579-4c96-8a0a-cf5967ddb836",
+        "name": "parse_incident_summary",
+        "description": "Parse an incident summary string to extract relevant information in a structured format",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "A human-readable incident summary including scope, runbook, and time window.",
+            "title": "incident_summary",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "Owning project (e.g., 'payments', 'inventory')",
+            "title": "from_project",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "Service/fleet name",
+            "title": "from_fleet",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "Environment/compartment (e.g., 'prod')",
+            "title": "from_compartment",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "Cloud region",
+            "title": "from_region",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "Minimum log level (string)",
+            "title": "log_level",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "ISO8601 start timestamp",
+            "title": "start_ts",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "ISO8601 end timestamp",
+            "title": "end_ts",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "The canonical runbook name.",
+            "title": "runbook_name",
+            "default": "",
+            "type": "string"
+          },
+          {
+            "description": "Alarm identifier (e.g., 'cw:payments-latency-high')",
+            "title": "alarm_id",
+            "default": "",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "919eb856-b841-4cc8-a4ae-bad403a5178b": {
+      "component_type": "ToolNode",
+      "id": "919eb856-b841-4cc8-a4ae-bad403a5178b",
+      "name": "read_runbook_tool_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "The canonical runbook name.",
+          "title": "runbook_name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Markdown content of the runbook.",
+          "title": "runbook_markdown",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "0e7c3178-1d58-410e-aa9a-9e352caba3ba",
+        "name": "read_runbook",
+        "description": "Return the markdown content of a runbook by name.",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "The canonical runbook name.",
+            "title": "runbook_name",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "Markdown content of the runbook.",
+            "title": "runbook_markdown",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "9b654a3c-30eb-4498-b467-927bfe24cb55": {
+      "component_type": "ToolNode",
+      "id": "9b654a3c-30eb-4498-b467-927bfe24cb55",
+      "name": "get_alarm_status_tool_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Cloud region (e.g., 'us-west-1', 'eu-frankfurt-1')",
+          "title": "region",
+          "type": "string"
+        },
+        {
+          "description": "Alarm identifier (e.g., 'cw:payments-latency-high')",
+          "title": "alarm_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "'firing' or 'not firing'",
+          "title": "alarm_status",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "6244fa30-c1c7-4f66-9ac9-6c4bc0afa3f0",
+        "name": "get_alarm_status",
+        "description": "Return the current status of an alarm: 'firing' or 'not firing'.",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "Cloud region (e.g., 'us-west-1', 'eu-frankfurt-1')",
+            "title": "region",
+            "type": "string"
+          },
+          {
+            "description": "Alarm identifier (e.g., 'cw:payments-latency-high')",
+            "title": "alarm_id",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "'firing' or 'not firing'",
+            "title": "alarm_status",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "d3d183ad-897d-435a-ade5-62e7aa909e58": {
+      "component_type": "ToolNode",
+      "id": "d3d183ad-897d-435a-ade5-62e7aa909e58",
+      "name": "read_logs_tool_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Host or group selector (e.g., 'asg:payments-api-*', 'host:inventory-svc-3')",
+          "title": "from_machine",
+          "type": "string"
+        },
+        {
+          "description": "Owning project (e.g., 'payments', 'inventory')",
+          "title": "from_project",
+          "type": "string"
+        },
+        {
+          "description": "Service/fleet name",
+          "title": "from_fleet",
+          "type": "string"
+        },
+        {
+          "description": "Environment/compartment (e.g., 'prod')",
+          "title": "from_compartment",
+          "type": "string"
+        },
+        {
+          "description": "Cloud region",
+          "title": "from_region",
+          "type": "string"
+        },
+        {
+          "description": "Minimum log level (string)",
+          "title": "log_level",
+          "type": "string"
+        },
+        {
+          "description": "ISO8601 start timestamp",
+          "title": "start_ts",
+          "type": "string"
+        },
+        {
+          "description": "ISO8601 end timestamp",
+          "title": "end_ts",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Concatenated log lines or a friendly 'no logs' message.",
+          "title": "log_lines",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "dabb08e0-4588-433c-adcd-b3ee50ba6f68",
+        "name": "read_logs",
+        "description": "Return log lines for the given filters as a single plain string.",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "Host or group selector (e.g., 'asg:payments-api-*', 'host:inventory-svc-3')",
+            "title": "from_machine",
+            "type": "string"
+          },
+          {
+            "description": "Owning project (e.g., 'payments', 'inventory')",
+            "title": "from_project",
+            "type": "string"
+          },
+          {
+            "description": "Service/fleet name",
+            "title": "from_fleet",
+            "type": "string"
+          },
+          {
+            "description": "Environment/compartment (e.g., 'prod')",
+            "title": "from_compartment",
+            "type": "string"
+          },
+          {
+            "description": "Cloud region",
+            "title": "from_region",
+            "type": "string"
+          },
+          {
+            "description": "Minimum log level (string)",
+            "title": "log_level",
+            "type": "string"
+          },
+          {
+            "description": "ISO8601 start timestamp",
+            "title": "start_ts",
+            "type": "string"
+          },
+          {
+            "description": "ISO8601 end timestamp",
+            "title": "end_ts",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "Concatenated log lines or a friendly 'no logs' message.",
+            "title": "log_lines",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "dd1a7635-9c49-4054-8ded-036bc70d8d9a": {
+      "component_type": "AgentNode",
+      "id": "dd1a7635-9c49-4054-8ded-036bc70d8d9a",
+      "name": "operator_assistant_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "jira_issue_id",
+          "type": "string"
+        },
+        {
+          "title": "runbook_markdown",
+          "type": "string"
+        },
+        {
+          "title": "alarm_status",
+          "type": "string"
+        },
+        {
+          "title": "log_lines",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "agent": {
+        "component_type": "Agent",
+        "id": "8b755d91-2b64-498e-87c9-90c953b160f8",
+        "name": "Operator_Assistant",
+        "description": null,
+        "metadata": {},
+        "inputs": [
+          {
+            "title": "jira_issue_id",
+            "type": "string"
+          },
+          {
+            "title": "runbook_markdown",
+            "type": "string"
+          },
+          {
+            "title": "alarm_status",
+            "type": "string"
+          },
+          {
+            "title": "log_lines",
+            "type": "string"
+          }
+        ],
+        "outputs": [],
+        "llm_config": {
+          "component_type": "OpenAiConfig",
+          "id": "eb9649c8-3116-4581-bc06-621b3a10d69e",
+          "name": "openai-llm",
+          "description": null,
+          "metadata": {},
+          "default_generation_parameters": null,
+          "model_id": "model-id"
+        },
+        "system_prompt": "# Agent background\n\nYou are an LLM-based operations assistant.\nYou have to help the operator solve the issue with Jira ID: {{jira_issue_id}}\n\n# Information available\n\n## Runbook\n\n{{runbook_markdown}}\n\n## Alarm Status\n\n{{alarm_status}}\n\n## Logs\n\n{{log_lines}}\n\n# Agent instructions\n\n1) Form a hypothesis and recommended actions\n    - Synthesize alarm status, logs, runbook guidance, and notes from the ticket.\n    - Provide a clear, probable cause hypothesis with confidence qualifiers.\n    - Recommend next steps aligned to the runbook.\n\n2) In the first message, report results in a structured format.\nUse this output template:\n- Incident: <jira_issue_id>\n- Summary: <one-liner from Jira or your concise rewrite>\n- Scope: Project=<project>, Fleet=<fleet>, Compartment=<compartment>, Region=<region>\n- Time window: <start_ts> to <end_ts> (from ticket or adjusted)\n- Alarm: <alarm_id> \u2014 Status: <firing|not firing|unknown>\n- Evidence:\n- Ticket highlights: <key notes, deployments, flags>\n- Logs (top 3-6 lines or patterns): <short bullets with timestamps and error types>\n- Runbook: <name> \u2014 Key steps considered: <bulleted list of most relevant steps>\n- Hypothesis: <probable cause and rationale>\n- Recommended actions: <ordered list; include rollback/failover/tuning/monitoring>\n- Validation: <what success looks like (e.g., P95 < threshold for X min)>\n- Open questions/next checks: <only if needed>\n- Artifacts: <any identifiers: deployment IDs, feature flags, trace IDs seen in logs>\n\n3) Follow up and assist the users by answering additional questions they might have until\nthey tell you that they have solved their issue.",
+        "tools": []
+      }
+    },
+    "529712e9-d6da-49bd-9bb0-340dfc7b8ce6": {
+      "component_type": "OutputMessageNode",
+      "id": "529712e9-d6da-49bd-9bb0-340dfc7b8ce6",
+      "name": "presentation_message",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "Hi, I am the Operations Assistant. Please insert the Jira issue ID you would like to investigate. Write `exit` if you don't want to proceed."
+    },
+    "ea6618d7-0249-448a-a2dd-8d23eea5a574": {
+      "component_type": "EndNode",
+      "id": "ea6618d7-0249-448a-a2dd-8d23eea5a574",
+      "name": "exit_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [],
+      "branch_name": "next"
+    }
+  },
+  "agentspec_version": "25.4.1"
+}
