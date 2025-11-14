@@ -7,7 +7,7 @@ on:
 
 env:
   SKIP_LLM_TESTS: "1"
-  COPYRIGHT_REGEX: "# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option."
+  COPYRIGHT_REGEX: '# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option.'
 
 jobs:
   checks-and-tests:
@@ -75,7 +75,7 @@ jobs:
         run: flake8 --select C801 adapters/langgraphagentspecadapter/
 
       - name: "[LangGraph Adapter] Flake8 copyright checks"
-        run: flake8 --select C801 --copyright-check --copyright-regexp="${{ env.COPYRIGHT_REGEX }} adapters/langgraphagentspecadapter/
+        run: flake8 --select C801 --copyright-check --copyright-regexp="${{ env.COPYRIGHT_REGEX }}" adapters/langgraphagentspecadapter/
 
       - name: "[LangGraph Adapter] Bandit security checks"
         run: bandit -c bandit.yaml -r adapters/langgraphagentspecadapter/
@@ -94,7 +94,7 @@ jobs:
         if: matrix.python-version != '3.13'
 
       - name: "[AutoGen Adapter] Isort import sorting check"
-        run: isort --settings-path adapters/autogenagentspecadapter/pyproject.toml --check-only adapters/langgraphagentspecadapter/
+        run: isort --settings-path adapters/autogenagentspecadapter/pyproject.toml --check-only adapters/autogenagentspecadapter/
         if: matrix.python-version != '3.13'
 
       - name: "[AutoGen Adapter] Flake8 linter checks"
@@ -102,7 +102,7 @@ jobs:
         if: matrix.python-version != '3.13'
 
       - name: "[AutoGen Adapter] Flake8 copyright checks"
-        run: flake8 --select C801 --copyright-check --copyright-regexp="${{ env.COPYRIGHT_REGEX }} adapters/autogenagentspecadapter/
+        run: flake8 --select C801 --copyright-check --copyright-regexp="${{ env.COPYRIGHT_REGEX }}" adapters/autogenagentspecadapter/
         if: matrix.python-version != '3.13'
 
       - name: "[AutoGen Adapter] Bandit security checks"

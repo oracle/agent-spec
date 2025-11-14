@@ -16,7 +16,7 @@ repos:
     hooks:
     -   id: black-formatting-hook
         name: Run autoformatting black
-        entry: bash -xc 'black --config pyagentspec/pyproject.toml -- "$@"' --
+        entry: bash -xc 'black --config ./pyproject.toml -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging
@@ -24,7 +24,7 @@ repos:
         verbose: true
     -   id: isort-formatting-hook
         name: Run autoformatting isort
-        entry: bash -xc 'isort --settings-path pyagentspec/pyproject.toml -- "$@"' --
+        entry: bash -xc 'isort --settings-path ./pyproject.toml -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging
