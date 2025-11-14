@@ -1250,6 +1250,34 @@ to one of the values in branches. GUIs will show the different branches
 as output flows of the node, so that each of them can be connected in a
 1-to-1 manner with another node's flow input.
 
+.. _parallelization:
+
+Parallelization
+^^^^^^^^^^^^^^^
+
+Support for parallelism in Agent Spec is limited to specific nodes that explicitly claim to support it.
+The boundaries of parallelism (i.e., fork and join) are well defined, and coincide with those of the node where
+parallelism is allowed.
+
+.. note::
+
+  Agent Spec does not enforce a specific way to implement parallelism. Runtimes can implement parallelism with different
+  techniques (including, but not limited to, multi-processing and multi-threading), as long as they respect
+  Agent Spec language directives and :ref:`security guidelines <securityconsiderations>`.
+  Developers creating Agent Spec configurations should not make any assumption on how parallelism is implemented.
+
+During parallel execution, the execution order among parallel flows is not guaranteed.
+Therefore, no assumptions should be made about the order or timing of operations, nor their atomicity.
+
+Consequently, take special precautions in flows and nodes that are supposed to be executed in parallel:
+
+- Avoid placing interrupts or user input/output operations (including, but not limited to, message nodes,
+  agent invocations, client tools) within parallel branches, as this can result in unpredictable behavior.
+- Do not perform write operations on shared stateful objects in parallel nodes to prevent race conditions or inconsistent states.
+- Parallel blocks should ideally be limited to independent, stateless tasks.
+  Carefully review flows with parallelism to ensure they remain safe and predictable.
+
+
 Standard library of nodes to use in flows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1269,6 +1297,8 @@ Here's the list of nodes supported in Agent Spec:
 - ToolNode: executes a tool
 - InputMessageNode: interrupts temporarily the execution to retrieve user input
 - OutputMessageNode: appends an agent message to the conversation
+- ParallelMapNode: performs a parallel map-reduce operation on a given input collection
+- ParallelFlowNode: execute a list of subflows in parallel
 
 
 A more detailed description of each node follows.
@@ -1420,7 +1450,7 @@ A more detailed description of each node follows.
         It's the set of outputs defined in the ``subflow``'s specification
       - Inferred from the inner flow: one per unique ``branch_name`` of the ``subflow``'s EndNodes
     * - MapNode
-      - The Map node is used when we need to map a sequence of nodes to each of the values
+      - The MapNode is used when we need to map a sequence of nodes to each of the values
         defined in a list (from output of a previous node). This node is responsible to
         asynchronically map each value of a collection (defined in input_schema) to the first node
         of the 'subflow' and reduce the outputs of the last node of the 'subflow' to
@@ -1473,6 +1503,88 @@ A more detailed description of each node follows.
 
         - ``List`` of the respective output type in case of ``append``
         - same type of the respective output type in case of ``sum``, ``avg``
+
+      - One, the default next
+    * - ParallelMapNode
+      - The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
+        defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
+        the only difference is that in this node the map operation is supposed to be performed in parallel.
+        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
+      - .. list-table::
+            :header-rows: 1
+            :widths: 20 35 15 15 15
+            :class: mywideinnertable
+
+            * - Name
+              - Description
+              - Type
+              - Mandatory
+              - Default
+            * - subflow
+              - The flow that should be applied to all the input values
+              - Flow
+              - Yes
+              - -
+            * - reducers
+              - The way the outputs of the different executions (map) should be collected together (reduce).
+                It's a dictionary mapping the name of an output to the respective reduction method.
+                Currently supported reduction methods are: ``append``, ``sum``, ``average``, ``max``, ``min``.
+                Allowed methods depend on the type of the output:
+
+                - ``sum``, ``average``, ``max``, ``min`` are applicable only to ``integer`` and ``number`` types
+                - ``append`` is applicable to all the types
+
+              - object[str, str] | null
+              - No
+              - null, each output is aggregated through value concatenation (append)
+
+      - Inferred from the inner structure (as defined in FlowNode).
+        The names of the inputs will be the ones of the inner flow,
+        complemented with the ``iterated_`` prefix. Their type is
+        ``Union[inner_type, List[inner_type]]``, where ``inner_type``
+        is the type of the respective input in the inner flow.
+
+        - If an input of type ``inner_type`` is connected, the same value will used in
+          all the executions of the inner flow
+        - If an input of type ``List[inner_type]`` is connected, the input values will be iterated over
+
+        Note that all the input lists must have the same length, otherwise a runtime error will be thrown.
+
+      - Inferred from the inner structure (as defined in FlowNode),
+        combined with the reducer method of each output.
+        The names of the outputs will be the ones of the inner flow,
+        complemented with the ``collected_`` prefix. Their type depends
+        on the ``reduce`` method specified for that output:
+
+        - ``List`` of the respective output type in case of ``append``
+        - same type of the respective output type in case of ``sum``, ``avg``
+
+      - One, the default next
+    * - ParallelFlowNode
+      - Execute a list of subflows in parallel.
+        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
+      - .. list-table::
+            :header-rows: 1
+            :widths: 20 35 15 15 15
+            :class: mywideinnertable
+
+            * - Name
+              - Description
+              - Type
+              - Mandatory
+              - Default
+            * - subflows
+              - The flows that should be executed in parallel
+              - List[Flow]
+              - Yes
+              - -
+
+      - Inferred from the inner structure. It's the union of the sets of inputs of the inner flows.
+        Inputs of different inner flows that have the same name are merged if they have the same type.
+        Inputs of different inner flows with the same name but different types are not allowed.
+
+      - Inferred from the inner structure. It's the union of the outputs of the inner flows.
+        Outputs of different inner flows with the same name are not allowed.
 
       - One, the default next
     * - StartNode

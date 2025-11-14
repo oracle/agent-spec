@@ -58,6 +58,10 @@
                 "name": "pyagentspec.flows.nodes.FlowNode"
             },
             {
+                "path": "pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode",
+                "name": "pyagentspec.flows.nodes.ParallelFlowNode"
+            },
+            {
                 "path": "pyagentspec.flows.nodes.inputmessagenode.InputMessageNode",
                 "name": "pyagentspec.flows.nodes.InputMessageNode"
             },
@@ -68,6 +72,10 @@
             {
                 "path": "pyagentspec.flows.nodes.mapnode.MapNode",
                 "name": "pyagentspec.flows.nodes.MapNode"
+            },
+            {
+                "path": "pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode",
+                "name": "pyagentspec.flows.nodes.ParallelMapNode"
             },
             {
                 "path": "pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode",

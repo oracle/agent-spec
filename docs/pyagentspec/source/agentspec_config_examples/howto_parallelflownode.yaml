@@ -1,0 +1,714 @@
+component_type: Flow
+id: 6861b3dc-f43c-4fda-a810-d46d927a97fc
+name: marketing_message_flow
+description: null
+metadata: {}
+inputs:
+- title: username
+  type: string
+outputs: []
+start_node:
+  $component_ref: c70fc4da-5944-465d-95ff-43a566fd869d
+nodes:
+- $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+- $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+- $component_ref: b787c7ef-3825-45b4-9673-f4aa3d0fa3da
+- $component_ref: c70fc4da-5944-465d-95ff-43a566fd869d
+- $component_ref: af549944-223d-4040-847d-5144d0e2299e
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 1bc34625-c3ed-4666-b940-1843005a031d
+  name: cfe1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: c70fc4da-5944-465d-95ff-43a566fd869d
+  from_branch: null
+  to_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+- component_type: ControlFlowEdge
+  id: 5565d070-0023-4654-8981-55c84862113e
+  name: cfe2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  from_branch: null
+  to_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+- component_type: ControlFlowEdge
+  id: 4c76ad90-9d79-4c22-9a37-da82bd62828f
+  name: cfe3
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+  from_branch: null
+  to_node:
+    $component_ref: b787c7ef-3825-45b4-9673-f4aa3d0fa3da
+- component_type: ControlFlowEdge
+  id: 387f6cfd-8a48-45d2-9737-d2cc865ef374
+  name: cfe4
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: b787c7ef-3825-45b4-9673-f4aa3d0fa3da
+  from_branch: null
+  to_node:
+    $component_ref: af549944-223d-4040-847d-5144d0e2299e
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: b3d3e994-c69b-4e0e-81f6-8420f5e8d557
+  name: dfe_username
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: c70fc4da-5944-465d-95ff-43a566fd869d
+  source_output: username
+  destination_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  destination_input: username
+- component_type: DataFlowEdge
+  id: 2144ad10-c436-418b-9726-a1c50e53e9ab
+  name: dfe_current_time
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  source_output: current_time
+  destination_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+  destination_input: current_time
+- component_type: DataFlowEdge
+  id: baffc53e-b41d-442c-bf9f-c9dc63ca58e2
+  name: dfe_user_info
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  source_output: user_info
+  destination_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+  destination_input: user_info
+- component_type: DataFlowEdge
+  id: f6fe93f1-7f9c-4c63-b21e-642571bffa8d
+  name: dfe_user_purchases
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  source_output: user_purchases
+  destination_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+  destination_input: user_purchases
+- component_type: DataFlowEdge
+  id: 87853542-222c-44bd-bb72-617b3b703ddd
+  name: dfe_items_on_sale
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+  source_output: items_on_sale
+  destination_node:
+    $component_ref: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+  destination_input: items_on_sale
+$referenced_components:
+  c70fc4da-5944-465d-95ff-43a566fd869d:
+    component_type: StartNode
+    id: c70fc4da-5944-465d-95ff-43a566fd869d
+    name: start_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: username
+      type: string
+    outputs:
+    - title: username
+      type: string
+    branches:
+    - next
+  35c9387c-b8f3-4657-ab07-cb0c52cbb064:
+    component_type: ParallelFlowNode
+    id: 35c9387c-b8f3-4657-ab07-cb0c52cbb064
+    name: parallel_flow_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: username
+      type: string
+    outputs:
+    - title: current_time
+      type: string
+    - title: user_info
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - title: user_purchases
+      items:
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      type: array
+    - title: items_on_sale
+      items:
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    subflows:
+    - component_type: Flow
+      id: 282874ac-6d5f-471a-9f04-d0cc00c07145
+      name: get_current_time_step_flow
+      description: null
+      metadata: {}
+      inputs: []
+      outputs:
+      - title: current_time
+        type: string
+      start_node:
+        $component_ref: d26092d8-2894-45bf-8eea-2e4348f0eb36
+      nodes:
+      - $component_ref: d26092d8-2894-45bf-8eea-2e4348f0eb36
+      - $component_ref: e1a65898-83f7-42cd-907f-5e790ec39f05
+      - $component_ref: de6ee72d-89f6-4d43-a400-f755af144c5b
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: 7cdca1f7-ffeb-4363-a027-810c411fade9
+        name: c1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: d26092d8-2894-45bf-8eea-2e4348f0eb36
+        from_branch: null
+        to_node:
+          $component_ref: de6ee72d-89f6-4d43-a400-f755af144c5b
+      - component_type: ControlFlowEdge
+        id: 8e3b006b-ad21-4a8f-89ae-2e225e5a957c
+        name: c2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: de6ee72d-89f6-4d43-a400-f755af144c5b
+        from_branch: null
+        to_node:
+          $component_ref: e1a65898-83f7-42cd-907f-5e790ec39f05
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: fa57815c-8719-44e8-adda-b85bf17ed61c
+        name: dout_current_time
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: de6ee72d-89f6-4d43-a400-f755af144c5b
+        source_output: current_time
+        destination_node:
+          $component_ref: e1a65898-83f7-42cd-907f-5e790ec39f05
+        destination_input: current_time
+      $referenced_components:
+        d26092d8-2894-45bf-8eea-2e4348f0eb36:
+          component_type: StartNode
+          id: d26092d8-2894-45bf-8eea-2e4348f0eb36
+          name: get_current_time_step_flow_start
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+        de6ee72d-89f6-4d43-a400-f755af144c5b:
+          component_type: ToolNode
+          id: de6ee72d-89f6-4d43-a400-f755af144c5b
+          name: get_current_time_step
+          description: null
+          metadata: {}
+          inputs: []
+          outputs:
+          - title: current_time
+            type: string
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: a94b12bb-1d7e-41c4-955b-7db0c8754256
+            name: get_current_time
+            description: Return current time
+            metadata: {}
+            inputs: []
+            outputs:
+            - title: current_time
+              type: string
+        e1a65898-83f7-42cd-907f-5e790ec39f05:
+          component_type: EndNode
+          id: e1a65898-83f7-42cd-907f-5e790ec39f05
+          name: get_current_time_step_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: current_time
+            type: string
+          outputs:
+          - title: current_time
+            type: string
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: ed508681-fa46-4d65-9fde-6da51f84fae7
+      name: get_user_information_step_flow
+      description: null
+      metadata: {}
+      inputs:
+      - title: username
+        type: string
+      outputs:
+      - title: user_info
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      start_node:
+        $component_ref: f7c961d9-0b97-4a9a-ae1b-6be99d84288c
+      nodes:
+      - $component_ref: f7c961d9-0b97-4a9a-ae1b-6be99d84288c
+      - $component_ref: d2f33b8f-eb0f-4952-94ed-5eb84c8381f6
+      - $component_ref: af34f4fa-cb16-4296-b600-a2464df0e820
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: 7fc31ca2-a583-4133-91e6-a0f13674f6aa
+        name: c1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: f7c961d9-0b97-4a9a-ae1b-6be99d84288c
+        from_branch: null
+        to_node:
+          $component_ref: af34f4fa-cb16-4296-b600-a2464df0e820
+      - component_type: ControlFlowEdge
+        id: 48c3736e-58c7-4164-9220-aed924a1d44b
+        name: c2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: af34f4fa-cb16-4296-b600-a2464df0e820
+        from_branch: null
+        to_node:
+          $component_ref: d2f33b8f-eb0f-4952-94ed-5eb84c8381f6
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: 9791f68b-bfa5-45b2-b39a-022aafba8e84
+        name: din_username
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: f7c961d9-0b97-4a9a-ae1b-6be99d84288c
+        source_output: username
+        destination_node:
+          $component_ref: af34f4fa-cb16-4296-b600-a2464df0e820
+        destination_input: username
+      - component_type: DataFlowEdge
+        id: f4289953-57c8-43e7-8c41-58a93e926c6f
+        name: dout_user_info
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: af34f4fa-cb16-4296-b600-a2464df0e820
+        source_output: user_info
+        destination_node:
+          $component_ref: d2f33b8f-eb0f-4952-94ed-5eb84c8381f6
+        destination_input: user_info
+      $referenced_components:
+        f7c961d9-0b97-4a9a-ae1b-6be99d84288c:
+          component_type: StartNode
+          id: f7c961d9-0b97-4a9a-ae1b-6be99d84288c
+          name: get_user_information_step_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: username
+            type: string
+          outputs:
+          - title: username
+            type: string
+          branches:
+          - next
+        af34f4fa-cb16-4296-b600-a2464df0e820:
+          component_type: ToolNode
+          id: af34f4fa-cb16-4296-b600-a2464df0e820
+          name: get_user_information_step
+          description: null
+          metadata: {}
+          inputs:
+          - title: username
+            type: string
+          outputs:
+          - title: user_info
+            additionalProperties:
+              type: string
+            properties: {}
+            type: object
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: d5fd6f3c-6b39-43b8-8829-bfab35cab174
+            name: get_user_information
+            description: Retrieve information about a user
+            metadata: {}
+            inputs:
+            - title: username
+              type: string
+            outputs:
+            - title: user_info
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+        d2f33b8f-eb0f-4952-94ed-5eb84c8381f6:
+          component_type: EndNode
+          id: d2f33b8f-eb0f-4952-94ed-5eb84c8381f6
+          name: get_user_information_step_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: user_info
+            additionalProperties:
+              type: string
+            properties: {}
+            type: object
+          outputs:
+          - title: user_info
+            additionalProperties:
+              type: string
+            properties: {}
+            type: object
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: 107cb956-34b6-45b3-819c-8609ff09443a
+      name: get_user_last_purchases_step_flow
+      description: null
+      metadata: {}
+      inputs:
+      - title: username
+        type: string
+      outputs:
+      - title: user_purchases
+        items:
+          additionalProperties:
+            type: string
+          properties: {}
+          type: object
+        type: array
+      start_node:
+        $component_ref: 1215d9f6-06f3-4cbe-8789-8fae2d54e218
+      nodes:
+      - $component_ref: 1215d9f6-06f3-4cbe-8789-8fae2d54e218
+      - $component_ref: 9a691ffe-3c85-41a9-9c80-b6efecb01cb8
+      - $component_ref: 87d8a6ff-a38f-490d-a029-59495e53df5d
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: 20a98d13-65df-4c4c-b16d-f6da1787151f
+        name: c1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 1215d9f6-06f3-4cbe-8789-8fae2d54e218
+        from_branch: null
+        to_node:
+          $component_ref: 87d8a6ff-a38f-490d-a029-59495e53df5d
+      - component_type: ControlFlowEdge
+        id: bd9b876f-7ffd-4ee2-976b-1eb740f13a5e
+        name: c2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 87d8a6ff-a38f-490d-a029-59495e53df5d
+        from_branch: null
+        to_node:
+          $component_ref: 9a691ffe-3c85-41a9-9c80-b6efecb01cb8
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: 0c1818d2-660f-47ac-b520-a84bc61f221f
+        name: din_username
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 1215d9f6-06f3-4cbe-8789-8fae2d54e218
+        source_output: username
+        destination_node:
+          $component_ref: 87d8a6ff-a38f-490d-a029-59495e53df5d
+        destination_input: username
+      - component_type: DataFlowEdge
+        id: 0039f6a6-faf6-40a8-b2d3-3041b03eb3b1
+        name: dout_user_purchases
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 87d8a6ff-a38f-490d-a029-59495e53df5d
+        source_output: user_purchases
+        destination_node:
+          $component_ref: 9a691ffe-3c85-41a9-9c80-b6efecb01cb8
+        destination_input: user_purchases
+      $referenced_components:
+        1215d9f6-06f3-4cbe-8789-8fae2d54e218:
+          component_type: StartNode
+          id: 1215d9f6-06f3-4cbe-8789-8fae2d54e218
+          name: get_user_last_purchases_step_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: username
+            type: string
+          outputs:
+          - title: username
+            type: string
+          branches:
+          - next
+        87d8a6ff-a38f-490d-a029-59495e53df5d:
+          component_type: ToolNode
+          id: 87d8a6ff-a38f-490d-a029-59495e53df5d
+          name: get_user_last_purchases_step
+          description: null
+          metadata: {}
+          inputs:
+          - title: username
+            type: string
+          outputs:
+          - title: user_purchases
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: 380dd9d1-072a-45c4-8a61-2ba4413b4496
+            name: get_user_last_purchases
+            description: Retrieve the list of purchases made by a user
+            metadata: {}
+            inputs:
+            - title: username
+              type: string
+            outputs:
+            - title: user_purchases
+              items:
+                additionalProperties:
+                  type: string
+                properties: {}
+                type: object
+              type: array
+        9a691ffe-3c85-41a9-9c80-b6efecb01cb8:
+          component_type: EndNode
+          id: 9a691ffe-3c85-41a9-9c80-b6efecb01cb8
+          name: get_user_last_purchases_step_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: user_purchases
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          outputs:
+          - title: user_purchases
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: dfeb70dc-6b50-4f23-a030-2ca7ccb6c9a1
+      name: get_items_on_sale_steo_flow
+      description: null
+      metadata: {}
+      inputs: []
+      outputs:
+      - title: items_on_sale
+        items:
+          additionalProperties:
+            type: string
+          properties: {}
+          type: object
+        type: array
+      start_node:
+        $component_ref: b3a7dcd4-0c27-4d3e-9c24-6abcf80ede14
+      nodes:
+      - $component_ref: b3a7dcd4-0c27-4d3e-9c24-6abcf80ede14
+      - $component_ref: 5d530823-b8a1-4c19-9221-d95b6b12f7ff
+      - $component_ref: 126d5e3d-b214-48e1-8bca-ab5c0b518892
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: 2bcc26b9-208f-47ee-81ff-87069794b06a
+        name: c1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: b3a7dcd4-0c27-4d3e-9c24-6abcf80ede14
+        from_branch: null
+        to_node:
+          $component_ref: 126d5e3d-b214-48e1-8bca-ab5c0b518892
+      - component_type: ControlFlowEdge
+        id: 59e0f356-3a09-4859-be30-dd204c42fdfd
+        name: c2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 126d5e3d-b214-48e1-8bca-ab5c0b518892
+        from_branch: null
+        to_node:
+          $component_ref: 5d530823-b8a1-4c19-9221-d95b6b12f7ff
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: c6a4b9ac-9a1f-43b0-883f-990f6d98f3f0
+        name: dout_items_on_sale
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 126d5e3d-b214-48e1-8bca-ab5c0b518892
+        source_output: items_on_sale
+        destination_node:
+          $component_ref: 5d530823-b8a1-4c19-9221-d95b6b12f7ff
+        destination_input: items_on_sale
+      $referenced_components:
+        b3a7dcd4-0c27-4d3e-9c24-6abcf80ede14:
+          component_type: StartNode
+          id: b3a7dcd4-0c27-4d3e-9c24-6abcf80ede14
+          name: get_items_on_sale_steo_flow_start
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+        126d5e3d-b214-48e1-8bca-ab5c0b518892:
+          component_type: ToolNode
+          id: 126d5e3d-b214-48e1-8bca-ab5c0b518892
+          name: get_items_on_sale_steo
+          description: null
+          metadata: {}
+          inputs: []
+          outputs:
+          - title: items_on_sale
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: 5057a406-bf9c-400e-bfca-d88f32c8e840
+            name: get_items_on_sale
+            description: Retrieve the list of items currently on sale
+            metadata: {}
+            inputs: []
+            outputs:
+            - title: items_on_sale
+              items:
+                additionalProperties:
+                  type: string
+                properties: {}
+                type: object
+              type: array
+        5d530823-b8a1-4c19-9221-d95b6b12f7ff:
+          component_type: EndNode
+          id: 5d530823-b8a1-4c19-9221-d95b6b12f7ff
+          name: get_items_on_sale_steo_flow_start
+          description: null
+          metadata: {}
+          inputs:
+          - title: items_on_sale
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          outputs:
+          - title: items_on_sale
+            items:
+              additionalProperties:
+                type: string
+              properties: {}
+              type: object
+            type: array
+          branches: []
+          branch_name: next
+  42abbbdb-15c9-44f0-97f4-b6246ab5769e:
+    component_type: LlmNode
+    id: 42abbbdb-15c9-44f0-97f4-b6246ab5769e
+    name: prepare_marketing_message_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_info
+      type: string
+    - title: current_time
+      type: string
+    - title: items_on_sale
+      type: string
+    - title: user_purchases
+      type: string
+    outputs:
+    - description: Raw text generated by the LLM
+      title: generated_text
+      type: string
+    branches:
+    - next
+    llm_config:
+      component_type: VllmConfig
+      id: 0c85bb34-f57c-4aa4-8ec4-a4d4bb3b0bf5
+      name: vllm-llama-4-maverick
+      description: null
+      metadata: {}
+      default_generation_parameters: null
+      url: http://url.to.my.vllm.server/llama4mav
+      model_id: llama-4-maverick
+    prompt_template: "# Instructions\n\nYou are a marketing expert. You have to write\
+      \ a welcome message for a user.\n\nThe message must contain:\n- A first sentence\
+      \ of greetings, including user's name, and personalized in case it's user's\
+      \ birthday\n- A proposal containing something to buy\n\nThe purchase proposal\
+      \ must be:\n- aligned with user's purchase history\n- part of the list of items\
+      \ on sale\n\n# User information\n\n{{user_info}}\n\nNote that the current time\
+      \ to check the birthday is: {{current_time}}\n\nThe list of items purchased\
+      \ by the user is:\n{{user_purchases}}\n\n# Items on sale\n\n{{items_on_sale}}\n\
+      \nPlease write the welcome message for the user.\nDo not give me the instructions\
+      \ to do it, I want only the final message to send.  \n"
+  b787c7ef-3825-45b4-9673-f4aa3d0fa3da:
+    component_type: OutputMessageNode
+    id: b787c7ef-3825-45b4-9673-f4aa3d0fa3da
+    name: output_message_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: output
+      type: string
+    outputs: []
+    branches:
+    - next
+    message: '{{output}}'
+  af549944-223d-4040-847d-5144d0e2299e:
+    component_type: EndNode
+    id: af549944-223d-4040-847d-5144d0e2299e
+    name: end_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

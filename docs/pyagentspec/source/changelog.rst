@@ -7,6 +7,13 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **ParallelFlowNode and ParallelMapNode**
+
+  Added support for parallelization in Agent Spec through :ref:`ParallelFlowNode <parallelflownode>`, which runs several
+  flows in parallel, and :ref:`ParallelMapNode <parallelmapnode>`, which is a parallel version of the ``MapNode``.
+  For more information, check out the corresponding :doc:`parallel flows how-to guide <howtoguides/howto_parallelflownode>`
+  and :doc:`map-reduce how-to guide <howtoguides/howto_mapnode>`.
+
 * **Tools with User Confirmation**
 
   Tools now have a new flag named `requires_confirmation`, which can be set to require user/operator approval before running the tool.
@@ -16,7 +23,6 @@ New features
 
   Toolboxes are now available in the Agent Spec Language Specification and can be
   passed to :ref:`Agents <agent>`. For more information read the :doc:`API Reference <api/tools>`.
-
 
 * **Structured Generation**
 

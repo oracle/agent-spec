@@ -15,6 +15,8 @@ from .inputmessagenode import InputMessageNode
 from .llmnode import LlmNode
 from .mapnode import MapNode
 from .outputmessagenode import OutputMessageNode
+from .parallelflownode import ParallelFlowNode
+from .parallelmapnode import ParallelMapNode
 from .startnode import StartNode
 from .toolnode import ToolNode
 
@@ -30,4 +32,6 @@ __all__ = [
     "OutputMessageNode",
     "ToolNode",
     "StartNode",
+    "ParallelFlowNode",
+    "ParallelMapNode",
 ]
