@@ -7,12 +7,15 @@
 """This module defines several Agent Spec components."""
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from pyagentspec.component import SerializeAsEnum
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.node import Node
 from pyagentspec.property import Property
+
+if TYPE_CHECKING:
+    from pyagentspec.flows.nodes.parallelmapnode import ParallelMapNode
 
 
 class ReductionMethod(Enum):
@@ -300,48 +303,62 @@ class MapNode(Node):
         super().model_post_init(__context)
 
     def _get_default_reducers(self) -> Dict[str, ReductionMethod]:
-        default_reducers = (
-            {
-                output.json_schema["title"]: ReductionMethod.APPEND
-                for output in self.subflow.outputs or []
-            }
-            if hasattr(self, "subflow")
-            else {}
-        )
-        return default_reducers
+        return _get_default_reducers(self)
 
     def _get_inferred_inputs(self) -> List[Property]:
-        if not hasattr(self, "subflow"):
-            return []
-        return [
-            Property(
-                json_schema={
-                    "title": f"iterated_{subflow_input_property.json_schema['title']}",
-                    "anyOf": [
-                        subflow_input_property.json_schema,
-                        {"type": "array", "items": subflow_input_property.json_schema},
-                    ],
-                }
-            )
-            for subflow_input_property in self.subflow.inputs or []
-        ]
+        return _get_inferred_inputs(self)
 
     def _get_inferred_outputs(self) -> List[Property]:
-        if not hasattr(self, "subflow"):
-            return []
-        outputs = []
-        for output in self.subflow.outputs or []:
-            if self.reducers is not None and output.title in self.reducers:
-                if self.reducers[output.title] == ReductionMethod.APPEND:
-                    json_schema = {
-                        "title": f"collected_{output.title}",
-                        "type": "array",
-                        "items": output.json_schema,
-                    }
-                else:
-                    json_schema = {
-                        **output.json_schema,
-                        "title": f"collected_{output.title}",
-                    }
-                outputs.append(Property(json_schema=json_schema))
-        return outputs
+        return _get_inferred_outputs(self)
+
+
+def _get_default_reducers(
+    map_node: Union["MapNode", "ParallelMapNode"],
+) -> Dict[str, ReductionMethod]:
+    default_reducers = (
+        {
+            output.json_schema["title"]: ReductionMethod.APPEND
+            for output in map_node.subflow.outputs or []
+        }
+        if hasattr(map_node, "subflow")
+        else {}
+    )
+    return default_reducers
+
+
+def _get_inferred_inputs(map_node: Union["MapNode", "ParallelMapNode"]) -> List[Property]:
+    if not hasattr(map_node, "subflow"):
+        return []
+    return [
+        Property(
+            json_schema={
+                "title": f"iterated_{subflow_input_property.json_schema['title']}",
+                "anyOf": [
+                    subflow_input_property.json_schema,
+                    {"type": "array", "items": subflow_input_property.json_schema},
+                ],
+            }
+        )
+        for subflow_input_property in map_node.subflow.inputs or []
+    ]
+
+
+def _get_inferred_outputs(map_node: Union["MapNode", "ParallelMapNode"]) -> List[Property]:
+    if not hasattr(map_node, "subflow"):
+        return []
+    outputs = []
+    for output in map_node.subflow.outputs or []:
+        if map_node.reducers is not None and output.title in map_node.reducers:
+            if map_node.reducers[output.title] == ReductionMethod.APPEND:
+                json_schema = {
+                    "title": f"collected_{output.title}",
+                    "type": "array",
+                    "items": output.json_schema,
+                }
+            else:
+                json_schema = {
+                    **output.json_schema,
+                    "title": f"collected_{output.title}",
+                }
+            outputs.append(Property(json_schema=json_schema))
+    return outputs

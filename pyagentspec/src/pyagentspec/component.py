@@ -804,9 +804,10 @@ def _add_agentspec_version_field(json_schema: JsonSchemaValue) -> JsonSchemaValu
     """
     if "$defs" in json_schema and "anyOf" in json_schema:
         agentspec_version_json_schema = TypeAdapter(AgentSpecVersionEnum).json_schema()
-        agentspec_version_json_schema["enum"] = list(
-            set(agentspec_version_json_schema["enum"]) - _LEGACY_AGENTSPEC_VERSIONS
+        agentspec_versions_list = list(
+            sorted(set(agentspec_version_json_schema["enum"]) - _LEGACY_AGENTSPEC_VERSIONS)
         )
+        agentspec_version_json_schema["enum"] = agentspec_versions_list
         json_schema["$defs"][AgentSpecVersionEnum.__name__] = agentspec_version_json_schema
         all_component_types = [
             component_type["$ref"].split("/")[-1] for component_type in json_schema["anyOf"]
@@ -819,7 +820,7 @@ def _add_agentspec_version_field(json_schema: JsonSchemaValue) -> JsonSchemaValu
                 json_schema["$defs"][f"Versioned{component_type}"]["properties"] = {}
             json_schema["$defs"][f"Versioned{component_type}"]["properties"][
                 AGENTSPEC_VERSION_FIELD_NAME
-            ] = agentspec_version_json_schema
+            ] = {"$ref": f"#/$defs/{AgentSpecVersionEnum.__name__}"}
         json_schema["anyOf"] = [
             {"$ref": f"#/$defs/Versioned{component_type}"} for component_type in all_component_types
         ]

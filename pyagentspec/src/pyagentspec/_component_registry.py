@@ -26,6 +26,8 @@ from pyagentspec.flows.nodes import (
     LlmNode,
     MapNode,
     OutputMessageNode,
+    ParallelFlowNode,
+    ParallelMapNode,
     StartNode,
     ToolNode,
 )
@@ -118,4 +120,6 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,
     "ManagerWorkers": ManagerWorkers,
+    "ParallelFlowNode": ParallelFlowNode,
+    "ParallelMapNode": ParallelMapNode,
 }

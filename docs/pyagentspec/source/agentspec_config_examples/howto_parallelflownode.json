@@ -1,0 +1,1057 @@
+{
+  "component_type": "Flow",
+  "id": "61d93ff3-a5c2-42e1-a9a3-d913014a8d47",
+  "name": "marketing_message_flow",
+  "description": null,
+  "metadata": {},
+  "inputs": [
+    {
+      "title": "username",
+      "type": "string"
+    }
+  ],
+  "outputs": [],
+  "start_node": {
+    "$component_ref": "276f6084-b26d-4ee2-8cf1-238f3032654e"
+  },
+  "nodes": [
+    {
+      "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+    },
+    {
+      "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+    },
+    {
+      "$component_ref": "7e31a16a-357c-4121-b00e-549cb36b550b"
+    },
+    {
+      "$component_ref": "276f6084-b26d-4ee2-8cf1-238f3032654e"
+    },
+    {
+      "$component_ref": "cc8603e1-1c15-4a1d-9674-68a202049fd6"
+    }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "4bb948ac-b7b0-4383-af68-d212a836d468",
+      "name": "cfe1",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "276f6084-b26d-4ee2-8cf1-238f3032654e"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "ab9eb713-3ad8-4e6d-8afe-87af8b40121f",
+      "name": "cfe2",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "73f33011-058b-4d63-a02a-c4e3f1b8fb30",
+      "name": "cfe3",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "7e31a16a-357c-4121-b00e-549cb36b550b"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "79c742e8-6f06-4391-baae-49b555d74908",
+      "name": "cfe4",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "7e31a16a-357c-4121-b00e-549cb36b550b"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "cc8603e1-1c15-4a1d-9674-68a202049fd6"
+      }
+    }
+  ],
+  "data_flow_connections": [
+    {
+      "component_type": "DataFlowEdge",
+      "id": "83c62b8a-56cd-46c0-9c92-5e6d90246361",
+      "name": "dfe_username",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "276f6084-b26d-4ee2-8cf1-238f3032654e"
+      },
+      "source_output": "username",
+      "destination_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "destination_input": "username"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "b0c1ad2d-0e11-40f3-8c84-4601bcf556cb",
+      "name": "dfe_current_time",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "source_output": "current_time",
+      "destination_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      },
+      "destination_input": "current_time"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "7933dfd3-7a12-4fcf-aac4-2510a5fce982",
+      "name": "dfe_user_info",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "source_output": "user_info",
+      "destination_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      },
+      "destination_input": "user_info"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "03b5a2b2-9359-4ad9-ba02-0d6281dd83f5",
+      "name": "dfe_user_purchases",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "source_output": "user_purchases",
+      "destination_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      },
+      "destination_input": "user_purchases"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "db2d9275-7937-4d1e-b1c1-417586886c10",
+      "name": "dfe_items_on_sale",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "1954fcef-a669-417a-a1be-9bd5d138bf2a"
+      },
+      "source_output": "items_on_sale",
+      "destination_node": {
+        "$component_ref": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7"
+      },
+      "destination_input": "items_on_sale"
+    }
+  ],
+  "$referenced_components": {
+    "1954fcef-a669-417a-a1be-9bd5d138bf2a": {
+      "component_type": "ParallelFlowNode",
+      "id": "1954fcef-a669-417a-a1be-9bd5d138bf2a",
+      "name": "parallel_flow_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "username",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "current_time",
+          "type": "string"
+        },
+        {
+          "title": "user_info",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        },
+        {
+          "title": "user_purchases",
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        {
+          "title": "items_on_sale",
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "subflows": [
+        {
+          "component_type": "Flow",
+          "id": "9c2736c2-9716-4c69-935a-b341adb0056c",
+          "name": "get_current_time_step_flow",
+          "description": null,
+          "metadata": {},
+          "inputs": [],
+          "outputs": [
+            {
+              "title": "current_time",
+              "type": "string"
+            }
+          ],
+          "start_node": {
+            "$component_ref": "6e2a3922-9993-4f66-b6b3-570c2821518e"
+          },
+          "nodes": [
+            {
+              "$component_ref": "6e2a3922-9993-4f66-b6b3-570c2821518e"
+            },
+            {
+              "$component_ref": "cde5f5ec-c028-43b7-9d66-23e37f59403e"
+            },
+            {
+              "$component_ref": "982f992c-76dd-4901-b810-aab2d1f610bd"
+            }
+          ],
+          "control_flow_connections": [
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "47fbf5c0-2ba4-4f68-883f-1a0c205524d3",
+              "name": "c1",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "6e2a3922-9993-4f66-b6b3-570c2821518e"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "982f992c-76dd-4901-b810-aab2d1f610bd"
+              }
+            },
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "63dac3bd-cbfb-47bc-82d9-c9fc18cb086f",
+              "name": "c2",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "982f992c-76dd-4901-b810-aab2d1f610bd"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "cde5f5ec-c028-43b7-9d66-23e37f59403e"
+              }
+            }
+          ],
+          "data_flow_connections": [
+            {
+              "component_type": "DataFlowEdge",
+              "id": "453e3bfe-0b46-4cd3-b38d-85cf5ac13efb",
+              "name": "dout_current_time",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "982f992c-76dd-4901-b810-aab2d1f610bd"
+              },
+              "source_output": "current_time",
+              "destination_node": {
+                "$component_ref": "cde5f5ec-c028-43b7-9d66-23e37f59403e"
+              },
+              "destination_input": "current_time"
+            }
+          ],
+          "$referenced_components": {
+            "6e2a3922-9993-4f66-b6b3-570c2821518e": {
+              "component_type": "StartNode",
+              "id": "6e2a3922-9993-4f66-b6b3-570c2821518e",
+              "name": "get_current_time_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [],
+              "outputs": [],
+              "branches": [
+                "next"
+              ]
+            },
+            "cde5f5ec-c028-43b7-9d66-23e37f59403e": {
+              "component_type": "EndNode",
+              "id": "cde5f5ec-c028-43b7-9d66-23e37f59403e",
+              "name": "get_current_time_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "current_time",
+                  "type": "string"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "current_time",
+                  "type": "string"
+                }
+              ],
+              "branches": [],
+              "branch_name": "next"
+            },
+            "982f992c-76dd-4901-b810-aab2d1f610bd": {
+              "component_type": "ToolNode",
+              "id": "982f992c-76dd-4901-b810-aab2d1f610bd",
+              "name": "get_current_time_step",
+              "description": null,
+              "metadata": {},
+              "inputs": [],
+              "outputs": [
+                {
+                  "title": "current_time",
+                  "type": "string"
+                }
+              ],
+              "branches": [
+                "next"
+              ],
+              "tool": {
+                "component_type": "ServerTool",
+                "id": "d5540249-4d2f-4f99-a807-14088ff9e14c",
+                "name": "get_current_time",
+                "description": "Return current time",
+                "metadata": {},
+                "inputs": [],
+                "outputs": [
+                  {
+                    "title": "current_time",
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "component_type": "Flow",
+          "id": "241296a7-0a4a-45d6-93e8-88b77f0ecd9e",
+          "name": "get_user_information_step_flow",
+          "description": null,
+          "metadata": {},
+          "inputs": [
+            {
+              "title": "username",
+              "type": "string"
+            }
+          ],
+          "outputs": [
+            {
+              "title": "user_info",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            }
+          ],
+          "start_node": {
+            "$component_ref": "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec"
+          },
+          "nodes": [
+            {
+              "$component_ref": "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec"
+            },
+            {
+              "$component_ref": "429967e3-5a64-4749-be07-57cc54afd39e"
+            },
+            {
+              "$component_ref": "141c49b0-026c-4379-b3a8-24dafe756278"
+            }
+          ],
+          "control_flow_connections": [
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "3fd8d404-e67c-491a-b3e8-31771f1da442",
+              "name": "c1",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "141c49b0-026c-4379-b3a8-24dafe756278"
+              }
+            },
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "d068501a-964e-4035-8f98-34d7b8350d43",
+              "name": "c2",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "141c49b0-026c-4379-b3a8-24dafe756278"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "429967e3-5a64-4749-be07-57cc54afd39e"
+              }
+            }
+          ],
+          "data_flow_connections": [
+            {
+              "component_type": "DataFlowEdge",
+              "id": "b756b473-e40e-4a97-b25a-bcd457b95242",
+              "name": "din_username",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec"
+              },
+              "source_output": "username",
+              "destination_node": {
+                "$component_ref": "141c49b0-026c-4379-b3a8-24dafe756278"
+              },
+              "destination_input": "username"
+            },
+            {
+              "component_type": "DataFlowEdge",
+              "id": "37827be0-ab14-439f-8251-832cb18128e0",
+              "name": "dout_user_info",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "141c49b0-026c-4379-b3a8-24dafe756278"
+              },
+              "source_output": "user_info",
+              "destination_node": {
+                "$component_ref": "429967e3-5a64-4749-be07-57cc54afd39e"
+              },
+              "destination_input": "user_info"
+            }
+          ],
+          "$referenced_components": {
+            "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec": {
+              "component_type": "StartNode",
+              "id": "3dc5d3eb-d366-4de7-8afe-3d2d160c7dec",
+              "name": "get_user_information_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "branches": [
+                "next"
+              ]
+            },
+            "429967e3-5a64-4749-be07-57cc54afd39e": {
+              "component_type": "EndNode",
+              "id": "429967e3-5a64-4749-be07-57cc54afd39e",
+              "name": "get_user_information_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "user_info",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "user_info",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                }
+              ],
+              "branches": [],
+              "branch_name": "next"
+            },
+            "141c49b0-026c-4379-b3a8-24dafe756278": {
+              "component_type": "ToolNode",
+              "id": "141c49b0-026c-4379-b3a8-24dafe756278",
+              "name": "get_user_information_step",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "user_info",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                }
+              ],
+              "branches": [
+                "next"
+              ],
+              "tool": {
+                "component_type": "ServerTool",
+                "id": "2ab1ea62-0c8b-46ed-85ba-2d6dbbd65761",
+                "name": "get_user_information",
+                "description": "Retrieve information about a user",
+                "metadata": {},
+                "inputs": [
+                  {
+                    "title": "username",
+                    "type": "string"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "title": "user_info",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "component_type": "Flow",
+          "id": "d384b947-2c6c-4669-b4f1-92c2d515891e",
+          "name": "get_user_last_purchases_step_flow",
+          "description": null,
+          "metadata": {},
+          "inputs": [
+            {
+              "title": "username",
+              "type": "string"
+            }
+          ],
+          "outputs": [
+            {
+              "title": "user_purchases",
+              "items": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "properties": {},
+                "type": "object"
+              },
+              "type": "array"
+            }
+          ],
+          "start_node": {
+            "$component_ref": "0bc49848-2a50-4b01-8b88-68794a3a5cad"
+          },
+          "nodes": [
+            {
+              "$component_ref": "0bc49848-2a50-4b01-8b88-68794a3a5cad"
+            },
+            {
+              "$component_ref": "205dff1d-9af0-4a44-937e-4ef950fbc436"
+            },
+            {
+              "$component_ref": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780"
+            }
+          ],
+          "control_flow_connections": [
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "9c1644a5-91e5-4124-97f2-e3e0a111b2b7",
+              "name": "c1",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "0bc49848-2a50-4b01-8b88-68794a3a5cad"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780"
+              }
+            },
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "ae0ff36d-b08e-496e-9dec-08e443ba8d92",
+              "name": "c2",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "205dff1d-9af0-4a44-937e-4ef950fbc436"
+              }
+            }
+          ],
+          "data_flow_connections": [
+            {
+              "component_type": "DataFlowEdge",
+              "id": "5f538977-456f-48e8-9c6d-04571895aa1d",
+              "name": "din_username",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "0bc49848-2a50-4b01-8b88-68794a3a5cad"
+              },
+              "source_output": "username",
+              "destination_node": {
+                "$component_ref": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780"
+              },
+              "destination_input": "username"
+            },
+            {
+              "component_type": "DataFlowEdge",
+              "id": "2e320aee-73dd-43f3-b3f1-623d41ad1fa8",
+              "name": "dout_user_purchases",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780"
+              },
+              "source_output": "user_purchases",
+              "destination_node": {
+                "$component_ref": "205dff1d-9af0-4a44-937e-4ef950fbc436"
+              },
+              "destination_input": "user_purchases"
+            }
+          ],
+          "$referenced_components": {
+            "0bc49848-2a50-4b01-8b88-68794a3a5cad": {
+              "component_type": "StartNode",
+              "id": "0bc49848-2a50-4b01-8b88-68794a3a5cad",
+              "name": "get_user_last_purchases_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "branches": [
+                "next"
+              ]
+            },
+            "205dff1d-9af0-4a44-937e-4ef950fbc436": {
+              "component_type": "EndNode",
+              "id": "205dff1d-9af0-4a44-937e-4ef950fbc436",
+              "name": "get_user_last_purchases_step_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "user_purchases",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "user_purchases",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "branches": [],
+              "branch_name": "next"
+            },
+            "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780": {
+              "component_type": "ToolNode",
+              "id": "82e6d2c4-44b0-42f7-8cc8-ba54eb3c4780",
+              "name": "get_user_last_purchases_step",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "username",
+                  "type": "string"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "user_purchases",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "branches": [
+                "next"
+              ],
+              "tool": {
+                "component_type": "ServerTool",
+                "id": "86f046df-a9b6-49ac-b73b-998d02ead1a3",
+                "name": "get_user_last_purchases",
+                "description": "Retrieve the list of purchases made by a user",
+                "metadata": {},
+                "inputs": [
+                  {
+                    "title": "username",
+                    "type": "string"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "title": "user_purchases",
+                    "items": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "component_type": "Flow",
+          "id": "8d7b7b24-58e7-4335-8a1f-f91587dee241",
+          "name": "get_items_on_sale_steo_flow",
+          "description": null,
+          "metadata": {},
+          "inputs": [],
+          "outputs": [
+            {
+              "title": "items_on_sale",
+              "items": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "properties": {},
+                "type": "object"
+              },
+              "type": "array"
+            }
+          ],
+          "start_node": {
+            "$component_ref": "9c97adb1-2c15-4f69-9a30-c7b46f4a598d"
+          },
+          "nodes": [
+            {
+              "$component_ref": "9c97adb1-2c15-4f69-9a30-c7b46f4a598d"
+            },
+            {
+              "$component_ref": "e099a667-cf9d-402c-b07c-894502f28fb7"
+            },
+            {
+              "$component_ref": "2e535a6e-ae5a-445b-8bda-d75b9adb7534"
+            }
+          ],
+          "control_flow_connections": [
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "9c48f961-1541-4bf0-b571-7f19e1610a42",
+              "name": "c1",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "9c97adb1-2c15-4f69-9a30-c7b46f4a598d"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "2e535a6e-ae5a-445b-8bda-d75b9adb7534"
+              }
+            },
+            {
+              "component_type": "ControlFlowEdge",
+              "id": "6f0954d1-8d9f-498c-bcb0-167f5f15488e",
+              "name": "c2",
+              "description": null,
+              "metadata": {},
+              "from_node": {
+                "$component_ref": "2e535a6e-ae5a-445b-8bda-d75b9adb7534"
+              },
+              "from_branch": null,
+              "to_node": {
+                "$component_ref": "e099a667-cf9d-402c-b07c-894502f28fb7"
+              }
+            }
+          ],
+          "data_flow_connections": [
+            {
+              "component_type": "DataFlowEdge",
+              "id": "bf4a0a50-d3a6-4ebf-bc0c-53b7d5f1eb6a",
+              "name": "dout_items_on_sale",
+              "description": null,
+              "metadata": {},
+              "source_node": {
+                "$component_ref": "2e535a6e-ae5a-445b-8bda-d75b9adb7534"
+              },
+              "source_output": "items_on_sale",
+              "destination_node": {
+                "$component_ref": "e099a667-cf9d-402c-b07c-894502f28fb7"
+              },
+              "destination_input": "items_on_sale"
+            }
+          ],
+          "$referenced_components": {
+            "9c97adb1-2c15-4f69-9a30-c7b46f4a598d": {
+              "component_type": "StartNode",
+              "id": "9c97adb1-2c15-4f69-9a30-c7b46f4a598d",
+              "name": "get_items_on_sale_steo_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [],
+              "outputs": [],
+              "branches": [
+                "next"
+              ]
+            },
+            "e099a667-cf9d-402c-b07c-894502f28fb7": {
+              "component_type": "EndNode",
+              "id": "e099a667-cf9d-402c-b07c-894502f28fb7",
+              "name": "get_items_on_sale_steo_flow_start",
+              "description": null,
+              "metadata": {},
+              "inputs": [
+                {
+                  "title": "items_on_sale",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "outputs": [
+                {
+                  "title": "items_on_sale",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "branches": [],
+              "branch_name": "next"
+            },
+            "2e535a6e-ae5a-445b-8bda-d75b9adb7534": {
+              "component_type": "ToolNode",
+              "id": "2e535a6e-ae5a-445b-8bda-d75b9adb7534",
+              "name": "get_items_on_sale_steo",
+              "description": null,
+              "metadata": {},
+              "inputs": [],
+              "outputs": [
+                {
+                  "title": "items_on_sale",
+                  "items": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "branches": [
+                "next"
+              ],
+              "tool": {
+                "component_type": "ServerTool",
+                "id": "fa406981-3775-4415-a147-c68ee85102bb",
+                "name": "get_items_on_sale",
+                "description": "Retrieve the list of items currently on sale",
+                "metadata": {},
+                "inputs": [],
+                "outputs": [
+                  {
+                    "title": "items_on_sale",
+                    "items": {
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "db1adb9a-9ce9-4af5-bc4d-878acec77bd7": {
+      "component_type": "LlmNode",
+      "id": "db1adb9a-9ce9-4af5-bc4d-878acec77bd7",
+      "name": "prepare_marketing_message_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "user_purchases",
+          "type": "string"
+        },
+        {
+          "title": "items_on_sale",
+          "type": "string"
+        },
+        {
+          "title": "current_time",
+          "type": "string"
+        },
+        {
+          "title": "user_info",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Raw text generated by the LLM",
+          "title": "generated_text",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "llm_config": {
+        "component_type": "VllmConfig",
+        "id": "5d2b8499-3d7a-494b-9e12-b61daf36a3f7",
+        "name": "vllm-llama-4-maverick",
+        "description": null,
+        "metadata": {},
+        "default_generation_parameters": null,
+        "url": "http://url.to.my.vllm.server/llama4mav",
+        "model_id": "llama-4-maverick"
+      },
+      "prompt_template": "# Instructions\n\nYou are a marketing expert. You have to write a welcome message for a user.\n\nThe message must contain:\n- A first sentence of greetings, including user's name, and personalized in case it's user's birthday\n- A proposal containing something to buy\n\nThe purchase proposal must be:\n- aligned with user's purchase history\n- part of the list of items on sale\n\n# User information\n\n{{user_info}}\n\nNote that the current time to check the birthday is: {{current_time}}\n\nThe list of items purchased by the user is:\n{{user_purchases}}\n\n# Items on sale\n\n{{items_on_sale}}\n\nPlease write the welcome message for the user.\nDo not give me the instructions to do it, I want only the final message to send.  \n"
+    },
+    "7e31a16a-357c-4121-b00e-549cb36b550b": {
+      "component_type": "OutputMessageNode",
+      "id": "7e31a16a-357c-4121-b00e-549cb36b550b",
+      "name": "output_message_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "output",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "{{output}}"
+    },
+    "276f6084-b26d-4ee2-8cf1-238f3032654e": {
+      "component_type": "StartNode",
+      "id": "276f6084-b26d-4ee2-8cf1-238f3032654e",
+      "name": "start_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "username",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "username",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ]
+    },
+    "cc8603e1-1c15-4a1d-9674-68a202049fd6": {
+      "component_type": "EndNode",
+      "id": "cc8603e1-1c15-4a1d-9674-68a202049fd6",
+      "name": "end_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [],
+      "branch_name": "next"
+    }
+  },
+  "agentspec_version": "25.4.2"
+}

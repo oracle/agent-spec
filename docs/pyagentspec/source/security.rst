@@ -285,6 +285,68 @@ utilities to avoid unsafe behavior.
 
 When deploying serialized representation to an execution engine, use the engine's secure loading mechanism for the import.
 
+Considerations regarding Parallelization
+----------------------------------------
+
+Agent Spec supports the configuration of flows that contain parallel nodes, enabling concurrent execution of sub-flows.
+While parallelization offers potential performance or latency benefits, it introduces its own set of security and
+operational risks that must be carefully managed.
+
+Execution Semantics and Safety Guidelines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Agent Spec outlines the expected behavior for parallel execution, but it does not specify implementation details,
+since those are determined by each runtime.
+
+* **For runtime developers**: Always provide clear documentation on how parallelism is implemented and describe secure usage patterns.
+* **For users**: Always review the runtime’s documentation and follow its recommendations to use parallelism safely.
+
+A list of typical potential issues when dealing with parallelism follows.
+
+* **Non-Deterministic, Nonatomic Execution Order**: In Agent Spec, parallel nodes are explicitly declared with
+  the understanding that the order and the atomicity of the execution of their sub-flows is **not guaranteed**.
+  The system may schedule, start, or complete individual flows in any order, and the timing may vary across runs.
+  **Do not assume any deterministic ordering or synchronization between parallel tasks.**
+
+* **Concurrent State Mutation Hazards**: Parallel execution can lead to **race conditions** and **state inconsistencies**
+  if multiple branches attempt to mutate shared resources or stateful entities (such as conversation history,
+  external databases, or files) simultaneously.
+
+  - **Avoid write operations** on shared or stateful objects within parallel branches where synchronization is not
+    explicitly managed by the execution environment.
+  - For operations requiring state changes (e.g., sending messages, updating databases, modifying files),
+    consider serializing those steps after parallel execution has completed, or use database transactions/locking
+    mechanisms where supported.
+
+* **Interrupt Handling Limitations**: Execution interrupts, such as tool confirmation steps, requesting additional input,
+  or other interactive requirements, are **not guaranteed to be coordinated or honored in a well-defined order**
+  within parallel branches.
+
+  - Avoid placing user input prompts, message outputs, or tool confirmation steps inside parallel blocks,
+    as this can result in unpredictable, inconsistent, or undesirable user experiences.
+  - Design flows such that interactive or interrupt-driven logic occurs **before** or **after** parallel execution blocks.
+
+* **Error Propagation and Fault Isolation**: Failure in one parallel branch might **not automatically propagate**
+  to other branches. Carefully plan how errors are handled and consider using explicit error-handling logic to aggregate,
+  report, or respond to errors from each concurrent path.
+
+  - Ensure that sensitive operations are performed atomically or idempotently to prevent security vulnerabilities due
+    to partial updates or inconsistent state.
+
+* **Resource-Exhaustion Risks**: Creating excessive parallelism (e.g., spawning large numbers of concurrent tool
+  calls or sub-flows) may result in resource exhaustion—such as CPU, memory, API rate limits, or network bandwidth starvation.
+
+  - Limit the number of parallel branches to a reasonable level for your deployment environment.
+  - Monitor usage and apply throttling or limits as appropriate at the infrastructure or execution engine layer.
+
+Summary Recommendations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- Design parallel blocks to perform **independent, stateless tasks** wherever possible.
+- Avoid interactive steps (like user input requests, client tools, confirmations) and uncontrolled state modifications in parallel branches.
+- Always validate that downstream infrastructure can handle the degree of parallelism configured.
+- Perform security and correctness reviews of all flows containing parallel nodes to identify unintended side effects or race conditions.
+
 Other Security Concerns
 -----------------------
 

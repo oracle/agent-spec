@@ -47,6 +47,10 @@ Nodes
 .. autoclass:: pyagentspec.flows.nodes.flownode.FlowNode
     :exclude-members: model_post_init, model_config
 
+.. _parallelflownode:
+.. autoclass:: pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode
+    :exclude-members: model_post_init, model_config
+
 .. _inputmessagenode:
 .. autoclass:: pyagentspec.flows.nodes.inputmessagenode.InputMessageNode
     :exclude-members: model_post_init, model_config
@@ -57,6 +61,10 @@ Nodes
 
 .. _mapnode:
 .. autoclass:: pyagentspec.flows.nodes.mapnode.MapNode
+    :exclude-members: model_post_init, model_config
+
+.. _parallelmapnode:
+.. autoclass:: pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode
     :exclude-members: model_post_init, model_config
 
 .. _outputmessagenode:

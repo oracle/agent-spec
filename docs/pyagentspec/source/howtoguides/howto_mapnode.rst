@@ -55,6 +55,32 @@ Once this is done, you can create the flow for the ``MapNode``:
     :start-after: .. start-##_Create_the_final_Flow
     :end-before: .. end-##_Create_the_final_Flow
 
+Enabling parallelization
+========================
+
+Agent Spec offers a parallel version of ``MapNode`` called ``ParallelMapNode`` : the node's behavior is
+equivalent, but the map operation is supposed to be performed in parallel.
+The flow we implemented for our map-reduce operation in this guide is well suited to enable parallelism,
+as it does not contain criticalities, such as access to mutable resources, or input requests.
+We can enable parallelism for the ``MapNode`` by simply changing the creation of the node to use the ``ParallelMapNode`` class:
+
+.. literalinclude:: ../code_examples/howto_mapnode.py
+    :language: python
+    :start-after: .. start-##_Create_the_ParallelMapNode
+    :end-before: .. end-##_Create_the_ParallelMapNode
+
+Notes about parallelization
+---------------------------
+
+Not all sub-flows can be executed in parallel.
+Agent Spec does not forbid specific configurations for ``ParallelMapNode`` subflows, but there are several
+precautions to take when parallelization is enabled, especially when the sub-flow is supposed to access mutable
+shared resources (e.g., the conversation), or interrupt the normal execution of the flow (e.g., client tools).
+
+For more information about parallel execution support in Agent Spec, please check the :ref:`language specification <agentspecspec_nightly>`.
+For guidelines about secure implementation of concurrent execution, instead, check our :ref:`security guidelines <securityconsiderations>`.
+
+
 Agent Spec Serialization
 ========================
 

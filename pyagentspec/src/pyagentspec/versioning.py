@@ -15,7 +15,7 @@ _LEGACY_AGENTSPEC_VERSIONS = {"25.3.0", "25.3.1", "25.4.0"}
 _LEGACY_VERSION_FIELD_NAME = "air_version"
 
 
-def _version_lt(version1: str, version2: str):
+def _version_lt(version1: str, version2: str) -> bool:
     v1_parts = list(map(int, version1.split(".")))
     v2_parts = list(map(int, version2.split(".")))
     if len(v1_parts) != len(v2_parts):
@@ -31,5 +31,5 @@ class AgentSpecVersionEnum(Enum):
     v25_4_2 = "25.4.2"
     current_version = "25.4.2"
 
-    def __lt__(self, other: "AgentSpecVersionEnum"):
+    def __lt__(self, other: "AgentSpecVersionEnum") -> bool:
         return _version_lt(self.value, other.value)

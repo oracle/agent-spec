@@ -108,6 +108,18 @@ flow = Flow(
 )
 # .. end-##_Create_the_final_Flow
 
+# .. start-##_Create_the_ParallelMapNode
+from pyagentspec.property import ListProperty, StringProperty
+from pyagentspec.flows.nodes import ParallelMapNode
+
+parallel_map_node = ParallelMapNode(
+    name="map_node",
+    subflow=summarize_flow,
+    inputs=[ListProperty(title="iterated_article", item_type=StringProperty(title="article"))],
+    outputs=[ListProperty(title="collected_summary", item_type=StringProperty(title="summary"))],
+)
+# .. end-##_Create_the_ParallelMapNode
+
 # .. start-export-config-to-agentspec
 from pyagentspec.serialization import AgentSpecSerializer
 
