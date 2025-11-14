@@ -5,7 +5,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+set -e # Exit immediately if any command fails
+
 REPO_ROOT=$( cd "$(dirname "${BASH_SOURCE[0]}")"/.. ; pwd -P )
 
 # run all tests
-pyqa test $REPO_ROOT/tests
+pytest $REPO_ROOT/tests
