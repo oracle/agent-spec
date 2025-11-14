@@ -22,6 +22,7 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
+from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
 from pyagentspec.llms import VllmConfig as AgentSpecVllmConfig
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
@@ -99,18 +100,15 @@ class LangGraphToAgentSpecConverter:
         closure: tuple[CellType, ...] = runnable.func.__closure__
 
         # Extract the instance of RunnableBinding which contains relevant information for the react agent
-        model = next(
-            cl.cell_contents.last
-            for cl in closure
-            if hasattr(cl.cell_contents, "last")
-            and isinstance(cl.cell_contents.last, RunnableBinding)
-        )
-        tools = self._langgraph_tools_to_agentspec_tools(model.kwargs["tools"])
+        model = next(cl.cell_contents.last for cl in closure if hasattr(cl.cell_contents, "last"))
 
         if isinstance(model, RunnableBinding):
+            tools = self._langgraph_tools_to_agentspec_tools(model.kwargs.get("tools", []))
             model = model.bound  # type: ignore
+        else:
+            tools = []
         if isinstance(model, ChatOpenAI):
-            model_type = "vllm"
+            model_type = "openaicompatible"
             model_name = model.model_name
             base_url = model.openai_api_base
         elif isinstance(model, ChatOllama):
@@ -169,6 +167,12 @@ class LangGraphToAgentSpecConverter:
             )
         elif langgraph_llm_config.model_type == "vllm":
             return AgentSpecVllmConfig(
+                name=langgraph_llm_config.model_name,
+                url=langgraph_llm_config.base_url,
+                model_id=langgraph_llm_config.model_name,
+            )
+        elif langgraph_llm_config.model_type == "openaicompatible":
+            return AgentSpecOpenAiCompatibleConfig(
                 name=langgraph_llm_config.model_name,
                 url=langgraph_llm_config.base_url,
                 model_id=langgraph_llm_config.model_name,

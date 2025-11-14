@@ -46,6 +46,7 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.property import DictProperty as AgentSpecDictProperty
@@ -683,20 +684,12 @@ class AgentSpecToLangGraphConverter:
             generation_config["top_p"] = generation_parameters.top_p
 
         if isinstance(llm_config, VllmConfig):
-            from urllib.parse import urljoin
-
             from langchain_openai import ChatOpenAI
 
-            base_url = llm_config.url
-            if not base_url.startswith("http://"):
-                base_url = f"http://{base_url}"
-            if "/v1" not in base_url:
-                base_url = urljoin(base_url + "/", "v1")
             return ChatOpenAI(
                 model=llm_config.model_id,
-                name=llm_config.model_id,
                 api_key=SecretStr("EMPTY"),
-                base_url=base_url,
+                base_url=_prepare_openai_compatible_url(llm_config.url),
                 **generation_config,
             )
         elif isinstance(llm_config, OllamaConfig):
@@ -719,7 +712,43 @@ class AgentSpecToLangGraphConverter:
                 model=llm_config.model_id,
                 **generation_config,
             )
+        elif isinstance(llm_config, OpenAiCompatibleConfig):
+            from langchain_openai import ChatOpenAI
+
+            return ChatOpenAI(
+                model=llm_config.model_id,
+                base_url=_prepare_openai_compatible_url(llm_config.url),
+                **generation_config,
+            )
         else:
             raise NotImplementedError(
                 f"Llm model of type {llm_config.__class__.__name__} is not yet supported."
             )
+
+
+def _prepare_openai_compatible_url(url: str) -> str:
+    """
+    Correctly formats a URL for an OpenAI-compatible server.
+
+    This function is robust and handles multiple formats:
+    - Ensures a scheme (http, https) is present, defaulting to 'http'.
+    - Replaces any existing path with exactly '/v1'.
+
+    Examples:
+        - "localhost:8000"          -> "http://localhost:8000/v1"
+        - "127.0.0.1:5000"          -> "http://127.0.0.1:5000/v1"
+        - "https://api.example.com"   -> "https://api.example.com/v1"
+        - "http://my-host/api/v2"   -> "http://my-host/v1"
+    """
+    from urllib.parse import urlparse, urlunparse
+
+    url = url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = f"http://{url}"
+    parsed_url = urlparse(url)
+    # parsed_url is a namedtuple object, and it has the _replace method
+    # this is actually a public facing method, check python documentation of namedtuple
+    v1_url_parts = parsed_url._replace(path="/v1", params="", query="", fragment="")
+    final_url = urlunparse(v1_url_parts)
+
+    return final_url
