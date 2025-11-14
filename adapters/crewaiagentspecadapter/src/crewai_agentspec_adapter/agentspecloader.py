@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 from crewai import Agent as CrewAIAgent
 from crewai import Flow as CrewAIFlow
-
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 

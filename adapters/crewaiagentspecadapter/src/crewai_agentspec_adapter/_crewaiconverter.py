@@ -11,8 +11,6 @@ from crewai import LLM as CrewAILlm
 from crewai import Agent as CrewAIAgent
 from crewai.tools import BaseTool as CrewAITool
 from crewai.tools.base_tool import Tool as CrewAIServerTool
-from pydantic import BaseModel, Field, create_model
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -25,6 +23,7 @@ from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
+from pydantic import BaseModel, Field, create_model
 
 _CrewAIServerToolType = Union[CrewAIServerTool, Callable[..., Any]]
 

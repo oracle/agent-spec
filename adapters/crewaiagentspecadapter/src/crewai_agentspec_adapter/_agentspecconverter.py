@@ -25,8 +25,6 @@ from crewai import Agent as CrewAIAgent
 from crewai.tools import BaseTool as CrewAIBaseTool
 from crewai.tools.base_tool import Tool as CrewAITool
 from crewai.tools.structured_tool import CrewStructuredTool as CrewAIStructuredTool
-from pydantic import BaseModel
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -37,6 +35,7 @@ from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
+from pydantic import BaseModel
 
 
 def generate_id() -> str:

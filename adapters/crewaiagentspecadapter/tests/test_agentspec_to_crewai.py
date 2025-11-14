@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 from crewai import Crew, Task
+
 from crewai_agentspec_adapter import AgentSpecLoader
 
 from .conftest import IS_JSON_SERVER_RUNNING, JSON_SERVER_PORT

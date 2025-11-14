@@ -10,14 +10,14 @@ import yaml
 from crewai import LLM as CrewAILlm
 from crewai import Agent as CrewAIAgent
 from crewai.tools.base_tool import Tool as CrewAIServerTool
-from crewai_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
-from pydantic import BaseModel
-
 from pyagentspec import Agent
 from pyagentspec.llms import LlmGenerationConfig, OllamaConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ServerTool
+from pydantic import BaseModel
+
+from crewai_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 
 
 def mock_tool() -> str:
