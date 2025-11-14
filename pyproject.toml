@@ -6,6 +6,8 @@ src_paths = [
     "adapters/autogenagentspecadapter/tests",
     "adapters/langgraphagentspecadapter/src",
     "adapters/langgraphagentspecadapter/tests",
+    "adapters/crewaiagentspecadapter/src",
+    "adapters/crewaiagentspecadapter/tests",
 ]
 
 [tool.mypy]
