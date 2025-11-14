@@ -123,8 +123,8 @@ class AgentSpecToLangGraphConverter:
         if config is None and checkpointer is not None:
             config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
         if agentspec_component.id not in converted_components:
-            converted_components[agentspec_component.id] = self._convert(  # type: ignore[arg-type]
-                agentspec_component, tool_registry, converted_components, checkpointer, config
+            converted_components[agentspec_component.id] = self._convert(
+                agentspec_component, tool_registry, converted_components, checkpointer, config  # type: ignore[arg-type]
             )
         return converted_components[agentspec_component.id]
 
