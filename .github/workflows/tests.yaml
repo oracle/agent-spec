@@ -1,4 +1,4 @@
-name: On-Demand PyAgentSpec and Adapters Tests and Checks
+name: "CI Pipeline: Formatting, Linting, Typing, Security, and Tests (PyAgentSpec + Adapters)"
 
 on:
   workflow_dispatch:
@@ -22,6 +22,7 @@ jobs:
             adapter-path: adapters/autogenagentspecadapter
 
     steps:
+      - name: Checkout repository
       - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -38,7 +39,7 @@ jobs:
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
 
-      - name: Run install-all-dev script
+      - name: Install packages and development dependencies
         run: bash install-all-dev.sh
 
       - name: Verify tools installation
@@ -71,7 +72,7 @@ jobs:
           !(matrix.adapter-name == 'AutoGen Adapter' && matrix.python-version == '3.13')
         run: bandit -c bandit.yaml -r ${{ matrix.adapter-path }}/
 
-      - name: "[${{ matrix.adapter-name }}] Mypy type checking"
+      - name: "[${{ matrix.adapter-name }}] Mypy static type checking"
         if: |
           !(matrix.adapter-name == 'AutoGen Adapter' && matrix.python-version == '3.13')
         run: mypy ${{ matrix.adapter-path }}/ --config-file ./pyproject.toml ${{ matrix.adapter-name == 'PyAgentSpec' && '--exclude pyagentspec/tests_fuzz' || '' }}
