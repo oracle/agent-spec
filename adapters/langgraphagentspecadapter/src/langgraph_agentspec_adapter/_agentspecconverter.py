@@ -105,7 +105,7 @@ class LangGraphToAgentSpecConverter:
 
         if isinstance(model, RunnableBinding):
             tools = self._langgraph_tools_to_agentspec_tools(model.kwargs.get("tools", []))
-            model = model.bound  # type: ignore
+            model = model.bound
         else:
             tools = []
         if isinstance(model, ChatOpenAI):
