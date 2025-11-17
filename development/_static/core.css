@@ -1,0 +1,238 @@
+/*
+  To customise:
+
+  https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/styling.html
+  https://pydata-sphinx-theme.readthedocs.io/en/v0.9.0/user_guide/customizing.html
+  https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/light-dark.html
+  https://github.com/pydata/pydata-sphinx-theme/tree/main/src/pydata_sphinx_theme/assets/styles/variables
+ */
+
+:root {
+  --pst-font-size-h1: 3.375rem;
+}
+
+.bd-page-width {
+  max-width: 100% !important;
+}
+
+html[data-theme="light"] .bd-page-width {
+  background: url("../_static/_images/docs-back-scheme-light-theme.svg") repeat-x 0% -25%;
+  background-color: rgba(255,255,255,0.5);
+  background-blend-mode: lighten;
+  background-size: auto;
+  background-attachment: fixed;
+  --pst-color-secondary: #f29111 !important;
+  --pst-color-link-hover: #f29111;
+  --pst-color-border: #5f534d;
+  --pst-color-surface: #ffffff;
+  --pst-color-heading: #292523;
+  --pst-color-text-base: #292523;
+  --pst-color-inline-code: #f29111;
+  --pst-color-info-bg: #C5E6F9;
+  --pst-color-info: #3fa1c5;
+  --pst-color-warning-bg: #ffb0a2;
+  --pst-color-warning: #c5533f;
+  --pst-color-success-bg: #bef3d6;
+  --pst-color-success: #3fc577;
+  --pst-color-secondary: #f29111;
+  --pst-color-danger-bg: #ffb0a2;
+  --pst-color-danger: #8d2d1c;
+  --pst-color-text-muted: #292523;
+  --pst-color-accent: #f29111 !important;
+  --bgColor__n2nsgo0: #f29111 !important;
+}
+
+html[data-theme="dark"] .bd-page-width {
+  background: url("../_static/_images/docs-back-scheme-dark-theme.svg") 0% -25%/auto repeat-x, #292523;
+  background-blend-mode: lighten;
+  background-attachment: fixed;
+  --pst-color-surface: #231f1d;
+  --pst-color-border: #5f534d;
+  --pst-color-secondary: #f29111 !important;
+  --pst-color-link-hover: #f29111;
+  --pst-color-on-background: #47403d;
+  --pst-color-text-muted: #d7c6bf;
+  --pst-color-table-inner-border: #cec8b0;
+  --pst-color-table-heading-bg: #5b4f44;
+  --pst-color-table-row-zebra-high-bg: #302a28;
+  --pst-color-table-row-zebra-low-bg: #1e1b19;
+  --pst-color-primary: #00758F;
+  --pst-color-background: #333130;
+  --pst-color-info: #C5E6F9;
+  --pst-color-info-bg: #3fa1c5;
+  --pst-color-warning: #ffb0a2;
+  --pst-color-warning-bg: #c5533f;
+  --pst-color-success: #bef3d6;
+  --pst-color-success-bg: #3fc577;
+  --pst-color-danger: #ffb0a2;
+  --pst-color-danger-bg: #8d2d1c;
+  --pst-color-accent: #f29111 !important;
+  --bgColor__n2nsgo0: #f29111 !important;
+}
+
+html[data-theme="dark"] .bd-header .bd-header__inner {
+  background:#1e1b19 !important;
+}
+
+html[data-theme="light"] .bd-header .bd-header__inner {
+  background:#ffffff !important;
+}
+
+.bd-main .bd-content .bd-article-container {
+  max-width: 70em;
+}
+
+.bd-sidebar-primary li {
+  padding: 6px 0 !important;
+}
+
+.bd-sidebar-primary a {
+  padding: 6px 0 !important;
+}
+
+a.current.reference.internal {
+  font-weight: 600;
+  color: #0A7D91;
+}
+
+.sphinx-tabs-panel {
+  border: 0.4px solid #554d49;
+  color: #ffffff;
+}
+
+html[data-theme="light"] .sphinx-tabs-tab[aria-selected="true"] {
+  font-weight: 700;
+  border: 0.4px solid #554d49;
+  border-bottom: none;
+  background-color: #dbf0f5;
+  color: #00758F;
+}
+
+html[data-theme="dark"] .sphinx-tabs-tab[aria-selected="true"] {
+  font-weight: 700;
+  border: 0.4px solid #554d49;
+  border-bottom: none;
+  background-color: #dbf0f5;
+  color: #00758F;
+}
+
+html[data-theme="light"] .sphinx-tabs-tab {
+  color: #00758F;
+}
+
+html[data-theme="dark"] .sphinx-tabs-tab {
+  color: #ffffff;
+}
+
+p.admonition-title {
+  color: #1e1b19 !important;
+}
+
+html[data-theme="light"] .admonition.warning p {
+  color: #1e1b19 !important;
+}
+
+html[data-theme="dark"] .bd-sidebar-primary a {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .sphinx-tabs-panel {
+  background: #1d1b19;
+}
+
+html[data-theme="dark"] .bd-header-announcement {
+  background-color: #f290118d;
+}
+
+html[data-theme="light"] .bd-header-announcement {
+  background-color: #f29011;
+}
+
+html[data-theme="light"] .bd-sidebar-primary {
+  background: linear-gradient(271deg, rgba(255, 255, 255, 0.00) 12.66%, #FFF 99.46%);
+}
+
+html[data-theme="dark"] .bd-sidebar-primary {
+  background: linear-gradient(271deg, rgba(41, 37, 35, 0.00) 10.29%, #292523 99.46%);
+}
+
+html[data-theme="light"] .bd-sidebar-secondary {
+  background: linear-gradient(271deg, #FFF 0.8%, rgba(255, 255, 255, 0.00) 89.22%);
+}
+
+html[data-theme="dark"] .bd-sidebar-secondary {
+  background: linear-gradient(271deg, #292523 0.8%, rgba(41, 37, 35, 0.00) 89.5%);
+}
+
+.bd-header .navbar-header-items {
+  padding: 0px 0px 0px 3.5rem;
+}
+
+nav.bd-links .current>a {
+  box-shadow: none;
+}
+
+@media (max-width: 960px) {
+  .bd-header ul.navbar-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .navbar-persistent--mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .bd-header .navbar-header-items {
+    padding: 0px 20px 0px 3.5rem;
+  }
+}
+
+@media (max-width: 960px) {
+  .bd-sidebar-primary {
+    background-color: #333130;
+  }
+}
+
+@media (max-width: 960px) {
+  html[data-theme="light"] .bd-sidebar-primary {
+    background-color: #ffffff;
+  }
+}
+
+@media (max-width: 960px) {
+  .sidebar-toggle {
+    background: transparent !important;
+    color: #d7c6bf !important;
+  }
+}
+
+@media (max-width: 960px) {
+  html[data-theme="light"] .sidebar-toggle {
+    background: transparent !important;
+    color: #333;
+  }
+}
+
+@media (max-width: 960px) {
+  .sidebar-header-items {
+    padding-top: 60px;
+  }
+}
+
+#custom-announcement {
+  padding-right: 2rem;
+}
+
+#close-announcement {
+  position: absolute;
+  top: 0.2rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+}

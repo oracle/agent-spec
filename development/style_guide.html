@@ -1,0 +1,599 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Documentation Style Guide &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/js/fix-navigation.js"></script>
+    <script src="_static/js/fix-navigation.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'style_guide';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="_static/announcement.js"></script>
+
+    <link rel="icon" href="_static/favicon.svg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="26.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="WayFlow GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="_static/icons/github-icon.svg" class="icon-link-image" alt="WayFlow GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="misc/reference_sheet.html">Reference Sheet</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="contributing.html">Contributing</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="WayFlow GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="_static/icons/github-icon.svg" class="icon-link-image" alt="WayFlow GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Documentation Style Guide</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="documentation-style-guide">
+<h1>Documentation Style Guide<a class="headerlink" href="#documentation-style-guide" title="Permalink to this heading">#</a></h1>
+<p>This style guide is short but specific to the Agent Spec documentation, and aligns with the writing guidelines of the Oracle Documentation Style Guide.
+These recommendations apply universally across all documentation types—be it reference materials, how-to guides, or release notes.
+We do not enforce these recommendations, but following them will improve content readability and ensure consistency across all pages.</p>
+<section id="i-naming-conventions">
+<h2>I. Naming conventions<a class="headerlink" href="#i-naming-conventions" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use <strong>Agent Spec</strong> for the name of the specification, all letters capital. It is a proper name; no article is required upfront. Example: <em>Agent Spec is a portable, platform-agnostic configuration language.</em></p></li>
+<li><p>Use <strong>PyAgentSpec</strong> for a Python SDK name implemented on top of Agent Spec. It is a proper name; no article is required upfront.</p></li>
+<li><p>Use <strong>Agent</strong> and <strong>Flow</strong> with initial letters capitalized when referring to the concepts or class names; otherwise, use lowercase.</p></li>
+<li><p>There is no class/API such as <strong>Assistant</strong>. You can create intelligent assistants. Example: <em>With PyAgentSpec users can build Agent Spec-compliant agents.</em></p></li>
+</ul>
+</section>
+<section id="ii-verb-tense">
+<h2>II. Verb tense<a class="headerlink" href="#ii-verb-tense" title="Permalink to this heading">#</a></h2>
+<p>In technical documentation, the verb tense depends on the context, but the general guidelines are:</p>
+<ul class="simple">
+<li><p>Present tense – Most common, recommended, used for describing facts, or how a system behaves. Example: <em>The user inputs their question to the assistant</em>.</p></li>
+<li><p>Future tense – Used typically when describing planned features or expected behavior. Example: <em>The next release will include support for the Swarm class to build a swarm of agents.</em></p></li>
+<li><p>Past tense – Rarely used, except when documenting historical changes or past events. Example: <em>Version 1.1 introduced support for the Swarm class.</em></p></li>
+</ul>
+<p>For Agent Spec documentation, the present tense is preferred.</p>
+</section>
+<section id="iii-style-and-tone">
+<h2>III. Style and tone<a class="headerlink" href="#iii-style-and-tone" title="Permalink to this heading">#</a></h2>
+<p>Be conversational and yet keep some level of formality.</p>
+<ul class="simple">
+<li><p>Avoid marketing pitch language in the technical documentation.</p></li>
+<li><p><strong>Use the second-person singular, *you*.</strong> Try to use <em>we</em> only when referring to developers. Example: <em>We are still working on implementing</em>; <em>We recommend</em>.</p></li>
+<li><p>Avoid using passive voice extensively, and rewrite the sentence to active voice. Instead of writing <em>It is recommended</em>, use <em>We recommend</em>.</p></li>
+<li><p>Avoid phrasing in terms of <em>Let’s do something</em>.</p></li>
+<li><p>Avoid using phrases such as <em>It’s simple</em>, <em>It’s easy</em>.</p></li>
+<li><p>Avoid using contractions such as <em>it’s</em>, <em>you’ll</em>, <em>you’re</em>.</p></li>
+<li><p>Avoid the use of gender-specific, third-person pronouns such as <em>he</em>, <em>she</em>, <em>his</em>, and <em>hers</em>. If possible, rewrite to use a neutral plural subject, such as <em>developers</em> or <em>users</em>.</p></li>
+<li><p>Try to avoid using <em>get</em>. Instead of writing <em>To check which classes got supported</em>, use <em>To check which classes are supported</em>.</p></li>
+</ul>
+<p>Be clear:</p>
+<ul class="simple">
+<li><p>The introduction to a how-to guide can be as simple as <em>In this guide you will learn how to…</em></p></li>
+<li><p>Consider including a short introduction and a summary for the guide.</p></li>
+<li><p>Consider a closing sentence summing the section up.</p></li>
+<li><p>Double check the logical flow of the chapter outline.</p></li>
+<li><p>Avoid redundancy or content duplication.</p></li>
+<li><p>Always proofread and when proofreading, read it out loud. It will help you find passages that may be too long or bulky.</p></li>
+<li><p>Try not to let sentences get too long and serpentine. When in doubt, make it two sentences.</p></li>
+<li><p>If one sentence goes to three lines, consider breaking it up.</p></li>
+</ul>
+</section>
+<section id="iv-formatting-rules">
+<h2>IV. Formatting rules<a class="headerlink" href="#iv-formatting-rules" title="Permalink to this heading">#</a></h2>
+<p>The following inconsistencies are important, common, and worth paying special attention to.</p>
+<section id="page-titles-and-subtitles">
+<h3>Page titles and subtitles<a class="headerlink" href="#page-titles-and-subtitles" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Main page title should have the first letter of each word capitalized except for articles or prepositions</strong>. If a title contains a hyphenated term, each word should be capitalized, unless it is a preposition or article. Example: <em>How-to Guides</em>.</p></li>
+<li><p><strong>All subheadings should be sentence case</strong>.</p></li>
+<li><p>If you write a how-to guide, start with an <strong>action verb</strong>. Example: <em>Execute Agent Spec Assistants with Different Frameworks</em>.</p></li>
+<li><p>If you write a reference documentation, it should start with a <strong>noun or gerund</strong>. Example: <em>Testing Inference with LLMs</em>.</p></li>
+</ul>
+</section>
+<section id="spacing">
+<h3>Spacing<a class="headerlink" href="#spacing" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Break the line if the sentence is getting long.</p></li>
+<li><p>Strive not to have code (lowercase) start sentences.</p></li>
+</ul>
+</section>
+<section id="referring-to-a-file-name-or-path">
+<h3>Referring to a file name or path<a class="headerlink" href="#referring-to-a-file-name-or-path" title="Permalink to this heading">#</a></h3>
+<p>To refer to a file name or repository path inside the text, italicize it. Example: “Save this code to a file named <em>File.py</em> in the current working directory.”</p>
+</section>
+<section id="button-names-in-the-text">
+<h3>Button names in the text<a class="headerlink" href="#button-names-in-the-text" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>When documenting the UI or API, match the terminology. Example: <em>To stop the process, click Abort</em>.</p></li>
+<li><p>Capitalize the button name (as it is onscreen).</p></li>
+</ul>
+</section>
+<section id="referring-to-file-formats">
+<h3>Referring to file formats<a class="headerlink" href="#referring-to-file-formats" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>When referring to a typical file format in the text, capitalize each letter. Example: JAR and JSON, not jar and json.</p></li>
+<li><p>Do not italicize types of files.</p></li>
+</ul>
+</section>
+<section id="oxford-comma">
+<h3>Oxford comma<a class="headerlink" href="#oxford-comma" title="Permalink to this heading">#</a></h3>
+<p>The <strong>Oxford comma</strong> is the comma before words such as “and” or “or” in a list of three or more items.
+Example: <em>The agent needs to be given a name, an LLM configuration, and a system prompt.</em></p>
+<p><strong>We suggest using the Oxford comma</strong> to keep sentences as clear and intelligible.</p>
+</section>
+<section id="british-english-vs-american-english-spelling">
+<h3>British English vs American English spelling<a class="headerlink" href="#british-english-vs-american-english-spelling" title="Permalink to this heading">#</a></h3>
+<p>As a convention, Oracle Corporation uses American English spelling rather than British English spelling.
+Use <strong>American English spelling</strong>.</p>
+<ul class="simple">
+<li><p>Example: Instead of “…our”, use “…or”. Write <em>behavior</em>, not <em>behaviour</em>.</p></li>
+<li><p>Example: <strong>Instead of “…ise”, use “…ize”</strong>. Write <em>organize</em> and <em>organization</em>, not <em>organise</em> and <em>organisation</em>.</p></li>
+</ul>
+</section>
+</section>
+<section id="how-to-become-a-contributor">
+<h2>How to become a contributor<a class="headerlink" href="#how-to-become-a-contributor" title="Permalink to this heading">#</a></h2>
+<p>The Agent Spec documentation is open source.
+If you consider contributing to it, please read our <a class="reference internal" href="contributing.html"><span class="doc">contributing guidelines</span></a>.</p>
+<section id="the-end">
+<h3>The end<a class="headerlink" href="#the-end" title="Permalink to this heading">#</a></h3>
+<p>We thank you for taking the time to read this style guide.</p>
+<p>The Agent Spec team</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#i-naming-conventions">I. Naming conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ii-verb-tense">II. Verb tense</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iii-style-and-tone">III. Style and tone</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iv-formatting-rules">IV. Formatting rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#page-titles-and-subtitles">Page titles and subtitles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spacing">Spacing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#referring-to-a-file-name-or-path">Referring to a file name or path</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#button-names-in-the-text">Button names in the text</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#referring-to-file-formats">Referring to file formats</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oxford-comma">Oxford comma</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#british-english-vs-american-english-spelling">British English vs American English spelling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-become-a-contributor">How to become a contributor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-end">The end</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
