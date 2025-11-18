@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -21,7 +21,6 @@ from autogen_ext.models.ollama import (
 from autogen_ext.models.openai import (
     OpenAIChatCompletionClient as AutogenOpenAIChatCompletionClient,
 )
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.edges import ControlFlowEdge as AgentSpecControlFlowEdge
@@ -90,15 +89,21 @@ class AutogenToAgentSpecConverter:
         # If we did not find the object, we create it, and we record it in the referenced_objects registry
         agentspec_component: AgentSpecComponent
         if isinstance(autogen_component, AutogenChatCompletionClient):
-            agentspec_component = self._llm_convert_to_agentspec(autogen_component, referenced_objects)
+            agentspec_component = self._llm_convert_to_agentspec(
+                autogen_component, referenced_objects
+            )
         elif isinstance(autogen_component, AutogenBaseAgent):
             agentspec_component = self._agent_convert_to_agentspec(
                 autogen_component, referenced_objects
             )
         elif isinstance(autogen_component, AutogenBaseTool):
-            agentspec_component = self._tool_convert_to_agentspec(autogen_component, referenced_objects)
+            agentspec_component = self._tool_convert_to_agentspec(
+                autogen_component, referenced_objects
+            )
         elif isinstance(autogen_component, AutogenGraphFlow):
-            agentspec_component = self._flow_convert_to_agentspec(autogen_component, referenced_objects)
+            agentspec_component = self._flow_convert_to_agentspec(
+                autogen_component, referenced_objects
+            )
         else:
             raise NotImplementedError(
                 f"The autogen type '{autogen_component.__class__.__name__}' is not yet supported "
@@ -400,7 +405,12 @@ class AutogenToAgentSpecConverter:
         # -----------------------------------------------------------------
         # 4. Assemble the AgentSpec Flow
         # -----------------------------------------------------------------
-        all_nodes: list[AgentSpecNode] = [start_node, end_node, *agentspec_nodes.values(), *extra_nodes]
+        all_nodes: list[AgentSpecNode] = [
+            start_node,
+            end_node,
+            *agentspec_nodes.values(),
+            *extra_nodes,
+        ]
 
         flow = AgentSpecFlow(
             name=getattr(
@@ -430,7 +440,9 @@ class AutogenToAgentSpecConverter:
         return flow
 
     def _create_synthetic_start_node(
-        self, autogen_flow: AutogenGraphFlow, agentspec_nodes: Dict[str, "AgentSpecAgentNode"]
+        self,
+        autogen_flow: AutogenGraphFlow,
+        agentspec_nodes: Dict[str, "AgentSpecAgentNode"],
     ) -> "AgentSpecStartNode":
         """
         2. Synthetic START node.
@@ -438,7 +450,9 @@ class AutogenToAgentSpecConverter:
         - Finds all start agent nodes (nodes that start the graph).
         - Aggregates and deduplicates all their inputs.
         """
-        start_agent_nodes = [agentspec_nodes[name] for name in autogen_flow._graph.get_start_nodes()]
+        start_agent_nodes = [
+            agentspec_nodes[name] for name in autogen_flow._graph.get_start_nodes()
+        ]
         if not start_agent_nodes:
             raise RuntimeError("No start nodes found in AutoGen flow!")
         # Aggregate and deduplicate all their inputs
@@ -451,7 +465,9 @@ class AutogenToAgentSpecConverter:
         return AgentSpecStartNode(name="start", inputs=start_inputs)
 
     def _create_synthetic_end_node(
-        self, autogen_flow: AutogenGraphFlow, agentspec_nodes: Dict[str, "AgentSpecAgentNode"]
+        self,
+        autogen_flow: AutogenGraphFlow,
+        agentspec_nodes: Dict[str, "AgentSpecAgentNode"],
     ) -> "AgentSpecEndNode":
         # Find leaf agent node outputs (agent nodes that end the graph)
         leaf_agent_nodes = [agentspec_nodes[name] for name in autogen_flow._graph.get_leaf_nodes()]
@@ -499,7 +515,9 @@ class AutogenToAgentSpecConverter:
             )
             # b) Wrap it in an AgentSpecAgentNode
             agentspec_nodes[name] = AgentSpecAgentNode(
-                name=name, description=agentspec_agent.description, agent=agentspec_agent
+                name=name,
+                description=agentspec_agent.description,
+                agent=agentspec_agent,
             )
         return agentspec_nodes
 
@@ -583,11 +601,15 @@ class AutogenToAgentSpecConverter:
             return AgentSpecNullProperty(title=title)
         raise NotImplementedError(f"Unsupported type of output property: {type_name}")
 
-    def make_agentspec_output_property(self, _type: Any, title: str = "Output") -> AgentSpecProperty:
+    def make_agentspec_output_property(
+        self, _type: Any, title: str = "Output"
+    ) -> AgentSpecProperty:
         origin = get_origin(_type)
         args = get_args(_type)
         if (origin is Union) or (hasattr(types, "UnionType") and origin is types.UnionType):
-            union_properties = [self.make_agentspec_output_property(arg, title=title) for arg in args]
+            union_properties = [
+                self.make_agentspec_output_property(arg, title=title) for arg in args
+            ]
             return AgentSpecUnionProperty(title=title, any_of=union_properties)
         elif origin is list:
             inner_type = args[0] if args else Any
@@ -714,7 +736,9 @@ class AutogenToAgentSpecConverter:
             _inputs = []
             for prop_val in _schema_properties.values():
                 _input = self.make_agentspec_input_property(
-                    prop_val=prop_val, title=prop_val["title"], description=prop_val["description"]
+                    prop_val=prop_val,
+                    title=prop_val["title"],
+                    description=prop_val["description"],
                 )
                 _inputs.append(_input)
 
@@ -731,7 +755,9 @@ class AutogenToAgentSpecConverter:
         raise ValueError(f"Unsupported type of Tool in AgentSpec: {type(autogen_tool)}")
 
     def _agent_convert_to_agentspec(
-        self, autogen_agent: AutogenBaseAgent, referenced_objects: Optional[Dict[str, Any]] = None
+        self,
+        autogen_agent: AutogenBaseAgent,
+        referenced_objects: Optional[Dict[str, Any]] = None,
     ) -> AgentSpecAgent:
         """
         Convert an AutogenBaseAgent to an AgentSpecAgent.

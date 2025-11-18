@@ -2,11 +2,18 @@
 src_paths = [
     "pyagentspec/src",
     "pyagentspec/tests",
-    "adapter/autogenagentspecadapter/src",
-    "adapter/autogenagentspecadapter/tests",
-    "adapter/langgraphagentspecadapter/src",
-    "adapter/langgraphagentspecadapter/tests",
+    "adapters/autogenagentspecadapter/src",
+    "adapters/autogenagentspecadapter/tests",
+    "adapters/langgraphagentspecadapter/src",
+    "adapters/langgraphagentspecadapter/tests",
+    "adapters/crewaiagentspecadapter/src",
+    "adapters/crewaiagentspecadapter/tests",
 ]
+profile = "black"
+line_length = 100
+
+[tool.black]
+line-length = 100
 
 [tool.mypy]
 strict = true

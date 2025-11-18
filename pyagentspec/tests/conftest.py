@@ -1,4 +1,4 @@
-# Copyright (C) 2024, 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -10,12 +10,49 @@ from contextlib import contextmanager
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
 from typing import Any, Iterator, List, Union
+from unittest.mock import patch
 
 import pytest
 
 from pyagentspec.llms import VllmConfig
 
 CONFIGS_DIR = Path(os.path.dirname(__file__)) / "agentspec_configs"
+
+SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
+
+
+def should_skip_llm_test() -> bool:
+    return SKIP_LLM_TESTS_ENV_VAR in os.environ
+
+
+LLM_MOCKED_METHODS = [
+    "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
+    "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
+    "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
+]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def skip_test_fixture():
+    """
+    When SKIP_LLM_TESTS=1, any attempt to build/use an LLM config will skip the test.
+    Identical logic to wayflowcore, adapted for pyagentspec.
+    """
+
+    def skip_callable(*args, **kwargs):
+        pytest.skip("LLM called, skipping test")
+
+    patches = []
+    if should_skip_llm_test():
+        for method_name in LLM_MOCKED_METHODS:
+            p = patch(method_name, side_effect=skip_callable)
+            p.start()
+            patches.append(p)
+
+    yield  # run the tests
+
+    for p in patches:
+        p.stop()
 
 
 def read_agentspec_config_file(filename: str) -> str:
@@ -52,6 +89,10 @@ def example_serialized_flow_with_properties() -> str:
 def default_llm_config() -> VllmConfig:
     llama_endpoint = os.environ.get("LLAMA_API_URL")
     if not llama_endpoint:
+        if should_skip_llm_test():
+            pytest.skip(
+                "Skipping LLM-dependent test: LLAMA_API_URL is not set and SKIP_LLM_TESTS is enabled"
+            )
         pytest.fail("LLAMA_API_URL is not set in the environment")
     return VllmConfig(
         name="Llama 3.1 8B instruct",

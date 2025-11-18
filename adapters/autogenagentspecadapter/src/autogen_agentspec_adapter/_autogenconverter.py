@@ -1,8 +1,9 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 
 import keyword
 import re
@@ -11,7 +12,6 @@ from urllib.parse import urljoin
 
 import httpx
 from autogen_agentchat.agents import AssistantAgent as AutogenAssistantAgent
-from autogen_agentspec_adapter._utils import render_template
 from autogen_core.models import ChatCompletionClient as AutogenChatCompletionClient
 from autogen_core.models import ModelFamily, ModelInfo
 from autogen_core.tools import BaseTool as AutogenBaseTool
@@ -22,8 +22,6 @@ from autogen_ext.models.ollama import (
 from autogen_ext.models.openai import (
     OpenAIChatCompletionClient as AutogenOpenAIChatCompletionClient,
 )
-from pydantic import BaseModel, Field, create_model
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -36,17 +34,20 @@ from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
+from pydantic import BaseModel, Field, create_model
+
+from autogen_agentspec_adapter._utils import render_template
 
 from .functiontool import FunctionTool
 
 _AutoGenTool = Union[AutogenFunctionTool, Callable[..., Any]]
 
 
-def literal_values(literal_type):
+def literal_values(literal_type: Any) -> tuple[Any, ...]:
     return get_args(literal_type)
 
 
-def fits_literal(value, literal_type) -> bool:
+def fits_literal(value: Any, literal_type: Any) -> bool:
     return value in get_args(literal_type)
 
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -23,10 +23,8 @@ from typing import (
 from crewai import LLM as CrewAILlm
 from crewai import Agent as CrewAIAgent
 from crewai.tools import BaseTool as CrewAIBaseTool
-from crewai.tools.base_tool import CrewStructuredTool as CrewAIStructuredTool
 from crewai.tools.base_tool import Tool as CrewAITool
-from pydantic import BaseModel
-
+from crewai.tools.structured_tool import CrewStructuredTool as CrewAIStructuredTool
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -37,6 +35,7 @@ from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
+from pydantic import BaseModel
 
 
 def generate_id() -> str:
@@ -130,12 +129,15 @@ class CrewAIToAgentSpecConverter:
         self, crewai_llm: CrewAILlm, referenced_objects: Dict[str, Any]
     ) -> AgentSpecLlmConfig:
         model_provider, model_id = crewai_llm.model.split("/", 1)
+        max_tokens = int(crewai_llm.max_tokens) if crewai_llm.max_tokens is not None else None
         default_generation_parameters = AgentSpecLlmGenerationConfig(
             temperature=crewai_llm.temperature,
             top_p=crewai_llm.top_p,
-            max_tokens=crewai_llm.max_tokens,
+            max_tokens=max_tokens,
         )
         if model_provider == "ollama":
+            if crewai_llm.base_url is None:
+                raise ValueError("Ollama LLM configuration requires a non-null base_url")
             return AgentSpecOllamaModel(
                 name=crewai_llm.model,
                 model_id=model_id,
@@ -143,6 +145,8 @@ class CrewAIToAgentSpecConverter:
                 default_generation_parameters=default_generation_parameters,
             )
         elif model_provider == "hosted_vllm":
+            if crewai_llm.api_base is None:
+                raise ValueError("VLLM LLM configuration requires a non-null api_base")
             return AgentSpecVllmModel(
                 name=crewai_llm.model,
                 model_id=model_id,
@@ -197,6 +201,6 @@ class CrewAIToAgentSpecConverter:
             ),
             tools=[
                 cast(AgentSpecTool, self.convert(tool, referenced_objects=referenced_objects))
-                for tool in crewai_agent.tools
+                for tool in (crewai_agent.tools or [])
             ],
         )

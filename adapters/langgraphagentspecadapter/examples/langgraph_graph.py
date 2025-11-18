@@ -1,3 +1,9 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 # MIT License
 #
 # Copyright (c) 2024 LangChain, Inc.
@@ -39,8 +45,9 @@ from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
-from langgraph_agentspec_adapter.agentspecexporter import AgentSpecExporter
 from pydantic import SecretStr
+
+from langgraph_agentspec_adapter.agentspecexporter import AgentSpecExporter
 
 
 class MessagesState(TypedDict):

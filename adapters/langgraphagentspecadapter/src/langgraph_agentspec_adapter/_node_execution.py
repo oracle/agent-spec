@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -6,23 +6,17 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import httpx
 from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import BaseMessage
+from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import BaseTool
 from langgraph.graph import add_messages
 from langgraph.graph.message import Messages
-from langgraph.graph.state import CompiledStateGraph, RunnableConfig
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Checkpointer, interrupt
-from langgraph_agentspec_adapter._template_rendering import render_template
-from langgraph_agentspec_adapter._types import (
-    ExecuteOutput,
-    FlowStateSchema,
-    LangGraphTool,
-    NodeExecutionDetails,
-    NodeOutputsType,
-)
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
@@ -39,6 +33,17 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as pyagentspec_empty_default
+
+from langgraph_agentspec_adapter._template_rendering import render_template
+from langgraph_agentspec_adapter._types import (
+    ExecuteOutput,
+    FlowStateSchema,
+    LangGraphTool,
+    NodeExecutionDetails,
+    NodeOutputsType,
+)
+
+MessageLike = Union[BaseMessage, List[str], Tuple[str, str], str, Dict[str, Any]]
 
 
 class NodeExecutor(ABC):
@@ -135,7 +140,8 @@ class NodeExecutor(ABC):
             "inputs": next_node_inputs,
             "outputs": outputs,
             "messages": add_messages(
-                previous_state.get("messages", []), execution_details["generated_messages"]
+                previous_state.get("messages", []),
+                execution_details["generated_messages"],
             ),
             "node_execution_details": execution_details,
         }
@@ -219,11 +225,15 @@ class BranchingNodeExecutor(NodeExecutor):
             raise ValueError("BranchingNode requires at least one input")
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
-        input_branch_prop_title = self.node.inputs[0].title
+        if not isinstance(self.node, AgentSpecBranchingNode):
+            raise TypeError("BranchingNodeExecutor can only be initialized with BranchingNode")
+        branching_node = self.node
+        node_inputs = branching_node.inputs or []
+        input_branch_prop_title = node_inputs[0].title
         input_branch_name = inputs.get(
             input_branch_prop_title, AgentSpecBranchingNode.DEFAULT_BRANCH
         )
-        selected_branch = self.node.mapping.get(
+        selected_branch = branching_node.mapping.get(
             input_branch_name, AgentSpecBranchingNode.DEFAULT_BRANCH
         )
         return {}, NodeExecutionDetails(branch=selected_branch)
@@ -239,7 +249,15 @@ class ToolNodeExecutor(NodeExecutor):
         self.tool_callable = tool
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
-        tool_output = self.tool_callable.invoke(inputs)
+        # LangGraphTool = Union[BaseTool, Callable[..., Any]]
+        tool = self.tool_callable
+
+        if isinstance(tool, BaseTool):
+            # LangChain tool object: uses .invoke
+            tool_output = tool.invoke(inputs)
+        else:
+            # Plain callable: we call it like a function
+            tool_output = tool(**inputs)
 
         if isinstance(tool_output, dict):
             # useful for multiple outputs, avoid nesting dictionaries
@@ -267,14 +285,17 @@ class AgentNodeExecutor(NodeExecutor):
         self.checkpointer = checkpointer
         self.converted_components = converted_components
         self.config = config
-        self._agents_cache: Dict[str, Any] = {}
+        self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
 
     def _create_react_agent_with_given_input_values(
         self, inputs: Dict[str, Any]
     ) -> CompiledStateGraph[Any, Any]:
         from langgraph_agentspec_adapter._langgraphconverter import AgentSpecToLangGraphConverter
 
-        agentspec_component = cast(AgentSpecAgent, self.node.agent)
+        if not isinstance(self.node.agent, AgentSpecAgent):
+            raise TypeError("AgentNodeExecutor can only be used with AgentSpecAgent agents")
+
+        agentspec_component = self.node.agent
         system_prompt = render_template(agentspec_component.system_prompt, inputs)
         if system_prompt not in self._agents_cache:
             self._agents_cache[
@@ -303,9 +324,10 @@ class AgentNodeExecutor(NodeExecutor):
         result = agent.invoke(inputs, self.config)
         if not self.node.outputs:
             generated_message = result["messages"][-1]
-            return {}, NodeExecutionDetails(
-                generated_messages=[{"role": "assistant", "content": generated_message.content}]
-            )
+            generated_messages: List[MessageLike] = [
+                {"role": "assistant", "content": generated_message.content}
+            ]
+            return {}, NodeExecutionDetails(generated_messages=generated_messages)
 
         return dict(result.get("structured_response", {})), NodeExecutionDetails()
 
@@ -320,9 +342,8 @@ class InputMessageNodeExecutor(NodeExecutor):
             if self.node.outputs
             else AgentSpecInputMessageNode.DEFAULT_OUTPUT
         )
-        return {output_name: response}, NodeExecutionDetails(
-            generated_messages=[{"role": "user", "content": response}]
-        )
+        generated_messages: List[MessageLike] = [{"role": "user", "content": response}]
+        return {output_name: response}, NodeExecutionDetails(generated_messages=generated_messages)
 
 
 class OutputMessageNodeExecutor(NodeExecutor):
@@ -330,9 +351,8 @@ class OutputMessageNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         message = render_template(self.node.message, inputs)
-        return {}, NodeExecutionDetails(
-            generated_messages=[{"role": "assistant", "content": message}]
-        )
+        generated_messages: List[MessageLike] = [{"role": "assistant", "content": message}]
+        return {}, NodeExecutionDetails(generated_messages=generated_messages)
 
 
 class LlmNodeExecutor(NodeExecutor):
@@ -342,34 +362,50 @@ class LlmNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecLlmNode):
             raise TypeError("LlmNodeExecutor can only be initialized with LlmNode")
-        self.llm = llm
-        self.requires_structured_generation = not (
-            len(self.node.outputs or []) == 1 and self.node.outputs[0].type == "string"
-        )
-        if not isinstance(self.llm, BaseChatModel):
+        if not isinstance(llm, BaseChatModel):
             raise TypeError("Llm can only be initialized with a BaseChatModel")
+
+        self.llm: BaseChatModel = llm
+
+        node_outputs = self.node.outputs or []
+        self.requires_structured_generation = not (
+            len(node_outputs) == 1 and node_outputs[0].type == "string"
+        )
+
+        self.structured_llm: Any = None
+
         if self.requires_structured_generation:
             json_schema = {
                 # Title is required by langgraph
                 "title": "structured_output",
                 "type": "object",
-                "properties": {output.title: output.json_schema for output in self.node.outputs},
+                "properties": {output.title: output.json_schema for output in node_outputs},
             }
-            self.llm = self.llm.with_structured_output(json_schema)
+            self.structured_llm = self.llm.with_structured_output(json_schema)
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         node_outputs = self.node.outputs or []
         prompt_template = self.node.prompt_template
         rendered_prompt = render_template(prompt_template, inputs)
         invoke_inputs = [{"role": "user", "content": rendered_prompt}]
-        generated_message = self.llm.invoke(invoke_inputs)
+
         if self.requires_structured_generation:
-            generated_output = generated_message
-            # For some reason LangGraph flattens the structure if there's a 1-property object inside another 1-property object
-            # Here we reconstruct the structure we need (for now depth 1, we need to check if flattening happens at deeper levels)
+            if self.structured_llm is None:
+                raise RuntimeError("Structured LLM was not initialized")
+
+            generated_raw = self.structured_llm.invoke(invoke_inputs)
+
+            if not isinstance(generated_raw, dict):
+                raise TypeError(
+                    f"Expected structured LLM to return a dict, got {type(generated_raw)!r}"
+                )
+
+            generated_output: Dict[str, Any] = generated_raw
+            # LangGraph sometimes flattens a 1-property nested object; rebuild if needed
             if len(node_outputs) == 1 and node_outputs[0].title != list(generated_output.keys())[0]:
                 generated_output = {node_outputs[0].title: generated_output}
         else:
+            generated_message = self.llm.invoke(invoke_inputs)
             output_name = node_outputs[0].title if node_outputs else "generated_text"
             generated_output = {output_name: generated_message.content}
         return generated_output, NodeExecutionDetails()
@@ -459,6 +495,9 @@ class MapNodeExecutor(NodeExecutor):
                 raise ValueError(
                     f"Found inputs to iterate with different sizes ({inputs[input_name]} and {num_iterations})"
                 )
+
+        if num_iterations is None:
+            raise ValueError("MapNode inputs_to_iterate did not match any provided inputs")
 
         for i in range(num_iterations):
             # Need to initialize a new dictionary of inputs at every iteration as it will be modified by the subflow

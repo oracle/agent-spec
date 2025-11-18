@@ -4,19 +4,27 @@ fail_fast: true
 repos:
 # Default hooks generally useful
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v5.0.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: check-added-large-files
         args: ['--maxkb=500']
+    # Scanning and fixing automatically unused imports
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+        -   id: autoflake
+            # Exclude init files avoid unexpected rewrite behaviour when __all__
+            # is not defined in the file
+            args: [--remove-all-unused-imports, --in-place, --exclude, "**/__init__.py"]
 # Hooks for code formatting, linting, type checking, security
 -   repo: local
     hooks:
     -   id: black-formatting-hook
         name: Run autoformatting black
-        entry: bash -xc 'black --config pyagentspec/pyproject.toml -- "$@"' --
+        entry: bash -xc 'black --config ./pyproject.toml -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging
@@ -24,7 +32,7 @@ repos:
         verbose: true
     -   id: isort-formatting-hook
         name: Run autoformatting isort
-        entry: bash -xc 'isort --settings-path pyagentspec/pyproject.toml -- "$@"' --
+        entry: bash -xc 'isort --settings-path ./pyproject.toml -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging
@@ -40,7 +48,7 @@ repos:
         verbose: true
     -   id: flake8-linter-hook-copyright
         name: Run Flake8 linter to check for the copyright
-        entry: bash -xc 'flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \(C\) [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." -- "$@"' --
+        entry: bash -xc 'flake8 --select C801 --copyright-check --copyright-regexp="# Copyright \u00A9 [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." -- "$@"' --
         language: system
         types_or: [python]
         # 'verbose:' when set to true, makes the pre-commit framework itself verbose. This means more detailed logging
