@@ -4,13 +4,21 @@ fail_fast: true
 repos:
 # Default hooks generally useful
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v5.0.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: check-added-large-files
         args: ['--maxkb=500']
+    # Scanning and fixing automatically unused imports
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+        -   id: autoflake
+            # Exclude init files avoid unexpected rewrite behaviour when __all__
+            # is not defined in the file
+            args: [--remove-all-unused-imports, --in-place, --exclude, "**/__init__.py"]
 # Hooks for code formatting, linting, type checking, security
 -   repo: local
     hooks:

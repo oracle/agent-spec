@@ -140,7 +140,8 @@ class NodeExecutor(ABC):
             "inputs": next_node_inputs,
             "outputs": outputs,
             "messages": add_messages(
-                previous_state.get("messages", []), execution_details["generated_messages"]
+                previous_state.get("messages", []),
+                execution_details["generated_messages"],
             ),
             "node_execution_details": execution_details,
         }
@@ -343,6 +344,7 @@ class InputMessageNodeExecutor(NodeExecutor):
         )
         generated_messages: List[MessageLike] = [{"role": "user", "content": response}]
         return {output_name: response}, NodeExecutionDetails(generated_messages=generated_messages)
+
 
 class OutputMessageNodeExecutor(NodeExecutor):
     node: AgentSpecOutputMessageNode
