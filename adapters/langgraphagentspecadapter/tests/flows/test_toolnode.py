@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -7,13 +7,13 @@
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
 from pyagentspec.property import Property
 from pyagentspec.tools import ClientTool
+
+from langgraph_agentspec_adapter import AgentSpecLoader
 
 
 def test_toolnode_can_be_imported_and_executed() -> None:

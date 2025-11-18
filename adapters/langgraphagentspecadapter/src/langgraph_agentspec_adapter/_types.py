@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,10 +11,9 @@ from langchain_core.tools import BaseTool
 from langgraph.graph import StateGraph
 from langgraph.graph.message import Messages
 from langgraph.graph.state import CompiledStateGraph
+from pyagentspec.tools import Tool as AgentSpecTool
 from pydantic import SerializeAsAny
 from typing_extensions import TypeAlias
-
-from pyagentspec.tools import Tool as AgentSpecTool
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
 LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]

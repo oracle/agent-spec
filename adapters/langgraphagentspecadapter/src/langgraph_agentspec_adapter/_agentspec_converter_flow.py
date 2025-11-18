@@ -1,8 +1,9 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 
 from dataclasses import is_dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, cast
@@ -13,9 +14,6 @@ from langgraph.graph.state import (  # type: ignore[attr-defined]
     CompiledStateGraph,
     StateNodeSpec,
 )
-from langgraph_agentspec_adapter._types import LangGraphComponent
-from pydantic import BaseModel, TypeAdapter, create_model
-
 from pyagentspec import Property
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
@@ -25,12 +23,15 @@ from pyagentspec.flows.nodes import BranchingNode, EndNode, FlowNode, StartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import StringProperty, UnionProperty
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
+from pydantic import BaseModel, TypeAdapter, create_model
+
+from langgraph_agentspec_adapter._types import LangGraphComponent
 
 if TYPE_CHECKING:
     from langgraph_agentspec_adapter._agentspecconverter import LangGraphToAgentSpecConverter
 
 
-def _validate_conditional_edges_support(graph: LangGraphComponent):
+def _validate_conditional_edges_support(graph: LangGraphComponent) -> None:
     if isinstance(graph, CompiledStateGraph):
         graph = graph.builder
     print(graph.branches.values())

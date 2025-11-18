@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,23 +11,12 @@ from uuid import uuid4
 import httpx
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph, RunnableConfig
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Checkpointer, interrupt
-from langgraph_agentspec_adapter._node_execution import NodeExecutor
-from langgraph_agentspec_adapter._template_rendering import render_template
-from langgraph_agentspec_adapter._types import (
-    ControlFlow,
-    FlowInputSchema,
-    FlowOutputSchema,
-    FlowStateSchema,
-    LangGraphComponent,
-    LangGraphTool,
-)
-from pydantic import BaseModel, Field, SecretStr, create_model
-
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
@@ -59,6 +48,18 @@ from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
+from pydantic import BaseModel, Field, SecretStr, create_model
+
+from langgraph_agentspec_adapter._node_execution import NodeExecutor
+from langgraph_agentspec_adapter._template_rendering import render_template
+from langgraph_agentspec_adapter._types import (
+    ControlFlow,
+    FlowInputSchema,
+    FlowOutputSchema,
+    FlowStateSchema,
+    LangGraphComponent,
+    LangGraphTool,
+)
 
 
 def _create_pydantic_model_from_properties(
@@ -123,7 +124,7 @@ class AgentSpecToLangGraphConverter:
             config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
         if agentspec_component.id not in converted_components:
             converted_components[agentspec_component.id] = self._convert(
-                agentspec_component, tool_registry, converted_components, checkpointer, config
+                agentspec_component, tool_registry, converted_components, checkpointer, config  # type: ignore[arg-type]
             )
         return converted_components[agentspec_component.id]
 
@@ -214,7 +215,6 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "LangGraphComponent":
-        from langgraph_agentspec_adapter._node_execution import FlowStateSchema
 
         graph_builder = StateGraph(
             FlowStateSchema, input_schema=FlowInputSchema, output_schema=FlowOutputSchema

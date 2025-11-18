@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -9,8 +9,9 @@
 
 import pytest
 from autogen_agentchat.conditions import MaxMessageTermination
-from autogen_agentspec_adapter import AgentSpecExporter
 from autogen_ext.models.ollama import OllamaChatCompletionClient
+
+from autogen_agentspec_adapter import AgentSpecExporter
 
 from .conftest import inspect_names_and_nodes_and_branching_mappings_of_generated_agentspec_flow
 from .model_builders import (

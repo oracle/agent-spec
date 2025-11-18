@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -12,9 +12,10 @@ import sys
 from pathlib import Path
 
 from autogen_agentchat.ui import Console
-from autogen_agentspec_adapter import AgentSpecExporter
 from autogen_ext.models.ollama import OllamaChatCompletionClient
 from wayflowcore.agentspec import AgentSpecLoader
+
+from autogen_agentspec_adapter import AgentSpecExporter
 
 # Add repository root (parent of examples) to sys.path so that `import tests...` works
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))

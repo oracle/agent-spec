@@ -1,3 +1,9 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 component_type: OciAgent
 id: 905c6f9a-3786-475c-83ac-a438563f0b86
 name: oci_agent
