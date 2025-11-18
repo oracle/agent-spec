@@ -84,7 +84,7 @@ class ParallelMapNode(Node):
     >>> is_llm_article_property = StringProperty(title="is_article")
     >>> llm_node = LlmNode(
     ...     name="check_if_article_talks_about_llms_node",
-    ...     prompt_template="Look at this article:\n{{article}}\nDoes it talk about LLMs? Answer `yes` or `no`.\n",
+    ...     prompt_template="Look at this article: {{article}}. Does it talk about LLMs? Answer `yes` or `no`.",
     ...     llm_config=llm_config,
     ...     inputs=[article_property],
     ...     outputs=[is_llm_article_property],
@@ -136,12 +136,11 @@ class ParallelMapNode(Node):
     >>> summary_property = StringProperty(title="summary")
     >>> summary_llm_node = LlmNode(
     ...     name="generate_summary_of_llm_articles_node",
-    ...     prompt_template="Summarize the following articles that talk about LLMs:\n{{collected_article}}\n",
+    ...     prompt_template="Summarize the following articles that talk about LLMs: {{collected_article}}",
     ...     llm_config=llm_config,
     ...     inputs=[list_of_articles_about_llm_property],
     ...     outputs=[summary_property],
     ... )
-    >>>
     >>> start_node = StartNode(name="start", inputs=[list_of_articles_property])
     >>> end_node = EndNode(name="end", outputs=[summary_property])
     >>> generate_summary_of_llm_articles_flow = Flow(
