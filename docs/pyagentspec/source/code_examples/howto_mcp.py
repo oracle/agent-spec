@@ -89,7 +89,7 @@ from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
-from pyagentspec.mcp import MCPTool, SSETransport
+from pyagentspec.mcp import MCPTool, MCPToolBox, SSETransport
 from pyagentspec.property import StringProperty
 
 mcp_server_url = f"http://localhost:8080/sse" # change to your own URL
@@ -97,21 +97,15 @@ mcp_server_url = f"http://localhost:8080/sse" # change to your own URL
 # .. start-##_Connecting_an_agent_to_the_MCP_server
 mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)
 
-get_user_session_tool = MCPTool(
-    client_transport=mcp_client,
-    description="Return session details for the current user",
-    name="get_user_session",
-)
-get_payslips_tool = MCPTool(
-    client_transport=mcp_client,
-    description="Return payslip details for a given PersonId",
-    name="get_payslips",
+payslip_mcptoolbox = MCPToolBox(
+    name="Payslip MCP ToolBox",
+    client_transport=mcp_client
 )
 agent = Agent(
     name="Agent using MCP",
     llm_config=llm_config,
     system_prompt="Use tools at your disposal to assist the user.",
-    tools=[get_user_session_tool, get_payslips_tool]
+    toolboxes=[payslip_mcptoolbox],
 )
 # .. end-##_Connecting_an_agent_to_the_MCP_server
 # .. start-##_Export_Agent_to_IR
