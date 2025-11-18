@@ -1,6 +1,8 @@
 name: "CI Pipeline: Formatting, Linting, Typing, Security, and Tests (PyAgentSpec + Adapters)"
 
 on:
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 env:
