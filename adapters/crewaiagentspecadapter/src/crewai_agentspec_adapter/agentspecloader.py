@@ -5,7 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union
 
 from crewai import Agent as CrewAIAgent
 from crewai import Flow as CrewAIFlow
@@ -83,4 +83,14 @@ class AgentSpecLoader:
         crewai_component = AgentSpecToCrewAIConverter().convert(
             agentspec_component, self.tool_registry
         )
-        return cast(_CrewAIComponent, crewai_component)
+
+        if isinstance(crewai_component, CrewAIAgent):
+            return crewai_component
+
+        if isinstance(crewai_component, CrewAIFlow):
+            return crewai_component
+
+        raise TypeError(
+            "AgentSpecLoader.load_component expected a CrewAI Agent or Flow, "
+            f"but got {type(crewai_component)!r} from the converter"
+        )

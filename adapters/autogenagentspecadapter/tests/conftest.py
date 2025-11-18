@@ -162,6 +162,8 @@ def _seed_llm_env_for_skip():
 
 LLM_MOCKED_METHODS = [
     "pyagentspec.llms.vllmconfig.VllmConfig.__init__",
+    "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
+    "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
 ]
 
 

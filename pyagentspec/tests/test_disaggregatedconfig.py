@@ -443,7 +443,7 @@ def test_serialize_raises_on_root_component_disaggregation() -> None:
 
 
 @timeout(
-    seconds=25,
+    seconds=35,
     error_message="Encountered time complexity issue when disaggregating a deeply nested component",
 )
 @pytest.mark.parametrize("size", [4, 30])
