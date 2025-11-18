@@ -1,4 +1,4 @@
-# Copyright (C) 2024, 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -39,19 +39,6 @@ def default_deserializer() -> AgentSpecDeserializer:
 
 
 @pytest.fixture()
-def default_vllm_config() -> LlmConfig:
-    llama_endpoint = os.environ.get("LLAMA_API_URL")
-    if not llama_endpoint:
-        pytest.fail("LLAMA_API_URL is not set in the environment")
-    return VllmConfig(
-        name="llm",
-        url=llama_endpoint,
-        model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-        default_generation_parameters=LlmGenerationConfig(temperature=0.5),
-    )
-
-
-@pytest.fixture()
 def default_oci_genai_llm_config() -> LlmConfig:
     return OciGenAiConfig(
         id="oci genai llm",
@@ -69,11 +56,11 @@ def default_oci_genai_llm_config() -> LlmConfig:
 
 
 @pytest.fixture()
-def default_agent(default_vllm_config: LlmConfig) -> Agent:
+def default_agent(default_llm_config: LlmConfig) -> Agent:
     return Agent(
         id="abc123",
         name="default_agent",
-        llm_config=default_vllm_config,
+        llm_config=default_llm_config,
         system_prompt="You are a great agent. You are talking to {{username}}. Be kind.",
         tools=[
             ClientTool(
@@ -108,14 +95,14 @@ def default_agent(default_vllm_config: LlmConfig) -> Agent:
 
 
 @pytest.fixture()
-def default_flow(default_vllm_config: LlmConfig) -> Flow:
+def default_flow(default_llm_config: LlmConfig) -> Flow:
     start_node = StartNode(
         name="start",
         inputs=[StringProperty(title="username"), StringProperty(title="user_input")],
     )
     llm_node = LlmNode(
         name="prompt",
-        llm_config=default_vllm_config,
+        llm_config=default_llm_config,
         prompt_template="{{username}} is asking: {{user_input}}",
         outputs=[StringProperty(title="llm_output")],
     )

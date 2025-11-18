@@ -1,16 +1,16 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from langchain_core.messages import AIMessage
-from langgraph_agentspec_adapter import AgentSpecLoader
-
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, OutputMessageNode, StartNode
 from pyagentspec.property import StringProperty
+
+from langgraph_agentspec_adapter import AgentSpecLoader
 
 
 def test_outputmessagenode_can_be_imported_and_executed() -> None:

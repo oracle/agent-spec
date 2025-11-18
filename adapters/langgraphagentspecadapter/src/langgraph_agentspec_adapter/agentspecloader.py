@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -8,12 +8,12 @@
 from typing import Any, Dict, List, Optional
 
 from langgraph.graph.state import CompiledStateGraph as LangGraphComponent
-from langgraph.graph.state import RunnableConfig
+from langgraph.graph.state import RunnableConfig  # type: ignore[attr-defined]
 from langgraph.types import Checkpointer
-from langgraph_agentspec_adapter._langgraphconverter import AgentSpecToLangGraphConverter
-
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
+
+from langgraph_agentspec_adapter._langgraphconverter import AgentSpecToLangGraphConverter
 
 
 class AgentSpecLoader:

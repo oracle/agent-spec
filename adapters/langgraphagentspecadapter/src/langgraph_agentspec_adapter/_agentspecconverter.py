@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,12 +11,8 @@ from typing import Any, Dict, List, Optional, cast
 from langchain_core.runnables import RunnableBinding
 from langchain_ollama import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
-from langgraph.graph.state import CompiledStateGraph, StateNodeSpec
-from langgraph_agentspec_adapter._agentspec_converter_flow import (
-    _langgraph_graph_convert_to_agentspec,
-)
-from langgraph_agentspec_adapter._types import LangGraphComponent, LangGraphLlmConfig
-
+from langgraph.graph._node import StateNodeSpec
+from langgraph.graph.state import CompiledStateGraph
 from pyagentspec import Property
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
@@ -26,6 +22,11 @@ from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatible
 from pyagentspec.llms import VllmConfig as AgentSpecVllmConfig
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
+
+from langgraph_agentspec_adapter._agentspec_converter_flow import (
+    _langgraph_graph_convert_to_agentspec,
+)
+from langgraph_agentspec_adapter._types import LangGraphComponent, LangGraphLlmConfig
 
 
 class LangGraphToAgentSpecConverter:
@@ -104,7 +105,7 @@ class LangGraphToAgentSpecConverter:
 
         if isinstance(model, RunnableBinding):
             tools = self._langgraph_tools_to_agentspec_tools(model.kwargs.get("tools", []))
-            model = model.bound  # type: ignore
+            model = model.bound
         else:
             tools = []
         if isinstance(model, ChatOpenAI):

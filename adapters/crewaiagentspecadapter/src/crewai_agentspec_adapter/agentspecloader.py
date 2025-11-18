@@ -1,21 +1,20 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from crewai import Agent as CrewAIAgent
 from crewai import Flow as CrewAIFlow
-
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 
 from ._crewaiconverter import AgentSpecToCrewAIConverter, _CrewAIServerToolType
 
-_CrewAIComponent = Union[CrewAIAgent, CrewAIFlow]
+_CrewAIComponent = Union[CrewAIAgent, CrewAIFlow[Any]]
 
 
 class AgentSpecLoader:
@@ -84,4 +83,14 @@ class AgentSpecLoader:
         crewai_component = AgentSpecToCrewAIConverter().convert(
             agentspec_component, self.tool_registry
         )
-        return crewai_component
+
+        if isinstance(crewai_component, CrewAIAgent):
+            return crewai_component
+
+        if isinstance(crewai_component, CrewAIFlow):
+            return crewai_component
+
+        raise TypeError(
+            "AgentSpecLoader.load_component expected a CrewAI Agent or Flow, "
+            f"but got {type(crewai_component)!r} from the converter"
+        )

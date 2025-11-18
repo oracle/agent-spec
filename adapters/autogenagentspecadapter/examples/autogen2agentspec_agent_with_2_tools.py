@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,13 +11,14 @@ import asyncio
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-from autogen_agentspec_adapter import AgentSpecExporter
 from autogen_core import CancellationToken
 from autogen_ext.models.ollama import OllamaChatCompletionClient
 from wayflowcore.agentspec import AgentSpecLoader
 from wayflowcore.executors.executionstatus import FinishedStatus
 from wayflowcore.property import StringProperty
 from wayflowcore.tools import ServerTool as WayflowServerTool
+
+from autogen_agentspec_adapter import AgentSpecExporter
 
 
 async def get_weather(city: str) -> str:

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -8,15 +8,15 @@
 
 import yaml
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 from autogen_core.models import ModelFamily, ModelInfo
 from autogen_ext.models.ollama import OllamaChatCompletionClient
-
 from pyagentspec import Agent
 from pyagentspec.llms import OllamaConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ServerTool
+
+from autogen_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
 
 
 async def mock_tool() -> str:

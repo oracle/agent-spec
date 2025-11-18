@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -13,14 +13,14 @@ import pytest
 from langchain_openai.chat_models import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import create_react_agent
-from langgraph_agentspec_adapter import AgentSpecExporter
-from pydantic import BaseModel, SecretStr
-
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.nodes import BranchingNode, FlowNode
 from pyagentspec.llms import OpenAiCompatibleConfig
+from pydantic import BaseModel, SecretStr
+
+from langgraph_agentspec_adapter import AgentSpecExporter
 
 from .conftest import get_weather
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 from crewai import Crew, Task
+
 from crewai_agentspec_adapter import AgentSpecLoader
 
 from .conftest import IS_JSON_SERVER_RUNNING, JSON_SERVER_PORT

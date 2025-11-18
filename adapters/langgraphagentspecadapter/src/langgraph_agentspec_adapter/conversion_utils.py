@@ -1,22 +1,25 @@
-# Copyright (C) 2025 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Callable, Dict
+from typing import Any, Callable, Dict, TypeAlias
 
 from langgraph.graph import add_messages
-from langgraph.graph.state import RunnableConfig
+from langgraph.graph.state import RunnableConfig  # type: ignore[attr-defined]
 from langgraph.prebuilt import ToolNode
 from langgraph.store.base import BaseStore
+
+State: TypeAlias = Dict[str, Any]
+RegistryCallable: TypeAlias = Callable[[State], Any]
 
 
 def convert_nodes_to_registry(
     nodes: Dict[str, object],
     config: RunnableConfig,
     store: BaseStore | None = None,
-) -> Dict[str, Callable]:
+) -> Dict[str, RegistryCallable]:
     """
     Utility function to convert nodes into an AgentSpec compatible tool registry
 
@@ -42,7 +45,7 @@ def _convert_node_to_registry_tool(
     node: object,
     config: RunnableConfig,
     store: BaseStore | None = None,
-) -> Callable:
+) -> RegistryCallable:
     """
     Convert node into a function compatible with an AgentSpec node generated from LangGraph
 
@@ -68,8 +71,8 @@ def _convert_node_to_registry_tool(
 
     # The wrapper function replicates the behavior of LangGraph
     # when it comes to posting messages to the state
-    def wrapper(func):
-        def outer(state):
+    def wrapper(func: Callable[[State], Any]) -> RegistryCallable:
+        def outer(state: State) -> Any:
             output = func(state)
             if isinstance(output, dict) and "messages" in output:
                 output["messages"] = add_messages(state["messages"], output["messages"])
@@ -80,7 +83,7 @@ def _convert_node_to_registry_tool(
     match node:
         case ToolNode() as tool_node:
 
-            def func(state):
+            def func(state: State) -> Any:
                 return tool_node._func(state, config, store=store)
 
             return wrapper(func)
