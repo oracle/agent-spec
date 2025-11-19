@@ -10,6 +10,38 @@
         }
       ]
     },
+    "A2AConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseA2AConnectionConfig"
+        }
+      ]
+    },
+    "A2ASessionParameters": {
+      "description": "Class to specify parameters of the A2A session.",
+      "properties": {
+        "timeout": {
+          "default": 60.0,
+          "title": "Timeout",
+          "type": "number"
+        },
+        "poll_interval": {
+          "default": 2.0,
+          "title": "Poll Interval",
+          "type": "number"
+        },
+        "max_retries": {
+          "default": 5,
+          "title": "Max Retries",
+          "type": "integer"
+        }
+      },
+      "title": "A2ASessionParameters",
+      "type": "object"
+    },
     "Agent": {
       "anyOf": [
         {
@@ -691,6 +723,17 @@
           "title": "Agent Url",
           "type": "string"
         },
+        "connection_config": {
+          "$ref": "#/$defs/A2AConnectionConfig"
+        },
+        "session_parameters": {
+          "$ref": "#/$defs/A2ASessionParameters",
+          "default": {
+            "timeout": 60.0,
+            "poll_interval": 2.0,
+            "max_retries": 5
+          }
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -700,9 +743,121 @@
       },
       "required": [
         "name",
-        "agent_url"
+        "agent_url",
+        "connection_config"
       ],
       "title": "A2AAgent",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseA2AConnectionConfig": {
+      "additionalProperties": false,
+      "description": "Class to specify configuration settings for establishing a connection in A2A communication.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "timeout": {
+          "default": 600.0,
+          "title": "Timeout",
+          "type": "number"
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Headers"
+        },
+        "verify": {
+          "default": true,
+          "title": "Verify",
+          "type": "boolean"
+        },
+        "key_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Key File"
+        },
+        "cert_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cert File"
+        },
+        "ssl_ca_cert": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ssl Ca Cert"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "A2AConnectionConfig"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "A2AConnectionConfig",
       "type": "object",
       "x-abstract-component": false
     },
@@ -4728,6 +4883,9 @@
             "$ref": "#/$defs/BaseA2AAgent"
           },
           {
+            "$ref": "#/$defs/BaseA2AConnectionConfig"
+          },
+          {
             "$ref": "#/$defs/BaseAgent"
           },
           {
@@ -4932,6 +5090,21 @@
         },
         {
           "$ref": "#/$defs/BaseA2AAgent"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedA2AConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseA2AConnectionConfig"
         }
       ],
       "properties": {
@@ -5743,6 +5916,9 @@
   "anyOf": [
     {
       "$ref": "#/$defs/VersionedA2AAgent"
+    },
+    {
+      "$ref": "#/$defs/VersionedA2AConnectionConfig"
     },
     {
       "$ref": "#/$defs/VersionedAgent"

@@ -6,7 +6,7 @@
 
 import pytest
 
-from pyagentspec.a2aagent import A2AAgent
+from pyagentspec.a2aagent import A2AAgent, A2AConnectionConfig, A2ASessionParameters
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -20,6 +20,15 @@ def a2aagent() -> A2AAgent:
         description="client to connect remote agent using a2a protocol",
         id="agent123",
         agent_url="http://127.0.0.1:8000",
+        connection_config=A2AConnectionConfig(
+            name="sample_connection_config",
+            timeout=100.0,
+            verify=True,
+            key_file="/path/to/key.pem",
+            cert_file="/path/to/cert.pem",
+            ssl_ca_cert="/path/to/ca.pem",
+        ),
+        session_parameters=A2ASessionParameters(timeout=20.0, poll_interval=3.0, max_retries=4),
     )
 
 
@@ -28,12 +37,31 @@ def test_can_instantiate_a2aagent(a2aagent: A2AAgent) -> None:
     assert a2aagent.description == "client to connect remote agent using a2a protocol"
     assert a2aagent.id == "agent123"
     assert a2aagent.agent_url == "http://127.0.0.1:8000"
+    assert isinstance(a2aagent.connection_config, A2AConnectionConfig)
+    assert isinstance(a2aagent.session_parameters, A2ASessionParameters)
+
+
+def test_a2aagent_connection_config_parameters(a2aagent: A2AAgent) -> None:
+    config = a2aagent.connection_config
+    assert config.timeout == 100.0
+    assert config.verify is True
+    assert config.key_file == "/path/to/key.pem"
+    assert config.cert_file == "/path/to/cert.pem"
+    assert config.ssl_ca_cert == "/path/to/ca.pem"
+
+
+def test_a2aagent_session_parameters(a2aagent: A2AAgent) -> None:
+    params = a2aagent.session_parameters
+    assert params.timeout == 20.0
+    assert params.poll_interval == 3.0
+    assert params.max_retries == 4
 
 
 def test_can_serialize_and_deserialize_a2aagent(a2aagent: A2AAgent) -> None:
     serialized_assistant = AgentSpecSerializer().to_yaml(a2aagent)
     assert len(serialized_assistant.strip()) > 0
     deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_assistant)
+    assert deserialized_assistant == a2aagent
     with pytest.raises(
         ValueError, match="Invalid agentspec_version:.*but the minimum allowed version is.*"
     ):

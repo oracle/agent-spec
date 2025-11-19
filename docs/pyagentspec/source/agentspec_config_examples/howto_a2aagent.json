@@ -7,5 +7,18 @@
     "inputs": [],
     "outputs": [],
     "agent_url": "<IP ADDRESS>",
+    "connection_config": {
+        "timeout": 30.0,
+        "headers": null,
+        "verify": true,
+        "key_file": "/path/to/client/key.pem",
+        "cert_file": "/path/to/client/cert.pem",
+        "ssl_ca_cert": "/path/to/ca/cert.pem"
+    },
+    "session_parameters": {
+        "timeout": 60.0,
+        "poll_interval": 60.0,
+        "max_retries": 3
+    },
     "agentspec_version": "25.4.2"
 }
