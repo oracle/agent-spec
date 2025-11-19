@@ -39,7 +39,6 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -69,7 +68,6 @@ cover/
 
 # Documentation / notebooks
 .ipynb_checkpoints
-.ipynb
 docs/_build/
 .scrapy
 profile_default/
@@ -104,15 +102,6 @@ pip-delete-this-directory.txt
 *.mo
 *.pot
 
-# Build scripts / temp files
-.rsync-exclude.txt
-activate
-scripts/
-outputs/
-mypy-precision/
-catboost_info/
-lcnc/
-
 # PDM
 __pypackages__/
 
@@ -120,7 +109,6 @@ __pypackages__/
 .spyderproject
 .spyproject
 .ropeproject
-/site
 
 # Cython / type checkers
 cython_debug/

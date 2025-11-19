@@ -87,21 +87,21 @@ Select an LLM from the options below:
 Build the Agent
 ---------------
 
-:ref:`Agents <agent>` can use tools exposed by MCP servers using :ref:`MCPTool <mcptool>`.
+:ref:`Agents <agent>` can connect to MCP tools by either using a :ref:`MCPToolBox <mcptoolbox>` or a :ref:`MCPTool <mcptool>`.
+Here you will use the toolbox (see the section on Flows to see how to use the ``MCPTool``).
 
 .. literalinclude:: ../code_examples/howto_mcp.py
     :language: python
     :start-after: .. start-##_Connecting_an_agent_to_the_MCP_server
     :end-before: .. end-##_Connecting_an_agent_to_the_MCP_server
 
-Specify the :doc:`transport <../api/mcp>` to use to handle the connection to the server
-as well as the name of the specific tool you want to use. Additionally, you can override the tool
-description (exposed by the MCP server) by specifying the ``description`` parameter.
+Specify the :doc:`transport <../api/mcp>` to use to handle the connection to the server and create the toolbox.
+You can then equip an agent with the toolbox similarly to tools.
 
 .. note::
-    To require user confirmation for a tool, set ``requires_confirmation=True`` (see :ref:`Tool <tool>`).
-    This signals that execution environments should require user approval before running the tool, which is useful
-    for tools performing sensitive actions.
+    When using a :ref:`MCPTool <mcptool>` you can set ``requires_confirmation=True`` to require user confirmation
+    for a tool (see :ref:`Tool <tool>`). This signals that execution environments should require user approval before
+    running the tool, which is useful for tools performing sensitive actions.
 
 Agent Serialization
 -------------------
