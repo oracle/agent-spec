@@ -2073,8 +2073,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.parallelmapnode.</span></span><span class="sig-name descname"><span class="pre">ParallelMapNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The parallel map node executes a subflow on each element of a given input in a parallel manner.</p>
-<blockquote>
-<div><ul>
+<ul>
 <li><dl>
 <dt><strong>Inputs</strong></dt><dd><p>Inferred from the inner structure. It’s the sets of inputs
 required by the StartNode of the inner flow.
@@ -2110,6 +2109,7 @@ and type according to the rules defined above.</p>
 </dl>
 </li>
 </ul>
+<p class="rubric">Examples</p>
 <p>In this example we create a flow that generates a summary of the given articles that talk about LLMs.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">BooleanProperty</span><span class="p">,</span> <span class="n">StringProperty</span><span class="p">,</span> <span class="n">ListProperty</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.edges</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlFlowEdge</span><span class="p">,</span> <span class="n">DataFlowEdge</span>
@@ -2136,46 +2136,41 @@ and type according to the rules defined above.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_llm_article_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;is_article&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">llm_node</span> <span class="o">=</span> <span class="n">LlmNode</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;check_if_article_talks_about_llms_node&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Look at this article:</span>
+<span class="gp">... </span>    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Look at this article: {{article}}. Does it talk about LLMs? Answer `yes` or `no`.&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">article_property</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">is_llm_article_property</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">branching_node</span> <span class="o">=</span> <span class="n">BranchingNode</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;decide_if_we_should_return_the_article&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">is_llm_article_property</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_node</span> <span class="o">=</span> <span class="n">StartNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">article_property</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">end_node_with_output</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end_with_output&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">article_property</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">end_node_without_output</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end_without_output&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[])</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_if_article_is_about_llm_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;is_article_about_llm_flow&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">llm_node</span><span class="p">,</span> <span class="n">end_node_with_output</span><span class="p">,</span> <span class="n">end_node_without_output</span><span class="p">,</span> <span class="n">branching_node</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">control_flow_connections</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start_to_llm&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm_to_branching&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;branching_to_end_with&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">end_node_with_output</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;branching_to_end_without&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">end_node_without_output</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">data_flow_connections</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">llm_node</span><span class="p">,</span> <span class="n">article_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">llm_node</span><span class="p">,</span> <span class="n">branching_node</span><span class="p">,</span> <span class="n">is_llm_article_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node_with_output</span><span class="p">,</span> <span class="n">article_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">article_property</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)],</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p>{{article}}
-Does it talk about LLMs? Answer <cite>yes</cite> or <cite>no</cite>.
-“,</p>
-<blockquote>
-<div><p>…     llm_config=llm_config,
-…     inputs=[article_property],
-…     outputs=[is_llm_article_property],
-… )
-&gt;&gt;&gt;
-&gt;&gt;&gt; branching_node = BranchingNode(
-…     name=”decide_if_we_should_return_the_article”,
-…     mapping={“yes”: “yes”},
-…     inputs=[is_llm_article_property],
-… )
-&gt;&gt;&gt;
-&gt;&gt;&gt; start_node = StartNode(name=”start”, inputs=[article_property])
-&gt;&gt;&gt; end_node_with_output = EndNode(name=”end_with_output”, outputs=[article_property])
-&gt;&gt;&gt; end_node_without_output = EndNode(name=”end_without_output”, outputs=[])
-&gt;&gt;&gt;
-&gt;&gt;&gt; check_if_article_is_about_llm_flow = Flow(
-…     name=”is_article_about_llm_flow”,
-…     start_node=start_node,
-…     nodes=[start_node, llm_node, end_node_with_output, end_node_without_output, branching_node],
-…     control_flow_connections=[
-…         ControlFlowEdge(name=”start_to_llm”, from_node=start_node, to_node=llm_node),
-…         ControlFlowEdge(name=”llm_to_branching”, from_node=llm_node, to_node=branching_node),
-…         ControlFlowEdge(name=”branching_to_end_with”, from_node=branching_node, to_node=end_node_with_output),
-…         ControlFlowEdge(name=”branching_to_end_without”, from_node=branching_node, to_node=end_node_without_output),
-…     ],
-…     data_flow_connections=[
-…         create_data_flow_edge(start_node, llm_node, article_property.title),
-…         create_data_flow_edge(llm_node, branching_node, is_llm_article_property.title),
-…         create_data_flow_edge(start_node, end_node_with_output, article_property.title),
-…     ],
-…     outputs=[StringProperty(title=article_property.title, default=””)],
-… )</p>
 <p>We put this flow into a <code class="docutils literal notranslate"><span class="pre">ParallelMapNode</span></code>, so that we can perform the check
 in parallel on multiple articles at the same time.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_articles_property</span> <span class="o">=</span> <span class="n">ListProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;iterated_article&quot;</span><span class="p">,</span> <span class="n">item_type</span><span class="o">=</span><span class="n">article_property</span><span class="p">)</span>
@@ -2193,36 +2188,30 @@ in parallel on multiple articles at the same time.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">summary_property</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;summary&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_llm_node</span> <span class="o">=</span> <span class="n">LlmNode</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;generate_summary_of_llm_articles_node&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Summarize the following articles that talk about LLMs:</span>
+<span class="gp">... </span>    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Summarize the following articles that talk about LLMs: {{collected_article}}&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">list_of_articles_about_llm_property</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">summary_property</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_node</span> <span class="o">=</span> <span class="n">StartNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">list_of_articles_property</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">end_node</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">summary_property</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generate_summary_of_llm_articles_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Generate summary of articles about LLMs flow&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">parallel_article_check_node</span><span class="p">,</span> <span class="n">summary_llm_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">control_flow_connections</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start_to_parallelmap&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">parallel_article_check_node</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;parallelmap_to_llm&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">parallel_article_check_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">summary_llm_node</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm_to_end&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">summary_llm_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">data_flow_connections</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">parallel_article_check_node</span><span class="p">,</span> <span class="n">list_of_articles_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">parallel_article_check_node</span><span class="p">,</span> <span class="n">summary_llm_node</span><span class="p">,</span> <span class="n">list_of_articles_about_llm_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">create_data_flow_edge</span><span class="p">(</span><span class="n">summary_llm_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">summary_property</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p>{{collected_article}}
-“,</p>
-<blockquote>
-<div><p>…     llm_config=llm_config,
-…     inputs=[list_of_articles_about_llm_property],
-…     outputs=[summary_property],
-… )
-&gt;&gt;&gt;
-&gt;&gt;&gt; start_node = StartNode(name=”start”, inputs=[list_of_articles_property])
-&gt;&gt;&gt; end_node = EndNode(name=”end”, outputs=[summary_property])
-&gt;&gt;&gt; generate_summary_of_llm_articles_flow = Flow(
-…     name=”Generate summary of articles about LLMs flow”,
-…     start_node=start_node,
-…     nodes=[start_node, parallel_article_check_node, summary_llm_node, end_node],
-…     control_flow_connections=[
-…         ControlFlowEdge(name=”start_to_parallelmap”, from_node=start_node, to_node=parallel_article_check_node),
-…         ControlFlowEdge(name=”parallelmap_to_llm”, from_node=parallel_article_check_node, to_node=summary_llm_node),
-…         ControlFlowEdge(name=”llm_to_end”, from_node=summary_llm_node, to_node=end_node),
-…     ],
-…     data_flow_connections=[
-…         create_data_flow_edge(start_node, parallel_article_check_node, list_of_articles_property.title),
-…         create_data_flow_edge(parallel_article_check_node, summary_llm_node, list_of_articles_about_llm_property.title),
-…         create_data_flow_edge(summary_llm_node, end_node, summary_property.title),
-…     ],
-… )</p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

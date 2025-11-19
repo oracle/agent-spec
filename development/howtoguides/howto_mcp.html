@@ -583,7 +583,7 @@ You should ensure that your MCP server configurations are secure, and only conne
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.edges</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlFlowEdge</span><span class="p">,</span> <span class="n">DataFlowEdge</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.flow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EndNode</span><span class="p">,</span> <span class="n">StartNode</span><span class="p">,</span> <span class="n">ToolNode</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPTool</span><span class="p">,</span> <span class="n">SSETransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPTool</span><span class="p">,</span> <span class="n">MCPToolBox</span><span class="p">,</span> <span class="n">SSETransport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringProperty</span>
 
 <span class="n">mcp_server_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://localhost:8080/sse&quot;</span> <span class="c1"># change to your own URL</span>
@@ -631,35 +631,29 @@ Select an LLM from the options below:</p>
 </section>
 <section id="build-the-agent">
 <h3>Build the Agent<a class="headerlink" href="#build-the-agent" title="Permalink to this heading">#</a></h3>
-<p><a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a> can use tools exposed by MCP servers using <a class="reference internal" href="../api/tools.html#mcptool"><span class="std std-ref">MCPTool</span></a>.</p>
+<p><a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agents</span></a> can connect to MCP tools by either using a <a class="reference internal" href="../api/tools.html#mcptoolbox"><span class="std std-ref">MCPToolBox</span></a> or a <a class="reference internal" href="../api/tools.html#mcptool"><span class="std std-ref">MCPTool</span></a>.
+Here you will use the toolbox (see the section on Flows to see how to use the <code class="docutils literal notranslate"><span class="pre">MCPTool</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mcp_client</span> <span class="o">=</span> <span class="n">SSETransport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">mcp_server_url</span><span class="p">)</span>
 
-<span class="n">get_user_session_tool</span> <span class="o">=</span> <span class="n">MCPTool</span><span class="p">(</span>
-    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">get_payslips_tool</span> <span class="o">=</span> <span class="n">MCPTool</span><span class="p">(</span>
-    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Return payslip details for a given PersonId&quot;</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_payslips&quot;</span><span class="p">,</span>
+<span class="n">payslip_mcptoolbox</span> <span class="o">=</span> <span class="n">MCPToolBox</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Payslip MCP ToolBox&quot;</span><span class="p">,</span>
+    <span class="n">client_transport</span><span class="o">=</span><span class="n">mcp_client</span>
 <span class="p">)</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Agent using MCP&quot;</span><span class="p">,</span>
     <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
     <span class="n">system_prompt</span><span class="o">=</span><span class="s2">&quot;Use tools at your disposal to assist the user.&quot;</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_user_session_tool</span><span class="p">,</span> <span class="n">get_payslips_tool</span><span class="p">]</span>
+    <span class="n">toolboxes</span><span class="o">=</span><span class="p">[</span><span class="n">payslip_mcptoolbox</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Specify the <a class="reference internal" href="../api/mcp.html"><span class="doc">transport</span></a> to use to handle the connection to the server
-as well as the name of the specific tool you want to use. Additionally, you can override the tool
-description (exposed by the MCP server) by specifying the <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter.</p>
+<p>Specify the <a class="reference internal" href="../api/mcp.html"><span class="doc">transport</span></a> to use to handle the connection to the server and create the toolbox.
+You can then equip an agent with the toolbox similarly to tools.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>To require user confirmation for a tool, set <code class="docutils literal notranslate"><span class="pre">requires_confirmation=True</span></code> (see <a class="reference internal" href="../api/tools.html#tool"><span class="std std-ref">Tool</span></a>).
-This signals that execution environments should require user approval before running the tool, which is useful
-for tools performing sensitive actions.</p>
+<p>When using a <a class="reference internal" href="../api/tools.html#mcptool"><span class="std std-ref">MCPTool</span></a> you can set <code class="docutils literal notranslate"><span class="pre">requires_confirmation=True</span></code> to require user confirmation
+for a tool (see <a class="reference internal" href="../api/tools.html#tool"><span class="std std-ref">Tool</span></a>). This signals that execution environments should require user approval before
+running the tool, which is useful for tools performing sensitive actions.</p>
 </div>
 </section>
 <section id="agent-serialization">
@@ -675,7 +669,7 @@ for tools performing sensitive actions.</p>
 <summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a98dfe0f-2f36-4c4c-937e-ab4394ef7863&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;420c4c4a-c6ae-48de-a7b3-6e3e7c314149&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent using MCP&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
@@ -683,7 +677,7 @@ for tools performing sensitive actions.</p>
 <span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
 <span class="w">    </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VllmConfig&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2242f59e-d803-4413-8473-c807bc5cbf19&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d4436c2b-e286-44cd-b89b-0ebaefbe3ee7&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
@@ -692,52 +686,42 @@ for tools performing sensitive actions.</p>
 <span class="w">        </span><span class="nt">&quot;model_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model_id&quot;</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use tools at your disposal to assist the user.&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;toolboxes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPTool&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d0b7948c-74e1-4789-a89a-b7a8a11a1651&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_user_session&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Return session details for the current user&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">            </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPTool&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2f03453b-def7-4515-b02e-b780c92c81ca&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_payslips&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Return payslip details for a given PersonId&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">            </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;$referenced_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSETransport&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d083a903-d504-41d4-84db-aabf19344c5c&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCPToolBox&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;f263d71e-4e3e-4bc5-ba86-8ec69634d925&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Payslip MCP ToolBox&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">            </span><span class="nt">&quot;session_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;read_timeout_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span>
+<span class="w">            </span><span class="nt">&quot;client_transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSETransport&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8e723672-b7f7-4698-bfe0-c66ab1525043&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCP Client&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                </span><span class="nt">&quot;session_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;read_timeout_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">60.0</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/sse&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/sse&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">            </span><span class="nt">&quot;tool_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.1&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;human_in_the_loop&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.2&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
-<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29eba92b-ae73-4a28-9bc0-ed47d1d6db12</span>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright © 2025 Oracle and/or its affiliates.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is under the Apache License 2.0</span>
+<span class="c1"># (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License</span>
+<span class="c1"># (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.</span>
+
+<span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3e9809e9-dae7-4bab-b045-2e741bab7d31</span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent using MCP</span>
 <span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
@@ -745,7 +729,7 @@ for tools performing sensitive actions.</p>
 <span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 <span class="nt">llm_config</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VllmConfig</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">82f0e440-792b-4f4a-b2c7-16306a2c0356</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ff9ace24-03d4-43fa-a39c-1e04f69792b4</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">llm</span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
@@ -753,37 +737,26 @@ for tools performing sensitive actions.</p>
 <span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">url</span>
 <span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_id</span>
 <span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Use tools at your disposal to assist the user.</span>
-<span class="nt">tools</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPTool</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3e16fc6c-4c7c-4cfe-b25b-a4c792d3fbf8</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get_user_session</span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Return session details for the current user</span>
+<span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">toolboxes</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPToolBox</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">37ac0458-df19-4c01-9917-22e0d4e6cf77</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Payslip MCP ToolBox</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 <span class="w">  </span><span class="nt">client_transport</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCPTool</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2f4a1eff-3df5-4688-9267-c24ae0ae9b1f</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get_payslips</span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Return payslip details for a given PersonId</span>
-<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-<span class="w">  </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">  </span><span class="nt">client_transport</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
-<span class="nt">$referenced_components</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SSETransport</span>
-<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">01c52aac-6b67-4ca2-8b43-08b4ac296fc1</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">38355b73-9a12-4f25-8a91-b341d7b1688c</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP Client</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 <span class="w">    </span><span class="nt">session_parameters</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">read_timeout_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">      </span><span class="nt">read_timeout_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60.0</span>
 <span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8080/sse</span>
 <span class="w">    </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.1</span>
+<span class="w">  </span><span class="nt">tool_filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">human_in_the_loop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.2</span>
 </pre></div>
 </div>
 </div></div>
@@ -1009,7 +982,13 @@ you want to use.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright © 2025 Oracle and/or its affiliates.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is under the Apache License 2.0</span>
+<span class="c1"># (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License</span>
+<span class="c1"># (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.</span>
+
+<span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
 <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baafbae6-c33a-4c1e-afa2-3fd9fccd0b87</span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow using MCP</span>
 <span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
