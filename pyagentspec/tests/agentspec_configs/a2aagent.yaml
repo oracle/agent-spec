@@ -12,4 +12,20 @@ metadata: {}
 inputs: []
 outputs: []
 agent_url: http://127.0.0.1:8000
+connection_config:
+  component_type: A2AConnectionConfig
+  id: 3a8762e2-d33e-4587-91be-e3301a728b8c
+  name: sample_connection_config
+  description: null
+  metadata: {}
+  timeout: 100.0
+  headers: null
+  verify: true
+  key_file: /path/to/key.pem
+  cert_file: /path/to/cert.pem
+  ssl_ca_cert: /path/to/ca.pem
+session_parameters:
+  timeout: 20.0
+  poll_interval: 3.0
+  max_retries: 4
 agentspec_version: 25.4.2

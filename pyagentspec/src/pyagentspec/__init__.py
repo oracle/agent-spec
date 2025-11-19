@@ -14,7 +14,7 @@ import pyagentspec.llms  # noqa: F401
 import pyagentspec.tools  # noqa: F401
 
 from ._openaiagent import OpenAiAgent
-from .a2aagent import A2AAgent
+from .a2aagent import A2AAgent, A2AConnectionConfig, A2ASessionParameters
 from .agent import Agent
 from .component import Component
 from .managerworkers import ManagerWorkers
@@ -25,6 +25,8 @@ from .swarm import Swarm
 
 __all__ = [
     "A2AAgent",
+    "A2AConnectionConfig",
+    "A2ASessionParameters",
     "AgentSpecDeserializer",
     "AgentSpecSerializer",
     "Property",

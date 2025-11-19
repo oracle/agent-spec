@@ -263,5 +263,13 @@
             {"path": "pyagentspec.specialized_agent.SpecializedAgent"},
             {"path": "pyagentspec.specialized_agent.AgentSpecializationParameters"}
         ]
+    },
+    {
+        "name": "A2A",
+        "path": "a2a",
+        "classes": [
+            {"path": "pyagentspec.a2aagent.A2AConnectionConfig"},
+            {"path": "pyagentspec.a2aagent.A2ASessionParameters"}
+        ]
     }
 ]

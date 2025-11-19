@@ -1714,13 +1714,21 @@ A2AAgent
 ~~~~~~~~
 
 ``A2AAgent`` is an implementation of ``AgenticComponent`` which uses the A2A protocol to communicate with a remote server agent. It handles all necessary data transformation and communication logic to and from the server agent.
+For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Protocol) section <agentspeca2aspec_nightly>`.
 
 .. code-block:: python
 
   class A2AAgent(AgenticComponent):
     agent_url: str
+    connection_config: A2AConnectionConfig # Parameters for HTTP connection settings, including timeouts and SSL/TLS security
+    session_parameters: Optional[Dict[str, Any]] # Parameters controlling session behavior such as polling timeouts and retry logic
 
-`agent_url` specifies the server agent's URL used for establishing a connection.
+- `agent_url`: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
+- `connection_config`: Contains HTTP connection details, including timeouts and SSL/TLS security settings, ensuring a secure and optimized connection with necessary certificates.
+- `session_parameters`: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
+                        These settings include `timeout`, specifying the maximum wait time in seconds before deeming a session unresponsive;
+                        `poll_interval`, defining the interval in seconds between polling attempts to check for server responses;
+                        and `max_retries`, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
 
 RemoteAgent
 ~~~~~~~~~~~
@@ -2019,6 +2027,28 @@ Streamable HTTP Transport with mTLS
     For production use, always prefer secure transports like those with mTLS to ensure
     mutual authentication.
 
+.. _agentspeca2aspec_nightly:
+
+A2A (Agent to Agent Protocol)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication among agents. 
+This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively. 
+It can also be used to establish a connection with a remote agent, allowing for distributed agentic systems.
+
+The connection to a remote agent or between agents is configured using `A2AConnectionConfig`, which defines the necessary parameters for establishing a secure and reliable HTTP connection.
+This includes settings such as timeouts, retry policies, and SSL/TLS security configurations to ensure encrypted and authenticated communication.
+
+.. code-block:: python
+
+   class A2AConnectionConfig(Component):
+     timeout: float  # Connection timeout in seconds
+     headers: Optional[Dict[str, str]] # A dictionary of HTTP headers to include in requests
+     verify: bool  # Boolean to enable HTTPS or not
+     key_file: Optional[str] # Path to the client's private key file
+     cert_file: Optional[str]  # Path to the client's certificate chain file
+     ssl_ca_cert: Optional[str]  # Path to private key file
+     ca_path: Optional[str]  # Path to the trusted CA certificate file
 
 Ecosystem of plugins
 --------------------
