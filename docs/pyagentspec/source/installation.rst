@@ -77,6 +77,8 @@ How to read the table:
      - Supported
    * - Python 3.13
      - Supported
+   * - Python 3.14
+     - Supported
 
 
 Package manager
