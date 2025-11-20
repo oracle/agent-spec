@@ -41,8 +41,16 @@ New features
 
 * **ManagerWorkers**
 
-  Introduced ManagerWorkers in the Agent Spec Language Specification
+  Introduced ManagerWorkers in the Agent Spec Language Specification.
   For more information check out the corresponding :doc:`managerworkers how-to guide <howtoguides/howto_managerworkers>` or read the :ref:`API Reference <managerworkers>`.
+
+Improvements
+^^^^^^^^^^^^
+
+* **Python 3.14 support**
+
+  Introduced support for python version 3.14.
+
 
 Agent Spec 25.4.1 — Initial release
 -----------------------------------

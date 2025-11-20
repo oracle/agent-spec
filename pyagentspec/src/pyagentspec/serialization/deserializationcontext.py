@@ -285,7 +285,11 @@ class _DeserializationContextImpl(DeserializationContext):
                     return content, []
                 # if it is a component, we might have refs
                 return self._load_component_from_dict(content, annotation)
-            elif annotation is not None and issubclass(annotation, Property):
+            elif (
+                annotation is not None
+                and inspect.isclass(annotation)
+                and issubclass(annotation, Property)
+            ):
                 return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
                 return self._load_pydantic_model_from_dict(content, annotation)

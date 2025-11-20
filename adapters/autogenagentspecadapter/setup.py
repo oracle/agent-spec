@@ -40,8 +40,6 @@ setup(
         "Natural Language :: English",
         "Intended Audience :: Science/Research",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.10",
-        "Operating System :: OS Dependent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="NLP, text generation,code generation, LLM, Assistant, Tool, Agent",

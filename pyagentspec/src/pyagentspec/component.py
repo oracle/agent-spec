@@ -34,7 +34,6 @@ from pydantic import (
     PlainSerializer,
     SerializationInfo,
     TypeAdapter,
-    ValidationError,
     computed_field,
     model_serializer,
 )
@@ -426,6 +425,7 @@ class Component(AbstractableModel, abstract=True):
         schema_generator: type[GenerateJsonSchema] = GenerateJsonSchema,
         mode: JsonSchemaMode = "validation",
         only_core_components: bool = False,
+        **kwargs: Any,
     ) -> JsonSchemaValue:
         """
         Build the json schema for Agent Spec Components.
@@ -452,14 +452,13 @@ class Component(AbstractableModel, abstract=True):
         """
         # The import below is needed to ensure that all component types are imported. Otherwise,
         # they would not appear correctly in the schema.
-        from pyagentspec._component_registry import BUILTIN_CLASS_MAP
 
         if cls._is_abstract:
             all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
             adapter = TypeAdapter(Union[all_subclasses])  # type: ignore
             json_schema = adapter.json_schema(by_alias=by_alias, mode=mode)
         else:
-            json_schema = super().model_json_schema(by_alias=by_alias, mode=mode)
+            json_schema = super().model_json_schema(by_alias=by_alias, mode=mode, **kwargs)
         json_schema_with_all_types = replace_abstract_models_and_hierarchical_definitions(
             json_schema, mode, only_core_components=only_core_components, by_alias=by_alias
         )
