@@ -10,7 +10,7 @@ from pyagentspec.agent import Agent
 from pyagentspec.mcp.clienttransport import SSETransport
 from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
-from pyagentspec.tools import ClientTool, RemoteTool, ServerTool, Tool
+from pyagentspec.tools import BuiltinTool, ClientTool, RemoteTool, ServerTool, Tool
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
@@ -64,6 +64,19 @@ def make_mcp_tool():
     )
 
 
+def make_builtin_tool():
+    return BuiltinTool(
+        name="builtin_tool",
+        description="Builtin tool executed by orchestrator",
+        id="builtin123",
+        requires_confirmation=True,
+        tool_type="orchestrator_builtin",
+        configuration={"param": "value"},
+        executor_name="orch_executor",
+        tool_version="1.0.0",
+    )
+
+
 @pytest.mark.parametrize(
     "tool_factory,expected_name,expected_desc,expected_id",
     [
@@ -71,6 +84,7 @@ def make_mcp_tool():
         (make_server_tool, "server_tool", "Server tool requiring confirmation", "server123"),
         (make_remote_tool, "remote_tool", "Remote tool requiring confirmation", "remote123"),
         (make_mcp_tool, "mcp_tool", "MCP tool requiring confirmation", "mcp123"),
+        (make_builtin_tool, "builtin_tool", "Builtin tool executed by orchestrator", "builtin123"),
     ],
 )
 def test_can_instantiate_tool(tool_factory, expected_name, expected_desc, expected_id):
@@ -88,6 +102,7 @@ def test_can_instantiate_tool(tool_factory, expected_name, expected_desc, expect
         make_server_tool,
         make_remote_tool,
         make_mcp_tool,
+        make_builtin_tool,
     ],
 )
 def test_can_serialize_and_deserialize_tool(tool_factory):
@@ -108,7 +123,13 @@ def test_can_serialize_and_deserialize_tool(tool_factory):
 
 
 def test_serialized_representations_are_equal_in_agent_with_confirmation_tools(vllmconfig):
-    tools = [make_client_tool(), make_server_tool(), make_remote_tool(), make_mcp_tool()]
+    tools = [
+        make_client_tool(),
+        make_server_tool(),
+        make_remote_tool(),
+        make_mcp_tool(),
+        make_builtin_tool(),
+    ]
     agent = Agent(
         id="dummy_agent",
         name="Dummy Agent With All Tools",

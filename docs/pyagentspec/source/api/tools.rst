@@ -34,6 +34,13 @@ Server Tool
 .. autoclass:: pyagentspec.tools.servertool.ServerTool
     :exclude-members: model_post_init, model_config
 
+Built-in Tool
+-------------
+
+.. _builtintool:
+.. autoclass:: pyagentspec.tools.builtintool.BuiltinTool
+    :exclude-members: model_post_init, model_config
+
 
 MCP Tool
 --------

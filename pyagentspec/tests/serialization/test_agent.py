@@ -4,11 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import cast
 
 import pytest
 
-from pyagentspec import Component
 from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.mcp.clienttransport import SSETransport
@@ -16,7 +14,7 @@ from pyagentspec.mcp.tools import MCPTool, MCPToolBox, MCPToolSpec
 from pyagentspec.property import BooleanProperty, StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
-from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
+from pyagentspec.tools import BuiltinTool, ClientTool, RemoteTool, ServerTool
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
@@ -65,6 +63,7 @@ def tools():
         # inputs=[city_input],  #  This is going to be inferred by the tool
         outputs=[subscription_success_output],
     )
+
     yield [weather_tool, history_tool, newsletter_subscribe_tool]
 
 
@@ -211,6 +210,62 @@ def test_deserializing_agent_with_toolboxes_and_unsupported_version_raises(
 ) -> None:
     serializer = AgentSpecSerializer()
     serialized_node = serializer.to_yaml(agent_with_toolbox)
+    assert "agentspec_version: 25.4.2" in serialized_node
+    serialized_node = serialized_node.replace(
+        "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"
+    )
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(serialized_node)
+
+
+@pytest.fixture
+def agent_with_builtin_tools(tools) -> Agent:
+    vllmconfig = VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
+
+    builtin_tool = BuiltinTool(
+        id="builtin_tool",
+        name="sample_builtin",
+        description="Builtin sample tool for orchestrator",
+        tool_type="orchestrator_builtin",
+        configuration={"key": "value"},
+        executor_name="demo_executor",
+        tool_version="1.0",
+    )
+
+    return Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        tools=tools + [builtin_tool],
+    )
+
+
+def test_serializing_agent_with_builtin_tools_is_correct(agent_with_builtin_tools: Agent):
+    serializer = AgentSpecSerializer()
+    serialized_agent = serializer.to_yaml(agent_with_builtin_tools)
+    example_serialized_agent = read_agentspec_config_file(
+        "example_serialized_agent_with_tools_and_builtin_tools.yaml"
+    )
+    assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+
+def test_serializing_agent_with_builtin_tools_and_unsupported_version_raises(
+    agent_with_builtin_tools: Agent,
+):
+    serializer = AgentSpecSerializer()
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = serializer.to_yaml(
+            agent_with_builtin_tools, agentspec_version=AgentSpecVersionEnum.v25_4_1
+        )
+
+
+def test_deserializing_agent_with_builtin_tools_and_unsupported_version_raises(
+    agent_with_builtin_tools: Agent,
+):
+    serializer = AgentSpecSerializer()
+    serialized_node = serializer.to_yaml(agent_with_builtin_tools)
     assert "agentspec_version: 25.4.2" in serialized_node
     serialized_node = serialized_node.replace(
         "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"

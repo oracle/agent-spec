@@ -166,6 +166,10 @@
                 "name": "pyagentspec.tools.ServerTool"
             },
             {
+                "path": "pyagentspec.tools.builtintool.BuiltinTool",
+                "name": "pyagentspec.tools.Builtintool"
+            },
+            {
                 "path": "pyagentspec.mcp.tools.MCPTool",
                 "name": "pyagentspec.mcp.MCPTool"
             },

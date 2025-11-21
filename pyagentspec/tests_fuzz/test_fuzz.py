@@ -47,7 +47,7 @@ from pyagentspec.property import (
     UnionProperty,
 )
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
-from pyagentspec.tools import ClientTool, RemoteTool, ServerTool, Tool
+from pyagentspec.tools import BuiltinTool, ClientTool, RemoteTool, ServerTool, Tool
 
 fuzz_output_filename = "pyagentspec.result.fuzz.txt"
 fuzz_exceptions_output_filename = "pyagentspec.exceptions.fuzz.txt"
@@ -130,7 +130,7 @@ def create_tool(
     buf: bytes,
     encoding: str,
 ) -> Tool:
-    selector = random.randint(0, 2)
+    selector = random.randint(0, 3)
     name = buf.decode(encoding)
     description = buf.decode(encoding)
     metadata = create_metadata(buf=buf, encoding=encoding)
@@ -152,7 +152,7 @@ def create_tool(
             outputs=outputs,
             metadata=metadata,
         )
-    else:
+    elif selector == 2:
         return RemoteTool(
             name=name,
             description=description,
@@ -165,6 +165,18 @@ def create_tool(
             query_params=create_random_dict_with_str_keys(buf=buf, encoding=encoding),
             headers=create_random_dict_with_str_keys(buf=buf, encoding=encoding),
             metadata=metadata,
+        )
+    else:
+        return BuiltinTool(
+            name=name,
+            description=description,
+            inputs=inputs,
+            outputs=outputs,
+            metadata=metadata,
+            tool_type=buf.decode(encoding),
+            configuration=create_random_dict_with_str_keys(buf=buf, encoding=encoding),
+            executor_name=buf.decode(encoding),
+            tool_version=buf.decode(encoding),
         )
 
 

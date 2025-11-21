@@ -24,6 +24,11 @@ New features
   Toolboxes are now available in the Agent Spec Language Specification and can be
   passed to :ref:`Agents <agent>`. For more information read the :doc:`API Reference <api/tools>`.
 
+* **BuiltinTool**
+
+  Executor-specific built-in tools are now available in the Agent Spec Language Specification.
+  For more information read the :doc:`API Reference <api/tools>`.
+
 * **Structured Generation**
 
   Formally introduced Structured Generation in the Agent Spec Language Specification.

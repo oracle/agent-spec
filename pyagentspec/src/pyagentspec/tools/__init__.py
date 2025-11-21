@@ -6,6 +6,7 @@
 
 """This module defines the different classes for tools."""
 
+from .builtintool import BuiltinTool
 from .clienttool import ClientTool
 from .remotetool import RemoteTool
 from .servertool import ServerTool
@@ -15,6 +16,7 @@ from .toolbox import ToolBox
 __all__ = [
     "ClientTool",
     "ServerTool",
+    "BuiltinTool",
     "RemoteTool",
     "Tool",
     "ToolBox",
