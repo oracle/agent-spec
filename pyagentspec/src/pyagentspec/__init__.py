@@ -8,11 +8,13 @@
 
 from importlib.metadata import version
 
-import pyagentspec.flows.edges  # noqa: F401
-import pyagentspec.flows.nodes  # noqa: F401
+import pyagentspec.flows  # noqa: F401
 import pyagentspec.llms  # noqa: F401
+import pyagentspec.mcp  # noqa: F401
 import pyagentspec.tools  # noqa: F401
 
+# We import the registry to make sure to import all the Component classes
+from ._component_registry import BUILTIN_CLASS_MAP as _BUILTIN_CLASS_MAP
 from ._openaiagent import OpenAiAgent
 from .a2aagent import A2AAgent, A2AConnectionConfig, A2ASessionParameters
 from .agent import Agent
