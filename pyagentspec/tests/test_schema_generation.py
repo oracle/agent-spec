@@ -257,6 +257,11 @@ def test_inheritance_is_correctly_applied() -> None:
     ]["anyOf"]
 
 
+def test_component_schema_generation_works() -> None:
+    component_json_schema = Component.model_json_schema(only_core_components=False)
+    assert "$defs" in component_json_schema
+
+
 def test_component_schema_corresponds_to_agentspec_schema_in_docs() -> None:
     # If this test fails because the Agent Spec json schema was updated, please update
     # the reference json schema displayed in the docs at the path specified below
