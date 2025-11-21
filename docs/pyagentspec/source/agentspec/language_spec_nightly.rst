@@ -760,6 +760,11 @@ on the type of the tool:
   must be available to the Agent's environment. It is expected that
   this type of tool will be very limited in number, and relatively
   general in functionality (e.g., human-in-the-loop).
+- **BuiltinTools** are defined and implemented by the execution engine.
+  Which built-in tools are available, their semantics and how to configure
+  them depends on, and should be verified by, the execution engine.
+  Built-in tools are expected to be executed in the same runtime
+  environment that the Agent is being executed in.
 - **ClientTools** are not executed by the executor, the client must
   execute the tool and provide the results back to the executor (similar
   to OpenAI's function calling model)
@@ -791,8 +796,9 @@ user/operator approval before running the tool, which is especially relevant
 for tools performing critical or sensitive actions.
 
 While ServerTool and ClientTool do not require specific additional
-parameters, the RemoteTool requires to include also the details needed
-to perform the remote call to the tool.
+parameters, the RemoteTool, MCPTool and the BuiltinTool require to include also
+the details needed to perform the remote call to the tool or to identify
+the correct built-in tool.
 
 .. code-block:: python
 
@@ -817,6 +823,12 @@ to perform the remote call to the tool.
 
    class MCPTool(Tool):
      client_transport: ClientTransport
+
+   class BuiltinTool(Tool):
+     tool_type: str
+     configuration: Optional[Dict[str, Any]]
+     executor_name: Optional[Union[str, List[str]]]
+     tool_version: Optional[str]
 
 An important security aspect of Agent Spec is the exclusion of arbitrary
 code from the agent representation. The representation contains a complete description
@@ -947,6 +959,94 @@ pin and validate specific remote MCP tools.
 
 See the :ref:`filter rules for the MCPToolBox <mcp_toolfilter_rules>` to see how the ``MCPToolSpec``
 is used.
+
+Built-in Tools
+^^^^^^^^^^^^^^
+
+Agent Spec execution engines may offer built-in tools out of the box and ready to use.
+For example,
+
+- An executor could provide a tool to search websites.
+  Users do not need to provide a tool implementation, but only need to specify which website to search on.
+- An executor running in a database might expose a native vector retrieval tool
+  with the possibility to configure which tables to search on or how many relevant results to return.
+
+Built-in tools in Agent Spec let users configure these types of tools.
+
+.. code-block:: python
+
+   class BuiltinTool(Tool):
+     tool_type: str
+     configuration: Optional[Dict[str, Any]]
+     executor_name: Optional[Union[str, List[str]]]
+     tool_version: Optional[str]
+
+- ``tool_type`` identifies the runtime-provided built-in tool.
+- ``configuration`` allows to configure the tool.
+  Legal configurations should be documented by the runtime providing the tool.
+  Not all built-in tools require configuration.
+- ``executor_name`` optionally allows to specify the runtime name providing the tool for validation purposes
+  (i.e., for the runtime to check that the tool config is intended for it).
+  The correct value to put should be documented by the runtime providing the tool.
+- ``tool_version``: if the runtime provides multiple versions of the tool, the built-in tool version can be specified here.
+
+The advantage of built-in tools is that no tool implementation needs to be provided by the users.
+The disadvantage is that built-in tools are specific to the Agent Spec execution runtime which provides them.
+In general, which built-in tools are available differs for each execution runtime, and using them might limit cross-framework portability.
+
+
+Implementing Built-in Tools as Execution Engine Developer
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+For Agent Spec execution engine developers implementing built-in tools,
+the following documentation should be provided to users.
+
+- The semantics of tool
+- The name of the tool, passed to the ``tool_type`` field
+- The expected input and output properties (title and type), if any
+- The expected static configuration parameters, if any
+- The executor name. Users can optionally specify this field s.t.
+  the execution engine can validate the tool is intended for it.
+- The tool version. If there are multiple versions of the tool,
+  this field can be used to select which tool to run. Furthermore, it should
+  be documented what the default behavior is if multiple tool versions are
+  available but no ``tool_version`` is specified.
+
+Execution engine developers should validate that inputs, outputs and configuration
+parameters of the built-in tool component provided in the configuration are as expected.
+
+Furthermore, to prevent unintended behavior, execution engine developers should
+validate the ``executor_name`` and ``tool_version`` fields, if they are provided,
+and raise an error if the values are not expected.
+
+.. collapse:: Example documentation for built-in tool...
+
+    **Vector Search Built-in Tool**
+
+    Retrieves the most relevant documents from a table based on cosine similarity
+    between a query text and stored embeddings.
+
+    **Tool Name:** "vector_retrieval_tool"
+
+    **Inputs:**
+
+    - ``StringProperty(title="query")``: user query text.
+
+    **Outputs:**
+
+    - ``ListProperty(title="results", item_type=StringProperty())``:
+        list of retrieved document contents.
+
+    **Configuration Parameters:**
+
+    - ``schema`` (str): schema containing the table.
+    - ``target_table`` (str): name of the table storing embeddings.
+    - ``target_column`` (str): column containing embedding vectors.
+    - ``top_k`` (int): number of nearest results to return.
+
+    **Executor Name:** "my_execution_engine>=25.4.1".
+
+    **Tool Version:**  Our vector_retrieval_tool is not versioned.
 
 
 Execution flows

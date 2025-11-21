@@ -102,6 +102,16 @@
         }
       ]
     },
+    "BuiltinTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseBuiltinTool"
+        }
+      ]
+    },
     "ClientTool": {
       "anyOf": [
         {
@@ -1427,6 +1437,139 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseBuiltinTool": {
+      "additionalProperties": false,
+      "description": "A tool that is built into and executed by the orchestrator",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "requires_confirmation": {
+          "default": false,
+          "title": "Requires Confirmation",
+          "type": "boolean"
+        },
+        "tool_type": {
+          "title": "Tool Type",
+          "type": "string"
+        },
+        "configuration": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Configuration"
+        },
+        "executor_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Executor Name"
+        },
+        "tool_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool Version"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "BuiltinTool"
+        }
+      },
+      "required": [
+        "name",
+        "tool_type"
+      ],
+      "title": "BuiltinTool",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseClientTool": {
       "additionalProperties": false,
       "description": "A tool that needs to be run by the client application.",
@@ -1557,6 +1700,9 @@
         },
         {
           "$ref": "#/$defs/BranchingNode"
+        },
+        {
+          "$ref": "#/$defs/BuiltinTool"
         },
         {
           "$ref": "#/$defs/ClientTool"
@@ -4691,6 +4837,9 @@
     "BaseTool": {
       "anyOf": [
         {
+          "$ref": "#/$defs/BuiltinTool"
+        },
+        {
           "$ref": "#/$defs/ClientTool"
         },
         {
@@ -4902,6 +5051,9 @@
           },
           {
             "$ref": "#/$defs/BaseBranchingNode"
+          },
+          {
+            "$ref": "#/$defs/BaseBuiltinTool"
           },
           {
             "$ref": "#/$defs/BaseClientTool"
@@ -5195,6 +5347,21 @@
         },
         {
           "$ref": "#/$defs/BaseBranchingNode"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedBuiltinTool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComponentReference"
+        },
+        {
+          "$ref": "#/$defs/BaseBuiltinTool"
         }
       ],
       "properties": {
@@ -5937,6 +6104,9 @@
     },
     {
       "$ref": "#/$defs/VersionedBranchingNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedBuiltinTool"
     },
     {
       "$ref": "#/$defs/VersionedClientTool"

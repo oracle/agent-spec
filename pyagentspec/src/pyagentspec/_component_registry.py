@@ -61,6 +61,7 @@ from pyagentspec.ociagent import OciAgent
 from pyagentspec.remoteagent import RemoteAgent
 from pyagentspec.specialized_agent import AgentSpecializationParameters, SpecializedAgent
 from pyagentspec.swarm import Swarm
+from pyagentspec.tools.builtintool import BuiltinTool
 from pyagentspec.tools.clienttool import ClientTool
 from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
@@ -80,6 +81,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Component": Component,
     "ComponentWithIO": ComponentWithIO,
     "ClientTool": ClientTool,
+    "BuiltinTool": BuiltinTool,
     "ControlFlowEdge": ControlFlowEdge,
     "DataFlowEdge": DataFlowEdge,
     "EndNode": EndNode,

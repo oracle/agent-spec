@@ -70,6 +70,19 @@ tools:
       read_timeout_seconds: 60.0
     url: https://example.com/sse
     headers: null
+- component_type: BuiltinTool
+  id: builtin123
+  name: builtin_tool
+  description: Builtin tool executed by orchestrator
+  metadata: {}
+  inputs: []
+  outputs: []
+  requires_confirmation: true
+  tool_type: orchestrator_builtin
+  configuration:
+    param: value
+  executor_name: orch_executor
+  tool_version: 1.0.0
 toolboxes: []
 human_in_the_loop: true
 agentspec_version: 25.4.2
