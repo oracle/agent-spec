@@ -29,7 +29,7 @@ git commit --signoff
 ```
 
 Only pull requests from committers that can be verified as having signed the OCA
-can be accepted, For more contribution guidelines, see the [PyAgentSpec Contributor Guide](https://oracle.github.io/agent-spec/contributing.html).
+can be accepted, For more contribution guidelines, see the [PyAgentSpec Contributor Guide](https://oracle.github.io/agent-spec/development/contributing.html).
 
 ## Pull request process
 
@@ -48,7 +48,7 @@ can be accepted, For more contribution guidelines, see the [PyAgentSpec Contribu
 
 ## Code of conduct
 
-Follow the [Golden Rule](https://en.wikipedia.org/wiki/Golden_Rule) and [PyAgentSpec Code of Conduct](https://oracle.github.io/agent-spec/conduct.html). If you'd
+Follow the [Golden Rule](https://en.wikipedia.org/wiki/Golden_Rule) and [PyAgentSpec Code of Conduct](https://oracle.github.io/agent-spec/development/conduct.html). If you'd
 like more specific guidelines, see the [Contributor Covenant Code of Conduct][COC].
 
 [OCA]: https://oca.opensource.oracle.com
