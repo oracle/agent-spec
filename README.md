@@ -19,7 +19,7 @@ Runtimes implement the Agent Spec components for execution with Agentic framewor
 Agent Spec would be supported by SDKs in various languages (e.g. Python) to be able to serialize/deserialize Agents to JSON/YAML,
 or create them from object representations with the assurance of conformance to the specification.
 
-For more information, including the motivation and specification, see the [dedicated section](https://oracle.github.io/agent-spec/agentspec/index.html) in the Agent Spec documentation.
+For more information, including the motivation and specification, see the [dedicated section](https://oracle.github.io/agent-spec/development/agentspec/index.html) in the Agent Spec documentation.
 
 
 ## Get started
@@ -47,10 +47,10 @@ Initialize a Large Language Model (LLM) of your choice:
 
 
 
-> See the list of supported LLMs in the [PyAgentSpec documentation](https://oracle.github.io/agent-spec/howtoguides/howto_llm_from_different_providers.html).
+> See the list of supported LLMs in the [PyAgentSpec documentation](https://oracle.github.io/agent-spec/development/howtoguides/howto_llm_from_different_providers.html).
 
 
-Then, create an agent using a [PyAgentSpec Agent](https://oracle.github.io/agent-spec/api/agent.html#pyagentspec.agent.Agent):
+Then, create an agent using a [PyAgentSpec Agent](https://oracle.github.io/agent-spec/development/api/agent.html#pyagentspec.agent.Agent):
 
 ```python
 from pyagentspec.agent import Agent
@@ -70,7 +70,7 @@ agent = Agent(
 ```
 
 
-For more information on how to build flexible Agents, structured Flows and multi-agent patterns, read the [PyAgentSpec Guides](https://oracle.github.io/agent-spec/howtoguides/index.html)
+For more information on how to build flexible Agents, structured Flows and multi-agent patterns, read the [PyAgentSpec Guides](https://oracle.github.io/agent-spec/development/howtoguides/index.html)
 
 
 ## Why Agent Spec
@@ -127,13 +127,13 @@ This software is under the Apache License 2.0 (LICENSE-APACHE or [http://www.apa
 [badge-docs]: https://img.shields.io/badge/documentation-AgentSpec-orange
 [badge-license]: https://img.shields.io/badge/license-apache_2.0+UPL_1.0-green
 [badge-reference-sheet]: https://img.shields.io/badge/reference%20sheet-read-red
-[contributors]: https://oracle.github.io/agent-spec/contributing.html
+[contributors]: https://oracle.github.io/agent-spec/development/contributing.html
 [docs]: https://oracle.github.io/agent-spec/index.html
-[downloads]: https://oracle.github.io/agent-spec/installation.html
-[getting-started]: https://oracle.github.io/agent-spec/docs_home.html
+[downloads]: https://oracle.github.io/agent-spec/development/installation.html
+[getting-started]: https://oracle.github.io/agent-spec/development/docs_home.html
 [issues]: https://github.com/oracle/agent-spec/issues
-[reference-sheet]: https://oracle.github.io/agent-spec/misc/reference_sheet.html
+[reference-sheet]: https://oracle.github.io/agent-spec/development/misc/reference_sheet.html
 [reporting-vulnerabilities]: https://www.oracle.com/corporate/security-practices/assurance/vulnerability/reporting.html
 [website-wayflow]: https://oracle.github.io/wayflow/
 [website-agentspec]: https://oracle.github.io/agent-spec/
-[website-ecosystem]: https://oracle.github.io/agent-spec/agentspec/positioning.html
+[website-ecosystem]: https://oracle.github.io/agent-spec/development/agentspec/positioning.html
