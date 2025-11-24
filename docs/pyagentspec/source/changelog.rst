@@ -7,6 +7,15 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **OpenAI Responses API Support:**
+
+  :ref:`OpenAICompatibleModel <openaicompatiblemodel>` and :ref:`OpenAIModel <openaiconfig>` now supports OpenAI Responses API, which can be configured
+  using the ``api_type`` parameter, which accepts values from :ref:`OpenAIAPIType <openaiapitype>`.
+
+  This enhancement allows recent OpenAI models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.
+
+  For more information read the :doc:`API Reference <api/llmmodels>`.
+
 * **ParallelFlowNode and ParallelMapNode**
 
   Added support for parallelization in Agent Spec through :ref:`ParallelFlowNode <parallelflownode>`, which runs several
