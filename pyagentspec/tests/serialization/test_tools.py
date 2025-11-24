@@ -7,6 +7,8 @@
 import pytest
 
 from pyagentspec.agent import Agent
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
+from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.mcp.clienttransport import SSETransport
 from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
@@ -15,6 +17,17 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
+
+
+@pytest.fixture()
+def vllmconfig_with_responses():
+    yield VllmConfig(
+        id="agi1",
+        name="agi1",
+        model_id="agi_model1",
+        url="http://some.where",
+        api_type=OpenAIAPIType.RESPONSES,
+    )
 
 
 def make_client_tool():
@@ -122,7 +135,9 @@ def test_can_serialize_and_deserialize_tool(tool_factory):
         assert getattr(deserialized_tool, attr) == getattr(tool, attr)
 
 
-def test_serialized_representations_are_equal_in_agent_with_confirmation_tools(vllmconfig):
+def test_serialized_representations_are_equal_in_agent_with_confirmation_tools(
+    vllmconfig_with_responses,
+):
     tools = [
         make_client_tool(),
         make_server_tool(),
@@ -134,7 +149,7 @@ def test_serialized_representations_are_equal_in_agent_with_confirmation_tools(v
         id="dummy_agent",
         name="Dummy Agent With All Tools",
         system_prompt="Testing tools with requires_confirmation in v25.4.2",
-        llm_config=vllmconfig,
+        llm_config=vllmconfig_with_responses,
         tools=tools,
     )
     serializer = AgentSpecSerializer()

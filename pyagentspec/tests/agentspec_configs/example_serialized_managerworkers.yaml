@@ -69,4 +69,5 @@ $referenced_components:
     default_generation_parameters: null
     url: LLAMA_PLACEHOLDER_LINK
     model_id: model_id
+    api_type: chat_completions
 agentspec_version: 25.4.2
