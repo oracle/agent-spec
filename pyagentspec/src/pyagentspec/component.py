@@ -626,7 +626,9 @@ def replace_abstract_models_and_hierarchical_definitions(
                 abstract_type_json_schema["anyOf"].remove({"type": "null"})
                 # ^ pop the null ref (ok since python list.remove relies on equality)
             else:
-                raise ValueError(f"No subclass was found")
+                raise ValueError(
+                    f"No subclass was found for abstract type `{component_type_name}`."
+                )
 
             new_type_definitions = abstract_type_json_schema.pop("$defs")
             abstract_types_to_resolve.extend(

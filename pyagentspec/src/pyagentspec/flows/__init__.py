@@ -5,3 +5,6 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """Define the Flow abstraction and the nodes that can be used in flows."""
+
+import pyagentspec.flows.edges  # noqa: F401
+import pyagentspec.flows.nodes  # noqa: F401
