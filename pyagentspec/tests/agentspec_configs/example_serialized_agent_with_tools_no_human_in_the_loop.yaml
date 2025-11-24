@@ -17,6 +17,7 @@ llm_config:
   model_id: agi_model1
   name: agi1
   url: http://some.where
+  api_type: chat_completions
 metadata: {}
 name: Funny agent
 outputs: []

@@ -20,6 +20,7 @@ from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
 from pyagentspec.llms import VllmConfig as AgentSpecVllmConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType as AgentSpecOpenAIAPIType
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
 
@@ -112,21 +113,36 @@ class LangGraphToAgentSpecConverter:
             model_type = "openaicompatible"
             model_name = model.model_name
             base_url = model.openai_api_base
+            api_type: AgentSpecOpenAIAPIType
+            if model.use_responses_api:
+                api_type = AgentSpecOpenAIAPIType.RESPONSES
+            else:
+                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
+
+            return LangGraphLlmConfig(
+                model_type=model_type,
+                model_name=model_name,
+                base_url=base_url or "",
+                tools=tools,
+                api_type=api_type,
+            )
+
         elif isinstance(model, ChatOllama):
             model_type = "ollama"
             model_name = model.model
             base_url = model.base_url
+
+            return LangGraphLlmConfig(
+                model_type=model_type,
+                model_name=model_name,
+                base_url=base_url or "",
+                tools=tools,
+            )
+
         else:
             raise ValueError(
                 f"The LLM instance provided is of an unsupported type `{type(model)}`."
             )
-
-        return LangGraphLlmConfig(
-            model_type=model_type,
-            model_name=model_name,
-            base_url=base_url or "",
-            tools=tools,
-        )
 
     def _extract_prompt_from_react_agent_node(
         self, langgraph_agent_node: StateNodeSpec[Any]
@@ -171,12 +187,14 @@ class LangGraphToAgentSpecConverter:
                 name=langgraph_llm_config.model_name,
                 url=langgraph_llm_config.base_url,
                 model_id=langgraph_llm_config.model_name,
+                api_type=langgraph_llm_config.api_type,
             )
         elif langgraph_llm_config.model_type == "openaicompatible":
             return AgentSpecOpenAiCompatibleConfig(
                 name=langgraph_llm_config.model_name,
                 url=langgraph_llm_config.base_url,
                 model_id=langgraph_llm_config.model_name,
+                api_type=langgraph_llm_config.api_type,
             )
         raise ValueError(
             f"The LLM instance provided is of an unsupported type `{langgraph_llm_config.model_type}`."

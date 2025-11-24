@@ -11,6 +11,7 @@ from langchain_core.tools import BaseTool
 from langgraph.graph import StateGraph
 from langgraph.graph.message import Messages
 from langgraph.graph.state import CompiledStateGraph
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
 from pyagentspec.tools import Tool as AgentSpecTool
 from pydantic import SerializeAsAny
 from typing_extensions import TypeAlias
@@ -25,6 +26,7 @@ class LangGraphLlmConfig:
     model_name: str
     base_url: str
     tools: List[SerializeAsAny[AgentSpecTool]]
+    api_type: OpenAIAPIType = OpenAIAPIType.CHAT_COMPLETIONS
 
 
 class NodeExecutionDetails(TypedDict, total=False):

@@ -599,19 +599,22 @@ Therefore, providing a proper description might improve the quality of the final
     In case structured generation is requested to an LLM that does not natively support it, it's up to
     the Agent Spec Runtime implementation to raise an exception, or to implement it in a different form.
 
-
+.. _openaicompatiblellms:
 
 OpenAI Compatible LLMs
 ^^^^^^^^^^^^^^^^^^^^^^
 
-This class of LLMs groups all the LLMs that are compatible with the
-`OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_.
+This class of LLMs groups all the LLMs that are compatible with either the
+`OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
+The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
+By default, the API type is set to chat completions.
 
 .. code-block:: python
 
    class OpenAiCompatibleConfig(LlmConfig):
      model_id: str
      url: str
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -629,6 +632,8 @@ Ollama
 ''''''
 
 Used to indicate all the LLMs deployed through `Ollama <https://ollama.com/>`_.
+Note that as of November 2025, Ollama does not support the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_,
+so using this API type may lead to unexpected behavior.
 
 .. code-block:: python
 
@@ -640,12 +645,15 @@ OpenAI
 ^^^^^^
 
 This class of LLMs refers to the models offered by `OpenAI <https://openai.com>`_.
+Similar to :ref:`OpenAI Compatible LLMs <openaicompatiblellms>`, you can also configure the ``api_type`` parameter,
+which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
+By default, the API type is set to chat completions.
 
 .. code-block:: python
 
    class OpenAiConfig(LlmConfig):
      model_id: str
-
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
 
 OCI GenAI
 ^^^^^^^^^
@@ -2132,8 +2140,8 @@ Streamable HTTP Transport with mTLS
 A2A (Agent to Agent Protocol)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication among agents. 
-This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively. 
+Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication among agents.
+This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively.
 It can also be used to establish a connection with a remote agent, allowing for distributed agentic systems.
 
 The connection to a remote agent or between agents is configured using `A2AConnectionConfig`, which defines the necessary parameters for establishing a secure and reliable HTTP connection.
