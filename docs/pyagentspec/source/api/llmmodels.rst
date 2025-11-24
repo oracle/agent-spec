@@ -20,6 +20,12 @@ Parameters for LLM generation (``max_tokens``, ``temperature``, ``top_p``).
 .. autoclass:: pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig
     :exclude-members: model_post_init, model_config, model_dump, model_dump_json
 
+OpenAI API Type 
+---------------
+
+.. _openaiapitype:
+.. autoclass:: pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType
+
 
 .. _allllms:
 
