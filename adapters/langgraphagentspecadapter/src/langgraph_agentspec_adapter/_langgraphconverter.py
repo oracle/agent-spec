@@ -35,7 +35,7 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
-from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.property import DictProperty as AgentSpecDictProperty
@@ -683,6 +683,10 @@ class AgentSpecToLangGraphConverter:
             generation_config["max_completion_tokens"] = generation_parameters.max_tokens
             generation_config["top_p"] = generation_parameters.top_p
 
+        use_responses_api = False
+        if isinstance(llm_config, (OpenAiCompatibleConfig, OpenAiConfig)):
+            use_responses_api = llm_config.api_type == OpenAIAPIType.RESPONSES
+
         if isinstance(llm_config, VllmConfig):
             from langchain_openai import ChatOpenAI
 
@@ -690,6 +694,7 @@ class AgentSpecToLangGraphConverter:
                 model=llm_config.model_id,
                 api_key=SecretStr("EMPTY"),
                 base_url=_prepare_openai_compatible_url(llm_config.url),
+                use_responses_api=use_responses_api,
                 **generation_config,
             )
         elif isinstance(llm_config, OllamaConfig):
@@ -710,6 +715,7 @@ class AgentSpecToLangGraphConverter:
 
             return ChatOpenAI(
                 model=llm_config.model_id,
+                use_responses_api=use_responses_api,
                 **generation_config,
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
@@ -718,6 +724,7 @@ class AgentSpecToLangGraphConverter:
             return ChatOpenAI(
                 model=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
+                use_responses_api=use_responses_api,
                 **generation_config,
             )
         else:

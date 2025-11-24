@@ -20,6 +20,7 @@ llm_config:
   default_generation_parameters: null
   url: http://some.where
   model_id: agi_model1
+  api_type: chat_completions
 system_prompt: No matter what the user asks, don't reply but make a joke instead
 tools:
 - component_type: MCPTool

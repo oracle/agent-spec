@@ -20,6 +20,7 @@ llm_config:
   default_generation_parameters: null
   url: http://some.where
   model_id: agi_model1
+  api_type: responses
 system_prompt: Testing tools with requires_confirmation in v25.4.2
 tools:
 - component_type: ClientTool

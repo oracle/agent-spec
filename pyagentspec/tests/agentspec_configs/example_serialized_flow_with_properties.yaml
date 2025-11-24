@@ -149,6 +149,7 @@ $referenced_components:
       default_generation_parameters: null
       url: url.to.my.llm.com/hostedllm:12345
       model_id: llama3.1-8b-instruct
+      api_type: chat_completions
     prompt_template: This is the prompt! {{ Input_2 }} {{ Input_3 }}
   724893yhrj:
     component_type: EndNode
