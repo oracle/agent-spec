@@ -6,7 +6,23 @@
 
 """Defines the class for configuring how to connect to an OpenAI compatible LLM."""
 
+from enum import Enum
+
+from pyagentspec.component import SerializeAsEnum
 from pyagentspec.llms.llmconfig import LlmConfig
+from pyagentspec.versioning import AgentSpecVersionEnum
+
+
+class OpenAIAPIType(str, Enum):
+    """
+    Enumeration of OpenAI API Types.
+
+    chat completions: Chat Completions API
+    responses: Responses API
+    """
+
+    CHAT_COMPLETIONS = "chat_completions"
+    RESPONSES = "responses"
 
 
 class OpenAiCompatibleConfig(LlmConfig):
@@ -20,3 +36,21 @@ class OpenAiCompatibleConfig(LlmConfig):
     """Url of the OpenAI compatible model deployment"""
     model_id: str
     """ID of the model to use"""
+    api_type: SerializeAsEnum[OpenAIAPIType] = OpenAIAPIType.CHAT_COMPLETIONS
+    """OpenAI API protocol to use"""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = set()
+        if agentspec_version < AgentSpecVersionEnum.v25_4_2:
+            fields_to_exclude.add("api_type")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        if self.api_type != OpenAIAPIType.CHAT_COMPLETIONS:
+            # If the api type is not chat completions, then we need to use the new AgentSpec version
+            # If not, the old version will work as it was the de-facto
+            return AgentSpecVersionEnum.v25_4_2
+
+        return super()._infer_min_agentspec_version_from_configuration()

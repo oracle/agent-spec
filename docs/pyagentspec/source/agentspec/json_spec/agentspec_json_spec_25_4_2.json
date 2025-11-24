@@ -417,6 +417,15 @@
         }
       ]
     },
+    "OpenAIAPIType": {
+      "description": "Enumeration of OpenAI API Types.\n\nchat completions: Chat Completions API\nresponses: Responses API",
+      "enum": [
+        "chat_completions",
+        "responses"
+      ],
+      "title": "OpenAIAPIType",
+      "type": "string"
+    },
     "OpenAiCompatibleConfig": {
       "anyOf": [
         {
@@ -3434,6 +3443,10 @@
           "title": "Model Id",
           "type": "string"
         },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -3513,6 +3526,10 @@
               "title": "Model Id",
               "type": "string"
             },
+            "api_type": {
+              "$ref": "#/$defs/OpenAIAPIType",
+              "default": "chat_completions"
+            },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
             },
@@ -3581,6 +3598,10 @@
         "model_id": {
           "title": "Model Id",
           "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -5007,6 +5028,10 @@
         "model_id": {
           "title": "Model Id",
           "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
