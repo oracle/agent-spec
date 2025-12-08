@@ -61,5 +61,11 @@ setup(
         "console_scripts": [],
     },
     include_package_data=True,
-    extras_require={},
+    extras_require={
+        "crewai": [
+            "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            "litellm>=1.79.0; python_version < '3.14'",
+            "httpx>0.28.0; python_version < '3.14'",
+        ],
+    },
 )

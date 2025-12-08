@@ -39,6 +39,21 @@ llm = OciGenAiConfig(
 )
 # .. oci-end
 
+# .. openaicompatible-start
+from pyagentspec.llms import OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
+
+generation_config = LlmGenerationConfig(max_tokens=512, temperature=1.0, top_p=1.0)
+
+llm = OpenAiCompatibleConfig(
+    name="vllm-llama-4-maverick",
+    model_id="llama-4-maverick",
+    url="http://url.to.my.vllm.server/llama4mav",
+    api_type=OpenAIAPIType.RESPONSES,
+    default_generation_parameters=generation_config,
+)
+# .. openaicompatible-end
+
 # .. vllm-start
 from pyagentspec.llms import VllmConfig
 

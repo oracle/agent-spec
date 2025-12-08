@@ -20,22 +20,28 @@ from typing import (
     get_type_hints,
 )
 
-from crewai import LLM as CrewAILlm
-from crewai import Agent as CrewAIAgent
-from crewai.tools import BaseTool as CrewAIBaseTool
-from crewai.tools.base_tool import Tool as CrewAITool
-from crewai.tools.structured_tool import CrewStructuredTool as CrewAIStructuredTool
+from pydantic import BaseModel
+
+from pyagentspec.adapters.crewai._types import (
+    CrewAIAgent,
+    CrewAIBaseTool,
+    CrewAILlm,
+    CrewAIStructuredTool,
+    CrewAITool,
+)
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import LlmGenerationConfig as AgentSpecLlmGenerationConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
+from pyagentspec.llms.openaicompatibleconfig import (
+    OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig,
+)
 from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
-from pydantic import BaseModel
 
 
 def generate_id() -> str:
@@ -154,6 +160,13 @@ class CrewAIToAgentSpecConverter:
                 default_generation_parameters=default_generation_parameters,
             )
         elif model_provider == "openai":
+            if crewai_llm.api_base is not None:
+                return AgentSpecOpenAiCompatibleConfig(
+                    name=crewai_llm.model,
+                    model_id=model_id,
+                    url=crewai_llm.api_base.replace("/v1", ""),
+                    default_generation_parameters=default_generation_parameters,
+                )
             return AgentSpecOpenAiConfig(
                 name=crewai_llm.model,
                 model_id=model_id,

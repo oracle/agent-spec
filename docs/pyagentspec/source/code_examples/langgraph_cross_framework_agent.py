@@ -10,17 +10,15 @@ from pathlib import Path
 
 CONFIGS_DIR = Path(os.path.dirname(__file__)).parent / "agentspec_config_examples"
 
+
 # .. define-tool-registry:
-from typing import List
-
-
 def hello_world() -> None:
     """Prints 'Hello world!'"""
     print("Hello world!")
     return None
 
 
-def rag_tool(query: str) -> List[str]:
+def rag_tool(query: str) -> list[str]:
     """Search and return the list of results"""
     return ["result 1", "result 2"]
 

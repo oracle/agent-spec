@@ -111,3 +111,4 @@ Having learned how to configure agent instructions, you may now proceed to:
 - :doc:`Specify the Generation Configuration when Using LLMs <howto_generation_config>`
 - :doc:`How to Develop an Agent with Remote Tools <howto_agent_with_remote_tools>`
 - :doc:`How to Execute Agent Spec Configuration with WayFlow <howto_execute_agentspec_with_wayflow>`
+- :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`

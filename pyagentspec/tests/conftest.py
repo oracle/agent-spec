@@ -141,15 +141,29 @@ def get_directory_allowlist_write(tmp_path: str) -> List[Union[str, Path]]:
 
 
 def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
-    return get_directory_allowlist_write(tmp_path) + [
-        CONFIGS_DIR,
-        # Docs path
-        Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
-        # Used in docstring tests
-        Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
-        Path("~/.pdbrc").expanduser(),
-        Path(os.path.dirname(__file__)).parent / ".pdbrc",
-    ]
+    try:
+        # Crew AI sometimes attempts to read in some folders, we need to take that into account
+        from crewai.cli.shared.token_manager import TokenManager
+
+        crewai_read_dirs = [
+            TokenManager.get_secure_storage_path(),
+            "/etc/os-release",
+        ]
+    except ImportError:
+        crewai_read_dirs = []
+    return (
+        get_directory_allowlist_write(tmp_path)
+        + [
+            CONFIGS_DIR,
+            # Docs path
+            Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
+            # Used in docstring tests
+            Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
+            Path("~/.pdbrc").expanduser(),
+            Path(os.path.dirname(__file__)).parent / ".pdbrc",
+        ]
+        + crewai_read_dirs
+    )
 
 
 def check_allowed_filewrite(path: Union[str, Path], tmp_path: str, mode: str) -> None:
@@ -264,7 +278,7 @@ def suppress_network(
         yield True
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 def guard_network(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
     """
     Fixture which raises an exception if the network is accessed. It
