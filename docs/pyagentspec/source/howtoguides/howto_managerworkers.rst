@@ -200,4 +200,6 @@ This guide covered how to define a manager-workers of agents in Agent Spec.
 Next steps
 ==========
 
-Having learned how to define a manager-workers, you may now proceed to :doc:`how to use the WayFlow runtime to execute it <howto_execute_agentspec_with_wayflow>`.
+Having learned how to define a manager-workers, you may now proceed to
+:doc:`how to use the WayFlow runtime to execute it <howto_execute_agentspec_with_wayflow>`
+and :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`.

@@ -124,4 +124,5 @@ Next steps
 ==========
 
 Having learned how to perform ``map`` and ``reduce`` operations in Agent Spec,
-you may now proceed to :doc:`How to Build an Orchestrator-Workers Agents Pattern <howto_orchestrator_agent>`.
+you may now proceed to :doc:`How to Build an Orchestrator-Workers Agents Pattern <howto_orchestrator_agent>`
+and :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`.

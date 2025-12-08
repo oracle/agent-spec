@@ -26,6 +26,19 @@ Installing with ``pip`` pulls prebuilt binary wheels on supported platforms.
 
         pip install "|package_name|==|stable_release|" -c constraints.txt
 
+Extra dependencies
+------------------
+
+|project| offers optional extra dependencies that can be installed to enable additional features.
+
+* The ``crewai`` extra dependency gives access to the CrewAI runtime adapter.
+
+To install extra dependencies, run the following command specifying the list of dependencies you want to install:
+
+.. code-block:: bash
+    :substitutions:
+
+    pip install "|package_name|[extra-dep-1,extra-dep-2]==|stable_release|"
 
 Supported platforms
 -------------------
@@ -45,7 +58,7 @@ Operating systems and CPU architectures
    * - Linux
      - Supported
      - Untested
-   * - MacOS
+   * - macOS
      - Supported
      - Supported
 
@@ -103,7 +116,7 @@ Python implementation
    :widths: 30 30
    :header-rows: 1
 
-   * - implementation
+   * - Implementation
      - Support
    * - CPython
      - Supported
