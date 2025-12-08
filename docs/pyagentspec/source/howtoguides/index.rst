@@ -29,7 +29,7 @@ These how-to guides demonstrate how to use the main Agent Spec features to creat
    Specify the Generation Configuration when Using LLMs <howto_generation_config>
    Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
    Use OCI Generative AI Agents <howto_ociagent>
-   Build an A2A Agent <howto_a2aagent>
+   Use an A2A Agent <howto_a2aagent>
    Build a Swarm of Agents <howto_swarm>
    Build a Manager-Worker Multi-Agent System <howto_managerworkers>
    Build Flows with Structured LLM Generation <howto_structured_generation>

@@ -5,16 +5,17 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
-from crewai import Agent as CrewAIAgent
-from crewai import Flow as CrewAIFlow
+from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
+from pyagentspec.adapters.crewai._types import (
+    CrewAIAgent,
+    CrewAIComponent,
+    CrewAIFlow,
+    CrewAIServerToolType,
+)
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
-
-from ._crewaiconverter import AgentSpecToCrewAIConverter, _CrewAIServerToolType
-
-_CrewAIComponent = Union[CrewAIAgent, CrewAIFlow[Any]]
 
 
 class AgentSpecLoader:
@@ -22,7 +23,7 @@ class AgentSpecLoader:
 
     def __init__(
         self,
-        tool_registry: Optional[Dict[str, _CrewAIServerToolType]] = None,
+        tool_registry: Optional[Dict[str, CrewAIServerToolType]] = None,
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
     ):
         """
@@ -40,7 +41,7 @@ class AgentSpecLoader:
         self.tool_registry = tool_registry or {}
         self.plugins = plugins
 
-    def load_yaml(self, serialized_assistant: str) -> _CrewAIComponent:
+    def load_yaml(self, serialized_assistant: str) -> CrewAIComponent:
         """
         Transform the given Agent Spec YAML representation into the respective CrewAI Component
 
@@ -55,7 +56,7 @@ class AgentSpecLoader:
         )
         return self.load_component(agentspec_assistant)
 
-    def load_json(self, serialized_assistant: str) -> _CrewAIComponent:
+    def load_json(self, serialized_assistant: str) -> CrewAIComponent:
         """
         Transform the given Agent Spec JSON representation into the respective CrewAI Component
 
@@ -70,7 +71,7 @@ class AgentSpecLoader:
         )
         return self.load_component(agentspec_assistant)
 
-    def load_component(self, agentspec_component: AgentSpecComponent) -> _CrewAIComponent:
+    def load_component(self, agentspec_component: AgentSpecComponent) -> CrewAIComponent:
         """
         Transform the given PyAgentSpec Component into the respective CrewAI Component
 
@@ -84,10 +85,7 @@ class AgentSpecLoader:
             agentspec_component, self.tool_registry
         )
 
-        if isinstance(crewai_component, CrewAIAgent):
-            return crewai_component
-
-        if isinstance(crewai_component, CrewAIFlow):
+        if isinstance(crewai_component, (CrewAIAgent, CrewAIFlow)):
             return crewai_component
 
         raise TypeError(

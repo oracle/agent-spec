@@ -29,5 +29,11 @@ sphinxcontrib.serializinghtml<1.1.10
 sphinxcontrib.qthelp<1.0.7
 sphinx_toolbox<=3.8.0
 
--e .
 -c constraints/constraints.txt
+# CrewAI does not support python 3.14 yet
+-e .[crewai]
+# or
+-e .
+
+# For remote tool tests
+fastapi[standard-no-fastapi-cloud-cli]

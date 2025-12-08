@@ -57,7 +57,7 @@ agent = Agent(
 )
 
 
-from crewai_agentspec_adapter import AgentSpecLoader
+from pyagentspec.adapters.crewai import AgentSpecLoader
 
 importer = AgentSpecLoader(
     tool_registry={

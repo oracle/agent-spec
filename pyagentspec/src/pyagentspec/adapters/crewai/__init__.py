@@ -1,12 +1,15 @@
-#!/bin/bash
 # Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-source ../../_installation_tools.sh
+"""Agent Spec adapter for the CrewAI agentic framework."""
 
-upgrade_pip
+from .agentspecexporter import AgentSpecExporter
+from .agentspecloader import AgentSpecLoader
 
-python -m pip install -e . -c constraints/constraints.txt
+__all__ = [
+    "AgentSpecExporter",
+    "AgentSpecLoader",
+]

@@ -212,4 +212,5 @@ This guide covered how to:
 Next steps
 ==========
 
-Having learned how to build assistants with custom Agent Spec components using the plugin system, you may now proceed to :doc:`How to Build an Orchestrator-Workers Agents Pattern <howto_orchestrator_agent>`.
+Having learned how to build assistants with custom Agent Spec components using the plugin system,
+you may now proceed to :doc:`How to Build an Orchestrator-Workers Agents Pattern <howto_orchestrator_agent>`.

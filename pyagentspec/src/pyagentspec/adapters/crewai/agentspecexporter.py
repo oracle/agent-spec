@@ -4,20 +4,16 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-
-from crewai import Agent as CrewAIAgent
-from crewai import Flow as CrewAIFlow
+from pyagentspec.adapters.crewai._agentspecconverter import CrewAIToAgentSpecConverter
+from pyagentspec.adapters.crewai._types import CrewAIAgent, CrewAIComponent, CrewAIFlow
 from pyagentspec.component import Component
 from pyagentspec.serialization import AgentSpecSerializer as PyAgentSpecSerializer
-
-from ._agentspecconverter import CrewAIToAgentSpecConverter
-from .agentspecloader import _CrewAIComponent
 
 
 class AgentSpecExporter:
     """Helper class to convert CrewAI objects to Agent Spec configurations."""
 
-    def to_yaml(self, crewai_component: _CrewAIComponent) -> str:
+    def to_yaml(self, crewai_component: CrewAIComponent) -> str:
         """
         Transform the given CrewAI component into the respective Agent Spec YAML representation.
 
@@ -30,7 +26,7 @@ class AgentSpecExporter:
         agentlang_assistant = self.to_component(crewai_component)
         return PyAgentSpecSerializer().to_yaml(agentlang_assistant)
 
-    def to_json(self, crewai_component: _CrewAIComponent) -> str:
+    def to_json(self, crewai_component: CrewAIComponent) -> str:
         """
         Transform the given CrewAI component into the respective Agent Spec JSON representation.
 
@@ -43,7 +39,7 @@ class AgentSpecExporter:
         agentlang_assistant = self.to_component(crewai_component)
         return PyAgentSpecSerializer().to_json(agentlang_assistant)
 
-    def to_component(self, crewai_component: _CrewAIComponent) -> Component:
+    def to_component(self, crewai_component: CrewAIComponent) -> Component:
         """
         Transform the given CrewAI component into the respective PyAgentSpec Component.
 

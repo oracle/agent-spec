@@ -167,4 +167,6 @@ This how-to guide covered how to:
 Next steps
 ==========
 
-Having learned how to develop a flow with conditional branches, you may now proceed to :doc:`How to Execute Agent Spec Configuration with WayFlow <howto_execute_agentspec_with_wayflow>`.
+Having learned how to develop a flow with conditional branches, you may now proceed to
+:doc:`How to Execute Agent Spec Configuration with WayFlow <howto_execute_agentspec_with_wayflow>`
+and :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`.
