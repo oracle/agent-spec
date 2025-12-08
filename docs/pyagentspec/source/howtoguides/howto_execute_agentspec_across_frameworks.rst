@@ -24,7 +24,7 @@ The example uses a pre-built Agent Spec representation of the agent, shown below
         .. literalinclude:: ../agentspec_config_examples/simple_agent_with_rag_tool.yaml
             :language: yaml
 
-It also assumes having a common registry of tool implementations containing the tool utilized by this agent.
+It also assumes a common registry of tool implementations containing the tools used by this agent.
 
 .. literalinclude:: ../code_examples/langgraph_cross_framework_agent.py
     :language: python
@@ -35,14 +35,15 @@ Adapters
 ========
 
 Using adapters is the recommended way of integrating an agentic framework runtime.
-Ideally, an adapter should translate programmatically the representation of the Agent Spec components
+Ideally, an adapter should programmatically translate the representation of the Agent Spec components
 into the equivalent solution, as per each framework's definition, and return an object that developers can run.
 
 As a reference runtime for Agent Spec, `WayFlow <https://github.com/oracle/wayflow>`_ offers an Agent Spec adapter as part of the package.
-Besides WayFlow, the Agent Spec team provides the implementation of adapters for two other common agentic frameworks:
+Additionally, we provide the adapter implementation for some of the most common agentic frameworks:
 
 - `LangGraph <https://github.com/oracle/agent-spec/tree/main/adapters/langgraphagentspecadapter>`_
 - `AutoGen <https://github.com/oracle/agent-spec/tree/main/adapters/autogenagentspecadapter>`_
+- `CrewAI <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/crewai>`_
 
 Each adapter contains two main public classes, ``AgentSpecExporter`` and ``AgentSpecLoader``.
 
@@ -60,14 +61,14 @@ Agent Spec representation in one of the following forms: YAML, JSON, or PyAgentS
         def to_json(self, framework_component: FrameworkComponent) -> str:
             """Transform the given framework component into the respective Agent Spec JSON representation."""
 
-        def to_component(self, autogen_component: FrameworkComponent) -> Component:
+        def to_component(self, framework_component: FrameworkComponent) -> Component:
             """Transform the given framework component into the respective PyAgentSpec Component."""
 
 
 The ``AgentSpecLoader`` exposes APIs to load an Agent Spec representation in one of the aforementioned forms, i.e.,
 YAML, JSON, or PyAgentSpec Component object, into the corresponding agentic framework's object.
-The loader requires to specify the registry of tool implementations.
-These tools will be mapped to the ServerTools used in the Agent Spec representation to load and transform.
+The loader requires you to specify the registry of tool implementations.
+These tools will be mapped to the ServerTools used in the Agent Spec representation.
 
 .. code-block:: python
 
@@ -75,7 +76,7 @@ These tools will be mapped to the ServerTools used in the Agent Spec representat
         """Helper class to convert Agent Spec configurations to agentic framework objects."""
 
         def __init__(self, tool_registry: Optional[Dict[str, Callable]] = None):
-            """Ask for the tool registry containing the implementation of ServerTools"""
+            """Provide the tool registry containing the implementations of ServerTools"""
 
         def load_yaml(self, serialized_assistant: str) -> FrameworkComponent:
             """Transform the given Agent Spec YAML representation into the respective framework Component"""
@@ -176,7 +177,7 @@ Finally, we can start the conversation with our new agent and execute it.
 Using the Agent Spec adapter from WayFlow
 =========================================
 
-The execution of this section requires to install the package ``wayflowcore``.
+The execution of this section requires installing the package ``wayflowcore``.
 
 .. code-block:: bash
     :substitutions:

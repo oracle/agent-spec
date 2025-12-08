@@ -129,4 +129,5 @@ This guide covered how to:
 Next steps
 ==========
 
-Having learned how to define an agent, you may now proceed to :doc:`how to use the WayFlow runtime to execute it <howto_execute_agentspec_with_wayflow>`.
+Having learned how to define an agent, you may now proceed to :doc:`how to use the WayFlow runtime to execute it <howto_execute_agentspec_with_wayflow>`
+and :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`.

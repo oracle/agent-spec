@@ -3,21 +3,23 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
-
-# mypy: ignore-errors
-
+import pytest
 import yaml
-from crewai import LLM as CrewAILlm
-from crewai import Agent as CrewAIAgent
-from crewai.tools.base_tool import Tool as CrewAIServerTool
-from pyagentspec import Agent
-from pyagentspec.llms import LlmGenerationConfig, OllamaConfig
-from pyagentspec.property import StringProperty
-from pyagentspec.serialization import AgentSpecSerializer
-from pyagentspec.tools import ServerTool
 from pydantic import BaseModel
 
-from crewai_agentspec_adapter import AgentSpecExporter, AgentSpecLoader
+from pyagentspec import Agent
+from pyagentspec.llms import (
+    LlmConfig,
+    LlmGenerationConfig,
+    OllamaConfig,
+    OpenAiCompatibleConfig,
+    OpenAiConfig,
+)
+from pyagentspec.property import StringProperty
+from pyagentspec.serialization import AgentSpecSerializer
+from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
+
+# mypy: ignore-errors
 
 
 def mock_tool() -> str:
@@ -26,21 +28,24 @@ def mock_tool() -> str:
 
 def test_crewai_agent_can_be_converted_to_agentspec() -> None:
 
+    from pyagentspec.adapters.crewai import AgentSpecExporter
+    from pyagentspec.adapters.crewai._types import CrewAITool, crewai
+
     class MockToolSchema(BaseModel):
         pass
 
-    crewai_mock_tool = CrewAIServerTool(
+    crewai_mock_tool = CrewAITool(
         name="mock_tool",
         description="Mocked tool",
         args_schema=MockToolSchema,
         func=mock_tool,
     )
 
-    agent = CrewAIAgent(
+    agent = crewai.Agent(
         role="crew_ai_assistant",
         goal="Use tools to solve tasks.",
         backstory="You are a helpful assistant",
-        llm=CrewAILlm(
+        llm=crewai.LLM(
             model="ollama/agi_model",
             base_url="url_to_my_agi_model",
             max_tokens=200,
@@ -68,30 +73,64 @@ def test_crewai_agent_can_be_converted_to_agentspec() -> None:
     assert agentspec_dict["tools"][0]["name"] == "mock_tool"
 
 
-def test_agentspec_agent_can_be_converted_to_crewai() -> None:
-
-    agent = Agent(
-        name="crew_ai_assistant",
-        description="You are a helpful assistant",
-        llm_config=OllamaConfig(
+@pytest.mark.parametrize(
+    "llm_config",
+    [
+        OllamaConfig(
             name="agi_model",
             model_id="agi_model",
             url="url_to_my_agi_model",
             default_generation_parameters=LlmGenerationConfig(max_tokens=200),
         ),
+        OpenAiCompatibleConfig(
+            name="agi_model",
+            model_id="agi_model",
+            url="url_to_my_agi_model",
+            default_generation_parameters=LlmGenerationConfig(temperature=200),
+        ),
+        OpenAiConfig(
+            name="agi_model",
+            model_id="agi_model",
+            default_generation_parameters=LlmGenerationConfig(top_p=0.3),
+        ),
+    ],
+)
+def test_agentspec_agent_can_be_converted_to_crewai(llm_config: LlmConfig) -> None:
+    from pyagentspec.adapters.crewai import AgentSpecLoader
+    from pyagentspec.adapters.crewai._types import crewai
+
+    agent = Agent(
+        name="crew_ai_assistant",
+        description="You are a helpful assistant",
+        llm_config=llm_config,
         tools=[
-            ServerTool(name="mock_tool", inputs=[], outputs=[StringProperty(title="mock_tool")])
+            ServerTool(
+                name="mock_tool_server", inputs=[], outputs=[StringProperty(title="output")]
+            ),
+            ClientTool(
+                name="mock_tool_client",
+                inputs=[StringProperty(title="input_2")],
+                outputs=[StringProperty(title="output_2")],
+            ),
+            RemoteTool(
+                name="mock_tool_remote",
+                url="my.remote.server",
+                http_method="GET",
+                data={"in": "{{input_3}}"},
+                inputs=[StringProperty(title="input_3")],
+                outputs=[StringProperty(title="output_3")],
+            ),
         ],
         system_prompt="Use tools to solve tasks.",
     )
     agentspec_yaml = AgentSpecSerializer().to_yaml(agent)
 
-    crewai_assistant = AgentSpecLoader(tool_registry={"mock_tool": mock_tool}).load_yaml(
+    crewai_assistant = AgentSpecLoader(tool_registry={"mock_tool_server": mock_tool}).load_yaml(
         agentspec_yaml
     )
-    assert isinstance(crewai_assistant, CrewAIAgent)
+    assert isinstance(crewai_assistant, crewai.Agent)
     assert crewai_assistant.role == "crew_ai_assistant"
     assert crewai_assistant.goal == "Use tools to solve tasks."
     assert crewai_assistant.backstory == "You are a helpful assistant"
-    assert len(crewai_assistant.tools) == 1
-    assert isinstance(crewai_assistant.llm, CrewAILlm)
+    assert len(crewai_assistant.tools) == 3
+    assert isinstance(crewai_assistant.llm, crewai.LLM)

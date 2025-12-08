@@ -150,4 +150,5 @@ This guide covered how to:
 Next steps
 ==========
 
-To discover more advanced capabilities, refer to the `WayFlow documentation <https://github.com/oracle/wayflow/>`_ and learn what you can build with Flows and Agents.
+To discover more advanced capabilities, refer to the `WayFlow documentation <https://github.com/oracle/wayflow/>`_ and
+learn what you can build with Flows and Agents.

@@ -7,10 +7,11 @@ The available LLMs are:
 
 - :ref:`OpenAiConfig <openaiconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
+- :ref:`OpenAiCompatibleConfig <openaicompatiblemodel>`
 - :ref:`VllmConfig <vllmconfig>`
 - :ref:`OllamaConfig <ollamaconfig>`
 
-Their configuration is specified directly to their respective class constructor.
+Their configuration is specified directly in their respective class constructor.
 This guide will show you how to configure LLMs from different LLM providers with examples and notes on usage.
 
 
@@ -138,6 +139,10 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
 
   Name of the model to use.
 
+.. option:: api_type: str
+
+  The API type that should be used. Can be either ``chat_completions`` or ``responses``.
+
 .. option:: default_generation_parameters: dict, null
 
   Default parameters for text generation with this model.
@@ -153,6 +158,38 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
     :language: python
     :start-after: .. openai-start
     :end-before: .. openai-end
+
+
+OpenAiCompatibleConfig
+======================
+
+OpenAI Compatible LLMs are all those models that are served through OpenAI APIs, either responses or completions.
+The ``OpenAiCompatibleConfig`` allows users to use this type of models in their agents and flows.
+
+**Parameters**
+
+.. option:: model_id: str
+
+  Name of the model to use.
+
+.. option:: url: str
+
+  Hostname and port of the vLLM server where the model is hosted.
+
+.. option:: api_type: str
+
+  The API type that should be used. Can be either ``chat_completions`` or ``responses``.
+
+.. option:: default_generation_parameters: dict, null
+
+  Default parameters for text generation with this model.
+
+**Examples**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. openaicompatible-start
+    :end-before: .. openaicompatible-end
 
 
 VllmConfig
@@ -171,6 +208,10 @@ The ``VllmConfig`` allows users to use this type of models in their agents and f
 
   Hostname and port of the vLLM server where the model is hosted.
 
+.. option:: api_type: str
+
+  The API type that should be used. Can be either ``chat_completions`` or ``responses``.
+
 .. option:: default_generation_parameters: dict, null
 
   Default parameters for text generation with this model.
@@ -187,7 +228,7 @@ OllamaConfig
 ============
 
 `Ollama Models <https://ollama.com/>`_ are powered by a locally hosted Ollama server.
-The ``VllmConfig`` allows users to use this type of models in their agents and flows.
+The ``OllamaConfig`` allows users to use this type of models in their agents and flows.
 
 **Parameters**
 
@@ -198,6 +239,10 @@ The ``VllmConfig`` allows users to use this type of models in their agents and f
 .. option:: url: str
 
   Hostname and port of the vLLM server where the model is hosted.
+
+.. option:: api_type: str
+
+  The API type that should be used. Can be either ``chat_completions`` or ``responses``.
 
 .. option:: default_generation_parameters: dict, null
 
