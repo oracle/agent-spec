@@ -97,7 +97,7 @@ if __name__ == "__main__":
         history.append(f"Agent: {response}")
         print("AGENT >>>", response)
 
-    from crewai_agentspec_adapter import AgentSpecExporter
+    from pyagentspec.adapters.crewai import AgentSpecExporter
 
     exporter = AgentSpecExporter()
     agentspec_yaml = exporter.to_yaml(calculator_agent)

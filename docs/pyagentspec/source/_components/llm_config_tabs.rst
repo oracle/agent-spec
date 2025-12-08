@@ -4,6 +4,18 @@
 
 .. tabs::
 
+    .. tab:: OpenAI Compatible Model
+
+        .. code-block:: python
+
+            from pyagentspec.llms import OpenAiCompatibleConfig
+
+            llm_config = OpenAiCompatibleConfig(
+                name="Llama 3.1 8B instruct",
+                url="VLLM_URL",
+                model_id="model-id",
+            )
+
     .. tab:: OCI GenAI
 
         .. code-block:: python
