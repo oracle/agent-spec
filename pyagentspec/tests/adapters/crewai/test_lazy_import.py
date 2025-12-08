@@ -4,11 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import pytest
 
-from .agentspecexporter import AgentSpecExporter
-from .agentspecloader import AgentSpecLoader
 
-__all__ = [
-    "AgentSpecExporter",
-    "AgentSpecLoader",
-]
+def test_import_raises_if_crewai_not_installed():
+    with pytest.raises(ImportError, match="Package crewai is not installed."):
+        import pyagentspec.adapters.crewai  # type: ignore

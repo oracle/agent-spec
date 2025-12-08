@@ -7,9 +7,18 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **Added CrewAI adapter to pyagentspec:**
+
+  The CrewAI adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.crewai`` subpackage.
+  It requires the ``crewai`` extra dependency to be installed.
+
+  For more information read the :doc:`API Reference <api/adapters>`.
+
 * **OpenAI Responses API Support:**
 
-  :ref:`OpenAICompatibleModel <openaicompatiblemodel>` and :ref:`OpenAIModel <openaiconfig>` now supports OpenAI Responses API, which can be configured
+
+  :ref:`OpenAICompatibleModel <openaicompatiblemodel>` and :ref:`OpenAIModel <openaiconfig>` now support the OpenAI Responses API, which can be configured
   using the ``api_type`` parameter, which accepts values from :ref:`OpenAIAPIType <openaiapitype>`.
 
   This enhancement allows recent OpenAI models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.
@@ -63,7 +72,7 @@ Improvements
 
 * **Python 3.14 support**
 
-  Introduced support for python version 3.14.
+  Introduced support for Python version 3.14.
 
 
 Agent Spec 25.4.1 — Initial release

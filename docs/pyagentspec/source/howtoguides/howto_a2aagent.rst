@@ -1,8 +1,8 @@
-=================================
-How to Build A2A Agents
-=================================
+=====================
+How to Use A2A Agents
+=====================
 
-`A2A Protocol <https://a2a-protocol.org/latest/>`_ is an open standard that defines how two agents can communicate 
+`A2A Protocol <https://a2a-protocol.org/latest/>`_ is an open standard that defines how two agents can communicate
 with each other. It covers both the serving and consumption aspects of agent interaction.
 
 In this guide, you will learn how to build an A2A agent with the :ref:`A2AAgent <a2aagent>` class from the ``pyagentspec`` package.
@@ -10,7 +10,7 @@ In this guide, you will learn how to build an A2A agent with the :ref:`A2AAgent 
 Basic Usage
 ===========
 
-To get started with an A2A agent, you need the URL of the remote server agent you wish to connect to. 
+To get started with an A2A agent, you need the URL of the remote server agent you wish to connect to.
 Once you have this information, creating your A2A agent is straightforward and can be done in just a few lines of code:
 
 .. literalinclude:: ../code_examples/howto_a2aagent.py
@@ -64,5 +64,6 @@ This how-to guide covered how to define an A2A Agent in Agent Spec.
 Next Steps
 ==========
 
-Now that you have learned how to build A2A Agents, 
-you can proceed to :doc:`How to Use the WayFlow Runtime to Execute Agent Spec <howto_execute_agentspec_with_wayflow>`.
+Now that you have learned how to build A2A Agents,
+you can proceed to :doc:`How to Use the WayFlow Runtime to Execute Agent Spec <howto_execute_agentspec_with_wayflow>`
+and :doc:`How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>`.

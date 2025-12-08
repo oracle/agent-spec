@@ -5,55 +5,20 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
-import random
-import socket
 import subprocess  # nosec, test-only code, args are trusted
-import time
 from pathlib import Path
-from typing import Optional
 from unittest.mock import patch
 
 import pytest
 
+from .utils import get_available_port, start_uvicorn_server, terminate_process_tree
+
 SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
 
 
-def is_port_busy(port: Optional[int]):
-    if port is None:
-        return True
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        try:
-            s.bind(("127.0.0.1", port))
-            return False
-        except OSError:
-            return True
-
-
-# We try to find an open port between 8000 and 9000 for 5 times, if we don't we skip remote tests
-attempt = 0
-while (
-    is_port_busy(JSON_SERVER_PORT := random.randint(8000, 9000))  # nosec, not for security/crypto
-    and attempt < 5
-):
-    time.sleep(1)
-    attempt += 1
-
-JSON_SERVER_PORT = JSON_SERVER_PORT if attempt < 5 else None
-IS_JSON_SERVER_RUNNING = False
-
-
-def _start_json_server() -> subprocess.Popen:
-    api_server = Path(__file__).parent / "api_server.py"
-    process = subprocess.Popen(  # nosec, test context and trusted env
-        [
-            "fastapi",
-            "run",
-            str(api_server.absolute()),
-            f"--port={JSON_SERVER_PORT}",
-        ]
-    )
-    time.sleep(3)
-    return process
+@pytest.fixture(scope="session")
+def json_server_port() -> int:
+    return get_available_port()
 
 
 def should_skip_llm_test() -> bool:
@@ -104,12 +69,24 @@ def skip_llm_construction():
 
 
 @pytest.fixture(scope="session")
-def json_server():
-    global IS_JSON_SERVER_RUNNING
-    if JSON_SERVER_PORT is not None:
-        IS_JSON_SERVER_RUNNING = True
-        process = _start_json_server()
-        yield
-        process.kill()
-        process.wait()
-    IS_JSON_SERVER_RUNNING = False
+def json_server(json_server_port: int):
+    api_server = Path(__file__).parent / "api_server.py"
+    process, url = start_uvicorn_server(
+        api_server, host="localhost", port=json_server_port, ready_timeout_s=10
+    )
+    try:
+        yield url
+    finally:
+        terminate_process_tree(process, timeout=5.0)
+
+
+def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:
+    llama_api_url = os.environ.get("LLAMA_API_URL")
+    llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
+    assert llama_api_url, "Please set LLAMA_API_URL"
+    assert llama70bv33_api_url, "Please set LLAMA70BV33_API_URL"
+    return (
+        yaml_config.replace("[[LLAMA_API_URL]]", llama_api_url)
+        .replace("[[LLAMA70BV33_API_URL]]", llama70bv33_api_url)
+        .replace("[[remote_tools_server]]", json_server_url)
+    )
