@@ -49,6 +49,9 @@ def test_convert_react_agent_with_tools_to_agentspec() -> None:
     assert agentspec_agent.tools[0].name == get_weather.__name__
     assert get_weather.__doc__ is not None
     assert agentspec_agent.tools[0].description == get_weather.__doc__.strip()
+    assert set([property.title for property in agentspec_agent.tools[0].inputs]) == set(
+        get_weather.__code__.co_varnames[: get_weather.__code__.co_argcount]
+    )
 
 
 def test_convert_react_agent_without_tools_to_agentspec() -> None:
