@@ -46,17 +46,19 @@ def get_example_agent_with_mcp_tool(client_transport: ClientTransport) -> Agent:
     "client_transport",
     argvalues=[
         StdioTransport(
-            id="stdio_mcp_transport",
+            id="client_transport_component_id",
             name="stdio_mcp_transport",
             command="python3",
             args=["servers/your_stdio_server.py"],
             env={"PYTHON": "3.12"},
         ),
         SSETransport(
-            id="sse_mcp_transport", name="sse_mcp_transport", url="https://some.where/sse"
+            id="client_transport_component_id",
+            name="sse_mcp_transport",
+            url="https://some.where/sse",
         ),
         SSEmTLSTransport(
-            id="sse_mtls_mcp_transport",
+            id="client_transport_component_id",
             name="sse_mtls_mcp_transport",
             url="https://some.where/sse",
             key_file="client.key",
@@ -64,10 +66,12 @@ def get_example_agent_with_mcp_tool(client_transport: ClientTransport) -> Agent:
             ca_file="trustedCA.pem",
         ),
         StreamableHTTPTransport(
-            id="shttp_mcp_transport", name="shttp_mcp_transport", url="https://some.where/mcp"
+            id="client_transport_component_id",
+            name="shttp_mcp_transport",
+            url="https://some.where/mcp",
         ),
         StreamableHTTPmTLSTransport(
-            id="shttp_mtls_mcp_transport",
+            id="client_transport_component_id",
             name="shttp_mtls_mcp_transport",
             url="https://some.where/mcp",
             key_file="client.key",
@@ -83,8 +87,17 @@ def get_example_agent_with_mcp_tool(client_transport: ClientTransport) -> Agent:
         "StreamableHTTP_mTLS",
     ],
 )
-def test_can_serialize_agent_with_mcp_tool(client_transport: ClientTransport) -> None:
+def test_agent_with_mcp_tool_can_be_serialized_then_deserialized(
+    client_transport: ClientTransport,
+) -> None:
     example_agent_with_mcp_tool = get_example_agent_with_mcp_tool(client_transport)
     ser_obj = AgentSpecSerializer().to_yaml(example_agent_with_mcp_tool)
-    new_agent = AgentSpecDeserializer().from_yaml(ser_obj)
+    new_agent = AgentSpecDeserializer().from_yaml(
+        ser_obj,
+        components_registry={
+            "client_transport_component_id.key_file": "client.key",
+            "client_transport_component_id.cert_file": "client.crt",
+            "client_transport_component_id.ca_file": "trustedCA.pem",
+        },
+    )
     assert example_agent_with_mcp_tool == new_agent

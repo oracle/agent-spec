@@ -15,6 +15,12 @@ New features
 
   For more information read the :doc:`API Reference <api/adapters>`.
 
+* **Sensitive Fields Support:**
+
+  New fields have been added to Agent Spec components that may carry sensitive data (e.g. the field `api_key` on :ref:`OpenAICompatibleModel <openaicompatiblemodel>`). To provide this functionality securely, we also introduced the annotation `SensitiveField` such that the sensitive fields are automatically excluded when exporting a Component to its JSON or yaml configuration.
+
+  For more information read the :ref:`latest specification <agentspecsensitivefield_nightly>`.
+
 * **OpenAI Responses API Support:**
 
 
@@ -73,6 +79,41 @@ Improvements
 * **Python 3.14 support**
 
   Introduced support for Python version 3.14.
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+* **Sensitive Fields**
+
+The below fields have been marked as carrying sensitive information and will be excluded from newly generated configurations automatically. See :ref:`latest specification <agentspecsensitivefield_nightly>` for more information on this. This change is implemented retroactively to impact older configurations too.
+
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | key_file           |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | cert_file          |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | ca_file            |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | key_file           |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | cert_file          |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | ca_file            |
++----------------------------------+--------------------+
+
+These field will now require to be passed explicitly when loading an exported configuration, as in the example below:
+
+.. code-block:: python
+
+    AgentSpecDeserializer().from_yaml(
+        serialized_component,
+        components_registry={
+            "<component_id>.key_file": "client.key",
+            "<component_id>.cert_file": "client.crt",
+            "<component_id>.ca_file": "trustedCA.pem",
+        },
+    )
+
 
 
 Agent Spec 25.4.1 — Initial release

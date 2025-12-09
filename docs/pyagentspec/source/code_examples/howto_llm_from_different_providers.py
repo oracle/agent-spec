@@ -64,6 +64,7 @@ llm = VllmConfig(
     model_id="llama-4-maverick",
     url="http://url.to.my.vllm.server/llama4mav",
     default_generation_parameters=generation_config,
+    api_key="optional_api_key",
 )
 # .. vllm-end
 
@@ -88,7 +89,8 @@ llm = OllamaConfig(
     name="ollama-llama-4",
     model_id="llama-4-maverick",
     url="http://url.to.my.ollama.server/llama4mav",
-    default_generation_parameters=generation_config
+    default_generation_parameters=generation_config,
+    api_key="optional_api_key",
 )
 # .. ollama-end
 

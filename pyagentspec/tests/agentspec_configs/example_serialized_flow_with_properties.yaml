@@ -143,6 +143,7 @@ $referenced_components:
     llm_config:
       component_type: VllmConfig
       id: 99asbdiugjk4b5
+      api_key: null
       name: LLama 3.1 8b
       description: llama 3.1 config
       metadata: {}

@@ -13,6 +13,7 @@ inputs: []
 outputs: []
 llm_config:
   component_type: VllmConfig
+  api_key: null
   id: agi1
   name: agi1
   description: null
@@ -53,6 +54,7 @@ tools:
   data: {}
   query_params: {}
   headers: {}
+  sensitive_headers: {}
 - component_type: MCPTool
   id: mcp123
   name: mcp_tool
@@ -71,6 +73,7 @@ tools:
       read_timeout_seconds: 60.0
     url: https://example.com/sse
     headers: null
+    sensitive_headers: null
 - component_type: BuiltinTool
   id: builtin123
   name: builtin_tool

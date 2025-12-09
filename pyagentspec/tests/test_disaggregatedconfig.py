@@ -348,7 +348,11 @@ def test_deserialize_with_unsupported_registry_type_raises_error(
     deserializer = AgentSpecDeserializer()
     mismatched_registry = {"custom_tool_id": "not_a_component"}  # String instead of Component
     with pytest.raises(
-        ValueError, match="Type mismatch for ID custom_tool_id: expected Component, got str"
+        ValueError,
+        match=(
+            "Type mismatch when loading component with reference 'custom_tool_id': expected 'Tool'"
+            ", got 'str'. If using a component registry, make sure that the components are correct"
+        ),
     ):
         deserializer.from_yaml(
             serialized_main_config_with_custom_id, components_registry=mismatched_registry  # type: ignore
@@ -409,7 +413,13 @@ def test_deserialize_main_missing_registry_reference_raises_error(
     serialized_main_config_with_custom_id: str,
 ) -> None:
     deserializer = AgentSpecDeserializer()
-    with pytest.raises(KeyError, match="Missing reference for ID: custom_tool_id"):
+    with pytest.raises(
+        ValueError,
+        match=(
+            "The following references to fields or components are missing and should be passed as part"
+            r" of the component registry when deserializing: \['custom_tool_id']"
+        ),
+    ):
         deserializer.from_yaml(serialized_main_config_with_custom_id, components_registry=None)
 
 
