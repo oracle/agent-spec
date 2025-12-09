@@ -13,6 +13,7 @@ inputs: []
 outputs: []
 llm_config:
   component_type: VllmConfig
+  api_key: null
   id: agi1
   name: agi1
   description: null
@@ -70,5 +71,6 @@ $referenced_components:
       read_timeout_seconds: 60
     url: https://some.where/sse
     headers: null
+    sensitive_headers: null
 human_in_the_loop: true
 agentspec_version: 25.4.2

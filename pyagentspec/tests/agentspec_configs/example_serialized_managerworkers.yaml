@@ -63,6 +63,7 @@ $referenced_components:
   vllm:
     component_type: VllmConfig
     id: vllm
+    api_key: null
     name: model_name
     description: null
     metadata: {}
