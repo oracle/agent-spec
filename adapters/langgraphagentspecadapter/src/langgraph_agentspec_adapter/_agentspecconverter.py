@@ -168,7 +168,12 @@ class LangGraphToAgentSpecConverter:
             ServerTool(
                 name=tool["function"]["name"],
                 description=tool["function"]["description"],
-                inputs=[Property(json_schema=tool["function"]["parameters"])],
+                inputs=[
+                    Property(json_schema=property_json_schema, title=property_title)
+                    for property_title, property_json_schema in tool["function"]["parameters"][
+                        "properties"
+                    ].items()
+                ],
             )
             for tool in tools
         ]
