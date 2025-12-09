@@ -39,6 +39,7 @@ $referenced_components:
     human_in_the_loop: true
   vllm:
     component_type: VllmConfig
+    api_key: null
     id: vllm
     name: model_name
     description: null

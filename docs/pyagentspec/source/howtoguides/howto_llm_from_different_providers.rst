@@ -216,6 +216,10 @@ The ``VllmConfig`` allows users to use this type of models in their agents and f
 
   Default parameters for text generation with this model.
 
+.. option:: api_key: str, null
+
+  An optional api key if the remote vllm server requires it.
+
 **Examples**
 
 .. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
@@ -247,6 +251,10 @@ The ``OllamaConfig`` allows users to use this type of models in their agents and
 .. option:: default_generation_parameters: dict, null
 
   Default parameters for text generation with this model.
+
+.. option:: api_key: str, null
+
+  An optional api key if the ollama server requires it.
 
 **Examples**
 

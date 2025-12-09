@@ -606,8 +606,9 @@ OpenAI Compatible LLMs
 
 This class of LLMs groups all the LLMs that are compatible with either the
 `OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
-The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
-By default, the API type is set to chat completions.
+The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely
+``chat_completions`` or ``responses``. By default, the API type is set to chat completions. Additionally, an optional
+``api_key`` can be set for the remote LLM model.
 
 .. code-block:: python
 
@@ -615,6 +616,7 @@ By default, the API type is set to chat completions.
      model_id: str
      url: str
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     api_key: SensitiveField[Optional[str]] = None
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -717,7 +719,7 @@ Client configuration that should be used if users want to use authentication thr
 
     class OciClientConfigWithSecurityToken(OciClientConfig):
         auth_profile: str
-        auth_file_location: str
+        auth_file_location: SensitiveField[str]
         auth_type: Literal["SECURITY_TOKEN"] = "SECURITY_TOKEN"
 
 OciClientConfigWithApiKey
@@ -729,7 +731,7 @@ Client configuration that should be used if users want to use authentication wit
 
     class OciClientConfigWithApiKey(OciClientConfig):
         auth_profile: str
-        auth_file_location: str
+        auth_file_location: SensitiveField[str]
         auth_type: Literal["API_KEY"] = "API_KEY"
 
 OciClientConfigWithInstancePrincipal
@@ -828,6 +830,7 @@ the correct built-in tool.
      data: Dict[str, Any]
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
+     sensitive_headers: SensitiveField[Dict[str, Any]]
 
    class MCPTool(Tool):
      client_transport: ClientTransport
@@ -861,7 +864,7 @@ in the right manner.
 Note that, similarly to the APINode, we allow users to use placeholders
 (as described in section 5.3.4) in all the string attributes of the
 RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
-of data, query_params, and headers).
+of data, query_params, headers, and sensitive_headers).
 
 
 MCP Tools
@@ -1497,6 +1500,14 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - sensitive_headers
+              - Additional headers for the API call. These additional headers are merged with the headers provided
+                as `headers` when executing the request, but these headers are excluded from exported configuration
+                thus they are better suited to contain sensitive information not intended to be shared as widely as
+                the exported configuration.
+              - object[str, any]
+              - No
+              - {}
 
       - Inferred from the json spec retrieved from API Spec URI, if available and reachable.
         Empty otherwise (users will have to manually specify them)
@@ -2056,10 +2067,15 @@ the ``url`` and ``headers`` fields.
    class RemoteTransport(ClientTransport):
      url: str
      headers: Dict[str, str]
+     sensitive_headers: SensitiveField[Dict[str, str]]
 
 
 - ``url`` is a string representing the URL to send the request.
 - ``headers`` is a dictionary of additional headers to use in the client.
+- ``sensitive_headers`` are additional headers that should be merged with the ``headers`` provided
+  when executing the request, but these headers are excluded from exported configuration thus they
+  are better suited to contain sensitive information not intended to be shared as widely as the
+  exported configuration.
 
 
 SSE Transport
@@ -2105,9 +2121,9 @@ SSE Transport with mTLS
 .. code-block:: python
 
    class SSEmTLSTransport(SSETransport):
-     key_file: str
-     cert_file: str
-     ca_file: str
+     key_file: SensitiveField[str]
+     cert_file: SensitiveField[str]
+     ca_file: SensitiveField[str]
 
 - ``key_file`` is the path to the client's private key file (PEM format).
 - ``cert_file`` is the path to the client's certificate chain file (PEM format).
@@ -2120,9 +2136,9 @@ Streamable HTTP Transport with mTLS
 .. code-block:: python
 
    class StreamableHTTPmTLSTransport(StreamableHTTPTransport):
-     key_file: str
-     cert_file: str
-     ca_file: str
+     key_file: SensitiveField[str]
+     cert_file: SensitiveField[str]
+     ca_file: SensitiveField[str]
 
 
 - ``key_file`` is the path to the client's private key file (PEM format).
@@ -2314,6 +2330,90 @@ And here's the configuration containing the disaggregated components:
       }
     }
 
+
+
+
+.. _agentspecsensitivefield_nightly:
+
+Sensitive fields
+----------------
+
+Some of the fields in the configuration of Agent Spec components may contain sensitive information
+such as API keys or authentication tokens. To help developers securely support these components,
+AgentSpec runtimes and SDKs must follow these three guidelines:
+
+- **When exporting configurations**: Any sensitive field must be excluded from the configurations.
+- **When loading configurations**: Runtime adapters and SDKs must allow passing the excluded sensitive information.
+- **When loading configurations**: If developers have already inlined the sensitive information into their
+  configurations, runtimes and SDKs should allow loading these configurations too.
+
+See all the fields below that are considered sensitive fields:
+
++----------------------------------+--------------------+
+| Component                        | Attribute          |
++==================================+====================+
+| OpenAiCompatibleConfig           | api_key            |
++----------------------------------+--------------------+
+| OciClientConfigWithSecurityToken | auth_file_location |
++----------------------------------+--------------------+
+| OciClientConfigWithApiKey        | auth_file_location |
++----------------------------------+--------------------+
+| RemoteTool                       | sensitive_headers  |
++----------------------------------+--------------------+
+| ApiNode                          | sensitive_headers  |
++----------------------------------+--------------------+
+| RemoteTransport                  | sensitive_headers  |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | key_file           |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | cert_file          |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | ca_file            |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | key_file           |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | cert_file          |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | ca_file            |
++----------------------------------+--------------------+
+
+
+For example, the following component produced using the `pyagentspec` SDK:
+
+.. code-block:: python
+
+    OpenAiCompatibleConfig(
+        name="llm-config",
+        id="llm-config-id",
+        url="https://some.api.com/v2",
+        model_id="some_model_id",
+        api_key="THIS_IS_SECRET",
+    )
+
+should produce the following configuration, in which the sensitive ``api_key`` is replaced by a reference
+
+.. code-block:: JSON5
+
+    {
+      "component_type" : "OpenAiCompatibleConfig",
+      "id" : "llm-config-id",
+      "name" : "llm-config",
+      "url" : "https://some.api.com/v2",
+      "model_id" : "some_model_id",
+      "api_key" : {
+        "$component_ref" : "llm-config-id.api_key"
+      },
+    }
+
+Such a configuration would then require to pass the referenced sensitive information when loading, as
+in the example code below:
+
+.. code-block:: python
+
+    llm_config = AgentSpecDeserializer().from_json(
+        serialized_llm,
+        components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
+    )
 
 
 Additional components for future versions

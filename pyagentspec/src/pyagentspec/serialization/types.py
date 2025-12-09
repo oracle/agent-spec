@@ -7,7 +7,7 @@
 """This module defines typing aliases for the Agent Spec serialization."""
 
 from collections import UserDict
-from typing import Any, Dict, Generic, List, Mapping, Optional, Sequence, Set, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple, Union
 
 from typing_extensions import TypeAlias
 
@@ -33,9 +33,11 @@ FieldName: TypeAlias = str
 """Alias for a component field name."""
 FieldID: TypeAlias = str
 """Alias for a component field ID."""
+FieldValue: TypeAlias = Any
+"""Alias for the value of a field of a component."""
 
 
-ComponentsRegistryT: TypeAlias = Mapping[FieldID, Union[Component, Tuple[Component, FieldName]]]
+ComponentsRegistryT: TypeAlias = Mapping[FieldID, Union[Component, FieldValue]]
 """Component registry provided by the user when deserializing a component."""
 
 DisaggregatedComponentsConfigT: TypeAlias = Sequence[

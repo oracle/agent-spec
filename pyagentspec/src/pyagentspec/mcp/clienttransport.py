@@ -9,8 +9,12 @@
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Self
 
 from pyagentspec.component import Component
+from pyagentspec.sensitive_field import SensitiveField
+from pyagentspec.validation_helpers import model_validator_with_error_accumulation
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 class SessionParameters(BaseModel):
@@ -65,6 +69,35 @@ class RemoteTransport(ClientTransport, abstract=True):
     """The URL of the server."""
     headers: Optional[Dict[str, str]] = None
     """The headers to send to the server."""
+    sensitive_headers: SensitiveField[Optional[Dict[str, str]]] = None
+    """Additional headers to send to the server.
+       These headers are intended to be used for sensitive information such as
+       authentication tokens and will be excluded form exported JSON configs."""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = set()
+        if agentspec_version < AgentSpecVersionEnum.v25_4_2:
+            fields_to_exclude.add("sensitive_headers")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        if self.sensitive_headers:
+            # `api_key` is only introduced starting from 25.4.2
+            return AgentSpecVersionEnum.v25_4_2
+
+        return super()._infer_min_agentspec_version_from_configuration()
+
+    @model_validator_with_error_accumulation
+    def _validate_sensitive_headers_are_disjoint(self) -> Self:
+        repeated_headers = set(self.headers or {}).intersection(set(self.sensitive_headers or {}))
+        if repeated_headers:
+            raise ValueError(
+                f"Found some headers have been specified in both `headers` and "
+                f"`sensitive_headers`: {repeated_headers}"
+            )
+        return self
 
 
 class SSETransport(RemoteTransport):
@@ -89,11 +122,11 @@ class SSEmTLSTransport(SSETransport):
 
     """
 
-    key_file: str
+    key_file: SensitiveField[str]
     """The path to the client's private key file (PEM format). If None, mTLS cannot be performed."""
-    cert_file: str
+    cert_file: SensitiveField[str]
     """The path to the client's certificate chain file (PEM format). If None, mTLS cannot be performed."""
-    ca_file: str
+    ca_file: SensitiveField[str]
     """The path to the trusted CA certificate file (PEM format) to verify the server.
     If None, system cert store is used."""
 
@@ -120,10 +153,10 @@ class StreamableHTTPmTLSTransport(StreamableHTTPTransport):
 
     """
 
-    key_file: str
+    key_file: SensitiveField[str]
     """The path to the client's private key file (PEM format). If None, mTLS cannot be performed."""
-    cert_file: str
+    cert_file: SensitiveField[str]
     """The path to the client's certificate chain file (PEM format). If None, mTLS cannot be performed."""
-    ca_file: str
+    ca_file: SensitiveField[str]
     """The path to the trusted CA certificate file (PEM format) to verify the server.
     If None, system cert store is used."""

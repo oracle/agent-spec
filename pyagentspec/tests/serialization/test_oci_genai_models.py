@@ -21,20 +21,24 @@ from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
     "client_config",
     [
         OciClientConfigWithApiKey(
+            id="client_config_id",
             name="oci_client_config",
             service_endpoint="SERVICE_ENDPOINT",
             auth_profile="DEFAULT",
             auth_file_location="~/.oci/config",
         ),
         OciClientConfigWithInstancePrincipal(
+            id="client_config_id",
             name="oci_client_config",
             service_endpoint="SERVICE_ENDPOINT",
         ),
         OciClientConfigWithResourcePrincipal(
+            id="client_config_id",
             name="oci_client_config",
             service_endpoint="SERVICE_ENDPOINT",
         ),
         OciClientConfigWithSecurityToken(
+            id="client_config_id",
             name="oci_client_config",
             service_endpoint="SERVICE_ENDPOINT",
             auth_profile="DEFAULT",
@@ -55,5 +59,10 @@ def test_can_serialize_and_deserialize_oci_genai_models(client_config: OciClient
     assert "client_config:" in serialized_llm
     assert "service_endpoint: SERVICE_ENDPOINT" in serialized_llm
     assert f"component_type: {type(client_config).__name__}" in serialized_llm
-    deserialized_llm = AgentSpecDeserializer().from_yaml(serialized_llm)
+    deserialized_llm = AgentSpecDeserializer().from_yaml(
+        serialized_llm,
+        components_registry={
+            "client_config_id.auth_file_location": "~/.oci/config",
+        },
+    )
     assert llm == deserialized_llm
