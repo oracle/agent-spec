@@ -96,6 +96,7 @@ Specifying a RemoteTool
      data: Dict[str, Any]
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
+     sensitive_headers: SensitiveField[Dict[str, Any]]
 
 For more details on tools, see the :ref:`Agent Spec Language Specification <agentspecspec>`.
 

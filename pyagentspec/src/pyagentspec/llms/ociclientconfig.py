@@ -8,6 +8,7 @@
 from typing import Literal
 
 from pyagentspec.component import Component
+from pyagentspec.sensitive_field import SensitiveField
 
 
 class OciClientConfig(Component, abstract=True):
@@ -21,7 +22,7 @@ class OciClientConfigWithSecurityToken(OciClientConfig):
     """OCI client config class for authentication using SECURITY_TOKEN."""
 
     auth_profile: str
-    auth_file_location: str
+    auth_file_location: SensitiveField[str]
     auth_type: Literal["SECURITY_TOKEN"] = "SECURITY_TOKEN"
 
 
@@ -41,5 +42,5 @@ class OciClientConfigWithApiKey(OciClientConfig):
     """OCI client config class for authentication using API_KEY and a config file."""
 
     auth_profile: str
-    auth_file_location: str
+    auth_file_location: SensitiveField[str]
     auth_type: Literal["API_KEY"] = "API_KEY"
