@@ -1335,6 +1335,11 @@
           "title": "Headers",
           "type": "object"
         },
+        "sensitive_headers": {
+          "additionalProperties": true,
+          "title": "Sensitive Headers",
+          "type": "object"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -3447,6 +3452,18 @@
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
         },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -3529,6 +3546,18 @@
             "api_type": {
               "$ref": "#/$defs/OpenAIAPIType",
               "default": "chat_completions"
+            },
+            "api_key": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Key"
             },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
@@ -4027,6 +4056,11 @@
           "title": "Headers",
           "type": "object"
         },
+        "sensitive_headers": {
+          "additionalProperties": true,
+          "title": "Sensitive Headers",
+          "type": "object"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -4123,6 +4157,21 @@
               "default": null,
               "title": "Headers"
             },
+            "sensitive_headers": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Sensitive Headers"
+            },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
             },
@@ -4197,6 +4246,21 @@
           ],
           "default": null,
           "title": "Headers"
+        },
+        "sensitive_headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sensitive Headers"
         },
         "key_file": {
           "title": "Key File",
@@ -4643,6 +4707,21 @@
               "default": null,
               "title": "Headers"
             },
+            "sensitive_headers": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Sensitive Headers"
+            },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
             },
@@ -4717,6 +4796,21 @@
           ],
           "default": null,
           "title": "Headers"
+        },
+        "sensitive_headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sensitive Headers"
         },
         "key_file": {
           "title": "Key File",
@@ -5032,6 +5126,18 @@
         "api_type": {
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"

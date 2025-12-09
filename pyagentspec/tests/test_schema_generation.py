@@ -263,9 +263,9 @@ def test_component_schema_generation_works() -> None:
 
 
 def test_component_schema_corresponds_to_agentspec_schema_in_docs() -> None:
-    # If this test fails because the Agent Spec json schema was updated, please update
-    # the reference json schema displayed in the docs at the path specified below
-    # It should be updated with the json dump of Component.model_json_schema()
+    # If this test fails because the Agent Spec json schema was updated, please update the
+    # reference json schema displayed in the docs at the path specified below. It should be updated
+    # with the json dump of `Component.model_json_schema(only_core_components=True)`
     agentspec_version = AgentSpecVersionEnum.current_version.value.replace(".", "_")
     agentspec_version_file = f"agentspec_json_spec_{agentspec_version}.json"
     component_json_schema = Component.model_json_schema(only_core_components=True)

@@ -12,7 +12,7 @@ The class provides entry points to read Agent Spec from a serialized form.
 """
 
 import json
-from typing import Dict, List, Literal, Optional, Tuple, Union, overload
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union, overload
 
 import yaml
 
@@ -380,6 +380,7 @@ class AgentSpecDeserializer:
         ... )
 
         """
+        self._check_missing_component_references(dict_content, components_registry)
         all_keys = set(dict_content.keys())
         if not import_only_referenced_components:
             # Loading as a Main Component
@@ -471,3 +472,53 @@ class AgentSpecDeserializer:
             all_validation_errors.extend(validation_errors)
 
         return referenced_components, all_validation_errors
+
+    @staticmethod
+    def _check_missing_component_references(
+        dict_content: ComponentAsDictT, components_registry: Optional[ComponentsRegistryT] = None
+    ) -> None:
+        """
+        Check that all references that are part of the dict_content are either defined in
+        dict_content["$referenced_components"] or are present in the components_registry.
+        If any references is not defined an error is raised.
+        """
+        all_used_references, all_defined_references = (
+            AgentSpecDeserializer._recursively_get_all_references(dict_content)
+        )
+        all_defined_references.update(set((components_registry or {}).keys()))
+        missing_references = [
+            ref for ref in all_used_references if ref not in all_defined_references
+        ]
+        if missing_references:
+            raise ValueError(
+                "The following references to fields or components are missing and should be passed"
+                " as part of the component registry when deserializing: "
+                f"{sorted(list(missing_references))}"
+            )
+
+    @staticmethod
+    def _recursively_get_all_references(value: Dict[str, Any]) -> Tuple[Set[str], Set[str]]:
+        """
+        This method recursively traverses the content of `value` and collects all the references
+        used that appear as `{"$component_ref": "some_component_id"}` and all the references that
+        are defined in the content as part of the nested `"$referenced_components"`.
+        """
+        used_references, defined_references = set(), set()
+        visited = {id(value)}
+        exploration_stack: List[Dict[Any, Any] | List[Any]] = [value]
+        while exploration_stack:
+            current_value = exploration_stack.pop()
+            if isinstance(current_value, dict) and "$component_ref" in current_value:
+                used_references.add(current_value["$component_ref"])
+            if isinstance(current_value, dict) and "$referenced_components" in current_value:
+                defined_references.update(set(current_value["$referenced_components"]))
+
+            nested_values = (
+                current_value.values() if isinstance(current_value, dict) else current_value
+            )
+            for nested_value in nested_values:
+                if isinstance(nested_value, (dict, list)) and id(nested_value) not in visited:
+                    visited.add(id(nested_value))
+                    exploration_stack.append(nested_value)
+
+        return used_references, defined_references
