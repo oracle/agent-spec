@@ -844,21 +844,21 @@ class ComponentWithIO(Component, abstract=True):
         if self.outputs is None:
             self.outputs = self._get_inferred_outputs()
 
-    @staticmethod
-    def _validate_no_duplicate_properties(properties: List[Property]) -> None:
+    @classmethod
+    def _validate_no_duplicate_properties(cls, properties: List[Property]) -> None:
         property_title_counts = Counter(p.title for p in properties)
         duplicated_property_titles = [
             property_title for property_title, count in property_title_counts.items() if count > 1
         ]
-        if any(duplicated_property_titles):
+        if len(duplicated_property_titles) > 0:
             raise ValueError(
                 "Found multiple instances of properties (inputs or outputs) with the same title in "
-                f"a ComponentWithIO. Please ensure titles are unique: {duplicated_property_titles}"
+                f"a {cls.__name__}. Please ensure titles are unique: {duplicated_property_titles}"
             )
 
-    @staticmethod
+    @classmethod
     def _validate_no_missing_property(
-        property_titles: Set[str], inferred_property_titles: Set[str]
+        cls, property_titles: Set[str], inferred_property_titles: Set[str]
     ) -> None:
         """
         Validate properties of ComponentWithIO.
@@ -869,15 +869,15 @@ class ComponentWithIO(Component, abstract=True):
         missing_property_titles = [
             title for title in inferred_property_titles if title not in property_titles
         ]
-        if any(missing_property_titles):
+        if len(missing_property_titles) > 0:
             raise ValueError(
-                f"The component expected a property titled {missing_property_titles[0]}, but none"
+                f"The {cls.__name__} component expected a property titled `{missing_property_titles[0]}`, but none"
                 f" of the passed properties have this title: {list(property_titles)}."
             )
 
-    @staticmethod
+    @classmethod
     def _validate_no_extra_property(
-        property_titles: Set[str], inferred_property_titles: Set[str]
+        cls, property_titles: Set[str], inferred_property_titles: Set[str]
     ) -> None:
         """
         Validate properties of ComponentWithIO.
@@ -888,9 +888,14 @@ class ComponentWithIO(Component, abstract=True):
         extra_property_titles = [
             title for title in property_titles if title not in inferred_property_titles
         ]
-        if any(extra_property_titles):
+        if len(extra_property_titles) > 0:
+            if len(inferred_property_titles) == 0:
+                raise ValueError(
+                    f"The {cls.__name__} component received a property titled `{extra_property_titles[0]}`, but "
+                    "did not expect any properties"
+                )
             raise ValueError(
-                f"The component received a property titled {extra_property_titles[0]}, but "
+                f"The {cls.__name__} component received a property titled `{extra_property_titles[0]}`, but "
                 f"expected only properties with the titles: {list(inferred_property_titles)}."
             )
 
@@ -921,13 +926,13 @@ class ComponentWithIO(Component, abstract=True):
         inferred_inputs = self._get_inferred_inputs()
         if self.inputs is None:
             raise ValueError("Something went wrong, inputs should not be None")
-        ComponentWithIO._validate_no_duplicate_properties(self.inputs)
+        self._validate_no_duplicate_properties(self.inputs)
         inputs_by_title = {p.title: p for p in self.inputs}
         inferred_inputs_by_title = {p.title: p for p in inferred_inputs}
         input_titles = set(inputs_by_title)
         inferred_input_titles = set(inferred_inputs_by_title)
-        ComponentWithIO._validate_no_missing_property(input_titles, inferred_input_titles)
-        ComponentWithIO._validate_no_extra_property(input_titles, inferred_input_titles)
+        self._validate_no_missing_property(input_titles, inferred_input_titles)
+        self._validate_no_extra_property(input_titles, inferred_input_titles)
         return self
 
     @model_validator_with_error_accumulation
@@ -935,11 +940,11 @@ class ComponentWithIO(Component, abstract=True):
         inferred_outputs = self._get_inferred_outputs()
         if self.outputs is None:
             raise ValueError("Something went wrong, outputs should not be None")
-        ComponentWithIO._validate_no_duplicate_properties(self.outputs)
+        self._validate_no_duplicate_properties(self.outputs)
         outputs_by_title = {p.title: p for p in self.outputs}
         inferred_outputs_by_title = {p.title: p for p in inferred_outputs}
         output_titles = set(outputs_by_title)
         inferred_output_titles = set(inferred_outputs_by_title)
-        ComponentWithIO._validate_no_missing_property(output_titles, inferred_output_titles)
-        ComponentWithIO._validate_no_extra_property(output_titles, inferred_output_titles)
+        self._validate_no_missing_property(output_titles, inferred_output_titles)
+        self._validate_no_extra_property(output_titles, inferred_output_titles)
         return self

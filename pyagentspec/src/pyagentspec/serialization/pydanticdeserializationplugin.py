@@ -9,6 +9,7 @@
 from typing import Any, Dict, List, Mapping, Tuple, Type, cast
 
 from pydantic import BaseModel, ValidationError
+from pydantic_core import InitErrorDetails
 
 from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import DeserializationContext
@@ -54,9 +55,17 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
             deserialization_context=deserialization_context,
         )
         if len(validation_errors) > 0:
+            line_errors = [
+                InitErrorDetails(
+                    type=e.type,
+                    loc=e.loc,
+                    input=(),
+                )
+                for e in validation_errors
+            ]
             raise ValidationError.from_exception_data(
                 title=component.__class__.__name__,
-                line_errors=[dict(e) for e in validation_errors],  # type: ignore
+                line_errors=line_errors,
             )
         return cast(Component, component)
 
@@ -104,7 +113,11 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
         except ValidationError as e:
             all_validation_errors.extend(
                 [
-                    PyAgentSpecErrorDetails(**error_details)  # type: ignore
+                    PyAgentSpecErrorDetails(
+                        type=error_details["type"],
+                        msg=error_details["msg"],
+                        loc=error_details["loc"],
+                    )
                     for error_details in e.errors()
                 ]
             )
