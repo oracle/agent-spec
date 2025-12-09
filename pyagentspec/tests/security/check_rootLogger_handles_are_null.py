@@ -197,7 +197,12 @@ def import_pyagentspec():
         id="321cba",
     )
     serialized_flow = serializer.to_yaml(flow)
-    _ = deserializer.from_yaml(serialized_flow)
+    _ = deserializer.from_yaml(
+        serialized_flow,
+        components_registry={
+            f"{oci_llm_config.client_config.id}.auth_file_location": "auth/file/location.txt",
+        },
+    )
 
 
 def test_for_empty_rootlogger():

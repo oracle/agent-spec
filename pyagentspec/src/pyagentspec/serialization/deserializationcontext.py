@@ -56,7 +56,6 @@ class DeserializationContext(ABC):
     @abstractmethod
     def get_component_type(self, content: Dict[str, Any]) -> str:
         """Get the type of component from the dedicated special field."""
-        pass
 
     @abstractmethod
     def load_config_dict(
@@ -65,7 +64,6 @@ class DeserializationContext(ABC):
         components_registry: Optional[ComponentsRegistryT],
     ) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
         """Load an Agent Spec configuration in dictionary form."""
-        pass
 
     @abstractmethod
     def load_field(
@@ -74,7 +72,6 @@ class DeserializationContext(ABC):
         annotation: Optional[type],
     ) -> Any:
         """Load a field based on its serialized field content and annotated type."""
-        pass
 
     def _partial_load_field(
         self,
@@ -230,7 +227,9 @@ class _DeserializationContextImpl(DeserializationContext):
             raise ValueError(f"Unknown Agent Spec Component type {component_type}")
         return component_class
 
-    def _load_reference(self, reference_id: str) -> Tuple[Component, List[PyAgentSpecErrorDetails]]:
+    def _load_reference(
+        self, reference_id: str, annotation: Optional[type] = None
+    ) -> Tuple[Any, List[PyAgentSpecErrorDetails]]:
         validation_errors: List[PyAgentSpecErrorDetails] = []
         if reference_id not in self.loaded_references:
             self.loaded_references[reference_id] = _DeserializationInProgressMarker()
@@ -249,8 +248,18 @@ class _DeserializationContextImpl(DeserializationContext):
                 f"Found a circular dependency during deserialization of object with id: "
                 f"'{reference_id}'"
             )
-        else:
-            return loaded_reference, validation_errors
+        if (
+            annotation
+            and isinstance(annotation, type)
+            and issubclass(annotation, Component)
+            and not isinstance(loaded_reference, annotation)
+        ):
+            raise ValueError(
+                f"Type mismatch when loading component with reference '{reference_id}': expected "
+                f"'{annotation.__name__}', got '{loaded_reference.__class__.__name__}'. "
+                "If using a component registry, make sure that the components are correct."
+            )
+        return loaded_reference, validation_errors
 
     def load_field(
         self,
@@ -271,6 +280,11 @@ class _DeserializationContextImpl(DeserializationContext):
         content: BaseModelAsDictT,
         annotation: Optional[type],
     ) -> Tuple[Any, List[PyAgentSpecErrorDetails]]:
+        # Some field may be disaggregated and available from the component registry. the condition
+        # below handles such fields.
+        if isinstance(content, dict) and "$component_ref" in content:
+            return self._load_reference(content["$component_ref"], annotation=annotation)
+
         origin_type = get_origin(annotation)
 
         if origin_type is Annotated:
@@ -510,19 +524,7 @@ class _DeserializationContextImpl(DeserializationContext):
             self.referenced_components.update(new_referenced_components)
 
         if "$component_ref" in content:
-            component_ref = content["$component_ref"]
-            cached_component, validation_errors = self._load_reference(component_ref)
-            if (
-                annotation
-                and issubclass(annotation, Component)
-                and not isinstance(cached_component, annotation)
-            ):
-                raise ValueError(
-                    f"Type mismatch when loading component with reference '{component_ref}': expected "
-                    f"'{annotation.__name__}', got '{cached_component.__class__.__name__}'. "
-                    "If using a component registry, make sure that the components are correct."
-                )
-            return cached_component, validation_errors
+            return self._load_reference(content["$component_ref"], annotation)
 
         component_type = self.get_component_type(content)
 
@@ -541,17 +543,8 @@ class _DeserializationContextImpl(DeserializationContext):
         self,
         components_registry: Optional[ComponentsRegistryT],
     ) -> None:
-        if not components_registry:
-            return None
-        for field_id, config_ in components_registry.items():
-            if isinstance(config_, Component):
-                self.loaded_references[field_id] = config_
-            elif isinstance(config_, tuple) and len(config_) == 2:
-                raise NotImplementedError("Component field disaggregation is not supported yet")
-            else:
-                raise ValueError(
-                    f"Type mismatch for ID {field_id}: expected Component, got {type(config_).__name__}"
-                )
+        if components_registry is not None:
+            self.loaded_references.update(components_registry)
 
     def load_config_dict(
         self,

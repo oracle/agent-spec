@@ -10,6 +10,7 @@ id: agent1
 inputs: []
 llm_config:
   component_type: VllmConfig
+  api_key: null
   default_generation_parameters: null
   description: null
   id: agi1
@@ -57,6 +58,7 @@ tools:
   description: Subscribe to the newsletter of a city
   headers:
     my_header: '123'
+  sensitive_headers: {}
   http_method: POST
   id: city_newsletter_subscribe_tool
   inputs:

@@ -22,6 +22,7 @@ agent:
   llm_config:
     component_type: VllmConfig
     id: agi1
+    api_key: null
     name: agi1
     description: null
     metadata: {}
@@ -89,6 +90,7 @@ agent_specialization_parameters:
       my_query_param: abc
     headers:
       my_header: '123'
+    sensitive_headers: {}
     requires_confirmation: false
   human_in_the_loop: null
 agentspec_version: 25.4.2

@@ -54,9 +54,9 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
             deserialization_context=deserialization_context,
         )
         if len(validation_errors) > 0:
-            raise ValidationError(
-                "Error during the validation of the component",
-                [dict(e) for e in validation_errors],
+            raise ValidationError.from_exception_data(
+                title=component.__class__.__name__,
+                line_errors=[dict(e) for e in validation_errors],  # type: ignore
             )
         return cast(Component, component)
 
