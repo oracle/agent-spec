@@ -3,20 +3,20 @@
     "A2AAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseA2AAgent"
         },
         {
-          "$ref": "#/$defs/BaseA2AAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "A2AConnectionConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseA2AConnectionConfig"
         },
         {
-          "$ref": "#/$defs/BaseA2AConnectionConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
@@ -45,170 +45,170 @@
     "Agent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgent"
         },
         {
-          "$ref": "#/$defs/BaseAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "AgentNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgentNode"
         },
         {
-          "$ref": "#/$defs/BaseAgentNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "AgentSpecializationParameters": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgentSpecializationParameters"
         },
         {
-          "$ref": "#/$defs/BaseAgentSpecializationParameters"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "AgenticComponent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgenticComponent"
         },
         {
-          "$ref": "#/$defs/BaseAgenticComponent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ApiNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseApiNode"
         },
         {
-          "$ref": "#/$defs/BaseApiNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "BranchingNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseBranchingNode"
         },
         {
-          "$ref": "#/$defs/BaseBranchingNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "BuiltinTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseBuiltinTool"
         },
         {
-          "$ref": "#/$defs/BaseBuiltinTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ClientTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseClientTool"
         },
         {
-          "$ref": "#/$defs/BaseClientTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ClientTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseClientTransport"
         },
         {
-          "$ref": "#/$defs/BaseClientTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ComponentWithIO": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseComponentWithIO"
         },
         {
-          "$ref": "#/$defs/BaseComponentWithIO"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ControlFlowEdge": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseControlFlowEdge"
         },
         {
-          "$ref": "#/$defs/BaseControlFlowEdge"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "DataFlowEdge": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseDataFlowEdge"
         },
         {
-          "$ref": "#/$defs/BaseDataFlowEdge"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "EndNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseEndNode"
         },
         {
-          "$ref": "#/$defs/BaseEndNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "Flow": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseFlow"
         },
         {
-          "$ref": "#/$defs/BaseFlow"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "FlowNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseFlowNode"
         },
         {
-          "$ref": "#/$defs/BaseFlowNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "InputMessageNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseInputMessageNode"
         },
         {
-          "$ref": "#/$defs/BaseInputMessageNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "LlmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseLlmConfig"
         },
         {
-          "$ref": "#/$defs/BaseLlmConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
@@ -259,69 +259,69 @@
     "LlmNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseLlmNode"
         },
         {
-          "$ref": "#/$defs/BaseLlmNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "MCPTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPTool"
         },
         {
-          "$ref": "#/$defs/BaseMCPTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "MCPToolBox": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPToolBox"
         },
         {
-          "$ref": "#/$defs/BaseMCPToolBox"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "MCPToolSpec": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPToolSpec"
         },
         {
-          "$ref": "#/$defs/BaseMCPToolSpec"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ManagerWorkers": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseManagerWorkers"
         },
         {
-          "$ref": "#/$defs/BaseManagerWorkers"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "MapNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMapNode"
         },
         {
-          "$ref": "#/$defs/BaseMapNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ModelProvider": {
       "description": "Provider of the model. It is used to ensure the requests to this model respect\nthe format expected by the provider.",
       "enum": [
-        "META",
-        "GROK",
         "COHERE",
+        "GROK",
+        "META",
         "OTHER"
       ],
       "title": "ModelProvider",
@@ -330,90 +330,100 @@
     "Node": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseNode"
         },
         {
-          "$ref": "#/$defs/BaseNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
+    },
+    "OciAPIType": {
+      "description": "Enumeration of API Types.",
+      "enum": [
+        "oci",
+        "openai_chat_completions",
+        "openai_responses"
+      ],
+      "title": "OciAPIType",
+      "type": "string"
     },
     "OciAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciAgent"
         },
         {
-          "$ref": "#/$defs/BaseOciAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciClientConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfig"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciClientConfigWithApiKey": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciClientConfigWithInstancePrincipal": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciClientConfigWithResourcePrincipal": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciClientConfigWithSecurityToken": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OciGenAiConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciGenAiConfig"
         },
         {
-          "$ref": "#/$defs/BaseOciGenAiConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OllamaConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOllamaConfig"
         },
         {
-          "$ref": "#/$defs/BaseOllamaConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
@@ -429,50 +439,50 @@
     "OpenAiCompatibleConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
         },
         {
-          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OpenAiConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOpenAiConfig"
         },
         {
-          "$ref": "#/$defs/BaseOpenAiConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "OutputMessageNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOutputMessageNode"
         },
         {
-          "$ref": "#/$defs/BaseOutputMessageNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ParallelFlowNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseParallelFlowNode"
         },
         {
-          "$ref": "#/$defs/BaseParallelFlowNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ParallelMapNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseParallelMapNode"
         },
         {
-          "$ref": "#/$defs/BaseParallelMapNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
@@ -484,10 +494,10 @@
       "description": "Enumerator for the types of reduction available in the MapNode.",
       "enum": [
         "append",
-        "sum",
         "average",
         "max",
-        "min"
+        "min",
+        "sum"
       ],
       "title": "ReductionMethod",
       "type": "string"
@@ -495,67 +505,68 @@
     "RemoteAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteAgent"
         },
         {
-          "$ref": "#/$defs/BaseRemoteAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "RemoteTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteTool"
         },
         {
-          "$ref": "#/$defs/BaseRemoteTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "RemoteTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteTransport"
         },
         {
-          "$ref": "#/$defs/BaseRemoteTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "SSETransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSSETransport"
         },
         {
-          "$ref": "#/$defs/BaseSSETransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "SSEmTLSTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSSEmTLSTransport"
         },
         {
-          "$ref": "#/$defs/BaseSSEmTLSTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ServerTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseServerTool"
         },
         {
-          "$ref": "#/$defs/BaseServerTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ServingMode": {
+      "description": "Serving mode to use for the GenAI service",
       "enum": [
-        "ON_DEMAND",
-        "DEDICATED"
+        "DEDICATED",
+        "ON_DEMAND"
       ],
       "title": "ServingMode",
       "type": "string"
@@ -575,100 +586,100 @@
     "SpecializedAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSpecializedAgent"
         },
         {
-          "$ref": "#/$defs/BaseSpecializedAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "StartNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStartNode"
         },
         {
-          "$ref": "#/$defs/BaseStartNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "StdioTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStdioTransport"
         },
         {
-          "$ref": "#/$defs/BaseStdioTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "StreamableHTTPTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStreamableHTTPTransport"
         },
         {
-          "$ref": "#/$defs/BaseStreamableHTTPTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "StreamableHTTPmTLSTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
         },
         {
-          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "Swarm": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSwarm"
         },
         {
-          "$ref": "#/$defs/BaseSwarm"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "Tool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseTool"
         },
         {
-          "$ref": "#/$defs/BaseTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ToolBox": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseToolBox"
         },
         {
-          "$ref": "#/$defs/BaseToolBox"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "ToolNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseToolNode"
         },
         {
-          "$ref": "#/$defs/BaseToolNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
     "VllmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseVllmConfig"
         },
         {
-          "$ref": "#/$defs/BaseVllmConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ]
     },
@@ -761,9 +772,9 @@
         }
       },
       "required": [
-        "name",
         "agent_url",
-        "connection_config"
+        "connection_config",
+        "name"
       ],
       "title": "A2AAgent",
       "type": "object",
@@ -980,8 +991,8 @@
         }
       },
       "required": [
-        "name",
         "llm_config",
+        "name",
         "system_prompt"
       ],
       "title": "Agent",
@@ -1072,8 +1083,8 @@
         }
       },
       "required": [
-        "name",
-        "agent"
+        "agent",
+        "name"
       ],
       "title": "AgentNode",
       "type": "object",
@@ -1348,9 +1359,9 @@
         }
       },
       "required": [
+        "http_method",
         "name",
-        "url",
-        "http_method"
+        "url"
       ],
       "title": "ApiNode",
       "type": "object",
@@ -1444,8 +1455,8 @@
         }
       },
       "required": [
-        "name",
-        "mapping"
+        "mapping",
+        "name"
       ],
       "title": "BranchingNode",
       "type": "object",
@@ -1852,8 +1863,8 @@
         }
       },
       "required": [
-        "name",
         "from_node",
+        "name",
         "to_node"
       ],
       "title": "ControlFlowEdge",
@@ -1918,11 +1929,11 @@
         }
       },
       "required": [
+        "destination_input",
+        "destination_node",
         "name",
         "source_node",
-        "source_output",
-        "destination_node",
-        "destination_input"
+        "source_output"
       ],
       "title": "DataFlowEdge",
       "type": "object",
@@ -2126,10 +2137,10 @@
         }
       },
       "required": [
+        "control_flow_connections",
         "name",
-        "start_node",
         "nodes",
-        "control_flow_connections"
+        "start_node"
       ],
       "title": "Flow",
       "type": "object",
@@ -2433,8 +2444,8 @@
         }
       },
       "required": [
-        "name",
         "llm_config",
+        "name",
         "prompt_template"
       ],
       "title": "LlmNode",
@@ -2523,8 +2534,8 @@
         }
       },
       "required": [
-        "name",
-        "client_transport"
+        "client_transport",
+        "name"
       ],
       "title": "MCPTool",
       "type": "object",
@@ -2575,10 +2586,10 @@
               "items": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/MCPToolSpec"
+                    "type": "string"
                   },
                   {
-                    "type": "string"
+                    "$ref": "#/$defs/MCPToolSpec"
                   }
                 ]
               },
@@ -2599,8 +2610,8 @@
         }
       },
       "required": [
-        "name",
-        "client_transport"
+        "client_transport",
+        "name"
       ],
       "title": "MCPToolBox",
       "type": "object",
@@ -2775,8 +2786,8 @@
         }
       },
       "required": [
-        "name",
         "group_manager",
+        "name",
         "workers"
       ],
       "title": "ManagerWorkers",
@@ -3014,9 +3025,9 @@
         }
       },
       "required": [
-        "name",
         "agent_endpoint_id",
-        "client_config"
+        "client_config",
+        "name"
       ],
       "title": "OciAgent",
       "type": "object",
@@ -3101,10 +3112,10 @@
         }
       },
       "required": [
-        "name",
-        "service_endpoint",
+        "auth_file_location",
         "auth_profile",
-        "auth_file_location"
+        "name",
+        "service_endpoint"
       ],
       "title": "OciClientConfigWithApiKey",
       "type": "object",
@@ -3294,10 +3305,10 @@
         }
       },
       "required": [
-        "name",
-        "service_endpoint",
+        "auth_file_location",
         "auth_profile",
-        "auth_file_location"
+        "name",
+        "service_endpoint"
       ],
       "title": "OciClientConfigWithSecurityToken",
       "type": "object",
@@ -3342,10 +3353,10 @@
         "default_generation_parameters": {
           "anyOf": [
             {
-              "$ref": "#/$defs/LlmGenerationConfig"
+              "type": "null"
             },
             {
-              "type": "null"
+              "$ref": "#/$defs/LlmGenerationConfig"
             }
           ],
           "default": null
@@ -3365,16 +3376,32 @@
         "provider": {
           "anyOf": [
             {
-              "$ref": "#/$defs/ModelProvider"
+              "type": "null"
             },
             {
-              "type": "null"
+              "$ref": "#/$defs/ModelProvider"
             }
           ],
           "default": null
         },
         "client_config": {
           "$ref": "#/$defs/OciClientConfig"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OciAPIType",
+          "default": "oci"
+        },
+        "conversation_store_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Store Id"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -3384,10 +3411,10 @@
         }
       },
       "required": [
-        "name",
-        "model_id",
+        "client_config",
         "compartment_id",
-        "client_config"
+        "model_id",
+        "name"
       ],
       "title": "OciGenAiConfig",
       "type": "object",
@@ -3432,10 +3459,10 @@
         "default_generation_parameters": {
           "anyOf": [
             {
-              "$ref": "#/$defs/LlmGenerationConfig"
+              "type": "null"
             },
             {
-              "type": "null"
+              "$ref": "#/$defs/LlmGenerationConfig"
             }
           ],
           "default": null
@@ -3472,9 +3499,9 @@
         }
       },
       "required": [
+        "model_id",
         "name",
-        "url",
-        "model_id"
+        "url"
       ],
       "title": "OllamaConfig",
       "type": "object",
@@ -3527,10 +3554,10 @@
             "default_generation_parameters": {
               "anyOf": [
                 {
-                  "$ref": "#/$defs/LlmGenerationConfig"
+                  "type": "null"
                 },
                 {
-                  "type": "null"
+                  "$ref": "#/$defs/LlmGenerationConfig"
                 }
               ],
               "default": null
@@ -3567,9 +3594,9 @@
             }
           },
           "required": [
+            "model_id",
             "name",
-            "url",
-            "model_id"
+            "url"
           ],
           "title": "OpenAiCompatibleConfig",
           "type": "object"
@@ -3616,10 +3643,10 @@
         "default_generation_parameters": {
           "anyOf": [
             {
-              "$ref": "#/$defs/LlmGenerationConfig"
+              "type": "null"
             },
             {
-              "type": "null"
+              "$ref": "#/$defs/LlmGenerationConfig"
             }
           ],
           "default": null
@@ -3640,8 +3667,8 @@
         }
       },
       "required": [
-        "name",
-        "model_id"
+        "model_id",
+        "name"
       ],
       "title": "OpenAiConfig",
       "type": "object",
@@ -3732,8 +3759,8 @@
         }
       },
       "required": [
-        "name",
-        "message"
+        "message",
+        "name"
       ],
       "title": "OutputMessageNode",
       "type": "object",
@@ -4069,9 +4096,9 @@
         }
       },
       "required": [
+        "http_method",
         "name",
-        "url",
-        "http_method"
+        "url"
       ],
       "title": "RemoteTool",
       "type": "object",
@@ -4282,11 +4309,11 @@
         }
       },
       "required": [
-        "name",
-        "url",
-        "key_file",
+        "ca_file",
         "cert_file",
-        "ca_file"
+        "key_file",
+        "name",
+        "url"
       ],
       "title": "SSEmTLSTransport",
       "type": "object",
@@ -4457,9 +4484,9 @@
         }
       },
       "required": [
-        "name",
         "agent",
-        "agent_specialization_parameters"
+        "agent_specialization_parameters",
+        "name"
       ],
       "title": "SpecializedAgent",
       "type": "object",
@@ -4637,8 +4664,8 @@
         }
       },
       "required": [
-        "name",
-        "command"
+        "command",
+        "name"
       ],
       "title": "StdioTransport",
       "type": "object",
@@ -4832,11 +4859,11 @@
         }
       },
       "required": [
-        "name",
-        "url",
-        "key_file",
+        "ca_file",
         "cert_file",
-        "ca_file"
+        "key_file",
+        "name",
+        "url"
       ],
       "title": "StreamableHTTPmTLSTransport",
       "type": "object",
@@ -4941,8 +4968,8 @@
         }
       },
       "required": [
-        "name",
         "first_agent",
+        "name",
         "relationships"
       ],
       "title": "Swarm",
@@ -5107,10 +5134,10 @@
         "default_generation_parameters": {
           "anyOf": [
             {
-              "$ref": "#/$defs/LlmGenerationConfig"
+              "type": "null"
             },
             {
-              "type": "null"
+              "$ref": "#/$defs/LlmGenerationConfig"
             }
           ],
           "default": null
@@ -5147,9 +5174,9 @@
         }
       },
       "required": [
+        "model_id",
         "name",
-        "url",
-        "model_id"
+        "url"
       ],
       "title": "VllmConfig",
       "type": "object",
@@ -5369,10 +5396,10 @@
     "VersionedA2AAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseA2AAgent"
         },
         {
-          "$ref": "#/$defs/BaseA2AAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5384,10 +5411,10 @@
     "VersionedA2AConnectionConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseA2AConnectionConfig"
         },
         {
-          "$ref": "#/$defs/BaseA2AConnectionConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5399,10 +5426,10 @@
     "VersionedAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgent"
         },
         {
-          "$ref": "#/$defs/BaseAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5414,10 +5441,10 @@
     "VersionedAgentNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgentNode"
         },
         {
-          "$ref": "#/$defs/BaseAgentNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5429,10 +5456,10 @@
     "VersionedAgentSpecializationParameters": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgentSpecializationParameters"
         },
         {
-          "$ref": "#/$defs/BaseAgentSpecializationParameters"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5444,10 +5471,10 @@
     "VersionedAgenticComponent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseAgenticComponent"
         },
         {
-          "$ref": "#/$defs/BaseAgenticComponent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5459,10 +5486,10 @@
     "VersionedApiNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseApiNode"
         },
         {
-          "$ref": "#/$defs/BaseApiNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5474,10 +5501,10 @@
     "VersionedBranchingNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseBranchingNode"
         },
         {
-          "$ref": "#/$defs/BaseBranchingNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5489,10 +5516,10 @@
     "VersionedBuiltinTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseBuiltinTool"
         },
         {
-          "$ref": "#/$defs/BaseBuiltinTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5504,10 +5531,10 @@
     "VersionedClientTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseClientTool"
         },
         {
-          "$ref": "#/$defs/BaseClientTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5519,10 +5546,10 @@
     "VersionedClientTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseClientTransport"
         },
         {
-          "$ref": "#/$defs/BaseClientTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5534,10 +5561,10 @@
     "VersionedComponentWithIO": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseComponentWithIO"
         },
         {
-          "$ref": "#/$defs/BaseComponentWithIO"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5549,10 +5576,10 @@
     "VersionedControlFlowEdge": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseControlFlowEdge"
         },
         {
-          "$ref": "#/$defs/BaseControlFlowEdge"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5564,10 +5591,10 @@
     "VersionedDataFlowEdge": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseDataFlowEdge"
         },
         {
-          "$ref": "#/$defs/BaseDataFlowEdge"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5579,10 +5606,10 @@
     "VersionedEndNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseEndNode"
         },
         {
-          "$ref": "#/$defs/BaseEndNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5594,10 +5621,10 @@
     "VersionedFlow": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseFlow"
         },
         {
-          "$ref": "#/$defs/BaseFlow"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5609,10 +5636,10 @@
     "VersionedFlowNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseFlowNode"
         },
         {
-          "$ref": "#/$defs/BaseFlowNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5624,10 +5651,10 @@
     "VersionedInputMessageNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseInputMessageNode"
         },
         {
-          "$ref": "#/$defs/BaseInputMessageNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5639,10 +5666,10 @@
     "VersionedLlmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseLlmConfig"
         },
         {
-          "$ref": "#/$defs/BaseLlmConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5654,10 +5681,10 @@
     "VersionedLlmNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseLlmNode"
         },
         {
-          "$ref": "#/$defs/BaseLlmNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5669,10 +5696,10 @@
     "VersionedMCPTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPTool"
         },
         {
-          "$ref": "#/$defs/BaseMCPTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5684,10 +5711,10 @@
     "VersionedMCPToolBox": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPToolBox"
         },
         {
-          "$ref": "#/$defs/BaseMCPToolBox"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5699,10 +5726,10 @@
     "VersionedMCPToolSpec": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMCPToolSpec"
         },
         {
-          "$ref": "#/$defs/BaseMCPToolSpec"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5714,10 +5741,10 @@
     "VersionedManagerWorkers": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseManagerWorkers"
         },
         {
-          "$ref": "#/$defs/BaseManagerWorkers"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5729,10 +5756,10 @@
     "VersionedMapNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseMapNode"
         },
         {
-          "$ref": "#/$defs/BaseMapNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5744,10 +5771,10 @@
     "VersionedNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseNode"
         },
         {
-          "$ref": "#/$defs/BaseNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5759,10 +5786,10 @@
     "VersionedOciAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciAgent"
         },
         {
-          "$ref": "#/$defs/BaseOciAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5774,10 +5801,10 @@
     "VersionedOciClientConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfig"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5789,10 +5816,10 @@
     "VersionedOciClientConfigWithApiKey": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5804,10 +5831,10 @@
     "VersionedOciClientConfigWithInstancePrincipal": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5819,10 +5846,10 @@
     "VersionedOciClientConfigWithResourcePrincipal": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithResourcePrincipal"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5834,10 +5861,10 @@
     "VersionedOciClientConfigWithSecurityToken": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
         },
         {
-          "$ref": "#/$defs/BaseOciClientConfigWithSecurityToken"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5849,10 +5876,10 @@
     "VersionedOciGenAiConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOciGenAiConfig"
         },
         {
-          "$ref": "#/$defs/BaseOciGenAiConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5864,10 +5891,10 @@
     "VersionedOllamaConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOllamaConfig"
         },
         {
-          "$ref": "#/$defs/BaseOllamaConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5879,10 +5906,10 @@
     "VersionedOpenAiCompatibleConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
         },
         {
-          "$ref": "#/$defs/BaseOpenAiCompatibleConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5894,10 +5921,10 @@
     "VersionedOpenAiConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOpenAiConfig"
         },
         {
-          "$ref": "#/$defs/BaseOpenAiConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5909,10 +5936,10 @@
     "VersionedOutputMessageNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseOutputMessageNode"
         },
         {
-          "$ref": "#/$defs/BaseOutputMessageNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5924,10 +5951,10 @@
     "VersionedParallelFlowNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseParallelFlowNode"
         },
         {
-          "$ref": "#/$defs/BaseParallelFlowNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5939,10 +5966,10 @@
     "VersionedParallelMapNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseParallelMapNode"
         },
         {
-          "$ref": "#/$defs/BaseParallelMapNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5954,10 +5981,10 @@
     "VersionedRemoteAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteAgent"
         },
         {
-          "$ref": "#/$defs/BaseRemoteAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5969,10 +5996,10 @@
     "VersionedRemoteTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteTool"
         },
         {
-          "$ref": "#/$defs/BaseRemoteTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5984,10 +6011,10 @@
     "VersionedRemoteTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseRemoteTransport"
         },
         {
-          "$ref": "#/$defs/BaseRemoteTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -5999,10 +6026,10 @@
     "VersionedSSETransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSSETransport"
         },
         {
-          "$ref": "#/$defs/BaseSSETransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6014,10 +6041,10 @@
     "VersionedSSEmTLSTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSSEmTLSTransport"
         },
         {
-          "$ref": "#/$defs/BaseSSEmTLSTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6029,10 +6056,10 @@
     "VersionedServerTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseServerTool"
         },
         {
-          "$ref": "#/$defs/BaseServerTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6044,10 +6071,10 @@
     "VersionedSpecializedAgent": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSpecializedAgent"
         },
         {
-          "$ref": "#/$defs/BaseSpecializedAgent"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6059,10 +6086,10 @@
     "VersionedStartNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStartNode"
         },
         {
-          "$ref": "#/$defs/BaseStartNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6074,10 +6101,10 @@
     "VersionedStdioTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStdioTransport"
         },
         {
-          "$ref": "#/$defs/BaseStdioTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6089,10 +6116,10 @@
     "VersionedStreamableHTTPTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStreamableHTTPTransport"
         },
         {
-          "$ref": "#/$defs/BaseStreamableHTTPTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6104,10 +6131,10 @@
     "VersionedStreamableHTTPmTLSTransport": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
         },
         {
-          "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6119,10 +6146,10 @@
     "VersionedSwarm": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseSwarm"
         },
         {
-          "$ref": "#/$defs/BaseSwarm"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6134,10 +6161,10 @@
     "VersionedTool": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseTool"
         },
         {
-          "$ref": "#/$defs/BaseTool"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6149,10 +6176,10 @@
     "VersionedToolBox": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseToolBox"
         },
         {
-          "$ref": "#/$defs/BaseToolBox"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6164,10 +6191,10 @@
     "VersionedToolNode": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseToolNode"
         },
         {
-          "$ref": "#/$defs/BaseToolNode"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6179,10 +6206,10 @@
     "VersionedVllmConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/ComponentReference"
+          "$ref": "#/$defs/BaseVllmConfig"
         },
         {
-          "$ref": "#/$defs/BaseVllmConfig"
+          "$ref": "#/$defs/ComponentReference"
         }
       ],
       "properties": {
@@ -6244,6 +6271,9 @@
     },
     {
       "$ref": "#/$defs/VersionedClientTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
     },
     {
       "$ref": "#/$defs/VersionedComponentWithIO"
@@ -6376,9 +6406,6 @@
     },
     {
       "$ref": "#/$defs/VersionedVllmConfig"
-    },
-    {
-      "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
     }
   ]
 }
