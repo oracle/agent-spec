@@ -2,12 +2,6 @@
 src_paths = [
     "pyagentspec/src",
     "pyagentspec/tests",
-    "adapters/autogenagentspecadapter/src",
-    "adapters/autogenagentspecadapter/tests",
-    "adapters/langgraphagentspecadapter/src",
-    "adapters/langgraphagentspecadapter/tests",
-    "adapters/crewaiagentspecadapter/src",
-    "adapters/crewaiagentspecadapter/tests",
 ]
 profile = "black"
 line_length = 100

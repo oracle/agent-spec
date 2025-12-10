@@ -9,7 +9,7 @@ import pathlib
 import signal
 import socket
 import ssl
-import subprocess
+import subprocess  # nosec B404
 import sys
 import threading
 import time
@@ -64,20 +64,20 @@ def terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> N
                 try:
                     process.terminate()
                 except Exception:
-                    pass
+                    pass  # nosec B110
         else:
             # Windows or other: terminate the single process
             try:
                 process.terminate()
             except Exception:
-                pass
+                pass  # nosec B110
 
         # Give it a moment to exit cleanly
         try:
             process.wait(timeout=timeout)
             return
         except Exception:
-            pass
+            pass  # nosec B110
 
         # 2) Forceful: SIGKILL the group (POSIX), otherwise kill the process
         if os.name == "posix":
@@ -88,25 +88,25 @@ def terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> N
                 try:
                     process.kill()
                 except Exception:
-                    pass
+                    pass  # nosec B110
         else:
             try:
                 process.kill()
             except Exception:
-                pass
+                pass  # nosec B110
 
         # Ensure it is gone
         try:
             process.wait(timeout=timeout)
         except Exception:
-            pass
+            pass  # nosec B110
     finally:
         # Close stdout to avoid ResourceWarning if we used a PIPE
         try:
             if getattr(process, "stdout", None) and not process.stdout.closed:
                 process.stdout.close()
         except Exception:
-            pass
+            pass  # nosec B110
 
 
 def start_uvicorn_server(
@@ -128,7 +128,7 @@ def start_uvicorn_server(
     env.setdefault("PYTHONUNBUFFERED", "1")
 
     # Start process with pipes and its own process group so we can kill children
-    process = subprocess.Popen(
+    process = subprocess.Popen(  # nosec B603
         process_args,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
