@@ -1891,7 +1891,7 @@ Swarm preserves the standard messaging and execution semantics of ``AgenticCompo
   class Swarm(AgenticComponent):
     first_agent: AgenticComponent
     relationships: List[Tuple[AgenticComponent, AgenticComponent]]
-    handoff: bool
+    handoff: Literal["never", "optional", "always"]
 
 When a Swarm is initialized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
 
@@ -1903,9 +1903,13 @@ From there, the ``first_agent`` may:
 The human user remains in conversation with the ``first agent`` during this time.
 The called agent can, in turn, call other agents it has relationships with to further handle a subtask.
 
-Alternatively, if ``handoff=True``, the first agent can also decide to handoff the conversation with human user to another agent.
-In this mode, the receiving agent takes over the conversation entirely, meanings it now becomes the one interacting directly with the human user.
-This handoof mechanism reduces latency by eliminating unnecessary message relays between agents.
+If ``handoff="optional"``, the first_agent also gains a third option:
+it may hand off the entire conversation to another agent.
+Once the handoff occurs, the receiving agent becomes the new primary point of contact for the human user. This mechanism can significantly reduce latency by avoiding unnecessary back-and-forth message passing between agents.
+
+When ``handoff="always"`` is enabled, an agent cannot call another agent and wait for a reply (i.e. it does not have the second option mentioned above).
+Delegation is only possible through a full handoff of the conversation.
+Handing off the conversation establishes a strict chain-of-ownership: each agent must transfer the entire dialogue context when involving another agent.
 
 Each relationship is defined as a tuple ``(caller_agent, recipient_agent)``
 which represents a one-way communication link from ``caller_agent`` to ``recipient_agent``.

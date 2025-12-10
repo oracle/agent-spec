@@ -20,7 +20,7 @@ relationships:
   - $component_ref: dermatologist
 - - $component_ref: dermatologist
   - $component_ref: pharmacist
-handoff: true
+handoff: "optional"
 $referenced_components:
   general_practitioner:
     component_type: Agent
