@@ -1,0 +1,151 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+from typing import Any
+
+import pytest
+
+from pyagentspec.datastores import (
+    InMemoryCollectionDatastore,
+)
+from pyagentspec.datastores.datastore import Datastore
+from pyagentspec.datastores.oracle import (
+    MTlsOracleDatabaseConnectionConfig,
+    OracleDatabaseDatastore,
+    TlsOracleDatabaseConnectionConfig,
+)
+from pyagentspec.datastores.postgres import (
+    PostgresDatabaseDatastore,
+    TlsPostgresDatabaseConnectionConfig,
+)
+from pyagentspec.property import (
+    FloatProperty,
+    IntegerProperty,
+    ObjectProperty,
+    Property,
+    StringProperty,
+)
+from pyagentspec.serialization.deserializer import AgentSpecDeserializer
+from pyagentspec.serialization.serializer import AgentSpecSerializer
+
+FAKE_PASSWORD = "testpass"  # nosec B105
+FAKE_TESTUSER = "testuser"
+FAKE_DSN = "testdsn"
+
+SCHEMA = {
+    "cache_collection": ObjectProperty(
+        properties={
+            "content": StringProperty(),
+            "ttl": IntegerProperty(),
+            "created_at": FloatProperty(),
+            "last_used_at": FloatProperty(),
+            "metadata": Property(json_schema={}),
+        }
+    )
+}
+
+
+def in_memory_datastore(schema):
+    return InMemoryCollectionDatastore(name="our_inmem_ds", datastore_schema=schema)
+
+
+def oracle_datastore_tls(schema):
+    config = TlsOracleDatabaseConnectionConfig(
+        id="myconfig",
+        name="test_config",
+        user=FAKE_TESTUSER,
+        password=FAKE_PASSWORD,
+        dsn=FAKE_DSN,
+        protocol="tcps",
+        config_dir="/configdir",
+    )
+    return OracleDatabaseDatastore(
+        id="my_ds", name="oracle_ds", datastore_schema=schema, connection_config=config
+    )
+
+
+def oracle_datastore_mtls(schema):
+    config = MTlsOracleDatabaseConnectionConfig(
+        id="myconfig_mtls",
+        name="test_config_mtls",
+        user=FAKE_TESTUSER,
+        password=FAKE_PASSWORD,
+        dsn=FAKE_DSN,
+        protocol="tcps",
+        config_dir="/configdir",
+        wallet_location="/wallet/location",
+        wallet_password="walletpass",  # nosec B106
+    )
+    return OracleDatabaseDatastore(
+        id="my_ds_mtls", name="oracle_ds_mtls", datastore_schema=schema, connection_config=config
+    )
+
+
+def postgres_datastore_tls(schema):
+    config = TlsPostgresDatabaseConnectionConfig(
+        id="myconfig_postgres",
+        name="test_config_postgres",
+        user=FAKE_TESTUSER,
+        password=FAKE_PASSWORD,
+        url="postgresql://localhost:5432/testdb",
+        sslmode="require",
+        sslcert="/path/to/client.crt",
+        sslkey="/path/to/client.key",
+        sslrootcert="/path/to/ca.crt",
+    )
+    return PostgresDatabaseDatastore(
+        id="my_ds_postgres", name="postgres_ds", datastore_schema=schema, connection_config=config
+    )
+
+
+@pytest.mark.parametrize(
+    "datastore, sensitive_fields",
+    [
+        (
+            oracle_datastore_tls(SCHEMA),
+            {
+                "myconfig.user": FAKE_TESTUSER,
+                "myconfig.password": FAKE_PASSWORD,
+                "myconfig.dsn": FAKE_DSN,
+            },
+        ),
+        (
+            oracle_datastore_mtls(SCHEMA),
+            {
+                "myconfig_mtls.user": FAKE_TESTUSER,
+                "myconfig_mtls.password": FAKE_PASSWORD,
+                "myconfig_mtls.dsn": FAKE_DSN,
+                "myconfig_mtls.wallet_location": "/wallet/location",
+                "myconfig_mtls.wallet_password": "walletpass",
+            },
+        ),
+        (
+            postgres_datastore_tls(SCHEMA),
+            {
+                "myconfig_postgres.user": FAKE_TESTUSER,
+                "myconfig_postgres.password": FAKE_PASSWORD,
+                "myconfig_postgres.sslkey": "/path/to/client.key",
+            },
+        ),
+        (in_memory_datastore(SCHEMA), {}),
+    ],
+)
+def test_can_serialize_and_deserialize_datastore(
+    datastore: Datastore, sensitive_fields: dict[str, Any]
+) -> None:
+    serialized_ds = AgentSpecSerializer().to_yaml(datastore)
+    print(serialized_ds)
+    assert len(serialized_ds.strip()) > 0
+    deserialized_ds = AgentSpecDeserializer().from_yaml(
+        yaml_content=serialized_ds, components_registry=sensitive_fields
+    )
+    assert deserialized_ds == datastore
+    serialized_ds = AgentSpecSerializer().to_json(datastore)
+    assert len(serialized_ds.strip()) > 0
+    deserialized_ds = AgentSpecDeserializer().from_yaml(
+        yaml_content=serialized_ds, components_registry=sensitive_fields
+    )
+    assert deserialized_ds == datastore
