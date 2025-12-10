@@ -45,6 +45,10 @@ Additionally, we provide the adapter implementation for some of the most common 
 - `AutoGen <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/autogen>`_
 - `CrewAI <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/crewai>`_
 
+.. seealso::
+
+    Click here to :doc:`learn more about the Agent Spec ecosystem <../ecosystem/integrations>`
+
 Each adapter contains two main public classes, ``AgentSpecExporter`` and ``AgentSpecLoader``.
 
 The ``AgentSpecExporter`` exposes APIs to export an object of the reference agentic framework into the equivalent
