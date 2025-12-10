@@ -64,6 +64,13 @@ class AgentSpecSerializer:
     def to_yaml(
         self,
         component: Component,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        component: Component,
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
     ) -> str: ...

@@ -161,6 +161,8 @@ def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
             Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
             Path("~/.pdbrc").expanduser(),
             Path(os.path.dirname(__file__)).parent / ".pdbrc",
+            Path(os.path.dirname(__file__)) / ".pdbrc",
+            Path("/etc/os-release"),
         ]
         + crewai_read_dirs
     )

@@ -9,27 +9,16 @@ from typing import Any
 
 import pytest
 
-from ..conftest import _replace_config_placeholders
+from ..conftest import _replace_config_placeholders, skip_tests_if_dependency_not_installed
 
 
 def pytest_collection_modifyitems(config: Any, items: Any):
     # We skip all the tests in this folder if langgraph is not installed
-    try:
-        import langgraph  # type: ignore
-
-        dependency_missing = False
-    except ImportError:
-        dependency_missing = True
-
-    for item in items:
-        if dependency_missing:
-            # If the dependency is missing we run only the test to check that the right error is raised
-            if item.name != "test_import_raises_if_langgraph_not_installed":
-                item.add_marker(pytest.mark.skip(reason="LangGraph is not installed"))
-        else:
-            # If the dependency is installed we run all the tests except the one that checks the import error
-            if item.name == "test_import_raises_if_langgraph_not_installed":
-                item.add_marker(pytest.mark.skip(reason="LangGraph is installed"))
+    skip_tests_if_dependency_not_installed(
+        module_name="langgraph",
+        directory=Path(__file__).parent,
+        items=items,
+    )
 
 
 def get_weather(city: str) -> str:

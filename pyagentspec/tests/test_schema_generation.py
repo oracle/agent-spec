@@ -286,4 +286,9 @@ def test_component_schema_corresponds_to_agentspec_schema_in_docs() -> None:
         else:
             return obj
 
-    assert normalize(component_json_schema) == normalize(docs_component_schema)
+    normalized_component_json_schema = normalize(component_json_schema)
+    ## this schema need to be put in the doc
+    ## uncomment the line below and copy it in the current json spec
+    # agentspec_spec_json_path.write_text(json.dumps(normalized_component_json_schema, indent=2))
+
+    assert normalized_component_json_schema == docs_component_schema

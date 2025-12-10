@@ -46,6 +46,15 @@ New features
 
   For more information read the :doc:`API Reference <api/llmmodels>`.
 
+* **OCI Responses API Support:**
+
+  :ref:`OciGenAiConfig <ocigenaiconfig>` now supports the OCI Responses API, which can be configured
+  using the ``api_type`` parameter, which accepts values from :ref:`OciAPIType <ociapitype>`.
+
+  This enhancement allows recent models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.
+
+  For more information read the :doc:`API Reference <api/llmmodels>`.
+
 * **ParallelFlowNode and ParallelMapNode**
 
   Added support for parallelization in Agent Spec through :ref:`ParallelFlowNode <parallelflownode>`, which runs several
