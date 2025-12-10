@@ -70,6 +70,7 @@ extensions = [
     "process_docstring_ext",  # custom extension in _ext/process_docstring_ext.py
     "docstring_role_ext",  # is used to support the :docstring: role
     "generate_api_table_ext",  # is used to automatically generate the API table
+    "sphinx_design",
 ]
 
 # Set the variables that should be replaced in the substitution-extensions directives
