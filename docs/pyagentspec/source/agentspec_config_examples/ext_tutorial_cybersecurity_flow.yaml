@@ -1,0 +1,1077 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+component_type: Flow
+id: c6eefe51-2eaa-4b73-9329-255df29a8251
+name: CyberSec_Assistant_Flow
+description: null
+metadata: {}
+inputs: []
+outputs: []
+start_node:
+  $component_ref: 6cd3c47a-0c40-44de-9a2d-1dbb7968c7e9
+nodes:
+- $component_ref: 6cd3c47a-0c40-44de-9a2d-1dbb7968c7e9
+- $component_ref: f66ebbf9-cede-4bdf-93b5-33d02278fdba
+- $component_ref: c037b20b-4a74-449e-bb82-0ac4c65f4bd0
+- $component_ref: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+- $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+- $component_ref: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+- $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+- $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+- $component_ref: 4df07259-f918-4e77-a6f1-340caa337b5c
+- $component_ref: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+- $component_ref: c1a48929-5de6-4ce4-9282-c7b01c1c65f3
+- $component_ref: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+- $component_ref: 2f334280-1352-48d3-a99c-6626addd3ed5
+- $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+- $component_ref: cf7df70c-f9c1-41a8-9286-4862f2955158
+- $component_ref: 0324fb6d-55ee-4eae-90c4-d5579b41ea02
+- $component_ref: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+- $component_ref: f5670867-70b3-42a9-a7f4-e906648aa327
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 86266d9a-2ff7-4509-8cc8-60072c8111b5
+  name: start_node_presentation_message_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 6cd3c47a-0c40-44de-9a2d-1dbb7968c7e9
+  from_branch: null
+  to_node:
+    $component_ref: c037b20b-4a74-449e-bb82-0ac4c65f4bd0
+- component_type: ControlFlowEdge
+  id: deb99460-baeb-4a0a-9868-1b771c00adf7
+  name: presentation_message_get_tenancy_id_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: c037b20b-4a74-449e-bb82-0ac4c65f4bd0
+  from_branch: null
+  to_node:
+    $component_ref: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+- component_type: ControlFlowEdge
+  id: c694d7cf-a5f4-4c6c-991e-086b0d6f513f
+  name: get_tenancy_id_retrieve_tenancy_graph Node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+  from_branch: null
+  to_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+- component_type: ControlFlowEdge
+  id: 8072851e-7407-4dde-b015-b603571c945c
+  name: retrieve_tenancy_graph Node_find_networking_vulnerabilities Node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  from_branch: null
+  to_node:
+    $component_ref: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+- component_type: ControlFlowEdge
+  id: a0038a78-f732-4769-b8c9-06003c0b4391
+  name: find_networking_vulnerabilities Node_find_sensitive_files Node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+  from_branch: null
+  to_node:
+    $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+- component_type: ControlFlowEdge
+  id: 2074c8d7-27f3-4b9a-a455-920761ae5769
+  name: find_sensitive_files Node_evaluate_exploits Node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+  from_branch: null
+  to_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+- component_type: ControlFlowEdge
+  id: dfee8d2e-2a71-4ebd-8350-a3e0be541182
+  name: evaluate_exploits Node_has_findings Node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+  from_branch: null
+  to_node:
+    $component_ref: 4df07259-f918-4e77-a6f1-340caa337b5c
+- component_type: ControlFlowEdge
+  id: c3d0f1c1-9632-4e7b-8918-dd21d6b5b482
+  name: has_findings Node_has_findings_branch_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 4df07259-f918-4e77-a6f1-340caa337b5c
+  from_branch: null
+  to_node:
+    $component_ref: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+- component_type: ControlFlowEdge
+  id: bcec05c7-4b31-4b79-b0d1-b3484631e9c1
+  name: has_findings_branch_no_findings_message_default
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+  from_branch: default
+  to_node:
+    $component_ref: c1a48929-5de6-4ce4-9282-c7b01c1c65f3
+- component_type: ControlFlowEdge
+  id: 62af2350-36fd-4fd6-a6b2-13060e7f6a9a
+  name: no_findings_message_get_tenancy_id_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: c1a48929-5de6-4ce4-9282-c7b01c1c65f3
+  from_branch: null
+  to_node:
+    $component_ref: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+- component_type: ControlFlowEdge
+  id: 0c17e031-95ab-41bc-8afd-584b8353081a
+  name: has_findings_branch_summarize_findings_node_has_findings
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+  from_branch: has_findings
+  to_node:
+    $component_ref: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+- component_type: ControlFlowEdge
+  id: ab2282df-e6d7-4f9e-a63c-5c968b626487
+  name: summarize_findings_node_going_to_triage_message_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+  from_branch: null
+  to_node:
+    $component_ref: 2f334280-1352-48d3-a99c-6626addd3ed5
+- component_type: ControlFlowEdge
+  id: edc3a67a-5886-4817-a395-513a41d08efb
+  name: going_to_triage_message_triaging_agent_node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 2f334280-1352-48d3-a99c-6626addd3ed5
+  from_branch: null
+  to_node:
+    $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+- component_type: ControlFlowEdge
+  id: 17bb6674-1d05-4d43-b6bc-3ab7e7696a8b
+  name: triaging_agent_node_request_confirmation_message_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+  from_branch: null
+  to_node:
+    $component_ref: cf7df70c-f9c1-41a8-9286-4862f2955158
+- component_type: ControlFlowEdge
+  id: 3029b7c4-6571-4c50-8988-1208f4ded738
+  name: request_confirmation_message_get_confirmation_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: cf7df70c-f9c1-41a8-9286-4862f2955158
+  from_branch: null
+  to_node:
+    $component_ref: 0324fb6d-55ee-4eae-90c4-d5579b41ea02
+- component_type: ControlFlowEdge
+  id: 287d8734-ef08-42ec-b369-59c6690c6d3e
+  name: get_confirmation_reporting_decision_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 0324fb6d-55ee-4eae-90c4-d5579b41ea02
+  from_branch: null
+  to_node:
+    $component_ref: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+- component_type: ControlFlowEdge
+  id: 42c4de31-1c66-4e96-9c5e-3e37d400e9be
+  name: reporting_decision_reporting_node_reporting
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+  from_branch: reporting
+  to_node:
+    $component_ref: f5670867-70b3-42a9-a7f4-e906648aa327
+- component_type: ControlFlowEdge
+  id: 33bdb104-108c-4f98-88f7-d7d8f89562bb
+  name: reporting_decision_exit_node_default
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+  from_branch: default
+  to_node:
+    $component_ref: f66ebbf9-cede-4bdf-93b5-33d02278fdba
+- component_type: ControlFlowEdge
+  id: 0331a047-fda2-4b5b-b1f9-cd03a32daead
+  name: reporting_node_exit_node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: f5670867-70b3-42a9-a7f4-e906648aa327
+  from_branch: null
+  to_node:
+    $component_ref: f66ebbf9-cede-4bdf-93b5-33d02278fdba
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: ffe9c905-e542-44a3-8f22-ceaa032ffe2e
+  name: get_tenancy_id_retrieve_tenancy_graph Node_tenancy_id
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+  source_output: tenancy_id
+  destination_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  destination_input: tenancy_id
+- component_type: DataFlowEdge
+  id: f3532265-c9c2-4dd7-bbf1-5051c795d1b9
+  name: retrieve_tenancy_graph Node_find_networking_vulnerabilities Node_tenancy_graph
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  source_output: tenancy_graph
+  destination_node:
+    $component_ref: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+  destination_input: tenancy_graph
+- component_type: DataFlowEdge
+  id: 363b0624-698e-4457-b775-9d4921c9f552
+  name: retrieve_tenancy_graph Node_find_sensitive_files Node_tenancy_graph
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  source_output: tenancy_graph
+  destination_node:
+    $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+  destination_input: tenancy_graph
+- component_type: DataFlowEdge
+  id: 4e014b8d-f554-4c7b-b23c-5f8cd5d455b8
+  name: find_networking_vulnerabilities Node_find_sensitive_files Node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+  source_output: findings
+  destination_node:
+    $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+  destination_input: findings
+- component_type: DataFlowEdge
+  id: 15f7fe87-0a9e-47a2-8599-0de4630f670c
+  name: retrieve_tenancy_graph Node_evaluate_exploits Node_tenancy_graph
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  source_output: tenancy_graph
+  destination_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+  destination_input: tenancy_graph
+- component_type: DataFlowEdge
+  id: 7ef373f6-8fb3-4663-a87c-f4ea21ae46ac
+  name: find_sensitive_files Node_evaluate_exploits Node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+  source_output: findings
+  destination_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+  destination_input: findings
+- component_type: DataFlowEdge
+  id: eb020bb1-60b4-42af-9d9c-8abf4c1aaec3
+  name: evaluate_exploits Node_has_findings Node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+  source_output: findings
+  destination_node:
+    $component_ref: 4df07259-f918-4e77-a6f1-340caa337b5c
+  destination_input: findings
+- component_type: DataFlowEdge
+  id: 3e01a90e-9cd1-480a-a6fe-e1546ac10275
+  name: has_findings Node_has_findings_branch_has_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 4df07259-f918-4e77-a6f1-340caa337b5c
+  source_output: has_findings
+  destination_node:
+    $component_ref: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+  destination_input: has_findings
+- component_type: DataFlowEdge
+  id: a4ef2337-e44f-44a7-9b78-e0c1f9455cda
+  name: evaluate_exploits Node_summarize_findings_node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: ae628b49-b461-4197-97ee-86c7658cd3f1
+  source_output: findings
+  destination_node:
+    $component_ref: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+  destination_input: findings
+- component_type: DataFlowEdge
+  id: 10d146a7-4a9e-4902-bfb0-01cf7a75a820
+  name: retrieve_tenancy_graph Node_triaging_agent_node_tenancy_graph
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+  source_output: tenancy_graph
+  destination_node:
+    $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+  destination_input: tenancy_graph
+- component_type: DataFlowEdge
+  id: 98ea0054-6488-4360-b073-f923ceaef949
+  name: summarize_findings_node_triaging_agent_node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+  source_output: findings
+  destination_node:
+    $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+  destination_input: findings
+- component_type: DataFlowEdge
+  id: e51adc61-6667-4209-a296-ad3a8bac4f4f
+  name: get_confirmation_reporting_decision_confirmation
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 0324fb6d-55ee-4eae-90c4-d5579b41ea02
+  source_output: confirmation
+  destination_node:
+    $component_ref: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+  destination_input: confirmation
+- component_type: DataFlowEdge
+  id: f41901aa-ea56-4e5a-b8fc-4a831ca70017
+  name: triaging_agent_node_reporting_node_findings
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+  source_output: findings
+  destination_node:
+    $component_ref: f5670867-70b3-42a9-a7f4-e906648aa327
+  destination_input: findings
+$referenced_components:
+  6cd3c47a-0c40-44de-9a2d-1dbb7968c7e9:
+    component_type: StartNode
+    id: 6cd3c47a-0c40-44de-9a2d-1dbb7968c7e9
+    name: start_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+  f66ebbf9-cede-4bdf-93b5-33d02278fdba:
+    component_type: EndNode
+    id: f66ebbf9-cede-4bdf-93b5-33d02278fdba
+    name: exit_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches: []
+    branch_name: next
+  c037b20b-4a74-449e-bb82-0ac4c65f4bd0:
+    component_type: OutputMessageNode
+    id: c037b20b-4a74-449e-bb82-0ac4c65f4bd0
+    name: presentation_message
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+    message: Hi, I am the CyberSecurity Assistant. Please insert the ID of the Tenancy
+      you would like to investigate.
+  26cd7a7f-2c0e-4461-a007-a0cc6a916a6d:
+    component_type: InputMessageNode
+    id: 26cd7a7f-2c0e-4461-a007-a0cc6a916a6d
+    name: get_tenancy_id
+    description: null
+    metadata: {}
+    inputs: []
+    outputs:
+    - description: The tenancy identifier.
+      title: tenancy_id
+      type: string
+    branches:
+    - next
+    message: null
+  2bae6b50-cbcd-41dc-b641-64c4726edd0f:
+    component_type: ToolNode
+    id: 2bae6b50-cbcd-41dc-b641-64c4726edd0f
+    name: retrieve_tenancy_graph Node
+    description: Tool to retrieve tenancy graph
+    metadata: {}
+    inputs:
+    - description: The tenancy identifier.
+      title: tenancy_id
+      type: string
+    outputs:
+    - description: Tenancy of the graph resources
+      title: tenancy_graph
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: 6d0a9b23-9e94-452e-978a-a3b6e9b9ac77
+      name: retrieve_tenancy_graph
+      description: Tool to retrieve tenancy graph
+      metadata: {}
+      inputs:
+      - description: The tenancy identifier.
+        title: tenancy_id
+        type: string
+      outputs:
+      - description: Tenancy of the graph resources
+        title: tenancy_graph
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+  999baa0e-10df-4b27-a9ea-9345bc50083c:
+    component_type: StreamableHTTPTransport
+    id: 999baa0e-10df-4b27-a9ea-9345bc50083c
+    name: CyberSecurity MCP Server Transport
+    description: Transport for the CyberSecurity MCP server
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60.0
+    url: http://localhost:8081/mcp
+    headers: null
+  9a84f17d-f723-41d0-96c6-31ac5a4f1323:
+    component_type: ToolNode
+    id: 9a84f17d-f723-41d0-96c6-31ac5a4f1323
+    name: find_networking_vulnerabilities Node
+    description: Tool to find networking vulnerabilities
+    metadata: {}
+    inputs:
+    - description: Tenancy of the graph resources
+      title: tenancy_graph
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    outputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: c127d6e0-7113-472e-8144-00e7d53e88fb
+      name: find_networking_vulnerabilities
+      description: Tool to find networking vulnerabilities
+      metadata: {}
+      inputs:
+      - description: Tenancy of the graph resources
+        title: tenancy_graph
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      outputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+  943b4d34-5fc1-47a3-af62-65aabdf40a1e:
+    component_type: ToolNode
+    id: 943b4d34-5fc1-47a3-af62-65aabdf40a1e
+    name: find_sensitive_files Node
+    description: Tool to find sensitive files in NFS and OS
+    metadata: {}
+    inputs:
+    - description: Tenancy of the graph resources
+      title: tenancy_graph
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    outputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: 3047a496-0a3c-4376-8aeb-09e04c3a1d83
+      name: find_sensitive_files
+      description: Tool to find sensitive files in NFS and OS
+      metadata: {}
+      inputs:
+      - description: Tenancy of the graph resources
+        title: tenancy_graph
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      outputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+  ae628b49-b461-4197-97ee-86c7658cd3f1:
+    component_type: ToolNode
+    id: ae628b49-b461-4197-97ee-86c7658cd3f1
+    name: evaluate_exploits Node
+    description: Tool to safely try exploits
+    metadata: {}
+    inputs:
+    - description: Tenancy of the graph resources
+      title: tenancy_graph
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    outputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: 7c9618a7-4b26-4a01-8397-bb9c40db35a6
+      name: evaluate_exploits
+      description: Tool to safely try exploits
+      metadata: {}
+      inputs:
+      - description: Tenancy of the graph resources
+        title: tenancy_graph
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      outputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+  4df07259-f918-4e77-a6f1-340caa337b5c:
+    component_type: ToolNode
+    id: 4df07259-f918-4e77-a6f1-340caa337b5c
+    name: has_findings Node
+    description: Tool to evaluate whether there are findings
+    metadata: {}
+    inputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    outputs:
+    - description: Whether detection yielded findings.
+      title: has_findings
+      type: string
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: 6830594f-7e2e-458a-9407-1a171578613c
+      name: has_findings
+      description: Tool to evaluate whether there are findings
+      metadata: {}
+      inputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      outputs:
+      - description: Whether detection yielded findings.
+        title: has_findings
+        type: string
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+  66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c:
+    component_type: BranchingNode
+    id: 66c0f58e-6d39-4f10-a3c5-1ae33ae6a96c
+    name: has_findings_branch
+    description: Exit the flow if the are no detected findings
+    metadata: {}
+    inputs:
+    - description: Whether detection yielded findings.
+      title: has_findings
+      type: string
+    outputs: []
+    branches:
+    - default
+    - has_findings
+    mapping:
+      'yes': has_findings
+  c1a48929-5de6-4ce4-9282-c7b01c1c65f3:
+    component_type: OutputMessageNode
+    id: c1a48929-5de6-4ce4-9282-c7b01c1c65f3
+    name: no_findings_message
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+    message: There were no findings computed. Please input another tenancy ID.
+  15f83f8e-7dc1-4a50-83ec-52e48d998a4a:
+    component_type: LlmNode
+    id: 15f83f8e-7dc1-4a50-83ec-52e48d998a4a
+    name: summarize_findings_node
+    description: null
+    metadata: {}
+    inputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    outputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    llm_config:
+      $component_ref: 7f8c47c4-ee68-4439-a9af-54dd777ac6bf
+    prompt_template: '
+
+      You are a CyberSecurity expert tasked to summarize security vulnerability findings.
+
+      You will receive a list of findings in the format:
+
+      - resource: <affected_resource_id>
+
+      - tenancy: <tenancy_id>
+
+      - summary: <summary, starts empty>
+
+      - verified: <boolean describing if the finding yielded a verified exploit>
+
+      - vuln_type: <''exposed_port'', ''sensitive_object_storage_file'', ''sensitive_nfs_file''>
+
+      - metadata: <added by tools>
+
+      - additional_details: <added by tools>
+
+      - severity: <ignore for now>
+
+
+      Here''s the list of findings:
+
+      {{findings}}
+
+
+      Populate the summary field with a description of why the findings is problematic
+      and what an attacker could do with it. Use less than 100 for each summary.
+
+      Also, return the updated findings.
+
+      '
+  7f8c47c4-ee68-4439-a9af-54dd777ac6bf:
+    component_type: VllmConfig
+    id: 7f8c47c4-ee68-4439-a9af-54dd777ac6bf
+    name: meta.llama-3.3-70b-instruct
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: model_id
+    model_id: /storage/models/Llama-3.3-70B-Instruct
+    api_type: chat_completions
+  2f334280-1352-48d3-a99c-6626addd3ed5:
+    component_type: OutputMessageNode
+    id: 2f334280-1352-48d3-a99c-6626addd3ed5
+    name: going_to_triage_message
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+    message: Moving to triaging Agent. Please wait for triaging to finish.
+  8dc586b5-faa8-4b68-ad0d-1d945c6b0859:
+    component_type: AgentNode
+    id: 8dc586b5-faa8-4b68-ad0d-1d945c6b0859
+    name: triaging_agent_node
+    description: null
+    metadata: {}
+    inputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    - description: Tenancy of the graph resources
+      title: tenancy_graph
+      additionalProperties:
+        type: string
+      properties: {}
+      type: object
+    outputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    branches:
+    - next
+    agent:
+      component_type: Agent
+      id: bafbbd8c-faa5-4c58-b858-cc14fce14c8c
+      name: Triaging_Agent
+      description: Agent equipped with tools to assist with computing blast radius
+        and lateral movement possibilities from Cloud tenancy findings
+      metadata: {}
+      inputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      - description: Tenancy of the graph resources
+        title: tenancy_graph
+        additionalProperties:
+          type: string
+        properties: {}
+        type: object
+      outputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      llm_config:
+        $component_ref: 7f8c47c4-ee68-4439-a9af-54dd777ac6bf
+      system_prompt: "You are an agent designed to triaging findings of security vulnerabilities\
+        \ within a Cloud tenancy.\nGiven a list of findings and a tenancy graph, you\
+        \ have to evaluate the possibilities of moving laterally from the findings\
+        \ entrypoints and their blast radius.\n\nHere's the list of findings:\n{{findings}}\n\
+        \nHere's the tenancy graph:\n{{tenancy_graph}}\n\n1) Your workflow (starting\
+        \ from the list of findings and the tenancy graph)\n- For each finding where\
+        \ Verified is True:\n    - If finding is of type 'sensitive_object_storage_file'\
+        \ OR 'sensitive_nfs_file':\n        1) Call find_lateral_movement_from_user(finding_metadata)\n\
+        \        2) Extract additional_details\n    - if finding is of type 'exposed_port':\n\
+        \        1) Call find_networking_lateral_movement(finding_metadata)\n    \
+        \    2) Extract additional_details\n\n- For each finding where Verified is\
+        \ False:\n    - Assign LOW Severity\n    - Assign 'Finding could not be exploited'\
+        \ as Severity_Explanation\n\n2) For the output, for each finding use the data\
+        \ in the \"metadata\" and \"additional_details\" fields to:\n    - summarize\
+        \ the blast radius and lateral movement possibilities for the finding in less\
+        \ than 100 words\n    - assign a severity in the severity field, either, 'LOW',\
+        \ 'MEDIUM' or 'HIGH'\n    - mind that if a finding is verified, it is likely\
+        \ to have a higher severity\n\nThen output the updated findings list with\
+        \ a small summary about the issues of the tenancy."
+      tools:
+      - component_type: MCPTool
+        id: e653e453-8220-41a8-b24e-447404297ce2
+        name: find_lateral_movement_from_user
+        description: Tool to evaluate where a compromised user has rights
+        metadata: {}
+        inputs:
+        - description: Tenancy of the graph resources
+          title: tenancy_graph
+          additionalProperties:
+            type: string
+          properties: {}
+          type: object
+        - description: List of findings
+          title: findings
+          items:
+            title: finding
+            additionalProperties:
+              title: field
+              type: string
+            properties: {}
+            type: object
+          type: array
+        outputs:
+        - description: List of findings
+          title: findings
+          items:
+            title: finding
+            additionalProperties:
+              title: field
+              type: string
+            properties: {}
+            type: object
+          type: array
+        requires_confirmation: false
+        client_transport:
+          $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+      - component_type: MCPTool
+        id: d27f36d4-d166-426f-ab8a-71f7a33b3e6f
+        name: find_networking_lateral_movement
+        description: Tool to evaluate where an attacker could reach from a compromised
+          IP
+        metadata: {}
+        inputs:
+        - description: Tenancy of the graph resources
+          title: tenancy_graph
+          additionalProperties:
+            type: string
+          properties: {}
+          type: object
+        - description: List of findings
+          title: findings
+          items:
+            title: finding
+            additionalProperties:
+              title: field
+              type: string
+            properties: {}
+            type: object
+          type: array
+        outputs:
+        - description: List of findings
+          title: findings
+          items:
+            title: finding
+            additionalProperties:
+              title: field
+              type: string
+            properties: {}
+            type: object
+          type: array
+        requires_confirmation: false
+        client_transport:
+          $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+      toolboxes: []
+      human_in_the_loop: true
+  cf7df70c-f9c1-41a8-9286-4862f2955158:
+    component_type: OutputMessageNode
+    id: cf7df70c-f9c1-41a8-9286-4862f2955158
+    name: request_confirmation_message
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+    message: Would you like to report the findings to their respective tenancy owner
+      via mail? Enter 'yes' if that is the case, otherwise Flow will terminate.
+  0324fb6d-55ee-4eae-90c4-d5579b41ea02:
+    component_type: InputMessageNode
+    id: 0324fb6d-55ee-4eae-90c4-d5579b41ea02
+    name: get_confirmation
+    description: null
+    metadata: {}
+    inputs: []
+    outputs:
+    - description: Confirmation for reporting.
+      title: confirmation
+      type: string
+    branches:
+    - next
+    message: null
+  8320ded9-5da0-4eef-8e12-caa729ba5ae8:
+    component_type: BranchingNode
+    id: 8320ded9-5da0-4eef-8e12-caa729ba5ae8
+    name: reporting_decision
+    description: Report findings if the users decides to do so
+    metadata: {}
+    inputs:
+    - description: Confirmation for reporting.
+      title: confirmation
+      type: string
+    outputs: []
+    branches:
+    - default
+    - reporting
+    mapping:
+      'yes': reporting
+  f5670867-70b3-42a9-a7f4-e906648aa327:
+    component_type: ToolNode
+    id: f5670867-70b3-42a9-a7f4-e906648aa327
+    name: reporting_node
+    description: Sends mail to the finding's tenancy owner.
+    metadata: {}
+    inputs:
+    - description: List of findings
+      title: findings
+      items:
+        title: finding
+        additionalProperties:
+          title: field
+          type: string
+        properties: {}
+        type: object
+      type: array
+    outputs: []
+    branches:
+    - next
+    tool:
+      component_type: MCPTool
+      id: 9884a27b-790f-4f21-ab29-0deda8d2f34a
+      name: report_findings
+      description: Finds the owner of a finding and reports it.
+      metadata: {}
+      inputs:
+      - description: List of findings
+        title: findings
+        items:
+          title: finding
+          additionalProperties:
+            title: field
+            type: string
+          properties: {}
+          type: object
+        type: array
+      outputs: []
+      requires_confirmation: false
+      client_transport:
+        $component_ref: 999baa0e-10df-4b27-a9ea-9345bc50083c
+agentspec_version: 25.4.2
