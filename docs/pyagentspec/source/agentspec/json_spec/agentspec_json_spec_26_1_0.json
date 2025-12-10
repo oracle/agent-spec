@@ -192,6 +192,16 @@
         }
       ]
     },
+    "HandoffMode": {
+      "description": "Controls how agents in a Swarm may delegate work to one another.\n\nThis setting determines whether an agent is equipped with:\n\n  * *send_message* \u2014 a tool for asking another agent to perform a sub-task and reply back.\n\n  * *handoff_conversation* \u2014 a tool for transferring the full user\u2013agent conversation to another agent.\n\nDepending on the selected mode, agents have different capabilities for delegation and collaboration.",
+      "enum": [
+        "always",
+        "never",
+        "optional"
+      ],
+      "title": "HandoffMode",
+      "type": "string"
+    },
     "InputMessageNode": {
       "anyOf": [
         {
@@ -4956,9 +4966,16 @@
           "type": "array"
         },
         "handoff": {
-          "default": true,
-          "title": "Handoff",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/$defs/HandoffMode"
+            }
+          ],
+          "default": "optional",
+          "title": "Handoff"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"

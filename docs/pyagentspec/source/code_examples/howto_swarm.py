@@ -159,6 +159,8 @@ serialized_assistant = AgentSpecSerializer().to_json(assistant)
 # .. end-serialization
 print(serialized_assistant)
 # .. start-swarm-with-handoff
+from pyagentspec.swarm import HandoffMode
+
 assistant = Swarm(
     name="Swarm",
     first_agent=general_practitioner,
@@ -167,6 +169,6 @@ assistant = Swarm(
         (general_practitioner, dermatologist),
         (dermatologist, pharmacist),
     ],
-    handoff=True,  # <-- Add this
+    handoff=HandoffMode.ALWAYS,  # <-- Specify the mode of your choice
 )
 # .. end-swarm-with-handoff
