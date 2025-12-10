@@ -8,5 +8,5 @@ import pytest
 
 
 def test_import_raises_if_langgraph_not_installed():
-    with pytest.raises(ImportError, match="Package langgraph is not installed."):
+    with pytest.raises(ImportError, match="Package langchain_core is not installed."):
         import pyagentspec.adapters.langgraph  # type: ignore
