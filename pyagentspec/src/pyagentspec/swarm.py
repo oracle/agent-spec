@@ -6,15 +6,72 @@
 
 """This module defines several Agent Spec components."""
 
-from typing import List, Tuple
+from enum import Enum
+from typing import Any, List, Tuple, Union
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Self
 
 from pyagentspec.agenticcomponent import AgenticComponent
+from pyagentspec.component import SerializeAsEnum
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
+
+
+class HandoffMode(str, Enum):
+    """
+    Controls how agents in a Swarm may delegate work to one another.
+
+    This setting determines whether an agent is equipped with:
+
+      * *send_message* — a tool for asking another agent to perform a sub-task and reply back.
+
+      * *handoff_conversation* — a tool for transferring the full user–agent conversation to another agent.
+
+    Depending on the selected mode, agents have different capabilities for delegation and collaboration.
+    """
+
+    NEVER = "never"
+    """
+    Agent is not equipped with the *handoff_conversation* tool.
+
+    Delegation is limited to message-passing:
+
+      * Agents *can* use *send_message* to request a sub-task from another agent.
+
+      * Agents *cannot* transfer the user conversation to another agent.
+
+    As a consequence, the ``first_agent`` always remains the primary point of contact with the user.
+    """
+
+    OPTIONAL = "optional"
+    """
+    Agents receive **both** *handoff_conversation* and *send_message* tool.
+
+    This gives agents full flexibility:
+
+      * They may pass a message to another agent and wait for a reply.
+
+      * Or they may fully hand off the user conversation to another agent.
+
+    Use this mode when you want agents to intelligently choose the most natural delegation strategy.
+    """
+
+    ALWAYS = "always"
+    """
+    Agents receive **only** the *handoff_conversation* tool.
+
+    Message-passing is disabled:
+
+      * Agents *must* hand off the user conversation when delegating work.
+
+      * They cannot simply send a message and receive a response.
+
+    This mode enforces a strict chain-of-ownership: whenever an agent involves another agent,
+    it must transfer the full dialogue context. The next agent can either respond directly to the user
+    or continue handing off the conversation to another agent.
+    """
 
 
 class Swarm(AgenticComponent):
@@ -52,21 +109,41 @@ class Swarm(AgenticComponent):
     Each element in the list is a tuple ``(caller_agent, recipient_agent)``
     specifying that the ``caller_agent`` can query the ``recipient_agent``.
     """
-    handoff: bool = True
-    """Controls whether agents in the Swarm can transfer the user conversation between each other.
+    handoff: Union[bool, SerializeAsEnum[HandoffMode]] = HandoffMode.OPTIONAL
+    """Specifies how agents are allowed to delegate work. See ``HandoffMode`` for full details.
 
-    When ``False``:
-        Agents can only communicate with one another, and the ``first_agent`` remains the sole agent directly interacting with the user throughout the conversation.
+    ``HandoffMode.NEVER``: Agents can only use *send_message*. The ``first_agent`` is the only agent that can interact with the user;
 
-    When ``True``:
-        Agents can *handoff* the conversation — transferring the entire message history between the user and one agent to another agent within the Swarm.
-        This allows different agents to take over the user interaction while maintaining context.
-        Agents can still exchange messages with each other as in ``handoff=False`` mode.
+    ``HandoffMode.OPTIONAL``: Agents may either send messages or fully hand off the conversation. This provides the most flexibility and often results in natural delegation;
+
+    ``HandoffMode.ALWAYS``: Agents cannot send messages to other agents. Any delegation must be performed through *handoff_conversation*;
+
+    A key benefit of using Handoff is the reduced response latency: While talking to other agents increases the "distance"
+    between the human user and the current agent, transferring a conversation to another agent keeps this distance unchanged
+    (i.e. the agent interacting with the user is different but the user is still the same). However, transferring the full conversation might increase the token usage.
     """
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
         default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
     )
+
+    @model_validator(mode="before")
+    def _raise_warning_if_handoff_is_bool(cls: Self, values: Any) -> Any:
+        import warnings
+
+        handoff = values.get("handoff")
+
+        if isinstance(handoff, bool):
+            warnings.warn(
+                "Passing `handoff` as a boolean is deprecated and will be removed in a "
+                "future release. Please use `HandoffMode` instead. The provided boolean "
+                "value will be automatically converted to the corresponding `HandoffMode`.",
+                DeprecationWarning,
+            )
+
+            values["handoff"] = HandoffMode.OPTIONAL if handoff else HandoffMode.NEVER
+
+        return values
 
     @model_validator_with_error_accumulation
     def _validate_one_or_more_relations(self) -> Self:
