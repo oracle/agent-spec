@@ -112,6 +112,16 @@ Agent Spec is developed jointly between Oracle Cloud Infrastructure and Oracle L
    How-to guides <howtoguides/index>
    API Reference <api/index>
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Ecosystem
+   :hidden:
+
+   Integrations <ecosystem/integrations>
+   Collaborations <ecosystem/collaborations>
+
+
 .. toctree::
    :maxdepth: 1
    :caption: Resources
