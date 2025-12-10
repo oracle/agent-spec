@@ -10,6 +10,9 @@ Swarm class
 .. autoclass:: pyagentspec.swarm.Swarm
     :exclude-members: model_post_init, model_config
 
+.. _handoffmode:
+.. autoclass:: pyagentspec.swarm.HandoffMode
+
 ManagerWorkers class
 --------------------
 

@@ -2,8 +2,8 @@
 How to Build a Swarm of Agents
 ==============================
 
-The Swarm pattern is a type of agentic pattern that takes inspiration from `Swarm intelligence <https://en.wikipedia.org/wiki/Swarm_intelligence>`_.
-It is often observed in biological systems such as ant colonies, bee hives, and bird flocks.
+The Swarm pattern is a type of agentic pattern that takes inspiration from `Swarm intelligence <https://en.wikipedia.org/wiki/Swarm_intelligence>`_,
+a phenomenon commonly seen in ant colonies, bee hives, and bird flocks, where coordinated behavior emerges from many simple actors rather than a central controller.
 In this agentic pattern, each agent is assigned a specific responsibility and can delegate tasks to other specialized agents to improve overall performance.
 
 **When to use the Swarm pattern?**
@@ -172,20 +172,31 @@ Here is what the **Agent Spec representation will look like ↓**
             :language: yaml
 
 
-Enabling handoff in the Swarm
-=============================
+Different handoff modes in Swarm
+================================
 
-By default, communication in the ``Swarm`` pattern is done with agent sending blocking messages/requests to each other.
+One of the key benefits of Swarm is its handoff mechanism. When enabled, an agent can hand off its conversation — that is, transfer the entire message history between it and the human user — to another agent within the Swarm.
 
-The ``handoff`` mechanism provides an alternative: when enabled, agents can handoff the conversation — that is, transfer the message history between
-the user and one agent to another agent within the Swarm.
-Agents can still communicate with each other as they do when ``handoff=False``.
+The handoff mechanism helps reduce response latency.
+Normally, when agents talk to each other, the "distance" between the human user and the final answering agent increases, because messages must travel through multiple agents.
+Handoff avoids this by directly transferring the conversation to another agent: while the agent changes, the user's distance to the active agent stays the same.
 
-A key benefit of using ``handoff`` is reduced response latency.
-Talking to other agents increases the "distance" between the human user and the current agent.
-Transferring a conversation to another agent keeps this distance unchanged (in other words, the agent interacting with the user is different, but the user is still the same).
+Swarm provides three handoff modes:
 
-To enable ``handoff`` in a Swarm, set the ``handoff`` parameter to ``True``.
+- ``HandoffMode.NEVER``
+  Disables the handoff mechanism. Agents can still communicate with each other, but cannot transfer the entire user conversation to another agent.
+  In this mode, the  ``first_agent`` is the only agent that can directly interact with the human user.
+
+- ``HandoffMode.OPTIONAL`` (default)
+  Agents may perform a handoff when it is beneficial.
+  A handoff is performed only when the receiving agent is able to take over and independently address the user’s request.
+  This strikes a balance between multi-agent collaboration and minimizing overhead.
+
+- ``HandoffMode.ALWAYS``
+  Agents must use the handoff mechanism whenever delegating work to another agent. Direct *send-message* tools between agents are disabled in this mode.
+  This mode is useful when most user requests are best handled by a single expert agent rather than through multi-agent collaboration.
+
+To set the handoff mode, simply use :ref:`HandoffMode <handoffmode>` and select the desired mode.
 
 .. literalinclude:: ../code_examples/howto_swarm.py
     :language: python
