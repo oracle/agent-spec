@@ -3,10 +3,8 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
-
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
-
-import pytest
 
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.nodes import AgentNode, BranchingNode, EndNode, StartNode, ToolNode
@@ -14,25 +12,16 @@ from pyagentspec.flows.nodes import AgentNode, BranchingNode, EndNode, StartNode
 if TYPE_CHECKING:
     from pyagentspec.adapters.autogen._types import AutogenGraphFlow
 
+from ..conftest import skip_tests_if_dependency_not_installed
+
 
 def pytest_collection_modifyitems(config: Any, items: Any):
     # We skip all the tests in this folder if autogen is not installed
-    try:
-        import autogen_core  # type: ignore
-
-        dependency_missing = False
-    except ImportError:
-        dependency_missing = True
-
-    for item in items:
-        if dependency_missing:
-            # If the dependency is missing we run only the test to check that the right error is raised
-            if item.name != "test_import_raises_if_autogen_not_installed":
-                item.add_marker(pytest.mark.skip(reason="AutoGen is not installed"))
-        else:
-            # If the dependency is installed we run all the tests except the one that checks the import error
-            if item.name == "test_import_raises_if_autogen_not_installed":
-                item.add_marker(pytest.mark.skip(reason="AutoGen is installed"))
+    skip_tests_if_dependency_not_installed(
+        module_name="autogen_core",
+        directory=Path(__file__).parent,
+        items=items,
+    )
 
 
 def inspect_names_and_nodes_and_branching_mappings_of_generated_agentspec_flow(

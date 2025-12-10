@@ -676,6 +676,11 @@ models. When ``None``, it is automatically detected based on the ``model_id``. W
 the ``model_id`` does not indicate what ``provider`` should be used so the user has to specify it manually,
 knowing what model it is.
 
+The API type can be configured by using the ``api_type`` parameter, which takes one of 3 string values, namely ``oci``,
+``openai_chat_completions`` and ``openai_responses``. By default, the API type is set to ``oci``.
+The ``conversation_store_id`` parameter allows to specify the conversation store OCI resource to use top persist
+conversations when using the openai responses API.
+
 .. code-block:: python
 
    class OciGenAiConfig(LlmConfig):
@@ -684,6 +689,8 @@ knowing what model it is.
      serving_mode: Literal["ON_DEMAND", "DEDICATED"] = "ON_DEMAND"
      provider: Optional[Literal["META", "GROK", "COHERE", "OTHER"]] = None
      client_config: OciClientConfig
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     conversation_store_id: Optional[str] = None
 
 .. note::
     The authentication components must not contain any sensitive information about the authentication,

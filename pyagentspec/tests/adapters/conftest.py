@@ -6,6 +6,7 @@
 
 import os
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -107,3 +108,29 @@ def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:
         .replace("[[LLAMA70BV33_API_URL]]", llama70bv33_api_url)
         .replace("[[remote_tools_server]]", json_server_url)
     )
+
+
+def skip_tests_if_dependency_not_installed(
+    module_name: str,
+    directory: Path,
+    items: Any,
+):
+    """Skips all the tests from this directory if the given dependency is missing"""
+    try:
+        __import__(module_name)  # dynamically import by name
+        dependency_missing = False
+    except ImportError:
+        dependency_missing = True
+
+    for item in items:
+        if not Path(item.fspath).is_relative_to(directory):
+            continue
+
+        if dependency_missing:
+            # If the dependency is missing we run only the test to check that the right error is raised
+            if item.name != f"test_import_raises_if_{module_name}_not_installed":
+                item.add_marker(pytest.mark.skip(reason=f"`{module_name}` is not installed"))
+        else:
+            # If the dependency is installed we run all the tests except the one that checks the import error
+            if item.name == f"test_import_raises_if_{module_name}_not_installed":
+                item.add_marker(pytest.mark.skip(reason=f"`{module_name}` is installed"))
