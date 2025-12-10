@@ -11,7 +11,6 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-import json
 import logging
 
 # -- Project information -----------------------------------------------------
@@ -66,6 +65,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "sphinx.ext.doctest",
     "sphinx_copybutton",
+    "sphinxext.rediraffe",
     "copy_sidebar_ext",  # custom extension in _ext/copy_sidebar_ext.py
     "process_docstring_ext",  # custom extension in _ext/process_docstring_ext.py
     "docstring_role_ext",  # is used to support the :docstring: role
@@ -119,6 +119,9 @@ autodoc_default_options = {
 
 # Add type hints to parameter description, not to signature.
 autodoc_typehints = "description"
+
+# Redirects
+rediraffe_redirects = {"agentspec/language_spec.rst": "agentspec/language_spec_25_4_1.rst"}
 
 
 # -- Options for HTML output -------------------------------------------------

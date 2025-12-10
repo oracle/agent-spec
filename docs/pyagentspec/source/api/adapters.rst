@@ -7,7 +7,6 @@ into the equivalent solution, as per each framework's definition, and return an 
 
 This page presents all APIs and classes related to Agent Spec Adapters.
 
-
 CrewAI
 ------
 
@@ -21,9 +20,17 @@ CrewAI
 LangGraph
 ---------
 
-The LangGraph adapter is available at `langgraphagentspecadapter <https://github.com/oracle/agent-spec/tree/main/adapters/langgraphagentspecadapter>`_.
+.. _adapters_langgraph_exporter:
+.. autoclass:: pyagentspec.adapters.langgraph.AgentSpecExporter
+
+.. _adapters_langgraph_loader:
+.. autoclass:: pyagentspec.adapters.langgraph.AgentSpecLoader
 
 AutoGen
 -------
 
-The AutoGen adapter is available at `autogenagentspecadapter <https://github.com/oracle/agent-spec/tree/main/adapters/autogenagentspecadapter>`_.
+.. _adapters_autogen_exporter:
+.. autoclass:: pyagentspec.adapters.autogen.AgentSpecExporter
+
+.. _adapters_autogen_loader:
+.. autoclass:: pyagentspec.adapters.autogen.AgentSpecLoader
