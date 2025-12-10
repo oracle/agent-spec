@@ -12,6 +12,8 @@ from pyagentspec.templating import TEMPLATE_PLACEHOLDER_REGEXP
 
 def render_template(template: str, inputs: Dict[str, Any]) -> str:
     """Render a prompt template using inputs."""
+    if not isinstance(template, str):
+        return str(template)
     return _recursive_template_splitting_rendering(
         template, [(input_title, input_value) for input_title, input_value in inputs.items()]
     )

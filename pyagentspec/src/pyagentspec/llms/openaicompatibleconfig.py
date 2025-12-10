@@ -53,12 +53,13 @@ class OpenAiCompatibleConfig(LlmConfig):
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        parent_min_version = super()._infer_min_agentspec_version_from_configuration()
+        current_object_min_version = self.min_agentspec_version
         if self.api_key is not None:
             # `api_key` is only introduced starting from 25.4.2
-            return AgentSpecVersionEnum.v25_4_2
+            current_object_min_version = AgentSpecVersionEnum.v25_4_2
         if self.api_type != OpenAIAPIType.CHAT_COMPLETIONS:
             # If the api type is not chat completions, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
-            return AgentSpecVersionEnum.v25_4_2
-
-        return super()._infer_min_agentspec_version_from_configuration()
+            current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        return max(current_object_min_version, parent_min_version)
