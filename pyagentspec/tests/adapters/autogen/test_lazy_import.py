@@ -7,6 +7,6 @@
 import pytest
 
 
-def test_import_raises_if_autogen_not_installed():
+def test_import_raises_if_autogen_core_not_installed():
     with pytest.raises(ImportError, match="Package autogen_core is not installed."):
         import pyagentspec.adapters.autogen  # type: ignore
