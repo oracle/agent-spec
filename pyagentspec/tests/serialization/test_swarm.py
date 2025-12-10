@@ -9,7 +9,7 @@ import pytest
 from pyagentspec.agent import Agent
 from pyagentspec.llms import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
-from pyagentspec.swarm import Swarm
+from pyagentspec.swarm import HandoffMode, Swarm
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .conftest import assert_serialized_representations_are_equal
@@ -99,3 +99,13 @@ def test_deserializing_swarm_with_unsupported_version_raises_error(example_seria
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         _ = AgentSpecDeserializer().from_yaml(serialized_swarm)
+
+
+def test_deserializing_swarm_with_bool_handoff_raise_deprecation_warning(example_swarm: Swarm):
+    swarm = example_swarm
+    swarm.handoff = True
+    serialized_swarm = AgentSpecSerializer().to_yaml(swarm)
+
+    with pytest.raises(DeprecationWarning, match="Passing `handoff` as a boolean is deprecated"):
+        deserialized_swarm = AgentSpecDeserializer().from_yaml(serialized_swarm)
+        assert isinstance(deserialized_swarm.handoff, HandoffMode)
