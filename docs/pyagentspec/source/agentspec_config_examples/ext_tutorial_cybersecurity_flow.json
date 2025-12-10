@@ -1,0 +1,1433 @@
+{
+  "component_type": "Flow",
+  "id": "e5eee65a-5b70-46d7-bb17-98ad3c1590f1",
+  "name": "CyberSec_Assistant_Flow",
+  "description": null,
+  "metadata": {},
+  "inputs": [],
+  "outputs": [],
+  "start_node": {
+    "$component_ref": "054cb876-237e-4494-bf4b-efd8b8de2f47"
+  },
+  "nodes": [
+    {
+      "$component_ref": "054cb876-237e-4494-bf4b-efd8b8de2f47"
+    },
+    {
+      "$component_ref": "b716700a-c114-4f02-ae71-3523615e5775"
+    },
+    {
+      "$component_ref": "d16be4ab-8c8a-4a09-ab9d-d44884d17cc6"
+    },
+    {
+      "$component_ref": "60ffe34e-fb96-453f-9884-55ef1e6b9f17"
+    },
+    {
+      "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+    },
+    {
+      "$component_ref": "97eaeb0c-80d0-400f-b825-78642c981d3c"
+    },
+    {
+      "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+    },
+    {
+      "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+    },
+    {
+      "$component_ref": "842bf80b-e9f1-4064-822c-6263eeffa094"
+    },
+    {
+      "$component_ref": "4e6ced6b-984e-4ab5-85db-353cc01da7c9"
+    },
+    {
+      "$component_ref": "0fa3cf2f-2ddd-477b-adf7-b78632260cda"
+    },
+    {
+      "$component_ref": "d575be4b-4549-4f43-9897-c39b38afba28"
+    },
+    {
+      "$component_ref": "4b324e5b-d55d-4854-9179-6ac4a0d4a6c2"
+    },
+    {
+      "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+    },
+    {
+      "$component_ref": "ef25d860-46a3-4e26-823c-6e45f363cf41"
+    },
+    {
+      "$component_ref": "c4d6df47-4336-4967-af03-10478a4147e4"
+    },
+    {
+      "$component_ref": "731fdfec-ee71-473f-aa47-a78a0d33f212"
+    },
+    {
+      "$component_ref": "21f73252-a8c0-4d2e-a2b0-54c13df8b55c"
+    }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "e10f86c9-b8cf-41a4-81bd-f6505d197f06",
+      "name": "start_node_presentation_message_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "054cb876-237e-4494-bf4b-efd8b8de2f47"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "d16be4ab-8c8a-4a09-ab9d-d44884d17cc6"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "7cb3f489-61a7-4f09-9e04-3df161c95830",
+      "name": "presentation_message_get_tenancy_id_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "d16be4ab-8c8a-4a09-ab9d-d44884d17cc6"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "60ffe34e-fb96-453f-9884-55ef1e6b9f17"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "78d23e0a-1166-413e-8aa2-4b03c7a289b6",
+      "name": "get_tenancy_id_retrieve_tenancy_graph Node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "60ffe34e-fb96-453f-9884-55ef1e6b9f17"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "c5b09642-2708-4406-854d-717f8138e06d",
+      "name": "retrieve_tenancy_graph Node_find_networking_vulnerabilities Node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "97eaeb0c-80d0-400f-b825-78642c981d3c"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "90bb37f5-28fc-4e4c-b2e1-a78f42cfb829",
+      "name": "find_networking_vulnerabilities Node_find_sensitive_files Node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "97eaeb0c-80d0-400f-b825-78642c981d3c"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "a20b9dad-07a8-43c0-b637-80818c8d58f9",
+      "name": "find_sensitive_files Node_evaluate_exploits Node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "036928b2-3918-49ce-9a0f-ee1b18f1da9e",
+      "name": "evaluate_exploits Node_has_findings Node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "842bf80b-e9f1-4064-822c-6263eeffa094"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "afca6f23-593f-4e2f-abd7-e1df0724fdd8",
+      "name": "has_findings Node_has_findings_branch_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "842bf80b-e9f1-4064-822c-6263eeffa094"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "4e6ced6b-984e-4ab5-85db-353cc01da7c9"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "7692fab4-7afb-4405-82e9-c0173a849dba",
+      "name": "has_findings_branch_no_findings_message_default",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "4e6ced6b-984e-4ab5-85db-353cc01da7c9"
+      },
+      "from_branch": "default",
+      "to_node": {
+        "$component_ref": "0fa3cf2f-2ddd-477b-adf7-b78632260cda"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "95b612f3-bae3-4ee9-a0f2-ae0558b18cbc",
+      "name": "no_findings_message_get_tenancy_id_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "0fa3cf2f-2ddd-477b-adf7-b78632260cda"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "60ffe34e-fb96-453f-9884-55ef1e6b9f17"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "dba118a3-a70f-4887-94cc-c6f2e31d0d68",
+      "name": "has_findings_branch_summarize_findings_node_has_findings",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "4e6ced6b-984e-4ab5-85db-353cc01da7c9"
+      },
+      "from_branch": "has_findings",
+      "to_node": {
+        "$component_ref": "d575be4b-4549-4f43-9897-c39b38afba28"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "e57d0af5-efda-4448-a453-99d6ae865a4d",
+      "name": "summarize_findings_node_going_to_triage_message_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "d575be4b-4549-4f43-9897-c39b38afba28"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "4b324e5b-d55d-4854-9179-6ac4a0d4a6c2"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "c3fc206f-8d60-42af-9466-307c9be5e0d6",
+      "name": "going_to_triage_message_triaging_agent_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "4b324e5b-d55d-4854-9179-6ac4a0d4a6c2"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "e125c14e-2088-4c62-b2ba-3f67c0341468",
+      "name": "triaging_agent_node_request_confirmation_message_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "ef25d860-46a3-4e26-823c-6e45f363cf41"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "edc782c8-3ccb-4033-b618-8c284930db5e",
+      "name": "request_confirmation_message_get_confirmation_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "ef25d860-46a3-4e26-823c-6e45f363cf41"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "c4d6df47-4336-4967-af03-10478a4147e4"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "7d0a7aed-8ae0-460c-963e-93d33660dba8",
+      "name": "get_confirmation_reporting_decision_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "c4d6df47-4336-4967-af03-10478a4147e4"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "731fdfec-ee71-473f-aa47-a78a0d33f212"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "364fd6f5-caeb-461a-a0e9-667a64791fcb",
+      "name": "reporting_decision_reporting_node_reporting",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "731fdfec-ee71-473f-aa47-a78a0d33f212"
+      },
+      "from_branch": "reporting",
+      "to_node": {
+        "$component_ref": "21f73252-a8c0-4d2e-a2b0-54c13df8b55c"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "e6cfdace-a624-4c35-96e1-0a00a4d8a9f6",
+      "name": "reporting_decision_exit_node_default",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "731fdfec-ee71-473f-aa47-a78a0d33f212"
+      },
+      "from_branch": "default",
+      "to_node": {
+        "$component_ref": "b716700a-c114-4f02-ae71-3523615e5775"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "51716c56-367d-4f22-a1d7-c56698935750",
+      "name": "reporting_node_exit_node_None",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "21f73252-a8c0-4d2e-a2b0-54c13df8b55c"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "b716700a-c114-4f02-ae71-3523615e5775"
+      }
+    }
+  ],
+  "data_flow_connections": [
+    {
+      "component_type": "DataFlowEdge",
+      "id": "361a4b1f-0d2e-435a-9e70-ea95c14dce39",
+      "name": "get_tenancy_id_retrieve_tenancy_graph Node_tenancy_id",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "60ffe34e-fb96-453f-9884-55ef1e6b9f17"
+      },
+      "source_output": "tenancy_id",
+      "destination_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "destination_input": "tenancy_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "73bfa1d0-1f9b-4664-ac7b-49031408645a",
+      "name": "retrieve_tenancy_graph Node_find_networking_vulnerabilities Node_tenancy_graph",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "source_output": "tenancy_graph",
+      "destination_node": {
+        "$component_ref": "97eaeb0c-80d0-400f-b825-78642c981d3c"
+      },
+      "destination_input": "tenancy_graph"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "890ae0f9-5ac9-45a8-828a-ac18e5d3eed2",
+      "name": "retrieve_tenancy_graph Node_find_sensitive_files Node_tenancy_graph",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "source_output": "tenancy_graph",
+      "destination_node": {
+        "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+      },
+      "destination_input": "tenancy_graph"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "4852687a-5252-4e03-add1-43cb443d7fb0",
+      "name": "find_networking_vulnerabilities Node_find_sensitive_files Node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "97eaeb0c-80d0-400f-b825-78642c981d3c"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+      },
+      "destination_input": "findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "4cd24c0b-6b68-460f-a1d7-4c27fad88768",
+      "name": "retrieve_tenancy_graph Node_evaluate_exploits Node_tenancy_graph",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "source_output": "tenancy_graph",
+      "destination_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      },
+      "destination_input": "tenancy_graph"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "30228d2f-0b59-4481-9c07-4d367c19fdd6",
+      "name": "find_sensitive_files Node_evaluate_exploits Node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      },
+      "destination_input": "findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "c616e2a8-2f95-481f-952f-fd8f58eb76a3",
+      "name": "evaluate_exploits Node_has_findings Node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "842bf80b-e9f1-4064-822c-6263eeffa094"
+      },
+      "destination_input": "findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "78954cbb-6cae-42a8-83ed-6da137e39e6f",
+      "name": "has_findings Node_has_findings_branch_has_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "842bf80b-e9f1-4064-822c-6263eeffa094"
+      },
+      "source_output": "has_findings",
+      "destination_node": {
+        "$component_ref": "4e6ced6b-984e-4ab5-85db-353cc01da7c9"
+      },
+      "destination_input": "has_findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "e5710bd6-106b-4d6f-9e78-f316543b9581",
+      "name": "evaluate_exploits Node_summarize_findings_node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "28bfd1d4-df15-4d4b-91e0-58b2f873be75"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "d575be4b-4549-4f43-9897-c39b38afba28"
+      },
+      "destination_input": "findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "10bd58b8-dc8b-4367-8551-acff96b47534",
+      "name": "retrieve_tenancy_graph Node_triaging_agent_node_tenancy_graph",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d10858fc-ebd2-46d4-99ec-616d9126c748"
+      },
+      "source_output": "tenancy_graph",
+      "destination_node": {
+        "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+      },
+      "destination_input": "tenancy_graph"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "28dd945d-0e53-4074-84b5-9312ee8b5a7c",
+      "name": "summarize_findings_node_triaging_agent_node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "d575be4b-4549-4f43-9897-c39b38afba28"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+      },
+      "destination_input": "findings"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "62d96755-1536-4ecb-a4eb-0e81bd52fc28",
+      "name": "get_confirmation_reporting_decision_confirmation",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "c4d6df47-4336-4967-af03-10478a4147e4"
+      },
+      "source_output": "confirmation",
+      "destination_node": {
+        "$component_ref": "731fdfec-ee71-473f-aa47-a78a0d33f212"
+      },
+      "destination_input": "confirmation"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "id": "fef0a559-3bf2-4017-9906-863c4117871e",
+      "name": "triaging_agent_node_reporting_node_findings",
+      "description": null,
+      "metadata": {},
+      "source_node": {
+        "$component_ref": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3"
+      },
+      "source_output": "findings",
+      "destination_node": {
+        "$component_ref": "21f73252-a8c0-4d2e-a2b0-54c13df8b55c"
+      },
+      "destination_input": "findings"
+    }
+  ],
+  "$referenced_components": {
+    "d16be4ab-8c8a-4a09-ab9d-d44884d17cc6": {
+      "component_type": "OutputMessageNode",
+      "id": "d16be4ab-8c8a-4a09-ab9d-d44884d17cc6",
+      "name": "presentation_message",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "Hi, I am the CyberSecurity Assistant. Please insert the ID of the Tenancy you would like to investigate."
+    },
+    "054cb876-237e-4494-bf4b-efd8b8de2f47": {
+      "component_type": "StartNode",
+      "id": "054cb876-237e-4494-bf4b-efd8b8de2f47",
+      "name": "start_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ]
+    },
+    "60ffe34e-fb96-453f-9884-55ef1e6b9f17": {
+      "component_type": "InputMessageNode",
+      "id": "60ffe34e-fb96-453f-9884-55ef1e6b9f17",
+      "name": "get_tenancy_id",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [
+        {
+          "description": "The tenancy identifier.",
+          "title": "tenancy_id",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "message": null
+    },
+    "d10858fc-ebd2-46d4-99ec-616d9126c748": {
+      "component_type": "ToolNode",
+      "id": "d10858fc-ebd2-46d4-99ec-616d9126c748",
+      "name": "retrieve_tenancy_graph Node",
+      "description": "Tool to retrieve tenancy graph",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "The tenancy identifier.",
+          "title": "tenancy_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Tenancy of the graph resources",
+          "title": "tenancy_graph",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "79f0f42d-d392-4020-b6d4-868e058c6675",
+        "name": "retrieve_tenancy_graph",
+        "description": "Tool to retrieve tenancy graph",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "The tenancy identifier.",
+            "title": "tenancy_id",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "Tenancy of the graph resources",
+            "title": "tenancy_graph",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          }
+        ],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "a5d19d8c-6482-46fb-9efe-6501213bc59c": {
+      "component_type": "StreamableHTTPTransport",
+      "id": "a5d19d8c-6482-46fb-9efe-6501213bc59c",
+      "name": "CyberSecurity MCP Server Transport",
+      "description": "Transport for the CyberSecurity MCP server",
+      "metadata": {},
+      "session_parameters": {
+        "read_timeout_seconds": 60
+      },
+      "url": "http://localhost:8081/mcp",
+      "headers": null
+    },
+    "97eaeb0c-80d0-400f-b825-78642c981d3c": {
+      "component_type": "ToolNode",
+      "id": "97eaeb0c-80d0-400f-b825-78642c981d3c",
+      "name": "find_networking_vulnerabilities Node",
+      "description": "Tool to find networking vulnerabilities",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Tenancy of the graph resources",
+          "title": "tenancy_graph",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "9be9c31a-d3ef-49ab-b8ad-a7c43c1617aa",
+        "name": "find_networking_vulnerabilities",
+        "description": "Tool to find networking vulnerabilities",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "Tenancy of the graph resources",
+            "title": "tenancy_graph",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a": {
+      "component_type": "ToolNode",
+      "id": "30feb5c5-9eb7-4710-a07d-dc7a55ddd46a",
+      "name": "find_sensitive_files Node",
+      "description": "Tool to find sensitive files in NFS and OS",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Tenancy of the graph resources",
+          "title": "tenancy_graph",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        },
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "e2177331-3d8e-421b-89f5-5eca1d50008e",
+        "name": "find_sensitive_files",
+        "description": "Tool to find sensitive files in NFS and OS",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "Tenancy of the graph resources",
+            "title": "tenancy_graph",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "28bfd1d4-df15-4d4b-91e0-58b2f873be75": {
+      "component_type": "ToolNode",
+      "id": "28bfd1d4-df15-4d4b-91e0-58b2f873be75",
+      "name": "evaluate_exploits Node",
+      "description": "Tool to safely try exploits",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Tenancy of the graph resources",
+          "title": "tenancy_graph",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        },
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "12b71462-72ae-4146-99fa-4d80e7602340",
+        "name": "evaluate_exploits",
+        "description": "Tool to safely try exploits",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "Tenancy of the graph resources",
+            "title": "tenancy_graph",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "842bf80b-e9f1-4064-822c-6263eeffa094": {
+      "component_type": "ToolNode",
+      "id": "842bf80b-e9f1-4064-822c-6263eeffa094",
+      "name": "has_findings Node",
+      "description": "Tool to evaluate whether there are findings",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "Whether detection yielded findings.",
+          "title": "has_findings",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "8d5d7d7f-de8c-4eb3-b14b-57420e634eee",
+        "name": "has_findings",
+        "description": "Tool to evaluate whether there are findings",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "Whether detection yielded findings.",
+            "title": "has_findings",
+            "type": "string"
+          }
+        ],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "4e6ced6b-984e-4ab5-85db-353cc01da7c9": {
+      "component_type": "BranchingNode",
+      "id": "4e6ced6b-984e-4ab5-85db-353cc01da7c9",
+      "name": "has_findings_branch",
+      "description": "Exit the flow if the are no detected findings",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Whether detection yielded findings.",
+          "title": "has_findings",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "default",
+        "has_findings"
+      ],
+      "mapping": {
+        "yes": "has_findings"
+      }
+    },
+    "0fa3cf2f-2ddd-477b-adf7-b78632260cda": {
+      "component_type": "OutputMessageNode",
+      "id": "0fa3cf2f-2ddd-477b-adf7-b78632260cda",
+      "name": "no_findings_message",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "There were no findings computed. Please input another tenancy ID."
+    },
+    "d575be4b-4549-4f43-9897-c39b38afba28": {
+      "component_type": "LlmNode",
+      "id": "d575be4b-4549-4f43-9897-c39b38afba28",
+      "name": "summarize_findings_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "llm_config": {
+        "$component_ref": "44da484e-86e6-4343-9ee0-f8de0484e40f"
+      },
+      "prompt_template": "\nYou are a CyberSecurity expert tasked to summarize security vulnerability findings.\nYou will receive a list of findings in the format:\n- resource: <affected_resource_id>\n- tenancy: <tenancy_id>\n- summary: <summary, starts empty>\n- verified: <boolean describing if the finding yielded a verified exploit>\n- vuln_type: <'exposed_port', 'sensitive_object_storage_file', 'sensitive_nfs_file'>\n- metadata: <added by tools>\n- additional_details: <added by tools>\n- severity: <ignore for now>\n\nHere's the list of findings:\n{{findings}}\n\nPopulate the summary field with a description of why the findings is problematic and what an attacker could do with it. Use less than 100 for each summary.\nAlso, return the updated findings.\n"
+    },
+    "44da484e-86e6-4343-9ee0-f8de0484e40f": {
+      "component_type": "VllmConfig",
+      "id": "44da484e-86e6-4343-9ee0-f8de0484e40f",
+      "name": "meta.llama-3.3-70b-instruct",
+      "description": null,
+      "metadata": {},
+      "default_generation_parameters": null,
+      "url": "model_id",
+      "model_id": "/storage/models/Llama-3.3-70B-Instruct",
+      "api_type": "chat_completions"
+    },
+    "4b324e5b-d55d-4854-9179-6ac4a0d4a6c2": {
+      "component_type": "OutputMessageNode",
+      "id": "4b324e5b-d55d-4854-9179-6ac4a0d4a6c2",
+      "name": "going_to_triage_message",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "Moving to triaging Agent. Please wait for triaging to finish."
+    },
+    "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3": {
+      "component_type": "AgentNode",
+      "id": "1c9bb0af-03b3-4f85-be66-a9c19f7b60c3",
+      "name": "triaging_agent_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        {
+          "description": "Tenancy of the graph resources",
+          "title": "tenancy_graph",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {},
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "agent": {
+        "component_type": "Agent",
+        "id": "18fa0fb3-2726-4419-b16c-c9ce4c76ec28",
+        "name": "Triaging_Agent",
+        "description": "Agent equipped with tools to assist with computing blast radius and lateral movement possibilities from Cloud tenancy findings",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          },
+          {
+            "description": "Tenancy of the graph resources",
+            "title": "tenancy_graph",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          }
+        ],
+        "outputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "llm_config": {
+          "$component_ref": "44da484e-86e6-4343-9ee0-f8de0484e40f"
+        },
+        "system_prompt": "You are an agent designed to triaging findings of security vulnerabilities within a Cloud tenancy.\nGiven a list of findings and a tenancy graph, you have to evaluate the possibilities of moving laterally from the findings entrypoints and their blast radius.\n\nHere's the list of findings:\n{{findings}}\n\nHere's the tenancy graph:\n{{tenancy_graph}}\n\n1) Your workflow (starting from the list of findings and the tenancy graph)\n- For each finding where Verified is True:\n    - If finding is of type 'sensitive_object_storage_file' OR 'sensitive_nfs_file':\n        1) Call find_lateral_movement_from_user(finding_metadata)\n        2) Extract additional_details\n    - if finding is of type 'exposed_port':\n        1) Call find_networking_lateral_movement(finding_metadata)\n        2) Extract additional_details\n\n- For each finding where Verified is False:\n    - Assign LOW Severity\n    - Assign 'Finding could not be exploited' as Severity_Explanation\n\n2) For the output, for each finding use the data in the \"metadata\" and \"additional_details\" fields to:\n    - summarize the blast radius and lateral movement possibilities for the finding in less than 100 words\n    - assign a severity in the severity field, either, 'LOW', 'MEDIUM' or 'HIGH'\n    - mind that if a finding is verified, it is likely to have a higher severity\n\nThen output the updated findings list with a small summary about the issues of the tenancy.",
+        "tools": [
+          {
+            "component_type": "MCPTool",
+            "id": "912d22df-c9ba-48ba-bb73-af0e29f8cb2a",
+            "name": "find_lateral_movement_from_user",
+            "description": "Tool to evaluate where a compromised user has rights",
+            "metadata": {},
+            "inputs": [
+              {
+                "description": "Tenancy of the graph resources",
+                "title": "tenancy_graph",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "properties": {},
+                "type": "object"
+              },
+              {
+                "description": "List of findings",
+                "title": "findings",
+                "items": {
+                  "title": "finding",
+                  "additionalProperties": {
+                    "title": "field",
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            ],
+            "outputs": [
+              {
+                "description": "List of findings",
+                "title": "findings",
+                "items": {
+                  "title": "finding",
+                  "additionalProperties": {
+                    "title": "field",
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            ],
+            "requires_confirmation": false,
+            "client_transport": {
+              "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+            }
+          },
+          {
+            "component_type": "MCPTool",
+            "id": "aa5e8f8b-3875-4aee-afc8-07976c7e1993",
+            "name": "find_networking_lateral_movement",
+            "description": "Tool to evaluate where an attacker could reach from a compromised IP",
+            "metadata": {},
+            "inputs": [
+              {
+                "description": "Tenancy of the graph resources",
+                "title": "tenancy_graph",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "properties": {},
+                "type": "object"
+              },
+              {
+                "description": "List of findings",
+                "title": "findings",
+                "items": {
+                  "title": "finding",
+                  "additionalProperties": {
+                    "title": "field",
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            ],
+            "outputs": [
+              {
+                "description": "List of findings",
+                "title": "findings",
+                "items": {
+                  "title": "finding",
+                  "additionalProperties": {
+                    "title": "field",
+                    "type": "string"
+                  },
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            ],
+            "requires_confirmation": false,
+            "client_transport": {
+              "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+            }
+          }
+        ],
+        "toolboxes": [],
+        "human_in_the_loop": true
+      }
+    },
+    "ef25d860-46a3-4e26-823c-6e45f363cf41": {
+      "component_type": "OutputMessageNode",
+      "id": "ef25d860-46a3-4e26-823c-6e45f363cf41",
+      "name": "request_confirmation_message",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "message": "Would you like to report the findings to their respective tenancy owner via mail? Enter 'yes' if that is the case, otherwise Flow will terminate."
+    },
+    "c4d6df47-4336-4967-af03-10478a4147e4": {
+      "component_type": "InputMessageNode",
+      "id": "c4d6df47-4336-4967-af03-10478a4147e4",
+      "name": "get_confirmation",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [
+        {
+          "description": "Confirmation for reporting.",
+          "title": "confirmation",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "message": null
+    },
+    "731fdfec-ee71-473f-aa47-a78a0d33f212": {
+      "component_type": "BranchingNode",
+      "id": "731fdfec-ee71-473f-aa47-a78a0d33f212",
+      "name": "reporting_decision",
+      "description": "Report findings if the users decides to do so",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "Confirmation for reporting.",
+          "title": "confirmation",
+          "type": "string"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "default",
+        "reporting"
+      ],
+      "mapping": {
+        "yes": "reporting"
+      }
+    },
+    "21f73252-a8c0-4d2e-a2b0-54c13df8b55c": {
+      "component_type": "ToolNode",
+      "id": "21f73252-a8c0-4d2e-a2b0-54c13df8b55c",
+      "name": "reporting_node",
+      "description": "Sends mail to the finding's tenancy owner.",
+      "metadata": {},
+      "inputs": [
+        {
+          "description": "List of findings",
+          "title": "findings",
+          "items": {
+            "title": "finding",
+            "additionalProperties": {
+              "title": "field",
+              "type": "string"
+            },
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "outputs": [],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "MCPTool",
+        "id": "1746e2a3-21f0-4d70-8a99-dc5bbefbdc33",
+        "name": "report_findings",
+        "description": "Finds the owner of a finding and reports it.",
+        "metadata": {},
+        "inputs": [
+          {
+            "description": "List of findings",
+            "title": "findings",
+            "items": {
+              "title": "finding",
+              "additionalProperties": {
+                "title": "field",
+                "type": "string"
+              },
+              "properties": {},
+              "type": "object"
+            },
+            "type": "array"
+          }
+        ],
+        "outputs": [],
+        "requires_confirmation": false,
+        "client_transport": {
+          "$component_ref": "a5d19d8c-6482-46fb-9efe-6501213bc59c"
+        }
+      }
+    },
+    "b716700a-c114-4f02-ae71-3523615e5775": {
+      "component_type": "EndNode",
+      "id": "b716700a-c114-4f02-ae71-3523615e5775",
+      "name": "exit_node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [],
+      "branch_name": "next"
+    }
+  },
+  "agentspec_version": "25.4.2"
+}
