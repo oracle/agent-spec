@@ -7,8 +7,9 @@
 import pytest
 
 from pyagentspec.llms.ociclientconfig import OciClientConfigWithInstancePrincipal
-from pyagentspec.llms.ocigenaiconfig import ModelProvider, OciGenAiConfig, ServingMode
+from pyagentspec.llms.ocigenaiconfig import ModelProvider, OciAPIType, OciGenAiConfig, ServingMode
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .conftest import read_agentspec_config_file
 
@@ -43,7 +44,6 @@ def test_can_instantiate_ocigenai_config(oci_llm_config: OciGenAiConfig) -> None
 def test_can_serialize_and_deserialize_ocigenai_config(oci_llm_config: OciGenAiConfig) -> None:
     serialized_assistant = AgentSpecSerializer().to_yaml(oci_llm_config)
     assert len(serialized_assistant.strip()) > 0
-    print(serialized_assistant)
     deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_assistant)
     assert isinstance(deserialized_assistant, OciGenAiConfig)
     assert deserialized_assistant == oci_llm_config
@@ -53,3 +53,54 @@ def test_deserialize_ocigenai_config_from_file(oci_llm_config: OciGenAiConfig) -
     serialized_agent = read_agentspec_config_file("ocigenaiconfig.yaml")
     deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_agent)
     assert deserialized_assistant.name == oci_llm_config.name
+
+
+@pytest.fixture
+def oci_responses_llm_config() -> OciGenAiConfig:
+    return OciGenAiConfig(
+        name="oci_llm",
+        description="my remote oci llm",
+        id="oci_llm_123",
+        model_id="cohere",
+        client_config=OciClientConfigWithInstancePrincipal(
+            service_endpoint="my_llm_endpoint", name="my_oci_config"
+        ),
+        compartment_id="my_compartment",
+        api_type=OciAPIType.OPENAI_RESPONSES,
+        conversation_store_id="store_1",
+    )
+
+
+def test_can_serialize_and_deserialize_ocigenai_responses_config(
+    oci_responses_llm_config: OciGenAiConfig,
+) -> None:
+    serialized_assistant = AgentSpecSerializer().to_yaml(oci_responses_llm_config)
+    assert len(serialized_assistant.strip()) > 0
+    assert "api_type" in serialized_assistant
+
+    deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_assistant)
+    assert isinstance(deserialized_assistant, OciGenAiConfig)
+    assert deserialized_assistant._is_equal(
+        oci_responses_llm_config, fields_to_exclude=["min_agentspec_version"]
+    )
+    assert deserialized_assistant.conversation_store_id == "store_1"
+    assert deserialized_assistant.api_type == OciAPIType.OPENAI_RESPONSES
+
+
+def test_export_config_without_responses_api_to_old_version_works(oci_llm_config: OciGenAiConfig):
+    serialized_agent = AgentSpecSerializer().to_yaml(
+        component=oci_llm_config,
+        agentspec_version=AgentSpecVersionEnum.v25_4_1,
+    )
+    assert "api_type" not in serialized_agent
+    assert "conversation_store_id" not in serialized_agent
+
+
+def test_export_config_with_responses_api_to_old_version_raises(
+    oci_responses_llm_config: OciGenAiConfig,
+):
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        serialized_agent = AgentSpecSerializer().to_yaml(
+            component=oci_responses_llm_config,
+            agentspec_version=AgentSpecVersionEnum.v25_4_1,
+        )
