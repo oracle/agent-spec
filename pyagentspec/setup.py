@@ -55,6 +55,7 @@ setup(
         "jsonschema>=4.23.0,<5",
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
+        "httpx>0.28.0",
     ],
     test_suite="tests",
     entry_points={
@@ -65,7 +66,17 @@ setup(
         "crewai": [
             "crewai[litellm]>=1.6.1; python_version < '3.14'",
             "litellm>=1.79.0; python_version < '3.14'",
-            "httpx>0.28.0; python_version < '3.14'",
+        ],
+        "autogen": [
+            "autogen-core>=0.5.6; python_version < '3.13'",
+            "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
+            "autogen-agentchat>=0.5.6; python_version < '3.13'",
+        ],
+        "langgraph": [
+            "langgraph>=0.5.3",
+            "langchain-core>=0.3",
+            "langchain-openai>=0.3.7",
+            "langchain-ollama>=0.3.3",
         ],
     },
 )

@@ -7,6 +7,22 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **Added LangGraph adapter to pyagentspec:**
+
+  The LangGraph adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.langgraph`` subpackage.
+  It requires the ``langgraph`` extra dependency to be installed.
+
+  For more information read the :doc:`API Reference <api/adapters>`.
+
+* **Added AutoGen adapter to pyagentspec:**
+
+  The AutoGen adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.autogen`` subpackage.
+  It requires the ``autogen`` extra dependency to be installed.
+
+  For more information read the :doc:`API Reference <api/adapters>`.
+
 * **Added CrewAI adapter to pyagentspec:**
 
   The CrewAI adapter is now available as part of ``pyagentspec``.
@@ -22,7 +38,6 @@ New features
   For more information read the :ref:`latest specification <agentspecsensitivefield_nightly>`.
 
 * **OpenAI Responses API Support:**
-
 
   :ref:`OpenAICompatibleModel <openaicompatiblemodel>` and :ref:`OpenAIModel <openaiconfig>` now support the OpenAI Responses API, which can be configured
   using the ``api_type`` parameter, which accepts values from :ref:`OpenAIAPIType <openaiapitype>`.

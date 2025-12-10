@@ -5,13 +5,11 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
 from pyagentspec.adapters.crewai._types import (
-    CrewAIAgent,
     CrewAIComponent,
-    CrewAIFlow,
     CrewAIServerToolType,
 )
 from pyagentspec.component import Component as AgentSpecComponent
@@ -81,14 +79,7 @@ class AgentSpecLoader:
         agentspec_component:
             PyAgentSpec Component to be converted to a CrewAI Component.
         """
-        crewai_component = AgentSpecToCrewAIConverter().convert(
-            agentspec_component, self.tool_registry
-        )
-
-        if isinstance(crewai_component, (CrewAIAgent, CrewAIFlow)):
-            return crewai_component
-
-        raise TypeError(
-            "AgentSpecLoader.load_component expected a CrewAI Agent or Flow, "
-            f"but got {type(crewai_component)!r} from the converter"
+        return cast(
+            CrewAIComponent,
+            AgentSpecToCrewAIConverter().convert(agentspec_component, self.tool_registry),
         )
