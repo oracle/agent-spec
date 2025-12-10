@@ -6,14 +6,13 @@
 
 """This module defines an Agent Spec component"""
 
-from typing import List, Union
+from typing import List
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Self
 
-from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
-from pyagentspec.llms import LlmConfig
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -62,6 +61,10 @@ class ManagerWorkers(AgenticComponent):
     workers: List[AgenticComponent]
     """List of agentic components that participate in the group. There should be at least one agentic component in the list."""
 
+    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+    )
+
     @model_validator_with_error_accumulation
     def _validate_one_or_more_workers(self) -> Self:
         if len(self.workers) == 0:
@@ -76,6 +79,3 @@ class ManagerWorkers(AgenticComponent):
         if any(self.group_manager is agent for agent in self.workers):
             raise ValueError("Group manager cannot be a worker.")
         return self
-
-    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
-        return AgentSpecVersionEnum.v25_4_2

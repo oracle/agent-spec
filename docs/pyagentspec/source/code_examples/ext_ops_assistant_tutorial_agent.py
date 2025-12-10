@@ -289,7 +289,7 @@ serialized_agent = AgentSpecSerializer().to_json(agent)
 
 ## With LangGraph
 # from langchain_core.runnables import RunnableConfig
-# from langgraph_agentspec_adapter import AgentSpecLoader as LangGraphLoader
+# from pyagentspec.adapters.langgraph import AgentSpecLoader as LangGraphLoader
 
 # user_query = "Please help with the ticket INC-12345"
 

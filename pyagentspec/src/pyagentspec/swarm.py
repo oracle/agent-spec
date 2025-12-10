@@ -9,6 +9,7 @@
 from typing import List, Tuple
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Self
 
 from pyagentspec.agenticcomponent import AgenticComponent
@@ -63,6 +64,10 @@ class Swarm(AgenticComponent):
         Agents can still exchange messages with each other as in ``handoff=False`` mode.
     """
 
+    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+    )
+
     @model_validator_with_error_accumulation
     def _validate_one_or_more_relations(self) -> Self:
         if len(self.relationships) == 0:
@@ -72,6 +77,3 @@ class Swarm(AgenticComponent):
             )
 
         return self
-
-    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
-        return AgentSpecVersionEnum.v25_4_2

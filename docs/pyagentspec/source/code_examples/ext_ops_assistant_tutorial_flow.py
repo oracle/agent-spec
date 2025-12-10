@@ -23,13 +23,9 @@ Building an LLM Operations Flow-based Agent with Open Agent Spec and WayFlow
 # Step 1.5 Getting the tools from the previous tutorial
 
 from ext_ops_assistant_tutorial_agent import (
-    read_jira_ticket,
     read_jira_ticket_tool,
-    read_runbook,
     read_runbook_tool,
-    get_alarm_status,
     get_alarm_status_tool,
-    read_logs,
     read_logs_tool,
 )
 
@@ -462,7 +458,7 @@ serialized_flow = AgentSpecSerializer().to_json(flow)
 # from langchain_core.runnables import RunnableConfig
 # from langgraph.types import Command
 # from langgraph.checkpoint.memory import MemorySaver
-# from langgraph_agentspec_adapter import AgentSpecLoader as LangGraphLoader
+# from pyagentspec.adapters.langgraph import AgentSpecLoader as LangGraphLoader
 #
 # assistant = LangGraphLoader(tool_registry=tool_registry, checkpointer=MemorySaver()).load_json(serialized_flow)
 # config = RunnableConfig({"configurable": {"thread_id": "1"}})

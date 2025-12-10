@@ -40,15 +40,3 @@ def _disable_tracing():
     finally:
         if old_value is not None:
             os.environ["CREWAI_DISABLE_TELEMETRY"] = old_value
-
-
-@pytest.fixture(scope="package", autouse=True)
-def _disable_openai_api_key():
-    """Disable the openai api key environment variable"""
-    old_value = os.environ.get("OPENAI_API_KEY", None)
-    os.environ["OPENAI_API_KEY"] = "fake-api-key"
-    try:
-        yield
-    finally:
-        if old_value is not None:
-            os.environ["OPENAI_API_KEY"] = old_value

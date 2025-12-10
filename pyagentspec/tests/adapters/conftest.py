@@ -5,7 +5,6 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
-import subprocess  # nosec, test-only code, args are trusted
 from pathlib import Path
 from unittest.mock import patch
 
@@ -68,7 +67,7 @@ def skip_llm_construction():
             p.stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def json_server(json_server_port: int):
     api_server = Path(__file__).parent / "api_server.py"
     process, url = start_uvicorn_server(
@@ -80,11 +79,29 @@ def json_server(json_server_port: int):
         terminate_process_tree(process, timeout=5.0)
 
 
+@pytest.fixture(scope="package", autouse=True)
+def _disable_openai_api_key():
+    """Disable the openai api key environment variable"""
+    old_value = os.environ.get("OPENAI_API_KEY", None)
+    os.environ["OPENAI_API_KEY"] = "fake-api-key"
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ["OPENAI_API_KEY"] = old_value
+
+
+llama_api_url = os.environ.get("LLAMA_API_URL")
+if not llama_api_url:
+    raise Exception("LLAMA_API_URL is not set in the environment")
+
+
+llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
+if not llama70bv33_api_url:
+    raise Exception("LLAMA70BV33_API_URL is not set in the environment")
+
+
 def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:
-    llama_api_url = os.environ.get("LLAMA_API_URL")
-    llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
-    assert llama_api_url, "Please set LLAMA_API_URL"
-    assert llama70bv33_api_url, "Please set LLAMA70BV33_API_URL"
     return (
         yaml_config.replace("[[LLAMA_API_URL]]", llama_api_url)
         .replace("[[LLAMA70BV33_API_URL]]", llama70bv33_api_url)
