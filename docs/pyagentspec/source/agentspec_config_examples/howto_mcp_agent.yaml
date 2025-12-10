@@ -40,4 +40,4 @@ toolboxes:
     headers: null
   tool_filter: null
 human_in_the_loop: true
-agentspec_version: 25.4.2
+agentspec_version: 26.1.0

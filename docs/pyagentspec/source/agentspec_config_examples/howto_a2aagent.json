@@ -20,5 +20,5 @@
         "poll_interval": 60.0,
         "max_retries": 3
     },
-    "agentspec_version": "25.4.2"
+    "agentspec_version": "26.1.0"
 }
