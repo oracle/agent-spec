@@ -81,10 +81,12 @@ class RemoteTool(Tool):
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        parent_min_version = super()._infer_min_agentspec_version_from_configuration()
+        current_object_min_version = self.min_agentspec_version
         if self.sensitive_headers:
-            return AgentSpecVersionEnum.v25_4_2
-
-        return super()._infer_min_agentspec_version_from_configuration()
+            # `sensitive_headers` was introduced in 25.4.2
+            current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        return max(current_object_min_version, parent_min_version)
 
     @model_validator_with_error_accumulation
     def _validate_sensitive_headers_are_disjoint(self) -> Self:

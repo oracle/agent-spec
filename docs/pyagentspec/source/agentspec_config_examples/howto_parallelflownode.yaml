@@ -711,4 +711,4 @@ $referenced_components:
     outputs: []
     branches: []
     branch_name: next
-agentspec_version: 25.4.2
+agentspec_version: 26.1.0

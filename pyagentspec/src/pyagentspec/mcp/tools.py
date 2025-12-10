@@ -40,12 +40,13 @@ class MCPToolSpec(ComponentWithIO):
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        parent_min_version = super()._infer_min_agentspec_version_from_configuration()
+        current_object_min_version = self.min_agentspec_version
         if self.requires_confirmation:
             # If the tool requires confirmation, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
-            return AgentSpecVersionEnum.v25_4_2
-
-        return super()._infer_min_agentspec_version_from_configuration()
+            current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        return max(current_object_min_version, parent_min_version)
 
 
 class MCPToolBox(ToolBox):

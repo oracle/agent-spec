@@ -94,6 +94,14 @@ according to the specifics of an agentic framework.
 For example, [WayFlow](https://github.com/oracle/wayflow/) is an Agent Spec reference runtime developed by Oracle,
 which offers a complete set of APIs that enable users to load and execute Agent Spec configurations.
 
+We also provide adapters for some of the most common agentic frameworks as part of `pyagentspec`.
+These adapters require to install extra dependencies, you can find more information in our [installation guide][downloads].
+You can find some examples of how to use these adapters in the `adapters_examples` folder:
+
+- [LangGraph](https://github.com/oracle/agent-spec/tree/main/adapters_examples/langgraph)
+- [AutoGen](https://github.com/oracle/agent-spec/tree/main/adapters_examples/autogen)
+- [CrewAI](https://github.com/oracle/agent-spec/tree/main/adapters_examples/crewai)
+
 
 ## Positioning in the Agentic Ecosystem
 
