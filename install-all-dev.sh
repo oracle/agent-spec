@@ -8,11 +8,7 @@
 
 source ./_installation_tools.sh
 
-upgrade_pip_or_uv
+upgrade_pip
 
 # Install pyagentspec main module
 install_dev_python_package pyagentspec
-
-# Install also the adapters for the docs
-install_dev_python_package adapters/autogenagentspecadapter
-install_dev_python_package adapters/langgraphagentspecadapter

@@ -94,12 +94,18 @@ def _disable_openai_api_key():
 
 llama_api_url = os.environ.get("LLAMA_API_URL")
 if not llama_api_url:
-    raise Exception("LLAMA_API_URL is not set in the environment")
+    if should_skip_llm_test():
+        llama_api_url = "http://dummy-llm.local"
+    else:
+        raise Exception("LLAMA_API_URL is not set in the environment")
 
 
 llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
 if not llama70bv33_api_url:
-    raise Exception("LLAMA70BV33_API_URL is not set in the environment")
+    if should_skip_llm_test():
+        llama70bv33_api_url = "http://dummy-llm70.local"
+    else:
+        raise Exception("LLAMA70BV33_API_URL is not set in the environment")
 
 
 def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:

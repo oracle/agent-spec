@@ -1,4 +1,4 @@
-name: "CI Pipeline: Formatting, Linting, Typing, Security, and Tests (PyAgentSpec + Adapters)"
+name: "CI Pipeline: Formatting, Linting, Typing, Security, and Tests (PyAgentSpec)"
 
 on:
   workflow_dispatch:
@@ -12,64 +12,51 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
-        adapter-name: ['PyAgentSpec', 'LangGraph Adapter', 'AutoGen Adapter']
-        include:
-          - adapter-name: PyAgentSpec
-            adapter-path: pyagentspec
-          - adapter-name: LangGraph Adapter
-            adapter-path: adapters/langgraphagentspecadapter
-          - adapter-name: AutoGen Adapter
-            adapter-path: adapters/autogenagentspecadapter
-        exclude:
-          - adapter-name: AutoGen Adapter
-            python-version: '3.13'
-          - adapter-name: AutoGen Adapter
-            python-version: '3.14'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache pip packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/setup.py', '**/requirements*.txt', '**/constraints/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyagentspec/setup.py', 'pyagentspec/requirements-dev.txt', 'pyagentspec/constraints/constraints.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
 
-      - name: Install packages and development dependencies
-        run: bash install-all-dev.sh
+      - name: Install PyAgentSpec packages and development dependencies
+        run: cd pyagentspec && bash install-dev.sh
 
       - name: Verify tools installation
         run: |
           python -m pip list | grep -E "black|isort|flake8|bandit|mypy"
           which black isort flake8 bandit mypy
 
-      - name: "[${{ matrix.adapter-name }}] Black formatting check"
-        run: black --config ${{ matrix.adapter-path }}/pyproject.toml --check ${{ matrix.adapter-path }}/
+      - name: "Black formatting check"
+        run: black --config pyagentspec/pyproject.toml --check pyagentspec/
 
-      - name: "[${{ matrix.adapter-name }}] Isort import sorting check"
-        run: isort --settings-path ${{ matrix.adapter-path }}/pyproject.toml --check-only ${{ matrix.adapter-path }}/
+      - name: "Isort import sorting check"
+        run: isort --settings-path pyagentspec/pyproject.toml --check-only pyagentspec/
 
-      - name: "[${{ matrix.adapter-name }}] Flake8 linter checks"
-        run: flake8 --select C801 ${{ matrix.adapter-path }}/
+      - name: "Flake8 linter checks"
+        run: flake8 --select C801 pyagentspec/
 
-      - name: "[${{ matrix.adapter-name }}] Flake8 copyright checks"
-        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright © [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." ${{ matrix.adapter-path }}/
+      - name: "Flake8 copyright checks"
+        run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright © [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." pyagentspec/
 
-      - name: "[${{ matrix.adapter-name }}] Bandit security checks"
-        run: bandit -c bandit.yaml -r ${{ matrix.adapter-path }}/
+      - name: "Bandit security checks"
+        run: bandit -c bandit.yaml -r pyagentspec/
 
-      - name: "[${{ matrix.adapter-name }}] Mypy static type checking"
-        run: mypy ${{ matrix.adapter-path }}/ --config-file ./pyproject.toml ${{ matrix.adapter-name == 'PyAgentSpec' && '--exclude pyagentspec/tests_fuzz' || '' }}
+      - name: "Mypy static type checking"
+        if: matrix.python-version != '3.13'
+        run: mypy pyagentspec/ --config-file pyagentspec/pyproject.toml --exclude pyagentspec/tests_fuzz
 
-      - name: "[${{ matrix.adapter-name }}] Run tests"
-        working-directory: ${{ matrix.adapter-path }}
+      - name: "Run tests"
+        working-directory: pyagentspec
         run: bash tests/run_tests.sh
