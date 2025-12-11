@@ -1,4 +1,4 @@
-image : $GITLAB_CI_CD_IMAGE
+image : $GITLAB_CI_CD_IMAGE_JQ
 include:
   - project: '$CI_PROJECT_NAMESPACE/agent-spec'
     ref: main
