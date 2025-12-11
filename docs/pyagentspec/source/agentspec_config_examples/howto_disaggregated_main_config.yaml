@@ -1,0 +1,13 @@
+component_type: Agent
+id: agent_id
+name: Weather Agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  $component_ref: llm_config
+system_prompt: You are a helpful weather assistant.
+tools:
+- $component_ref: client_weather_tool
+agentspec_version: 25.4.1

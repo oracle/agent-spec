@@ -1,0 +1,36 @@
+{
+    "$referenced_components": {
+        "llm_config": {
+            "component_type": "OpenAiCompatibleConfig",
+            "id": "9612d107-0e69-4169-85d1-8e4e3aee41ec",
+            "name": "llm-dev",
+            "description": null,
+            "metadata": {},
+            "default_generation_parameters": null,
+            "url": "http://dev.llm.url",
+            "model_id": "llm-model_1",
+            "agentspec_version": "25.4.1"
+        },
+        "client_weather_tool": {
+            "component_type": "ClientTool",
+            "id": "weather_tool",
+            "name": "get_weather",
+            "description": "Gets the weather for a city",
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "city_name",
+                    "default": "zurich",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "forecast",
+                    "type": "string"
+                }
+            ],
+            "agentspec_version": "25.4.1"
+        }
+    }
+}

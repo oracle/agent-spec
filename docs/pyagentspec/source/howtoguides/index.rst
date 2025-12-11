@@ -26,8 +26,6 @@ These how-to guides demonstrate how to use the main Agent Spec features to creat
    How to Develop an Agent with Remote Tools <howto_agent_with_remote_tools>
    Do Map and Reduce Operations in Flows <howto_mapnode>
    How to Build an Orchestrator-Workers Agents Pattern <howto_orchestrator_agent>
-   Specify the Generation Configuration when Using LLMs <howto_generation_config>
-   Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
    Use OCI Generative AI Agents <howto_ociagent>
    Use an A2A Agent <howto_a2aagent>
    Build a Swarm of Agents <howto_swarm>
@@ -51,6 +49,17 @@ These how-to guides provide examples of how to run your Assistant using specific
    How to Execute Agent Spec Configuration with WayFlow <howto_execute_agentspec_with_wayflow>
    How to Execute Agent Spec Across Frameworks <howto_execute_agentspec_across_frameworks>
 
+Configuration and State Management
+----------------------------------
+
+These guides demonstrate how to configure components in Agent Spec.
+
+.. toctree::
+   :maxdepth: 1
+
+   Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
+   Specify the Generation Configuration when Using LLMs <howto_generation_config>
+   How to Use Disaggregated Config <howto_disaggregated_config>
 
 External Features
 -----------------
