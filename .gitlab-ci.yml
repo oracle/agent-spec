@@ -1,9 +1,5 @@
-image : $GITLAB_CI_CD_IMAGE
+image : $GITLAB_CI_CD_IMAGE_JQ
 include:
-  - local: '.gitlab/jobs/templates/get_merge_request_id.yml'
-  - local: '.gitlab/jobs/templates/get_private_branch.yml'
-  - local: '.gitlab/jobs/schedule_mergegate.yml'
-  - local: '.gitlab/jobs/schedule_regression.yml'
-
-stages:
-  - trigger
+  - project: '$CI_PROJECT_NAMESPACE/agent-spec'
+    ref: main
+    file: '/.gitlab-ci.yml'
