@@ -2,6 +2,7 @@ name: "CI Pipeline: Formatting, Linting, Typing, Security, and Tests (PyAgentSpe
 
 on:
   pull_request:
+  workflow_dispatch:
 
 env:
   SKIP_LLM_TESTS: "1"
