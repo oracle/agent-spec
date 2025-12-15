@@ -9,12 +9,12 @@ import pathlib
 import signal
 import socket
 import ssl
-import subprocess
+import subprocess  # nosec B404
 import sys
 import threading
 import time
 from collections import deque
-from contextlib import closing
+from contextlib import closing, suppress
 from typing import Optional
 
 import httpx
@@ -55,58 +55,45 @@ def terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> N
             return  # already exited
         # Prefer group termination on POSIX if we started a new session
         if os.name == "posix":
-            try:
+            group_terminated = False
+            with suppress(Exception):
                 pgid = os.getpgid(process.pid)
-                # 1) Graceful: SIGTERM to the group
                 os.killpg(pgid, signal.SIGTERM)
-            except Exception:
-                # Fall back to terminating the single process
-                try:
+                group_terminated = True
+            if not group_terminated:
+                with suppress(Exception):
                     process.terminate()
-                except Exception:
-                    pass
         else:
             # Windows or other: terminate the single process
-            try:
+            with suppress(Exception):
                 process.terminate()
-            except Exception:
-                pass
 
         # Give it a moment to exit cleanly
-        try:
+        with suppress(Exception):
             process.wait(timeout=timeout)
             return
-        except Exception:
-            pass
 
         # 2) Forceful: SIGKILL the group (POSIX), otherwise kill the process
         if os.name == "posix":
-            try:
+            killed_group = False
+            with suppress(Exception):
                 os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-            except Exception:
-                # Fall back to killing the single process
-                try:
+                killed_group = True
+            if not killed_group:
+                with suppress(Exception):
                     process.kill()
-                except Exception:
-                    pass
         else:
-            try:
+            with suppress(Exception):
                 process.kill()
-            except Exception:
-                pass
 
         # Ensure it is gone
-        try:
+        with suppress(Exception):
             process.wait(timeout=timeout)
-        except Exception:
-            pass
     finally:
         # Close stdout to avoid ResourceWarning if we used a PIPE
-        try:
+        with suppress(Exception):
             if getattr(process, "stdout", None) and not process.stdout.closed:
                 process.stdout.close()
-        except Exception:
-            pass
 
 
 def start_uvicorn_server(
@@ -128,7 +115,7 @@ def start_uvicorn_server(
     env.setdefault("PYTHONUNBUFFERED", "1")
 
     # Start process with pipes and its own process group so we can kill children
-    process = subprocess.Popen(
+    process = subprocess.Popen(  # nosec B603: controlled args; shell=False;
         process_args,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -136,6 +123,7 @@ def start_uvicorn_server(
         bufsize=1,  # line-buffered
         env=env,
         start_new_session=True,
+        shell=False,
     )
 
     # Tee logs to CI and keep a ring buffer
