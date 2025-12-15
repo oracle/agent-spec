@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
       - name: Checkout repository
@@ -45,17 +45,20 @@ jobs:
       - name: "Isort import sorting check"
         run: isort --settings-path pyagentspec/pyproject.toml --check-only pyagentspec/
 
+      # Skipping flake8 for Python 3.14 due to old flake8 version incompatibility
       - name: "Flake8 linter checks"
+        if: matrix.python-version != '3.14'
         run: flake8 --select C801 pyagentspec/
 
       - name: "Flake8 copyright checks"
+        if: matrix.python-version != '3.14'
         run: flake8 --select C801 --copyright-check --copyright-regexp="# Copyright © [0-9]{4}(, [0-9]{4})* Oracle and/or its affiliates.\n#\n# This software is under the Apache License 2.0\n# \(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0\) or Universal Permissive License\n# \(UPL\) 1.0 \(LICENSE-UPL or https://oss.oracle.com/licenses/upl\), at your option." pyagentspec/
 
       - name: "Bandit security checks"
         run: bandit -c bandit.yaml -r pyagentspec/
 
       - name: "Mypy static type checking"
-        if: matrix.python-version != '3.13'
+        if: ${{ matrix.python-version != '3.13' && matrix.python-version != '3.14' }}
         run: mypy pyagentspec/ --config-file pyagentspec/pyproject.toml --exclude pyagentspec/tests_fuzz
 
       - name: "Run tests"
