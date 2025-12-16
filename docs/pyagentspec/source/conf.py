@@ -17,6 +17,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from sphinx.application import Sphinx
 
@@ -39,9 +40,6 @@ with open(Path(__file__).parents[3] / "VERSION", "r") as f:
 # The IDE complains, but the tags set exists
 # We add stable as current version, we might add the version switch in the future
 tags.add("stable")  # type: ignore
-
-# The short X.Y version.
-version = ".".join(pyagentspec.__version__.split(".")[:2])
 
 # The full version, including alpha/beta/rc tags.
 release = pyagentspec.__version__
@@ -148,7 +146,11 @@ html_theme_options = {
     "pygments_light_style": "xcode",  # for light mode
     "pygments_dark_style": "monokai",  # for dark mode
     "navbar_align": "left",
-    "navbar_start": ["navbar-logo"],
+    "navbar_start": ["navbar-logo", "version-switcher"],
+    "switcher": {
+        "json_url": "https://oracle.github.io/agent-spec/switcher.json",
+        "version_match": stable_release,
+    },
     "navbar_center": [
         "navbar-new"
     ],  # Custom top navigation - defined in the template, navbar-new.html, in the _templates dir.
@@ -179,7 +181,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 
-def autodoc_skip_member(app: Sphinx, what, name, obj, skip, options):
+def autodoc_skip_member(app: Sphinx, what, name, obj, skip, options):  # type: ignore
     """
     Skips showing an attribute as a member if it is already in the list of parameters.
     This prevents duplicated fields in Pydantic / dataclasses.
@@ -191,7 +193,7 @@ def autodoc_skip_member(app: Sphinx, what, name, obj, skip, options):
     return skip
 
 
-def setup(app: Sphinx):
+def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.add_js_file("js/fix-navigation.js")
 
