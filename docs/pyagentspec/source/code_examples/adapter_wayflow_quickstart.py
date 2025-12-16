@@ -8,6 +8,7 @@
 # fmt: off
 # mypy: ignore-errors
 
+exit() # wayflow not installed
 # .. start-agentspec_to_runtime
 # Create a Agent Spec agent
 from pyagentspec.agent import Agent
