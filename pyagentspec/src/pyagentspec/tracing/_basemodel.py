@@ -15,7 +15,7 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 _PII_MASK = "** MASKED **"
 
 
-class _TelemetrySerializationContextImpl(_SerializationContextImpl):
+class _TracingSerializationContextImpl(_SerializationContextImpl):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -32,7 +32,7 @@ class BaseModelWithSensitiveInfo(BaseModel):
         """
         mask_sensitive_information = kwargs.pop("mask_sensitive_information", True)
         if "context" not in kwargs:
-            kwargs["context"] = _TelemetrySerializationContextImpl()
+            kwargs["context"] = _TracingSerializationContextImpl()
         serialized_model_dict = super().model_dump(*args, **kwargs)
         for field_name, field_info in self.__class__.model_fields.items():
             if field_name in serialized_model_dict:

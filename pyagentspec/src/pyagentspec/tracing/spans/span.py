@@ -140,8 +140,6 @@ class Span(BaseModelWithSensitiveInfo):
                 )
             )
         self.end()
-        if exc_value is not None:
-            raise exc_value
 
     async def __aexit__(
         self,
@@ -149,19 +147,17 @@ class Span(BaseModelWithSensitiveInfo):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        try:
-            if exc_value is not None:
-                from pyagentspec.tracing.events import ExceptionRaised
+        if exc_value is not None:
+            from pyagentspec.tracing.events import ExceptionRaised
 
-                await self.add_event_async(
-                    ExceptionRaised(
-                        exception_type=exc_type.__name__ if exc_type else "Unknown",
-                        exception_message=str(exc_value),
-                        exception_stacktrace=str(traceback),
-                    )
+            await self.add_event_async(
+                ExceptionRaised(
+                    exception_type=exc_type.__name__ if exc_type else "Unknown",
+                    exception_message=str(exc_value),
+                    exception_stacktrace=str(traceback),
                 )
-        finally:
-            await self.end_async()
+            )
+        await self.end_async()
 
     def start(self) -> None:
         """
