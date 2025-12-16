@@ -9,7 +9,7 @@
 # mypy: ignore-errors
 
 try:
-    pass
+    import crewai # noqa: F401
 except ImportError:
     exit() # Not installed
 except RuntimeError as e:
