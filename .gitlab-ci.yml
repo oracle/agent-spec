@@ -2,4 +2,4 @@ image : $GITLAB_CI_CD_IMAGE_JQ
 include:
   - project: '$CI_PROJECT_NAMESPACE/agent-spec'
     ref: main
-    file: '/.gitlab-ci.yml'
+    file: '/.gitlab-ci.ymlw'
