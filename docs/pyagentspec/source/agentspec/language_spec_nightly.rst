@@ -649,13 +649,15 @@ OpenAI
 This class of LLMs refers to the models offered by `OpenAI <https://openai.com>`_.
 Similar to :ref:`OpenAI Compatible LLMs <openaicompatiblellms>`, you can also configure the ``api_type`` parameter,
 which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
-By default, the API type is set to chat completions.
+By default, the API type is set to chat completions. Additionally, an optional
+``api_key`` can be set for the remote LLM model.
 
 .. code-block:: python
 
    class OpenAiConfig(LlmConfig):
      model_id: str
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     api_key: SensitiveField[Optional[str]] = None
 
 OCI GenAI
 ^^^^^^^^^
@@ -2364,6 +2366,8 @@ See all the fields below that are considered sensitive fields:
 | Component                        | Attribute          |
 +==================================+====================+
 | OpenAiCompatibleConfig           | api_key            |
++----------------------------------+--------------------+
+| OpenAiConfig                     | api_key            |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+

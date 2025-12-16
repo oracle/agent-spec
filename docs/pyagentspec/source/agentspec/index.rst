@@ -28,3 +28,4 @@ with all the latest updates at :ref:`this link<agentspecspec_nightly>`.
    Introduction, motivation & vision <intro_and_motivation>
    Language specification (v25.4.1) <language_spec_25_4_1>
    Positioning in the agentic ecosystem <positioning>
+   Tracing <tracing>

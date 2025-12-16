@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
     import langgraph_core  # type: ignore
+    from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
     from langchain_core.messages import BaseMessage, SystemMessage
     from langchain_core.runnables import RunnableBinding, RunnableConfig
@@ -54,6 +55,7 @@ else:
     StateGraph = langgraph_graph.StateGraph
     Messages = LazyLoader("langgraph.graph.message").Messages
     CompiledStateGraph = LazyLoader("langgraph.graph.state").CompiledStateGraph
+    BaseCallbackHandler = LazyLoader("langchain_core.callbacks").BaseCallbackHandler
     RunnableBinding = LazyLoader("langchain_core.runnables").RunnableBinding
     RunnableConfig = LazyLoader("langchain_core.runnables").RunnableConfig
     StateNodeSpec = LazyLoader("langgraph.graph._node").StateNodeSpec
@@ -150,4 +152,5 @@ __all__ = [
     "RunnableConfig",
     "Messages",
     "BranchSpec",
+    "BaseCallbackHandler",
 ]

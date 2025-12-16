@@ -59,6 +59,7 @@ def test_can_serialize_and_deserialize_llm_config_with_arbitrary_generation_conf
             name="agi2",
             model_id="agi_model2",
             url="http://some.where",
+            api_key="api_key",
             default_generation_parameters=LlmGenerationConfig(top_p=3),
         ),
         VllmConfig(
@@ -72,6 +73,7 @@ def test_can_serialize_and_deserialize_llm_config_with_arbitrary_generation_conf
             id="openai",
             name="agi4",
             model_id="agi_model4",
+            api_key="api_key",
             default_generation_parameters=LlmGenerationConfig(),
         ),
     ],
@@ -82,5 +84,8 @@ def test_can_serialize_and_deserialize_llm_config(llm_config: VllmConfig) -> Non
     assert f"component_type: {type(llm_config).__name__}"
     assert f"name: agi"
     assert f"model_id: agi_model"
-    deserialized_llm = AgentSpecDeserializer().from_yaml(serialized_llm)
+    deserialized_llm = AgentSpecDeserializer().from_yaml(
+        serialized_llm,
+        components_registry={"openai.api_key": "api_key", "openai_compatible.api_key": "api_key"},
+    )
     assert llm_config == deserialized_llm

@@ -17,6 +17,7 @@ from pyagentspec.adapters.crewai._types import (
     CrewAIServerToolType,
     CrewAITool,
 )
+from pyagentspec.adapters.crewai.tracing import CrewAIAgentWithTracing
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
@@ -81,6 +82,11 @@ def _create_pydantic_model_from_properties(
 
 class AgentSpecToCrewAIConverter:
 
+    def __init__(self, enable_agentspec_tracing: bool = True) -> None:
+        self.enable_agentspec_tracing = enable_agentspec_tracing
+        self._is_root_call: bool = True
+        self._obj_id_to_agentspec_component: Dict[int, AgentSpecComponent] = {}
+
     def convert(
         self,
         agentspec_component: AgentSpecComponent,
@@ -91,34 +97,58 @@ class AgentSpecToCrewAIConverter:
         if converted_components is None:
             converted_components = {}
 
-        if agentspec_component.id in converted_components:
-            return converted_components[agentspec_component.id]
+        if self._is_root_call:
+            # Reset the obj id -> agentspec component mapping
+            self._obj_id_to_agentspec_component = {}
 
-        # If we did not find the object, we create it, and we record it in the referenced_objects registry
-        crewai_component: Any
-        if isinstance(agentspec_component, AgentSpecLlmConfig):
-            crewai_component = self._llm_convert_to_crewai(
-                agentspec_component, tool_registry, converted_components
+        is_root_call = self._is_root_call
+        self._is_root_call = False
+
+        if agentspec_component.id not in converted_components:
+            # If we did not find the object, we create it, and we record it in the referenced_objects registry
+            crewai_component: Any
+            if isinstance(agentspec_component, AgentSpecLlmConfig):
+                crewai_component = self._llm_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
+            elif isinstance(agentspec_component, AgentSpecAgent):
+                crewai_component = self._agent_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
+            elif isinstance(agentspec_component, AgentSpecTool):
+                crewai_component = self._tool_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
+            elif isinstance(agentspec_component, AgentSpecComponent):
+                raise NotImplementedError(
+                    f"The AgentSpec Component type '{agentspec_component.__class__.__name__}' is not yet supported "
+                    f"for conversion. Please contact the AgentSpec team."
+                )
+            else:
+                raise TypeError(
+                    f"Expected object of type 'pyagentspec.component.Component',"
+                    f" but got {type(agentspec_component)} instead"
+                )
+            converted_components[agentspec_component.id] = crewai_component
+
+        self._obj_id_to_agentspec_component[id(converted_components[agentspec_component.id])] = (
+            agentspec_component
+        )
+
+        if (
+            is_root_call
+            and self.enable_agentspec_tracing
+            and isinstance(converted_components[agentspec_component.id], CrewAIAgentWithTracing)
+        ):
+            # If the root component is an agent to which we can attach an agent spec listener,
+            # we monkey patch the root CrewAI component to attach the event listener for Agent Spec
+            from pyagentspec.adapters.crewai.tracing import AgentSpecEventListener
+
+            converted_components[agentspec_component.id]._agentspec_event_listener = (
+                AgentSpecEventListener(agentspec_components=self._obj_id_to_agentspec_component)
             )
-        elif isinstance(agentspec_component, AgentSpecAgent):
-            crewai_component = self._agent_convert_to_crewai(
-                agentspec_component, tool_registry, converted_components
-            )
-        elif isinstance(agentspec_component, AgentSpecTool):
-            crewai_component = self._tool_convert_to_crewai(
-                agentspec_component, tool_registry, converted_components
-            )
-        elif isinstance(agentspec_component, AgentSpecComponent):
-            raise NotImplementedError(
-                f"The AgentSpec Component type '{agentspec_component.__class__.__name__}' is not yet supported "
-                f"for conversion. Please contact the AgentSpec team."
-            )
-        else:
-            raise TypeError(
-                f"Expected object of type 'pyagentspec.component.Component',"
-                f" but got {type(agentspec_component)} instead"
-            )
-        converted_components[agentspec_component.id] = crewai_component
+
+        self._is_root_call = is_root_call
         return converted_components[agentspec_component.id]
 
     def _llm_convert_to_crewai(
@@ -130,7 +160,9 @@ class AgentSpecToCrewAIConverter:
 
         def parse_url(url: str) -> str:
             url = url.strip()
-            if not url.endswith("/v1"):
+            if url.endswith("/completions"):
+                return url
+            if not url.endswith("/v1") and not url.endswith("/litellm"):
                 url += "/v1"
             if not url.startswith("http"):
                 url = "http://" + url
@@ -252,7 +284,7 @@ class AgentSpecToCrewAIConverter:
         tool_registry: Dict[str, CrewAIServerToolType],
         converted_components: Optional[Dict[str, Any]] = None,
     ) -> CrewAIAgent:
-        return CrewAIAgent(
+        crewai_agent = CrewAIAgentWithTracing(
             # We interpret the name as the `role` of the agent in CrewAI,
             # the description as the `backstory`, and the system prompt as the `goal`, as they are all required
             # This interpretation comes from the analysis of CrewAI Agent definition examples
@@ -271,3 +303,7 @@ class AgentSpecToCrewAIConverter:
                 for tool in agentspec_agent.tools
             ],
         )
+        if not agentspec_agent.metadata:
+            agentspec_agent.metadata = {}
+        agentspec_agent.metadata["__crewai_agent_id__"] = str(crewai_agent.id)
+        return crewai_agent

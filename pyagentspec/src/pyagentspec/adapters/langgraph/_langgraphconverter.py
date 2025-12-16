@@ -5,16 +5,17 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 from uuid import uuid4
 
 import httpx
-from pydantic import BaseModel, Field, SecretStr, create_model
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, create_model
 
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.adapters._utils import render_template
 from pyagentspec.adapters.langgraph._node_execution import NodeExecutor
 from pyagentspec.adapters.langgraph._types import (
+    BaseCallbackHandler,
     BaseChatModel,
     Checkpointer,
     CompiledStateGraph,
@@ -31,6 +32,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
+from pyagentspec.adapters.langgraph.tracing import AgentSpecCallbackHandler
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
@@ -63,50 +65,119 @@ from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
 
 
+class SchemaRegistry:
+    def __init__(self) -> None:
+        self.models: Dict[str, type[BaseModel]] = {}
+
+
+def _build_type_from_schema(
+    name: str,
+    schema: Dict[str, Any],
+    registry: SchemaRegistry,
+) -> Any:
+    # Enum -> Literal[…]
+    if "enum" in schema and isinstance(schema["enum"], list):
+        values = schema["enum"]
+        # Literal supports a tuple of literal values as a single subscription argument
+        return Literal[tuple(values)]
+
+    # anyOf / oneOf -> Union[…]
+    for key in ("anyOf", "oneOf"):
+        if key in schema:
+            variants = [
+                _build_type_from_schema(f"{name}Alt{i}", s, registry)
+                for i, s in enumerate(schema[key])
+            ]
+            return Union[tuple(variants)]
+
+    t = schema.get("type")
+
+    # list of types -> Union[…]
+    if isinstance(t, list):
+        variants = [
+            _build_type_from_schema(f"{name}Alt{i}", {"type": subtype}, registry)
+            for i, subtype in enumerate(t)
+        ]
+        return Union[tuple(variants)]
+
+    # arrays
+    if t == "array":
+        items_schema = schema.get("items", {"type": "any"})
+        item_type = _build_type_from_schema(f"{name}Item", items_schema, registry)
+        return List[item_type]  # type: ignore
+    # objects
+    if t == "object" or ("properties" in schema or "required" in schema):
+        # Create or reuse a Pydantic model for this object schema
+        model_name = schema.get("title") or name
+        unique_name = model_name
+        suffix = 1
+        while unique_name in registry.models:
+            suffix += 1
+            unique_name = f"{model_name}_{suffix}"
+
+        props = schema.get("properties", {}) or {}
+        required = set(schema.get("required", []))
+
+        fields: Dict[str, Tuple[Any, Any]] = {}
+        for prop_name, prop_schema in props.items():
+            prop_type = _build_type_from_schema(f"{unique_name}_{prop_name}", prop_schema, registry)
+            desc = prop_schema.get("description")
+            default_field = (
+                Field(..., description=desc)
+                if prop_name in required
+                else Field(None, description=desc)
+            )
+            fields[prop_name] = (prop_type, default_field)
+
+        # Enforce additionalProperties: False (extra=forbid)
+        extra_forbid = schema.get("additionalProperties") is False
+        model_kwargs: Dict[str, Any] = {}
+        if extra_forbid:
+            # Pydantic v2: pass a ConfigDict/dict into __config__
+            model_kwargs["__config__"] = ConfigDict(extra="forbid")
+
+        model_cls = create_model(unique_name, **fields, **model_kwargs)  # type: ignore
+        registry.models[unique_name] = model_cls
+        return model_cls
+
+    # primitives / fallback
+    mapping = {
+        "string": str,
+        "number": float,
+        "integer": int,
+        "boolean": bool,
+        "null": type(None),
+        "any": Any,
+        None: Any,
+        "": Any,
+    }
+    return mapping.get(t, Any)
+
+
 def _create_pydantic_model_from_properties(
     model_name: str, properties: List[AgentSpecProperty]
 ) -> type[BaseModel]:
-    # Create a pydantic model whose attributes are the given properties
-    fields: Dict[str, Any] = {}
+    registry = SchemaRegistry()
+    fields: Dict[str, Tuple[Any, Any]] = {}
+
     for property_ in properties:
-        field_parameters: Dict[str, Any] = {}
-        param_name = property_.title
-        if property_.default is not _agentspec_empty_default:
-            field_parameters["default"] = property_.default
+        # Build the annotation from the json_schema (handles enum/array/object/etc.)
+        annotation = _build_type_from_schema(property_.title, property_.json_schema, registry)
+
+        field_params: Dict[str, Any] = {}
         if property_.description:
-            field_parameters["description"] = property_.description
-        annotation = _json_schema_type_to_python_annotation(property_.json_schema)
-        fields[param_name] = (annotation, Field(**field_parameters))
-    return cast(type[BaseModel], create_model(model_name, **fields))
+            field_params["description"] = property_.description
 
+        if property_.default is not _agentspec_empty_default:
+            default_field = Field(property_.default, **field_params)
+        else:
+            default_field = Field(..., **field_params)
 
-def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
-    if "anyOf" in json_schema:
-        possible_types = set(
-            _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema["anyOf"]
-        )
-        return f"Union[{','.join(possible_types)}]"
-    json_schema_type = json_schema.get("type", "")
-    if isinstance(json_schema_type, list):
-        possible_types = set(
-            _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema_type
-        )
-        return f"Union[{','.join(possible_types)}]"
+        fields[property_.title] = (annotation, default_field)
 
-    if json_schema_type == "array":
-        return f"List[{_json_schema_type_to_python_annotation(json_schema['items'])}]"
-    mapping = {
-        "string": "str",
-        "number": "float",
-        "integer": "int",
-        "boolean": "bool",
-        "null": "None",
-        "object": "Dict[str, Any]",
-    }
-
-    return mapping.get(json_schema_type, "Any")
+    # You can also enforce top-level extra forbidding if desired:
+    # return create_model(model_name, **fields, __config__=ConfigDict(extra="forbid"))  # type: ignore
+    return create_model(model_name, **fields)  # type: ignore
 
 
 class AgentSpecToLangGraphConverter:
@@ -121,11 +192,14 @@ class AgentSpecToLangGraphConverter:
         """Convert the given PyAgentSpec component object into the corresponding LangGraph component"""
         if converted_components is None:
             converted_components = {}
-        if config is None and checkpointer is not None:
-            config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
+        if config is None:
+            if checkpointer is not None:
+                config = RunnableConfig({"configurable": {"thread_id": str(uuid4())}})
+            else:
+                config = RunnableConfig({})
         if agentspec_component.id not in converted_components:
             converted_components[agentspec_component.id] = self._convert(
-                agentspec_component, tool_registry, converted_components, checkpointer, config  # type: ignore[arg-type]
+                agentspec_component, tool_registry, converted_components, checkpointer, config
             )
         return converted_components[agentspec_component.id]
 
@@ -138,17 +212,24 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
     ) -> Any:
         if isinstance(agentspec_component, AgentSpecAgent):
+            callback = AgentSpecCallbackHandler(
+                llm_config=agentspec_component.llm_config,
+                tools=agentspec_component.tools,
+            )
+            config_with_callbacks = _add_callback_to_runnable_config(callback, config)
             return self._agent_convert_to_langgraph(
                 agentspec_component,
                 tool_registry=tool_registry,
                 converted_components=converted_components,
                 checkpointer=checkpointer,
-                config=config,
+                config=config_with_callbacks,
             )
         elif isinstance(agentspec_component, AgentSpecLlmConfig):
-            return self._llm_convert_to_langgraph(agentspec_component)
+            return self._llm_convert_to_langgraph(agentspec_component, config=config)
         elif isinstance(agentspec_component, AgentSpecServerTool):
-            return self._server_tool_convert_to_langgraph(agentspec_component, tool_registry)
+            return self._server_tool_convert_to_langgraph(
+                agentspec_component, tool_registry, config=config
+            )
         elif isinstance(agentspec_component, AgentSpecClientTool):
             if checkpointer is None:
                 raise ValueError(
@@ -156,7 +237,7 @@ class AgentSpecToLangGraphConverter:
                 )
             return self._client_tool_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecRemoteTool):
-            return self._remote_tool_convert_to_langgraph(agentspec_component)
+            return self._remote_tool_convert_to_langgraph(agentspec_component, config=config)
         elif isinstance(agentspec_component, AgentSpecFlow):
             return self._flow_convert_to_langgraph(
                 agentspec_component,
@@ -483,6 +564,7 @@ class AgentSpecToLangGraphConverter:
     def _remote_tool_convert_to_langgraph(
         self,
         remote_tool: AgentSpecRemoteTool,
+        config: RunnableConfig,
     ) -> LangGraphTool:
         def _remote_tool(**kwargs: Any) -> Any:
             remote_tool_data = {k: render_template(v, kwargs) for k, v in remote_tool.data.items()}
@@ -513,6 +595,7 @@ class AgentSpecToLangGraphConverter:
             description=remote_tool.description or "",
             args_schema=args_model,
             func=_remote_tool,
+            callbacks=config.get("callbacks"),
         )
         return structured_tool
 
@@ -520,6 +603,7 @@ class AgentSpecToLangGraphConverter:
         self,
         agentspec_server_tool: AgentSpecServerTool,
         tool_registry: Dict[str, LangGraphTool],
+        config: RunnableConfig,
     ) -> LangGraphTool:
         # Ensure the tool exists in the registry
         if agentspec_server_tool.name not in tool_registry:
@@ -547,6 +631,7 @@ class AgentSpecToLangGraphConverter:
                 description=description,
                 args_schema=args_model,  # model class, not a dict
                 func=tool_obj,
+                callbacks=config.get("callbacks"),
             )
             return wrapped
 
@@ -674,7 +759,9 @@ class AgentSpecToLangGraphConverter:
             config=config,
         )
 
-    def _llm_convert_to_langgraph(self, llm_config: AgentSpecLlmConfig) -> BaseChatModel:
+    def _llm_convert_to_langgraph(
+        self, llm_config: AgentSpecLlmConfig, config: RunnableConfig
+    ) -> BaseChatModel:
         """Create the LLM model object for the chosen llm configuration."""
         generation_config: Dict[str, Any] = {}
         generation_parameters = llm_config.default_generation_parameters
@@ -696,6 +783,7 @@ class AgentSpecToLangGraphConverter:
                 api_key=SecretStr("EMPTY"),
                 base_url=_prepare_openai_compatible_url(llm_config.url),
                 use_responses_api=use_responses_api,
+                callbacks=config.get("callbacks"),
                 **generation_config,
             )
         elif isinstance(llm_config, OllamaConfig):
@@ -709,6 +797,7 @@ class AgentSpecToLangGraphConverter:
             return ChatOllama(
                 base_url=llm_config.url,
                 model=llm_config.model_id,
+                callbacks=config.get("callbacks"),
                 **generation_config,
             )
         elif isinstance(llm_config, OpenAiConfig):
@@ -717,6 +806,7 @@ class AgentSpecToLangGraphConverter:
             return ChatOpenAI(
                 model=llm_config.model_id,
                 use_responses_api=use_responses_api,
+                callbacks=config.get("callbacks"),
                 **generation_config,
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
@@ -726,6 +816,7 @@ class AgentSpecToLangGraphConverter:
                 model=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
                 use_responses_api=use_responses_api,
+                callbacks=config.get("callbacks"),
                 **generation_config,
             )
         else:
@@ -760,3 +851,16 @@ def _prepare_openai_compatible_url(url: str) -> str:
     final_url = urlunparse(v1_url_parts)
 
     return str(final_url)
+
+
+def _add_callback_to_runnable_config(
+    callback: BaseCallbackHandler, config: RunnableConfig
+) -> RunnableConfig:
+    callbacks = [callback]
+    existing_callbacks = config.get("callbacks")
+    if not existing_callbacks:
+        existing_callbacks = []
+    if isinstance(existing_callbacks, list):
+        existing_callbacks = existing_callbacks + callbacks
+    config_with_callbacks = RunnableConfig({**config, "callbacks": existing_callbacks})
+    return config_with_callbacks
