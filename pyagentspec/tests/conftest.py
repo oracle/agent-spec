@@ -7,8 +7,8 @@
 import os
 import stat
 from contextlib import contextmanager
-from distutils.sysconfig import get_python_lib
 from pathlib import Path
+from sysconfig import get_path
 from typing import Any, Iterator, List, Union
 from unittest.mock import patch
 
@@ -134,7 +134,7 @@ def check_file_permissions(path: Any) -> None:
 
 def get_directory_allowlist_write(tmp_path: str) -> List[Union[str, Path]]:
     return [
-        get_python_lib(),  # Allow packages to r/w their pycache
+        get_path("platlib"),  # Allow packages to r/w their pycache
         tmp_path,
         "/dev/null",
     ]
