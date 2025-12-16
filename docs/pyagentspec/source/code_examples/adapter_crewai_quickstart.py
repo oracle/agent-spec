@@ -8,6 +8,19 @@
 # fmt: off
 # mypy: ignore-errors
 
+try:
+    pass
+except ImportError:
+    exit() # Not installed
+except RuntimeError as e:
+    if "Your system has an unsupported version of sqlite3" in str(e):
+        # ChromaDB requires a version of SQLite which is not always supported
+        __import__("pysqlite3")
+        import sys
+        sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+    else:
+        raise e # other error
+
 # .. start-agentspec_to_runtime
 # Create a Agent Spec agent
 from pyagentspec.agent import Agent
