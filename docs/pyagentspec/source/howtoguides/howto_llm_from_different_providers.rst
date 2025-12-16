@@ -7,7 +7,7 @@ The available LLMs are:
 
 - :ref:`OpenAiConfig <openaiconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
-- :ref:`OpenAiCompatibleConfig <openaicompatiblemodel>`
+- :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>`
 - :ref:`VllmConfig <vllmconfig>`
 - :ref:`OllamaConfig <ollamaconfig>`
 

@@ -73,8 +73,8 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "langgraph": [
-            "langgraph>=0.5.3",
-            "langchain-core>=0.3",
+            "langgraph>=0.5.3,<1.0.0",
+            "langchain-core>=0.3,<1.0.0",
             "langchain-openai>=0.3.7",
             "langchain-ollama>=0.3.3",
         ],

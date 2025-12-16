@@ -130,16 +130,31 @@ conversation = agent.start_conversation(inputs={"domain_of_expertise": "computer
 status = conversation.execute()
 # .. end-conversation
 
-# .. using-wayflow-agentspec-adapter:
-from wayflowcore.agentspec import AgentSpecLoader
-from wayflowcore.tools import tool
+# .. using-langgraph-agentspec-adapter:
+# Load the Agent Spec component into a LangGraph assistant
+from pyagentspec.adapters.langgraph import AgentSpecLoader as LangGraphLoader
 
-loader = AgentSpecLoader(
-    tool_registry={
-        tool_name: tool(tool_function, description_mode="only_docstring")
-        for tool_name, tool_function in tool_registry.items()
-    }
-)
+loader = LangGraphLoader(tool_registry=tool_registry)
+agent = loader.load_component(deserialized_agentspec_agent)
+# .. end-using-langgraph-agentspec-adapter:
+# .. using-crewai-agentspec-adapter:
+# Load the Agent Spec component into a CrewAI assistant
+from pyagentspec.adapters.crewai import AgentSpecLoader as CrewAILoader
+
+loader = CrewAILoader(tool_registry=tool_registry)
+agent = loader.load_component(deserialized_agentspec_agent)
+# .. end-using-crewai-agentspec-adapter:
+# .. using-autogen-agentspec-adapter:
+# Load the Agent Spec component into a AutoGen assistant
+from pyagentspec.adapters.autogen import AgentSpecLoader as AutoGenLoader
+
+loader = AutoGenLoader(tool_registry=tool_registry)
+agent = loader.load_component(deserialized_agentspec_agent)
+# .. end-using-autogen-agentspec-adapter:
+# .. using-wayflow-agentspec-adapter:
+from wayflowcore.agentspec import AgentSpecLoader as WayFlowLoader
+
+loader = WayFlowLoader(tool_registry=tool_registry)
 agent = loader.load_component(deserialized_agentspec_agent)
 # .. end-using-wayflow-agentspec-adapter:
 

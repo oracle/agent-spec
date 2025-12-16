@@ -139,13 +139,13 @@ class AgentSpecToCrewAIConverter:
         llm_parameters: Dict[str, Any] = {}
         if isinstance(agentspec_llm, AgentSpecOpenAiConfig):
             llm_parameters["model"] = "openai/" + agentspec_llm.model_id
-        elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleConfig):
-            llm_parameters["model"] = "openai/" + agentspec_llm.model_id
-            llm_parameters["api_base"] = parse_url(agentspec_llm.url)
         elif isinstance(agentspec_llm, AgentSpecVllmModel):
             # CrewAI uses lite llm underneath:
             # https://community.crewai.com/t/help-how-to-use-a-custom-local-llm-with-vllm/5746
             llm_parameters["model"] = "hosted_vllm/" + agentspec_llm.model_id
+            llm_parameters["api_base"] = parse_url(agentspec_llm.url)
+        elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleConfig):
+            llm_parameters["model"] = "openai/" + agentspec_llm.model_id
             llm_parameters["api_base"] = parse_url(agentspec_llm.url)
         elif isinstance(agentspec_llm, AgentSpecOllamaModel):
             llm_parameters["model"] = "ollama/" + agentspec_llm.model_id
