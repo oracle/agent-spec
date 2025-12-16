@@ -7,7 +7,7 @@
 
 import keyword
 import re
-from typing import Any, Dict, List, Optional, Union, cast, get_args
+from typing import Any, Dict, List, Optional, cast, get_args
 from urllib.parse import urljoin
 
 import httpx
@@ -30,8 +30,10 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
+from pyagentspec.llms.openaicompatibleconfig import (
+    OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleModel,
+)
 from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
-from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.tools import Tool as AgentSpecTool
@@ -157,7 +159,7 @@ class AgentSpecToAutogenConverter:
     ) -> AutogenChatCompletionClient:
 
         def _prepare_llm_args(
-            agentspec_llm_: Union[AgentSpecVllmModel, AgentSpecOllamaModel],
+            agentspec_llm_: AgentSpecOpenAiCompatibleModel,
         ) -> Dict[str, Any]:
             metadata = getattr(agentspec_llm_, "metadata", {}) or {}
             base_url = agentspec_llm_.url
@@ -193,10 +195,10 @@ class AgentSpecToAutogenConverter:
 
         if isinstance(agentspec_llm, AgentSpecOpenAiConfig):
             return AutogenOpenAIChatCompletionClient(model=agentspec_llm.model_id)
-        elif isinstance(agentspec_llm, AgentSpecVllmModel):
-            return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
         elif isinstance(agentspec_llm, AgentSpecOllamaModel):
             return AutogenOllamaChatCompletionClient(**_prepare_llm_args(agentspec_llm))
+        elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleModel):
+            return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
         else:
             raise NotImplementedError(
                 f"The provided LlmConfig type `{type(agentspec_llm)}` is not supported in autogen yet."

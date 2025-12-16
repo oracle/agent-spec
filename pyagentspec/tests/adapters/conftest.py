@@ -140,3 +140,35 @@ def skip_tests_if_dependency_not_installed(
             # If the dependency is installed we run all the tests except the one that checks the import error
             if item.name == f"test_import_raises_if_{module_name}_not_installed":
                 item.add_marker(pytest.mark.skip(reason=f"`{module_name}` is installed"))
+
+
+@pytest.fixture
+def quickstart_agent_json() -> str:
+    from pyagentspec.agent import Agent
+    from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+    from pyagentspec.property import FloatProperty
+    from pyagentspec.serialization import AgentSpecSerializer
+    from pyagentspec.tools import ServerTool
+
+    subtraction_tool = ServerTool(
+        name="subtraction-tool",
+        description="subtract two numbers together",
+        inputs=[FloatProperty(title="a"), FloatProperty(title="b")],
+        outputs=[FloatProperty(title="difference")],
+    )
+
+    agentspec_llm_config = OpenAiCompatibleConfig(
+        name="llama-3.3-70b-instruct",
+        model_id="/storage/models/Llama-3.3-70B-Instruct",
+        url=os.environ["LLAMA70BV33_API_URL"],
+    )
+
+    agent = Agent(
+        name="agentspec_tools_test",
+        description="agentspec_tools_test",
+        llm_config=agentspec_llm_config,
+        system_prompt="Perform subtraction with the given tool.",
+        tools=[subtraction_tool],
+    )
+
+    return AgentSpecSerializer().to_json(agent)

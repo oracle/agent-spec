@@ -33,13 +33,13 @@ New features
 
 * **Sensitive Fields Support:**
 
-  New fields have been added to Agent Spec components that may carry sensitive data (e.g. the field `api_key` on :ref:`OpenAICompatibleModel <openaicompatiblemodel>`). To provide this functionality securely, we also introduced the annotation `SensitiveField` such that the sensitive fields are automatically excluded when exporting a Component to its JSON or yaml configuration.
+  New fields have been added to Agent Spec components that may carry sensitive data (e.g. the field `api_key` on :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>`). To provide this functionality securely, we also introduced the annotation `SensitiveField` such that the sensitive fields are automatically excluded when exporting a Component to its JSON or yaml configuration.
 
   For more information read the :ref:`latest specification <agentspecsensitivefield_nightly>`.
 
 * **OpenAI Responses API Support:**
 
-  :ref:`OpenAICompatibleModel <openaicompatiblemodel>` and :ref:`OpenAIModel <openaiconfig>` now support the OpenAI Responses API, which can be configured
+  :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>` and :ref:`OpenAIModel <openaiconfig>` now support the OpenAI Responses API, which can be configured
   using the ``api_type`` parameter, which accepts values from :ref:`OpenAIAPIType <openaiapitype>`.
 
   This enhancement allows recent OpenAI models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.

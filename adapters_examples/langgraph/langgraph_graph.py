@@ -45,8 +45,9 @@ from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
-from langgraph_agentspec_adapter.agentspecexporter import AgentSpecExporter
 from pydantic import SecretStr
+
+from pyagentspec.adapters.langgraph import AgentSpecExporter
 
 
 class MessagesState(TypedDict):

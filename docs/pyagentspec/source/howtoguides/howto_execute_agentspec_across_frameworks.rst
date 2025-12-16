@@ -178,8 +178,62 @@ Finally, we can start the conversation with our new agent and execute it.
     :end-before: .. end-conversation
 
 
-Using the Agent Spec adapter from WayFlow
-=========================================
+
+Using the native Agent Spec adapters
+====================================
+
+The execution of this section requires installing pyagentspec with the extension corresponding
+to the framework you want to use Agent Spec with.
+
+.. tabs::
+
+    .. tab:: LangGraph
+
+        .. code-block:: bash
+
+            # To use this adapter, please install pyagentspec with the "langgraph" extension.
+            pip install "pyagentspec[langgraph]"
+
+        .. literalinclude:: ../code_examples/wayflow_cross_framework_agent.py
+            :language: python
+            :start-after: .. using-langgraph-agentspec-adapter:
+            :end-before: .. end-using-langgraph-agentspec-adapter:
+
+    .. tab:: CrewAI
+
+        .. code-block:: bash
+
+            # To use this adapter, please install pyagentspec with the "crewai" extension.
+            pip install "pyagentspec[crewai]"
+
+        .. literalinclude:: ../code_examples/wayflow_cross_framework_agent.py
+            :language: python
+            :start-after: .. using-crewai-agentspec-adapter:
+            :end-before: .. end-using-crewai-agentspec-adapter:
+
+    .. tab:: AutoGen
+
+
+        .. code-block:: bash
+
+            # To use this adapter, please install pyagentspec with the "autogen" extension.
+            pip install "pyagentspec[autogen]"
+
+        .. literalinclude:: ../code_examples/wayflow_cross_framework_agent.py
+            :language: python
+            :start-after: .. using-autogen-agentspec-adapter:
+            :end-before: .. end-using-autogen-agentspec-adapter:
+
+
+The transformation can be easily performed using this library by using the ``AgentSpecLoader`` object,
+and calling the ``load_json`` method directly on the Agent Spec JSON representation of the agent,
+or the ``load_component`` method on the PyAgentSpec component object.
+
+You can find more information about the Agent Spec adapter in the Agent Spec :doc:`API Documentation <../api/adapters>`.
+
+
+Using the WayFlow Agent Spec adapter
+====================================
 
 The execution of this section requires installing the package ``wayflowcore``.
 
