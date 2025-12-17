@@ -18,6 +18,7 @@ from contextlib import closing, suppress
 from typing import Optional
 
 import httpx
+import pytest
 
 
 class LogTee:
@@ -96,9 +97,19 @@ def terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> N
                 process.stdout.close()
 
 
-def start_uvicorn_server(
-    server_path: str | pathlib.Path, host: str, port: int, ready_timeout_s: float = 20.0
-) -> tuple[subprocess.Popen, str]:
+def _start_server(
+    server_path: str | pathlib.Path,
+    host: str,
+    port: int,
+    mode: Optional[str] = None,
+    server_key_path: Optional[str] = None,
+    server_cert_path: Optional[str] = None,
+    ca_cert_path: Optional[str] = None,
+    ssl_cert_reqs: Optional[int] = None,  # ssl.CERT_NONE
+    client_key_path: Optional[str] = None,
+    client_cert_path: Optional[str] = None,
+    ready_timeout_s: float = 10.0,
+) -> tuple[subprocess.Popen, str, LogTee]:
     process_args = [
         "python",
         "-u",  # unbuffered output
@@ -108,8 +119,34 @@ def start_uvicorn_server(
         "--port",
         str(port),
     ]
-
-    url = f"http://{host}:{port}"
+    if mode:
+        process_args.extend(
+            [
+                "--mode",
+                mode,
+            ]
+        )
+    if ssl_cert_reqs is not None:
+        process_args.extend(
+            [
+                "--ssl_cert_reqs",
+                str(ssl_cert_reqs),
+            ]
+        )
+    if server_key_path and server_cert_path and ca_cert_path:  # using https
+        process_args.extend(
+            [
+                "--ssl_keyfile",
+                server_key_path,
+                "--ssl_certfile",
+                server_cert_path,
+                "--ssl_ca_certs",
+                ca_cert_path,
+            ]
+        )
+        url = f"https://{host}:{port}"
+    else:
+        url = f"http://{host}:{port}"
 
     env = os.environ.copy()
     env.setdefault("PYTHONUNBUFFERED", "1")
@@ -140,9 +177,11 @@ def start_uvicorn_server(
             if rc is not None:
                 raise RuntimeError(f"Uvicorn exited early with code {rc}.\nLogs:\n{tee.dump()}")
 
-            if check_server_is_up(url, timeout_s=0.5):
+            if check_server_is_up(
+                url, client_key_path, client_cert_path, ca_cert_path, timeout_s=0.5
+            ):
                 print("Server is up.", flush=True)
-                return process, url
+                return process, url, tee
             time.sleep(0.2)
 
         # Timed out
@@ -155,6 +194,43 @@ def start_uvicorn_server(
         raise e
     finally:
         tee.stop()
+
+
+def start_uvicorn_server(
+    server_path: str | pathlib.Path, host: str, port: int, ready_timeout_s: float = 20.0
+) -> tuple[subprocess.Popen, str]:
+    process, url, _ = _start_server(server_path, host, port, ready_timeout_s=ready_timeout_s)
+    return process, url
+
+
+def start_mcp_server(
+    host: str,
+    port: int,
+    mode: Optional[str] = None,
+    server_key_path: Optional[str] = None,
+    server_cert_path: Optional[str] = None,
+    ca_cert_path: Optional[str] = None,
+    ssl_cert_reqs: int = 0,  # ssl.CERT_NONE
+    client_key_path: Optional[str] = None,
+    client_cert_path: Optional[str] = None,
+    ready_timeout_s: float = 10.0,
+) -> tuple[subprocess.Popen, str, LogTee]:
+    start_mcp_server_file_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "start_mcp_server.py"
+    )
+    return _start_server(
+        start_mcp_server_file_path,
+        host,
+        port,
+        mode=mode,
+        server_key_path=server_key_path,
+        server_cert_path=server_cert_path,
+        ca_cert_path=ca_cert_path,
+        ssl_cert_reqs=ssl_cert_reqs,
+        client_key_path=client_key_path,
+        client_cert_path=client_cert_path,
+        ready_timeout_s=ready_timeout_s,
+    )
 
 
 def check_server_is_up(
@@ -196,3 +272,26 @@ def get_available_port():
         s.bind(("", 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
+
+
+def register_mcp_server_fixture(
+    name: str, url_suffix: str, start_kwargs: dict, deps: tuple[str, ...] = ()
+):
+    def _fixture(request):
+        # Resolve any dependent fixtures by name and merge into kwargs
+        resolved = {name: request.getfixturevalue(name) for name in deps}
+        kwargs = {**start_kwargs, **resolved}
+
+        process, url, tee = start_mcp_server(**kwargs)
+        try:
+            yield f"{url}/{url_suffix.strip('/')}"
+        finally:
+            # ^ The MCP sessions are closed before the servers are
+            # stopped to avoid sse_reader issues (solves the error:
+            # `peer closed connection without sending complete message body
+            # (incomplete chunked read)`)
+            terminate_process_tree(process, timeout=5.0)
+            tee.stop()  # this needs to be stopped after the
+            # MCP server so that the stdout is closed.
+
+    return pytest.fixture(scope="session", name=name)(_fixture)

@@ -5,13 +5,26 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+import ssl
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
 import pytest
 
-from .utils import get_available_port, start_uvicorn_server, terminate_process_tree
+from .encryption import (
+    create_client_key_and_csr,
+    create_root_ca,
+    create_server_key_and_csr,
+    issue_client_cert,
+    issue_server_cert,
+)
+from .utils import (
+    get_available_port,
+    register_mcp_server_fixture,
+    start_uvicorn_server,
+    terminate_process_tree,
+)
 
 SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
 
@@ -172,3 +185,120 @@ def quickstart_agent_json() -> str:
     )
 
     return AgentSpecSerializer().to_json(agent)
+
+
+@pytest.fixture(scope="session")
+def root_ca(session_tmp_path):
+    return create_root_ca(common_name="TestRootCA", days=3650, tmpdir=session_tmp_path)
+
+
+@pytest.fixture(scope="session")
+def ca_key(root_ca):
+    return root_ca[0]
+
+
+@pytest.fixture(scope="session")
+def ca_cert(root_ca):
+    return root_ca[1]
+
+
+@pytest.fixture(scope="session")
+def ca_cert_path(root_ca) -> str:
+    return root_ca[2]
+
+
+@pytest.fixture(scope="session")
+def server_key_and_csr(session_tmp_path):
+    return create_server_key_and_csr(cn="localhost", tmpdir=session_tmp_path)
+
+
+@pytest.fixture(scope="session")
+def server_key_path(server_key_and_csr):
+    return server_key_and_csr[2]
+
+
+@pytest.fixture(scope="session")
+def server_csr(server_key_and_csr):
+    return server_key_and_csr[1]
+
+
+@pytest.fixture(scope="session")
+def server_cert_path(ca_key, ca_cert, server_csr, session_tmp_path) -> str:
+    return issue_server_cert(ca_key, ca_cert, server_csr, days=365, tmpdir=session_tmp_path)[1]
+
+
+@pytest.fixture(scope="session")
+def client_key_and_csr(session_tmp_path):
+    return create_client_key_and_csr(cn="mtls-client", tmpdir=session_tmp_path)
+
+
+@pytest.fixture(scope="session")
+def client_key_path(client_key_and_csr):
+    return client_key_and_csr[2]
+
+
+@pytest.fixture(scope="session")
+def client_csr(client_key_and_csr):
+    return client_key_and_csr[1]
+
+
+@pytest.fixture(scope="session")
+def client_cert_path(ca_key, ca_cert, client_csr, session_tmp_path) -> str:
+    return issue_client_cert(ca_key, ca_cert, client_csr, days=365, tmpdir=session_tmp_path)[1]
+
+
+_MCP_SERVER_FIXTURE_DEPS = (
+    "server_key_path",
+    "server_cert_path",
+    "ca_cert_path",
+    "client_key_path",
+    "client_cert_path",
+)
+
+sse_mcp_server_http = register_mcp_server_fixture(
+    name="sse_mcp_server_http",
+    url_suffix="sse",
+    start_kwargs=dict(
+        host="localhost",
+        port=get_available_port(),
+        mode="sse",
+        ssl_cert_reqs=0,
+    ),
+    deps=(),
+)
+
+streamablehttp_mcp_server_http = register_mcp_server_fixture(
+    name="streamablehttp_mcp_server_http",
+    url_suffix="mcp",
+    start_kwargs=dict(
+        host="localhost",
+        port=get_available_port(),
+        mode="streamable-http",
+        ssl_cert_reqs=int(ssl.CERT_NONE),
+    ),
+    deps=(),
+)
+
+sse_mcp_server_https = register_mcp_server_fixture(
+    name="sse_mcp_server_https",
+    url_suffix="sse",
+    start_kwargs=dict(
+        host="localhost",
+        port=get_available_port(),
+        mode="sse",
+        ssl_cert_reqs=int(ssl.CERT_NONE),
+    ),
+    deps=_MCP_SERVER_FIXTURE_DEPS,
+)
+
+streamablehttp_mcp_server_https = register_mcp_server_fixture(
+    name="streamablehttp_mcp_server_https",
+    url_suffix="mcp",
+    start_kwargs=dict(
+        host="localhost",
+        port=get_available_port(),
+        mode="streamable-http",
+        ssl_cert_reqs=int(ssl.CERT_NONE),
+    ),
+    deps=_MCP_SERVER_FIXTURE_DEPS,
+)
