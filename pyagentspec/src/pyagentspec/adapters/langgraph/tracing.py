@@ -25,7 +25,7 @@ from pyagentspec.tracing.events import LlmGenerationResponse as AgentSpecLlmGene
 from pyagentspec.tracing.events import ToolExecutionRequest as AgentSpecToolExecutionRequest
 from pyagentspec.tracing.events import ToolExecutionResponse as AgentSpecToolExecutionResponse
 from pyagentspec.tracing.events.llmgeneration import ToolCall as AgentSpecToolCall
-from pyagentspec.tracing.models.message import Message as AgentSpecMessage
+from pyagentspec.tracing.messages.message import Message as AgentSpecMessage
 from pyagentspec.tracing.spans import LlmGenerationSpan as AgentSpecLlmGenerationSpan
 from pyagentspec.tracing.spans import Span as AgentSpecSpan
 from pyagentspec.tracing.spans import ToolExecutionSpan as AgentSpecToolExecutionSpan

@@ -34,7 +34,7 @@ from pyagentspec.tracing.events import (
     ToolExecutionRequest,
     ToolExecutionResponse,
 )
-from pyagentspec.tracing.models.message import Message
+from pyagentspec.tracing.messages.message import Message
 
 
 # Exception events
@@ -110,7 +110,7 @@ def test_flow_execution_end_creation(dummy_flow: Flow):
 
 
 # HITL events
-def test_hitl_request_creation():
+def test_humanintheloop_request_creation():
     ev = HumanInTheLoopRequest(request_id="r1", content={"question": "ok?"})
     assert ev.request_id == "r1"
     assert ev.content == {"question": "ok?"}
@@ -122,7 +122,7 @@ def test_hitl_request_creation():
     assert masked["type"] == "HumanInTheLoopRequest"
 
 
-def test_hitl_response_creation():
+def test_humanintheloop_response_creation():
     ev = HumanInTheLoopResponse(request_id="r1", content={"answer": "yes"})
     assert ev.request_id == "r1"
     assert ev.content == {"answer": "yes"}

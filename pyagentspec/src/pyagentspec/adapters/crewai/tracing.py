@@ -42,7 +42,7 @@ from pyagentspec.tracing.events import (
     ToolExecutionRequest,
     ToolExecutionResponse,
 )
-from pyagentspec.tracing.models.message import Message as AgentSpecMessage
+from pyagentspec.tracing.messages.message import Message as AgentSpecMessage
 from pyagentspec.tracing.spans import AgentExecutionSpan, LlmGenerationSpan, Span, ToolExecutionSpan
 from pyagentspec.tracing.spans.span import (
     _ACTIVE_SPAN_STACK,

@@ -12,7 +12,7 @@ from pyagentspec.llms import LlmConfig, LlmGenerationConfig
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.tools import Tool
 from pyagentspec.tracing.events.event import Event
-from pyagentspec.tracing.models.message import Message
+from pyagentspec.tracing.messages.message import Message
 
 
 class ToolCall(BaseModel):

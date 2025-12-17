@@ -8,7 +8,7 @@ Overview
 ========
 
 Open Agent Specification Tracing (short: Agent Spec Tracing) is an extension of
-Agent Spec that standardizes how agent and flow executions emit telemetry.
+Agent Spec that standardizes how agent and flow executions emit traces.
 It defines a unified, implementation-agnostic semantic for:
 
 - Events: structured, point-in-time facts.
@@ -18,7 +18,7 @@ It defines a unified, implementation-agnostic semantic for:
 
 Agent Spec Tracing enables:
 
-- Runtime adapters to emit consistent telemetry across different frameworks.
+- Runtime adapters to emit consistent traces across different frameworks.
 - Consumers (observability backends, UIs, developer tooling) to ingest one standardized format regardless of the producer.
 
 Agent Spec Tracing aligns with widely used observability concepts (e.g.,
@@ -121,7 +121,7 @@ SpanProcessor
 
 A SpanProcessor receives callbacks when Spans start/end and when Events are added.
 Processors are meant to consume the Agent Spec traces (spans, events) emitted by the runtime adapter
-during the execution. They can be used to export telemetry to third parties consumers (e.g., to OpenTelemetry, files, UIs).
+during the execution. They can be used to export traces to third parties consumers (e.g., to OpenTelemetry, files, UIs).
 
 A SpanProcessor MUST implement the following interface.
 
@@ -1098,14 +1098,14 @@ Telemetry with WayFlow
 .. code-block:: python
 
    from wayflowcore.agentspec import AgentSpecLoader
-   from wayflowcore.agentspec.tracing import AgentSpectracingEventListener
+   from wayflowcore.agentspec.tracing import AgentSpecTracingEventListener
    from wayflowcore.events.eventlistener import register_event_listeners
    from openinference_spanprocessor import ArizePhoenixSpanProcessor
 
    agent_json = read_json_file("my/agentspec/agent.json")
    processor = ArizePhoenixSpanProcessor(mask_sensitive_information=False, project_name="agentspec-tracing-test")
 
-   with register_event_listeners([AgentSpectracingEventListener()]):
+   with register_event_listeners([AgentSpecTracingEventListener()]):
        with Trace(name="agentspec_wayflow_demo", span_processors=[processor]) as trace:
            agent = AgentSpecLoader().load_json(agent_json)
            conversation = agent.start_conversation()
@@ -1116,7 +1116,7 @@ Security Considerations
 =======================
 
 Agent Spec Tracing inherits all security requirements from Agent Spec (see :doc:`../security`).
-Additionally, telemetry frequently includes potentially sensitive information (PII), including, but not limited to:
+Additionally, tracing frequently includes potentially sensitive information (PII), including, but not limited to:
 
 - LLM prompts and generated content
 - Tool inputs/outputs
@@ -1156,7 +1156,7 @@ Design Notes and Best Practices
 
 - Event emission ordering: Within a span, events SHOULD be in timestamp order.
 - Time units: Use nanoseconds since epoch for timestamps and start/end times
-  for consistency with common telemetry systems.
+  for consistency with common tracing systems.
 - Nesting: Prefer nesting spans to represent sub-operations (e.g., NodeExecutionSpan
   under FlowExecutionSpan, ToolExecutionSpan under AgentExecutionSpan).
 - Exceptions: Emit ExceptionRaised with type/message/stacktrace and consider adding
@@ -1175,7 +1175,7 @@ Span, Event, SpanProcessor) to leverage community familiarity.
 Environment context
 -------------------
 
-This version focuses on agentic execution telemetry. Future versions may add
+This version focuses on agentic execution tracing. Future versions may add
 execution-environment spans or include environment metadata on Trace.
 
 References and Cross-links

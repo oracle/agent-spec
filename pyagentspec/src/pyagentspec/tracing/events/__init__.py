@@ -8,7 +8,7 @@ from .agent import AgentExecutionEnd, AgentExecutionStart
 from .event import Event
 from .exception import ExceptionRaised
 from .flow import FlowExecutionEnd, FlowExecutionStart
-from .hitl import HumanInTheLoopRequest, HumanInTheLoopResponse
+from .humanintheloop import HumanInTheLoopRequest, HumanInTheLoopResponse
 from .llmgeneration import (
     LlmGenerationChunkReceived,
     LlmGenerationRequest,
