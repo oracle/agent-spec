@@ -175,8 +175,6 @@ def _create_pydantic_model_from_properties(
 
         fields[property_.title] = (annotation, default_field)
 
-    # You can also enforce top-level extra forbidding if desired:
-    # return create_model(model_name, **fields, __config__=ConfigDict(extra="forbid"))  # type: ignore
     return create_model(model_name, **fields)  # type: ignore
 
 

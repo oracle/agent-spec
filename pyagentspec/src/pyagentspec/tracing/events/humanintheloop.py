@@ -11,7 +11,7 @@ from pyagentspec.tracing.events.event import Event
 
 
 class HumanInTheLoopRequest(Event):
-    """A human-in-the-loop intervention is required. Emitted when the execution is interrupted due to HITL request"""
+    """A human-in-the-loop (HITL) intervention is required. Emitted when the execution is interrupted due to HITL request"""
 
     request_id: str
     "Identifier of the human-in-the-loop request"

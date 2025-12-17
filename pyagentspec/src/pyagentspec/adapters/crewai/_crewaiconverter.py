@@ -131,25 +131,24 @@ class AgentSpecToCrewAIConverter:
                 )
             converted_components[agentspec_component.id] = crewai_component
 
-        self._obj_id_to_agentspec_component[id(converted_components[agentspec_component.id])] = (
-            agentspec_component
-        )
+        converted_crewai_component = converted_components[agentspec_component.id]
+        self._obj_id_to_agentspec_component[id(converted_crewai_component)] = agentspec_component
 
         if (
             is_root_call
             and self.enable_agentspec_tracing
-            and isinstance(converted_components[agentspec_component.id], CrewAIAgentWithTracing)
+            and isinstance(converted_crewai_component, CrewAIAgentWithTracing)
         ):
             # If the root component is an agent to which we can attach an agent spec listener,
             # we monkey patch the root CrewAI component to attach the event listener for Agent Spec
             from pyagentspec.adapters.crewai.tracing import AgentSpecEventListener
 
-            converted_components[agentspec_component.id]._agentspec_event_listener = (
-                AgentSpecEventListener(agentspec_components=self._obj_id_to_agentspec_component)
+            converted_crewai_component._agentspec_event_listener = AgentSpecEventListener(
+                agentspec_components=self._obj_id_to_agentspec_component
             )
 
         self._is_root_call = is_root_call
-        return converted_components[agentspec_component.id]
+        return converted_crewai_component
 
     def _llm_convert_to_crewai(
         self,

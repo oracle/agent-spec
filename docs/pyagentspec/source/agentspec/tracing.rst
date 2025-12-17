@@ -241,7 +241,7 @@ Attributes:
 SwarmExecutionSpan
 ------------------
 
-Specialization of AgentExecutionSpan for a Swarm.
+Specialization of AgentExecutionSpan for a Swarm Component.
 
 - Starts: when swarm execution starts.
 - Ends: when swarm execution completes and outputs are ready.
@@ -962,7 +962,7 @@ An exception occurred during execution.
 HumanInTheLoopRequest
 ^^^^^^^^^^^^^^^^^^^^^
 
-A HITL intervention is required; execution is interrupted until a response.
+A human-in-the-loop intervention is required; execution is interrupted until a response.
 
 .. list-table::
     :header-rows: 1
@@ -974,7 +974,7 @@ A HITL intervention is required; execution is interrupted until a response.
       - Default/Optional
       - Sensitive
     * - request_id
-      - Identifier of the HITL request
+      - Identifier of the human-in-the-loop request
       - str
       - -
       - no
@@ -1027,7 +1027,7 @@ Runtimes SHOULD ensure uniqueness within a Span and consistency across all relat
 PyAgentSpecTracing (Python materialization)
 ===========================================
 
-The ``pyagentspec-tracing`` package provides convenient Pydantic-based models and interfaces so that:
+The ``pyagentspec.tracing`` subpackage of ``pyagentspec`` provides convenient Pydantic-based models and interfaces so that:
 
 - Producers (adapters, runtimes) can emit spans/events according to Agent Spec Tracing standards.
 - Consumers (exporters, UIs) can receive and consume them via SpanProcessors.
@@ -1079,12 +1079,13 @@ Consuming traces (consumer example)
 Interoperability examples
 -------------------------
 
-Telemetry with LangGraph
+Tracing with LangGraph
 
 .. code-block:: python
 
-   from langgraph_agentspec_adapter import AgentSpecLoader
+   from pyagentspec.adapters.langgraph import AgentSpecLoader
    from openinference_spanprocessor import ArizePhoenixSpanProcessor
+   # Assuming this package implements a SpanProcessor that takes the Agent Spec Traces and sends them to a Phoenix Arize server
 
    agent_json = read_json_file("my/agentspec/agent.json")
    processor = ArizePhoenixSpanProcessor(mask_sensitive_information=False, project_name="agentspec-tracing-test")
@@ -1093,7 +1094,7 @@ Telemetry with LangGraph
        agent = AgentSpecLoader().load_json(agent_json)
        result = agent.invoke({"inputs": {}, "messages": []})
 
-Telemetry with WayFlow
+Tracing with WayFlow
 
 .. code-block:: python
 

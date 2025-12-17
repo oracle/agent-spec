@@ -74,37 +74,11 @@ class DummySpanProcessor(SpanProcessor):
         self.shut_down_async = True
 
 
-def test_crewai_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
-
-    from pyagentspec.adapters.crewai import AgentSpecLoader
-    from pyagentspec.adapters.crewai._types import crewai
-
-    # Prepare YAML config with placeholders replaced
-    yaml_content = (CONFIGS / "weather_agent_remote_tool.yaml").read_text()
-    final_yaml = _replace_config_placeholders(yaml_content, json_server)
-
-    # Convert to CrewAI agent
-    weather_agent = AgentSpecLoader().load_yaml(final_yaml)
-
-    # Build a simple task/crew run
-    task = crewai.Task(
-        description="Use your tool to answer this simple request from the user: {user_input}",
-        expected_output="A helpful, concise reply to the user.",
-        agent=weather_agent,
-    )
-    crew = crewai.Crew(agents=[weather_agent], tasks=[task], verbose=False)
-
-    proc = DummySpanProcessor()
-    with Trace(name="crewai_tracing_test", span_processors=[proc]):
-        with weather_agent.agentspec_event_listener():
-            response = crew.kickoff(inputs={"user_input": "What's the weather in Agadir?"})
-            assert "sunny" in str(response).lower()
-
+def check_dummyspanprocessor_events_and_spans(span_processor: DummySpanProcessor) -> None:
     # Assertions on spans started/ended
     # We expect at least one of each span type during a normal run
-    started_types = [type(s) for s in proc.starts]
-    ended_types = [type(s) for s in proc.ends]
-
+    started_types = [type(s) for s in span_processor.starts]
+    ended_types = [type(s) for s in span_processor.ends]
     assert any(
         issubclass(t, AgentExecutionSpan) for t in started_types
     ), "AgentExecutionSpan did not start"
@@ -127,7 +101,7 @@ def test_crewai_tracing_emits_agent_llm_and_tool_events(json_server: str) -> Non
     ), "ToolExecutionSpan did not end"
 
     # Assertions on key events observed
-    event_types = [type(e) for (e, _s) in proc.events]
+    event_types = [type(e) for (e, _s) in span_processor.events]
     assert any(
         issubclass(t, AgentExecutionStart) for t in event_types
     ), "AgentExecutionStart not emitted"
@@ -146,3 +120,48 @@ def test_crewai_tracing_emits_agent_llm_and_tool_events(json_server: str) -> Non
     assert any(
         issubclass(t, ToolExecutionResponse) for t in event_types
     ), "ToolExecutionResponse not emitted"
+
+
+def test_crewai_crew_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+
+    from pyagentspec.adapters.crewai import AgentSpecLoader
+    from pyagentspec.adapters.crewai._types import crewai
+
+    # Prepare YAML config with placeholders replaced
+    yaml_content = (CONFIGS / "weather_agent_remote_tool.yaml").read_text()
+    final_yaml = _replace_config_placeholders(yaml_content, json_server)
+    weather_agent = AgentSpecLoader().load_yaml(final_yaml)
+
+    # Build a simple task/crew run
+    task = crewai.Task(
+        description="Use your tool to answer this simple request from the user: {user_input}",
+        expected_output="A helpful, concise reply to the user.",
+        agent=weather_agent,
+    )
+    crew = crewai.Crew(agents=[weather_agent], tasks=[task], verbose=False)
+
+    proc = DummySpanProcessor()
+    with Trace(name="crewai_tracing_test", span_processors=[proc]):
+        with weather_agent.agentspec_event_listener():
+            response = crew.kickoff(inputs={"user_input": "What's the weather in Agadir?"})
+            assert "sunny" in str(response).lower()
+
+    check_dummyspanprocessor_events_and_spans(proc)
+
+
+def test_crewai_agent_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+
+    from pyagentspec.adapters.crewai import AgentSpecLoader
+
+    # Prepare YAML config with placeholders replaced
+    yaml_content = (CONFIGS / "weather_agent_remote_tool.yaml").read_text()
+    final_yaml = _replace_config_placeholders(yaml_content, json_server)
+    weather_agent = AgentSpecLoader().load_yaml(final_yaml)
+
+    proc = DummySpanProcessor()
+    with Trace(name="crewai_tracing_test", span_processors=[proc]):
+        with weather_agent.agentspec_event_listener():
+            response = weather_agent.kickoff(messages="What's the weather in Agadir?")
+            assert "sunny" in str(response).lower()
+
+    check_dummyspanprocessor_events_and_spans(proc)

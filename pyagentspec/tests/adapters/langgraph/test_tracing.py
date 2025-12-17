@@ -72,7 +72,49 @@ class DummySpanProcessor(SpanProcessor):
         self.shut_down_async = True
 
 
-def test_langgraph_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+def check_dummyspanprocessor_events_and_spans(span_processor: DummySpanProcessor) -> None:
+    # Assertions on spans started/ended
+    # We expect at least one of each span type during a normal run
+    started_types = [type(s) for s in span_processor.starts]
+    ended_types = [type(s) for s in span_processor.ends]
+
+    # Agent execution events are not emitted yet
+    # assert any(issubclass(t, AgentExecutionSpan) for t in started_types), "AgentExecutionSpan did not start"
+    # assert any(issubclass(t, AgentExecutionSpan) for t in ended_types), "AgentExecutionSpan did not end"
+    assert any(
+        issubclass(t, LlmGenerationSpan) for t in started_types
+    ), "LlmGenerationSpan did not start"
+    assert any(
+        issubclass(t, LlmGenerationSpan) for t in ended_types
+    ), "LlmGenerationSpan did not end"
+
+    assert any(
+        issubclass(t, ToolExecutionSpan) for t in started_types
+    ), "ToolExecutionSpan did not start"
+    assert any(
+        issubclass(t, ToolExecutionSpan) for t in ended_types
+    ), "ToolExecutionSpan did not end"
+
+    # Assertions on key events observed
+    event_types = [type(e) for (e, _s) in span_processor.events]
+    # Agent execution events are not emitted yet
+    # assert any(issubclass(t, AgentExecutionStart) for t in event_types), "AgentExecutionStart not emitted"
+    # assert any(issubclass(t, AgentExecutionEnd) for t in event_types), "AgentExecutionEnd not emitted"
+    assert any(
+        issubclass(t, LlmGenerationRequest) for t in event_types
+    ), "LlmGenerationRequest not emitted"
+    assert any(
+        issubclass(t, LlmGenerationResponse) for t in event_types
+    ), "LlmGenerationResponse not emitted"
+    assert any(
+        issubclass(t, ToolExecutionRequest) for t in event_types
+    ), "ToolExecutionRequest not emitted"
+    assert any(
+        issubclass(t, ToolExecutionResponse) for t in event_types
+    ), "ToolExecutionResponse not emitted"
+
+
+def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -92,43 +134,32 @@ def test_langgraph_tracing_emits_agent_llm_and_tool_events(json_server: str) -> 
         response = weather_agent.invoke(input=agent_input)
         assert "sunny" in str(response).lower()
 
-    # Assertions on spans started/ended
-    # We expect at least one of each span type during a normal run
-    started_types = [type(s) for s in proc.starts]
-    ended_types = [type(s) for s in proc.ends]
+    check_dummyspanprocessor_events_and_spans(proc)
 
-    # Agent execution events are not emitted yet
-    # assert any(issubclass(t, AgentExecutionSpan) for t in started_types), "AgentExecutionSpan did not start"
-    # assert any(issubclass(t, AgentExecutionSpan) for t in ended_types), "AgentExecutionSpan did not end"
 
-    assert any(
-        issubclass(t, LlmGenerationSpan) for t in started_types
-    ), "LlmGenerationSpan did not start"
-    assert any(
-        issubclass(t, LlmGenerationSpan) for t in ended_types
-    ), "LlmGenerationSpan did not end"
+def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
 
-    assert any(
-        issubclass(t, ToolExecutionSpan) for t in started_types
-    ), "ToolExecutionSpan did not start"
-    assert any(
-        issubclass(t, ToolExecutionSpan) for t in ended_types
-    ), "ToolExecutionSpan did not end"
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
-    # Assertions on key events observed
-    event_types = [type(e) for (e, _s) in proc.events]
-    # Agent execution events are not emitted yet
-    # assert any(issubclass(t, AgentExecutionStart) for t in event_types), "AgentExecutionStart not emitted"
-    # assert any(issubclass(t, AgentExecutionEnd) for t in event_types), "AgentExecutionEnd not emitted"
-    assert any(
-        issubclass(t, LlmGenerationRequest) for t in event_types
-    ), "LlmGenerationRequest not emitted"
-    assert any(
-        issubclass(t, LlmGenerationResponse) for t in event_types
-    ), "LlmGenerationResponse not emitted"
-    assert any(
-        issubclass(t, ToolExecutionRequest) for t in event_types
-    ), "ToolExecutionRequest not emitted"
-    assert any(
-        issubclass(t, ToolExecutionResponse) for t in event_types
-    ), "ToolExecutionResponse not emitted"
+    # Prepare YAML config with placeholders replaced
+    yaml_content = (CONFIGS / "weather_agent_remote_tool.yaml").read_text()
+    final_yaml = _replace_config_placeholders(yaml_content, json_server)
+
+    # Convert to LangGraph agent
+    weather_agent = AgentSpecLoader().load_yaml(final_yaml)
+
+    proc = DummySpanProcessor()
+    with Trace(name="langgraph_tracing_test", span_processors=[proc]):
+        agent_input = {
+            "inputs": {},
+            "messages": [{"role": "user", "content": "What's the weather in Agadir?"}],
+        }
+        response = ""
+        for message_chunk, metadata in weather_agent.stream(
+            input=agent_input, stream_mode="messages"
+        ):
+            if message_chunk.content:
+                response += message_chunk.content
+        assert "sunny" in str(response).lower()
+
+    check_dummyspanprocessor_events_and_spans(proc)

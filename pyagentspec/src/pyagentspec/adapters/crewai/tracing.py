@@ -6,6 +6,7 @@
 
 import json
 import threading
+import time
 import uuid
 from contextlib import contextmanager
 from typing import Any, Dict, Generator, List, Optional, Type, cast
@@ -84,6 +85,7 @@ class AgentSpecEventListener:
         self.agentspec_components = agentspec_components
         self._event_listener: Optional[_CrewAiEventListener] = None
         self.scoped_handlers_context_generator: Optional[Generator[None, Any, None]] = None
+        self._events_flush_timeout: float = 2.0
 
     @contextmanager
     def record_listener(self) -> Generator[None, Any, None]:
@@ -92,6 +94,15 @@ class AgentSpecEventListener:
         with crewai_event_bus.scoped_handlers():
             self._event_listener = _CrewAiEventListener(self.agentspec_components)
             yield
+            # Before getting out, we ensure that the events have all been handled
+            # We first wait a little to make the handlers start before we continue with this code
+            time.sleep(0.1)
+            start_time = time.time()
+            while (
+                len(self._event_listener._events_list) > 0
+                and start_time + self._events_flush_timeout > time.time()
+            ):
+                time.sleep(0.1)
             self._event_listener = None
 
 
@@ -439,14 +450,39 @@ class _CrewAiEventListener(CrewAIBaseEventListener):
 
 
 class CrewAIAgentWithTracing(CrewAIAgent):
+    """Extension of the CrewAI agent that contains the event handler for Agent Spec Tracing"""
 
     _agentspec_event_listener: Optional[AgentSpecEventListener] = PrivateAttr(default=None)
 
     @contextmanager
     def agentspec_event_listener(self) -> Generator[None, Any, None]:
+        """
+        Context manager that yields the agent spec event listener.
+
+        Example of usage:
+
+        from pyagentspec.agent import Agent
+
+        system_prompt = '''You are an expert in computer science. Please help the users with their requests.'''
+        agent = Agent(
+            name="Adaptive expert agent",
+            system_prompt=system_prompt,
+            llm_config=llm_config,
+        )
+
+        from pyagentspec.adapters.crewai import AgentSpecLoader
+        from pyagentspec.tracing.trace import Trace
+
+        crewai_agent = AgentSpecLoader().load_component(agent)
+        with Trace(name="crewai_tracing_test"):
+            with crewai_agent.agentspec_event_listener():
+                response = crewai_agent.kickoff(messages="Talk about the Dijkstra's algorithm")
+
+        """
         if self._agentspec_event_listener is None:
             raise RuntimeError(
-                "Called Agent Spec event listener context manager, but no instance was provided. Please set the _agentspec_event_listener attribute first."
+                "Called Agent Spec event listener context manager, but no instance was provided. "
+                "Please set the _agentspec_event_listener attribute first."
             )
         with self._agentspec_event_listener.record_listener():
             yield

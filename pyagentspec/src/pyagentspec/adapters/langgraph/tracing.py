@@ -47,7 +47,6 @@ LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
     "ai": "assistant",
     "tool": "tool",
     "system": "system",
-    # missing developer message
 }
 
 
@@ -183,7 +182,7 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
                     "tool_call_name": tool_name,
                 }
             agentspec_tool_calls = [
-                AgentSpecToolCall(call_id=call_id, tool_name=tool_name, arguments=tool_args)
+                AgentSpecToolCall(call_id=call_id, tool_name=tool_name, arguments=tool_args or "")
             ]
 
         span.add_event(
