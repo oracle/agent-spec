@@ -38,6 +38,7 @@ class AgentSpecLoader:
         """
         self.tool_registry = tool_registry or {}
         self.plugins = plugins
+        self._enable_agentspec_tracing = True
 
     def load_yaml(self, serialized_assistant: str) -> CrewAIComponent:
         """
@@ -81,5 +82,7 @@ class AgentSpecLoader:
         """
         return cast(
             CrewAIComponent,
-            AgentSpecToCrewAIConverter().convert(agentspec_component, self.tool_registry),
+            AgentSpecToCrewAIConverter(
+                enable_agentspec_tracing=self._enable_agentspec_tracing,
+            ).convert(agentspec_component, self.tool_registry),
         )

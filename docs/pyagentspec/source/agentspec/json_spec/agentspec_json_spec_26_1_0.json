@@ -3669,6 +3669,18 @@
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
         },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },

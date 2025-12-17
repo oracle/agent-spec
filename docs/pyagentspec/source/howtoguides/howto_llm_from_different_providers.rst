@@ -143,6 +143,10 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
 
   The API type that should be used. Can be either ``chat_completions`` or ``responses``.
 
+.. option:: api_key: str, null
+
+  An optional api key for the authentication with the OpenAI endpoint.
+
 .. option:: default_generation_parameters: dict, null
 
   Default parameters for text generation with this model.
@@ -179,6 +183,10 @@ The ``OpenAiCompatibleConfig`` allows users to use this type of models in their 
 .. option:: api_type: str
 
   The API type that should be used. Can be either ``chat_completions`` or ``responses``.
+
+.. option:: api_key: str, null
+
+  An optional api key if the remote server requires it.
 
 .. option:: default_generation_parameters: dict, null
 

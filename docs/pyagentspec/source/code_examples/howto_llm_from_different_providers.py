@@ -50,6 +50,7 @@ llm = OpenAiCompatibleConfig(
     model_id="llama-4-maverick",
     url="http://url.to.my.vllm.server/llama4mav",
     api_type=OpenAIAPIType.RESPONSES,
+    api_key="optional_api_key",
     default_generation_parameters=generation_config,
 )
 # .. openaicompatible-end
@@ -77,6 +78,7 @@ llm = OpenAiConfig(
     name="openai-gpt-5",
     model_id="gpt-5",
     default_generation_parameters=generation_config,
+    api_key="optional_api_key",
 )
 # .. openai-end
 

@@ -29,6 +29,7 @@ sphinxcontrib-htmlhelp<2.0.5
 sphinxcontrib.serializinghtml<1.1.10
 sphinxcontrib.qthelp<1.0.7
 sphinx_toolbox<=3.8.0
+sphinx_design==0.6.1
 
 -c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
