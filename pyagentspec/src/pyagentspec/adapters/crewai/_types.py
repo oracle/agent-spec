@@ -4,7 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import TYPE_CHECKING, Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Union
+
+from typing_extensions import TypeAlias
 
 from pyagentspec._lazy_loader import LazyLoader
 
@@ -40,6 +42,9 @@ if TYPE_CHECKING:
     from crewai.events.types.tool_usage_events import (
         ToolUsageStartedEvent as CrewAIToolUsageStartedEvent,
     )
+    from crewai.flow.flow import listen as CrewAIListenNode
+    from crewai.flow.flow import or_ as CrewAIOrOperator
+    from crewai.flow.flow import start as CrewAIStartNode
     from crewai.tools import BaseTool as CrewAIBaseTool
     from crewai.tools.base_tool import Tool as CrewAITool
     from crewai.tools.structured_tool import CrewStructuredTool as CrewAIStructuredTool
@@ -78,9 +83,22 @@ else:
     CrewAIToolUsageStartedEvent = LazyLoader(
         "crewai.events.types.tool_usage_events"
     ).ToolUsageStartedEvent
+    CrewAIStartNode = LazyLoader("crewai.flow.flow").start
+    CrewAIListenNode = LazyLoader("crewai.flow.flow").listen
+    CrewAIOrOperator = LazyLoader("crewai.flow.flow").or_
 
 CrewAIComponent = Union[CrewAIAgent, CrewAIFlow[Any]]
 CrewAIServerToolType = Union[CrewAITool, Callable[..., Any]]
+
+NodeInput: TypeAlias = Union[Dict[str, Any]]
+NodeOutput: TypeAlias = Union[Dict[str, Any]]
+ExecuteOutput: TypeAlias = Union[Dict[str, Any]]
+FlowState: TypeAlias = Dict[str, Any]
+
+SourceNodeId: TypeAlias = str
+BranchName: TypeAlias = Hashable
+TargetNodeId: TypeAlias = str
+ControlFlow: TypeAlias = Dict[SourceNodeId, Dict[BranchName, TargetNodeId]]
 
 __all__ = [
     "crewai",
@@ -91,6 +109,9 @@ __all__ = [
     "CrewAIBaseTool",
     "CrewAITool",
     "CrewAIStructuredTool",
+    "CrewAIStartNode",
+    "CrewAIListenNode",
+    "CrewAIOrOperator",
     "CrewAIComponent",
     "CrewAIServerToolType",
     "CrewAIBaseEvent",
@@ -105,4 +126,11 @@ __all__ = [
     "CrewAIAgentExecutionCompletedEvent",
     "CrewAILiteAgentExecutionStartedEvent",
     "CrewAILiteAgentExecutionCompletedEvent",
+    "NodeInput",
+    "NodeOutput",
+    "FlowState",
+    "SourceNodeId",
+    "BranchName",
+    "TargetNodeId",
+    "ControlFlow",
 ]

@@ -54,3 +54,14 @@ def no_network_plusapi(monkeypatch):
         monkeypatch.setattr(PlusAPI, "_make_request", fake_response, raising=True)
     except ImportError:
         pass
+
+
+@pytest.fixture
+def mute_crewai_event_bus(monkeypatch):
+    try:
+        from crewai.events.event_bus import crewai_event_bus
+    except Exception:
+        return
+
+    # Replace emit/aemit with no-ops to avoid background threads, rich output, and side effects
+    monkeypatch.setattr(crewai_event_bus, "emit", lambda *args, **kwargs: None, raising=True)
