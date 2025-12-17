@@ -61,6 +61,20 @@ These guides demonstrate how to configure components in Agent Spec.
    Specify the Generation Configuration when Using LLMs <howto_generation_config>
    How to Use Disaggregated Config <howto_disaggregated_config>
 
+
+Ecosystem
+---------
+
+With expanding integrations and community partnerships, Agent Spec streamlines building, running, and monitoring agents across heterogeneous environments.
+
+For more information about the Agent Spec ecosystem, see :ref:`integrations <integrations>` and :ref:`collaborations <collaborations>`.
+
+.. toctree::
+   :maxdepth: 1
+
+   How to Use AG-UI with Agent Spec <howto_ag_ui>
+
+
 External Features
 -----------------
 

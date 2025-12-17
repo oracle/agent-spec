@@ -1,0 +1,43 @@
+{
+    "component_type": "Agent",
+    "id": "67ae0b68-53ab-458c-b8b7-43009ab81e34",
+    "name": "my_agent",
+    "description": null,
+    "metadata": {},
+    "inputs": [],
+    "outputs": [],
+    "llm_config": {
+        "component_type": "OpenAiCompatibleConfig",
+        "id": "c7dc111f-5c25-4aa0-8329-f6d44d578780",
+        "name": "my_llm",
+        "description": null,
+        "metadata": {},
+        "default_generation_parameters": null,
+        "url": "https://api.openai.com/v1",
+        "model_id": "gpt-4o"
+    },
+    "system_prompt": "Based on the weather forecaset result and the user input, write a response to the user",
+    "tools": [
+        {
+            "component_type": "ServerTool",
+            "id": "cd54932c-bda9-4021-aa12-110276bb86f3",
+            "name": "get_weather",
+            "description": "Get the weather for a given location.",
+            "metadata": {},
+            "inputs": [
+                {
+                    "description": "The location to get the weather forecast. Must be a city/town name.",
+                    "title": "location",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "weather_result",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "agentspec_version": "25.4.1"
+}
