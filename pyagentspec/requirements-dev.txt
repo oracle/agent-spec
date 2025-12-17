@@ -39,3 +39,4 @@ sphinx_design==0.6.1
 
 # For remote tool tests
 fastapi[standard-no-fastapi-cloud-cli]
+cryptography

@@ -5,6 +5,7 @@ httpx==0.28.1
 
 # CrewAI adapter
 crewai==1.6.1
+mcp==1.22.0
 
 # AutoGen adapter
 autogen-core==0.7.4

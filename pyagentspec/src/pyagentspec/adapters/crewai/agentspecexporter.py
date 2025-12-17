@@ -51,6 +51,6 @@ class AgentSpecExporter:
         """
         if not isinstance(crewai_component, (CrewAIAgent, CrewAIFlow)):
             raise TypeError(
-                f"Expected an Agent of Flow, but got '{type(crewai_component)}' instead"
+                f"Expected an Agent or Flow, but got '{type(crewai_component)}' instead"
             )
         return CrewAIToAgentSpecConverter().convert(crewai_component)

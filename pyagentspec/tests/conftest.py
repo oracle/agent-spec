@@ -5,7 +5,9 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+import shutil
 import stat
+import tempfile
 from contextlib import contextmanager
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
@@ -30,6 +32,14 @@ LLM_MOCKED_METHODS = [
     "pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.__init__",
     "pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.__init__",
 ]
+
+
+@pytest.fixture(scope="session")
+def session_tmp_path():
+    """Session-scoped temp path"""
+    dirpath = tempfile.mkdtemp()
+    yield dirpath
+    shutil.rmtree(dirpath)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -132,15 +142,16 @@ def check_file_permissions(path: Any) -> None:
         assert not (st_mode & (stat.S_IRWXG | stat.S_IRWXO))
 
 
-def get_directory_allowlist_write(tmp_path: str) -> List[Union[str, Path]]:
+def get_directory_allowlist_write(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
     return [
         get_python_lib(),  # Allow packages to r/w their pycache
         tmp_path,
+        session_tmp_path,
         "/dev/null",
     ]
 
 
-def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
+def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
     try:
         # Crew AI sometimes attempts to read in some folders, we need to take that into account
         from crewai.cli.shared.token_manager import TokenManager
@@ -152,7 +163,7 @@ def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
     except ImportError:
         crewai_read_dirs = []
     return (
-        get_directory_allowlist_write(tmp_path)
+        get_directory_allowlist_write(tmp_path, session_tmp_path)
         + [
             CONFIGS_DIR,
             # Docs path
@@ -168,27 +179,33 @@ def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
     )
 
 
-def check_allowed_filewrite(path: Union[str, Path], tmp_path: str, mode: str) -> None:
+def check_allowed_filewrite(
+    path: Union[str, Path], tmp_path: str, session_tmp_path: str, mode: str
+) -> None:
     path = os.path.abspath(path)
     if mode == "r" or mode == "rb":
         assert any(
             [
                 Path(dir) in Path(path).parents or Path(dir) == Path(path)
-                for dir in get_directory_allowlist_read(tmp_path=tmp_path)
+                for dir in get_directory_allowlist_read(
+                    tmp_path=tmp_path, session_tmp_path=session_tmp_path
+                )
             ]
         ), f"Reading outside of allowed directories! {path}"
     else:
         assert any(
             [
                 Path(dir) in Path(path).parents or Path(dir) == Path(path)
-                for dir in get_directory_allowlist_write(tmp_path=tmp_path)
+                for dir in get_directory_allowlist_write(
+                    tmp_path=tmp_path, session_tmp_path=session_tmp_path
+                )
             ]
         ), f"Writing outside of allowed directories! {path}"
 
 
 @contextmanager
 def limit_filewrites(
-    monkeypatch: Any, tmp_path: str, allowed_access_enabled: bool = True
+    monkeypatch: Any, tmp_path: str, session_tmp_path: str, allowed_access_enabled: bool = True
 ) -> Iterator[bool]:
     import builtins
 
@@ -208,7 +225,9 @@ def limit_filewrites(
             # Mode can be either in *args or **kwargs, if it's not, the default is "r"
             mode = "w" if "w" in args else "r"
             mode = kwargs.get("mode", mode)
-            check_allowed_filewrite(name, tmp_path=tmp_path, mode=mode)
+            check_allowed_filewrite(
+                name, tmp_path=tmp_path, session_tmp_path=session_tmp_path, mode=mode
+            )
         return _open(name, *args, **kwargs)
 
     with monkeypatch.context() as m:
@@ -217,24 +236,34 @@ def limit_filewrites(
 
 
 @pytest.fixture(scope="function", autouse=True)
-def guard_filewrites(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_filewrites(monkeypatch: Any, tmp_path: str, session_tmp_path: str) -> Iterator[bool]:
     """Fixture which raises an exception if the filesystem is accessed
     outside of a limited set of allowed directories
     """
-    with limit_filewrites(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=True) as x:
+    with limit_filewrites(
+        monkeypatch,
+        tmp_path=tmp_path,
+        session_tmp_path=session_tmp_path,
+        allowed_access_enabled=True,
+    ) as x:
         yield x
 
 
 @pytest.fixture(scope="function")
-def guard_all_filewrites(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_all_filewrites(monkeypatch: Any, tmp_path: str, session_tmp_path: str) -> Iterator[bool]:
     """Fixture which raises an exception if the filesystem is accessed."""
-    with limit_filewrites(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=False) as x:
+    with limit_filewrites(
+        monkeypatch,
+        tmp_path=tmp_path,
+        session_tmp_path=session_tmp_path,
+        allowed_access_enabled=False,
+    ) as x:
         yield x
 
 
 @contextmanager
 def suppress_network(
-    monkeypatch: Any, tmp_path: str, allowed_access_enabled: bool = True
+    monkeypatch: Any, tmp_path: str, session_tmp_path: str, allowed_access_enabled: bool = True
 ) -> Iterator[bool]:
     """
     Context manager which raises an exception if network connection is requested.
@@ -268,7 +297,9 @@ def suppress_network(
         assert allowed_access_enabled, "Code is accessing network when it shouldn't have"
         addr = args[1]
         if isinstance(addr, str) or addr[0] == "127.0.0.1":
-            check_allowed_filewrite(addr, tmp_path=tmp_path, mode="w")
+            check_allowed_filewrite(
+                addr, tmp_path=tmp_path, session_tmp_path=session_tmp_path, mode="w"
+            )
             return orig_fn(*args)
         # We must raise OSError (not Exception) similar to that raised
         # by socket.connect to support libraries that rely on this
@@ -281,7 +312,7 @@ def suppress_network(
 
 
 @pytest.fixture(scope="function")
-def guard_network(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_network(monkeypatch: Any, tmp_path: str, session_tmp_path: str) -> Iterator[bool]:
     """
     Fixture which raises an exception if the network is accessed. It
     will not raise an exception for localhost, use guard_all_network_access
@@ -290,16 +321,28 @@ def guard_network(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
     Unit tests should not touch the network so this fixture helps guard
     against accidental network use.
     """
-    with suppress_network(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=True) as x:
+    with suppress_network(
+        monkeypatch,
+        tmp_path=tmp_path,
+        session_tmp_path=session_tmp_path,
+        allowed_access_enabled=True,
+    ) as x:
         yield x
 
 
 @pytest.fixture(scope="function")
-def guard_all_network_access(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_all_network_access(
+    monkeypatch: Any, tmp_path: str, session_tmp_path: str
+) -> Iterator[bool]:
     """Fixture which raises an exception if the network is accessed.
 
     Unit tests should not touch the network so this fixture helps guard
     against accidental network use.
     """
-    with suppress_network(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=False) as x:
+    with suppress_network(
+        monkeypatch,
+        tmp_path=tmp_path,
+        session_tmp_path=session_tmp_path,
+        allowed_access_enabled=False,
+    ) as x:
         yield x
