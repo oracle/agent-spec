@@ -39,7 +39,7 @@ MessageInProgress = TypedDict(
     },
 )
 
-MessagesInProgressRecord = Dict[str, Optional[MessageInProgress]]  # keys are run_id
+MessagesInProgressRecord = Dict[Union[str, UUID], MessageInProgress]  # keys are run_id
 
 
 LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
@@ -58,29 +58,14 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         llm_config: AgentSpecLlmConfig,
         tools: Optional[List[AgentSpecTool]] = None,
     ) -> None:
-        # All per-run state consolidated here
+        # This is only added during tool-call streaming to associate run_id with tool_call_id
+        # (tool_call_id is not available mid-stream)
         self.messages_in_process: MessagesInProgressRecord = {}
         # Track spans per run_id
         self.agentspec_spans_registry: Dict[str, AgentSpecSpan] = {}
-        # Track tool-call id -> assistant message id correlation
-        self.tool_call_message_ids: Dict[str, str] = {}
-        # References for payloads
+        # configs for spans
         self.llm_config = llm_config
         self.tools_map: Dict[str, AgentSpecTool] = {t.name: t for t in (tools or [])}
-
-    def get_message_in_progress(self, run_id: str) -> Optional[MessageInProgress]:
-        run_id = str(run_id)
-        return self.messages_in_process.get(run_id)
-
-    def set_message_in_progress(self, run_id: str, data: MessageInProgress) -> None:
-        current_message_in_progress = self.messages_in_process.get(run_id)
-        if current_message_in_progress:
-            self.messages_in_process[run_id] = {
-                **(current_message_in_progress),
-                **data,
-            }
-        else:
-            self.messages_in_process[run_id] = data
 
     def _get_or_start_llm_span(self, run_id_str: str) -> AgentSpecLlmGenerationSpan:
         span = self.agentspec_spans_registry.get(run_id_str)
@@ -171,6 +156,7 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
             )
         message_id = chunk_message.id
 
+        agentspec_tool_calls: List[AgentSpecToolCall] = []
         tool_call_chunks = chunk_message.tool_call_chunks or []  # type: ignore
         if tool_call_chunks:
             if len(tool_call_chunks) != 1:
@@ -178,21 +164,37 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
                     "[on_llm_new_token] Expected exactly one tool call chunk "
                     f"if streaming tool calls, but got: {tool_call_chunks}"
                 )
-            self._add_tool_call_event_if_not_streamed(
-                tool_call_chunks[0], message_id, run_id_str, span, streaming=True
+            tool_call_chunk = tool_call_chunks[0]
+            tool_name, tool_args, call_id = (
+                tool_call_chunk["name"],
+                tool_call_chunk["args"],
+                tool_call_chunk["id"],
             )
-            return
-
-        delta_text = chunk_message.content
-        if delta_text:
-            span.add_event(
-                AgentSpecLlmGenerationChunkReceived(
-                    request_id=run_id_str,
-                    completion_id=message_id,
-                    content=_ensure_string(delta_text),
-                    llm_config=self.llm_config,
+            if call_id is None:
+                current_stream = self.messages_in_process[run_id]
+                tool_name, call_id = (
+                    current_stream["tool_call_name"],
+                    current_stream["tool_call_id"],
                 )
+            else:
+                self.messages_in_process[run_id] = {
+                    "id": message_id,
+                    "tool_call_id": call_id,
+                    "tool_call_name": tool_name,
+                }
+            agentspec_tool_calls = [
+                AgentSpecToolCall(call_id=call_id, tool_name=tool_name, arguments=tool_args)
+            ]
+
+        span.add_event(
+            AgentSpecLlmGenerationChunkReceived(
+                request_id=run_id_str,
+                completion_id=message_id,
+                content=_ensure_string(chunk_message.content or ""),
+                llm_config=self.llm_config,
+                tool_calls=agentspec_tool_calls,
             )
+        )
 
     @typing.no_type_check
     def on_llm_end(
@@ -203,83 +205,21 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-        # use _extract_message_content_and_tool_calls to parse the response
-        # expected behavior: this should emit LlmGenerationResponse
-        run_id_str = str(run_id)
-        span = self._get_or_start_llm_span(run_id_str)
-
+        run_id = str(run_id)
+        span = self._get_or_start_llm_span(run_id)
         message_id, content, tool_calls = _extract_message_content_and_tool_calls(response)
-
-        for tc in tool_calls:
-            self._add_tool_call_event_if_not_streamed(
-                tc, message_id, run_id_str, span, streaming=False
-            )
-
         span.add_event(
             AgentSpecLlmGenerationResponse(
                 llm_config=self.llm_config,
-                request_id=run_id_str,
+                request_id=run_id,
                 completion_id=message_id,
                 content=content,
+                tool_calls=tool_calls,
             )
         )
-
         span.end()
-        self.agentspec_spans_registry.pop(run_id_str, None)
-        self.messages_in_process[run_id_str] = None
-
-    def _add_tool_call_event_if_not_streamed(
-        self,
-        tool_call: Dict[str, Any],
-        message_id: str,
-        run_id_str: str,
-        span: AgentSpecSpan,
-        streaming: bool = False,
-    ) -> None:
-        tc_id = tool_call["id"]
-        if "function" in tool_call:
-            tool_call: Dict[str, Any] = tool_call.get("function")  # type: ignore
-            args_key = "arguments"
-        else:
-            args_key = "args"
-        tc_name = tool_call.get("name")
-        tc_args = tool_call.get(args_key)
-
-        if not isinstance(tc_args, str):
-            raise ValueError(f"Expected tool call args to be a string but got: {tc_args=}")
-
-        tc_id, tc_name = _fill_tool_call_identifiers(
-            run_id_str, streaming, self.get_message_in_progress(run_id_str), tc_id, tc_name
-        )
-
-        streamed_tool_call_ids = set(self.tool_call_message_ids.keys())
-
-        if streaming or (tc_id not in streamed_tool_call_ids):
-            span.add_event(
-                AgentSpecLlmGenerationChunkReceived(
-                    request_id=run_id_str,
-                    llm_config=self.llm_config,
-                    completion_id=message_id,
-                    content="",
-                    tool_calls=[
-                        AgentSpecToolCall(
-                            call_id=tc_id, tool_name=tc_name, arguments=_ensure_string(tc_args)
-                        )
-                    ],
-                )
-            )
-        # Remember assistant message id for this tool_call to correlate to ToolMessage later
-        self.tool_call_message_ids[tc_id] = message_id
-
-        if streaming:
-            self.set_message_in_progress(
-                run_id_str,
-                MessageInProgress(
-                    id=message_id,
-                    tool_call_id=tc_id,
-                    tool_call_name=tc_name,
-                ),
-            )
+        self.agentspec_spans_registry.pop(run_id, None)
+        self.messages_in_process.pop(run_id, None)
 
     def on_tool_start(
         self,
@@ -291,6 +231,8 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         **kwargs: Any,
     ) -> Any:
         if kwargs.get("tool_call_id"):
+            # note that this run_id is different from the run_id in LLM events
+            # so we cannot use it to correlate with tool_call_id above
             raise NotImplementedError(
                 "[on_tool_start] This is implemented starting from langchain 1.1.2, and we should support it"
             )
@@ -311,6 +253,7 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         inputs: Dict[str, Any] = (
             ast.literal_eval(input_str) if isinstance(input_str, str) else input_str
         )
+        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
         tool_span.add_event(
             AgentSpecToolExecutionRequest(request_id=run_id_str, tool=tool_span.tool, inputs=inputs)
         )
@@ -373,47 +316,10 @@ def _ensure_string(obj: Any) -> str:
     return obj
 
 
-def _fill_tool_call_identifiers(
-    run_id_str: str,
-    streaming: bool,
-    current_stream: Optional[MessageInProgress],
-    tc_id: Optional[str],
-    tc_name: Optional[str],
-) -> Tuple[str, str]:
-    """
-    Ensure tool call id/name are present. If streaming and a value is missing,
-    backfill from the in-flight tool call. Only require current_stream when a
-    corresponding value is missing.
-    """
-    if streaming and (tc_id is None or tc_name is None):
-        if current_stream is None:
-            # Only error if we actually needed to backfill something
-            missing = []
-            if tc_id is None:
-                missing.append("id")
-            if tc_name is None:
-                missing.append("name")
-            raise ValueError(
-                f"Missing tool call {' and '.join(missing)} and no in-flight tool call found. Current stream: {current_stream}"
-            )
-
-        if tc_id is None:
-            tc_id = current_stream["tool_call_id"]
-        if tc_name is None:
-            tc_name = current_stream["tool_call_name"]
-
-    if not tc_id:
-        raise ValueError("Expected non-empty tool call id")
-    if not tc_name:
-        raise ValueError("Expected non-empty tool call name")
-
-    return tc_id, tc_name
-
-
 @typing.no_type_check
 def _extract_message_content_and_tool_calls(
     response: LLMResult,
-) -> Tuple[str, str, List[Dict[str, Any]]]:
+) -> Tuple[str, str, List[AgentSpecToolCall]]:
     """
     Returns content, tool_calls
     """
@@ -429,8 +335,21 @@ def _extract_message_content_and_tool_calls(
     if content == "" and not tool_calls:
         raise ValueError("Expected tool_calls to not be empty when content is empty")
     content = _ensure_string(content)
+    agentspec_tool_calls = [_build_agentspec_tool_call(tc) for tc in tool_calls]
     # if streaming, response_id is not provided, must rely on run_id
     run_id = chat_generation.message.id
     completion_id = chat_generation.message.response_metadata.get("id")
     message_id = run_id or completion_id
-    return message_id, content, tool_calls
+    return message_id, content, agentspec_tool_calls
+
+
+def _build_agentspec_tool_call(tool_call: Dict[str, Any]) -> AgentSpecToolCall:
+    tc_id = tool_call["id"]
+    if "function" in tool_call:
+        tool_call: Dict[str, Any] = tool_call["function"]  # type: ignore[no-redef]
+        args_key = "arguments"
+    else:
+        args_key = "args"
+    tc_name = tool_call["name"]
+    tc_args = _ensure_string(tool_call[args_key])
+    return AgentSpecToolCall(call_id=tc_id, tool_name=tc_name, arguments=tc_args)
