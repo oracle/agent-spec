@@ -74,7 +74,7 @@ setup(
             "langchain-core>=0.3,<1.0.0",
             "langchain-openai>=0.3.7",
             "langchain-ollama>=0.3.3",
-            "langgraph-checkpoint>=3.0.1,<4.0.0" # To mitigate CVE-2025-64439
+            "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
         ],
     },
 )
