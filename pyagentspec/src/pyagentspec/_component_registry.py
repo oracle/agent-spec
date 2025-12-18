@@ -77,6 +77,7 @@ from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 
 BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "A2AAgent": A2AAgent,
@@ -137,6 +138,8 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "TlsOracleDatabaseConnectionConfig": TlsOracleDatabaseConnectionConfig,
     "MTlsOracleDatabaseConnectionConfig": MTlsOracleDatabaseConnectionConfig,
     "TlsPostgresDatabaseConnectionConfig": TlsPostgresDatabaseConnectionConfig,
+    "MessageSummarizationTransform": MessageSummarizationTransform,
+    "ConversationSummarizationTransform": ConversationSummarizationTransform,
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,
     "ManagerWorkers": ManagerWorkers,

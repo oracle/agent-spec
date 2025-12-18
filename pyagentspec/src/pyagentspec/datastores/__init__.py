@@ -11,6 +11,10 @@ from .oracle import (
     OracleDatabaseDatastore,
     TlsOracleDatabaseConnectionConfig,
 )
+from .postgres import (
+    PostgresDatabaseDatastore,
+    TlsPostgresDatabaseConnectionConfig,
+)
 
 __all__ = [
     "Datastore",
@@ -20,4 +24,6 @@ __all__ = [
     "OracleDatabaseDatastore",
     "TlsOracleDatabaseConnectionConfig",
     "MTlsOracleDatabaseConnectionConfig",
+    "PostgresDatabaseDatastore",
+    "TlsPostgresDatabaseConnectionConfig",
 ]
