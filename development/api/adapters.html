@@ -393,7 +393,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
@@ -478,115 +477,6 @@
 Ideally, an adapter should programmatically translate the representation of the Agent Spec components
 into the equivalent solution, as per each framework’s definition, and return an object that developers can run.</p>
 <p>This page presents all APIs and classes related to Agent Spec Adapters.</p>
-<section id="crewai">
-<h2>CrewAI<a class="headerlink" href="#crewai" title="Permalink to this heading">#</a></h2>
-<span class="target" id="adapters-crewai-exporter"></span><dl class="py class">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.crewai.</span></span><span class="sig-name descname"><span class="pre">AgentSpecExporter</span></span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Helper class to convert CrewAI objects to Agent Spec configurations.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_component">
-<span class="sig-name descname"><span class="pre">to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_component" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given CrewAI component into the respective PyAgentSpec Component.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to a corresponding PyAgentSpec Component.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_json" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given CrewAI component into the respective Agent Spec JSON representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to an Agent Spec configuration.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml">
-<span class="sig-name descname"><span class="pre">to_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given CrewAI component into the respective Agent Spec YAML representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to an Agent Spec configuration.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<span class="target" id="adapters-crewai-loader"></span><dl class="py class">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.crewai.</span></span><span class="sig-name descname"><span class="pre">AgentSpecLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Helper class to convert Agent Spec configurations to CrewAI objects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tool_registry</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Tool</em><em> | </em><em>Callable</em><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>None</em>) – </p></li>
-<li><p><strong>plugins</strong> (<em>List</em><em>[</em><a class="reference internal" href="serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin" title="pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin"><em>ComponentDeserializationPlugin</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_component">
-<span class="sig-name descname"><span class="pre">load_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agentspec_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_component" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given PyAgentSpec Component into the respective CrewAI Component</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>agentspec_component</strong> (<a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a>) – PyAgentSpec Component to be converted to a CrewAI Component.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_json">
-<span class="sig-name descname"><span class="pre">load_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_json" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given Agent Spec JSON representation into the respective CrewAI Component</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a CrewAI Component.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml">
-<span class="sig-name descname"><span class="pre">load_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform the given Agent Spec YAML representation into the respective CrewAI Component</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a CrewAI Component.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="langgraph">
 <h2>LangGraph<a class="headerlink" href="#langgraph" title="Permalink to this heading">#</a></h2>
 <span class="target" id="adapters-langgraph-exporter"></span><dl class="py class">
@@ -600,7 +490,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective PyAgentSpec Component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to a corresponding PyAgentSpec Component.</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to a corresponding PyAgentSpec Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a></p>
@@ -614,7 +504,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective AgentSpec JSON representation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
@@ -628,7 +518,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective AgentSpec YAML representation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
@@ -662,7 +552,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>agentspec_component</strong> (<a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a>) – PyAgentSpec Component to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -676,7 +566,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -690,7 +580,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – SerializedAgent Spec configuration to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -700,7 +590,125 @@ into the equivalent solution, as per each framework’s definition, and return a
 </section>
 <section id="autogen">
 <h2>AutoGen<a class="headerlink" href="#autogen" title="Permalink to this heading">#</a></h2>
-<span class="target" id="adapters-autogen-loader"><span id="adapters-autogen-exporter"></span></span></section>
+<span class="target" id="adapters-autogen-exporter"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecExporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.autogen.</span></span><span class="sig-name descname"><span class="pre">AgentSpecExporter</span></span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecExporter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class to convert AutoGen objects to Agent Spec configurations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecExporter.to_component">
+<span class="sig-name descname"><span class="pre">to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autogen_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_component" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given AutoGen component into the respective PyAgentSpec Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>autogen_component</strong> (<em>Component</em>) – AutoGen Component to transform into a corresponding PyAgentSpec Component.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PyAgentSpec Component corresponding to the AutoGen component.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component">Component</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the input is not an AutoGen Component.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecExporter.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autogen_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given AutoGen component into the respective Agent Spec JSON representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>autogen_component</strong> (<em>Component</em>) – AutoGen Component to serialize to an Agent Spec configuration.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Agent Spec JSON representation of the AutoGen component.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml">
+<span class="sig-name descname"><span class="pre">to_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autogen_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given AutoGen component into the respective Agent Spec YAML representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>autogen_component</strong> (<em>Component</em>) – AutoGen Component to serialize to an Agent Spec configuration.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Agent Spec YAML representation of the AutoGen component.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="adapters-autogen-loader"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.autogen.</span></span><span class="sig-name descname"><span class="pre">AgentSpecLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class to convert Agent Spec configurations to AutoGen objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_registry</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>FunctionTool</em><em> | </em><em>Callable</em><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>plugins</strong> (<em>List</em><em>[</em><a class="reference internal" href="serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin" title="pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin"><em>ComponentDeserializationPlugin</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecLoader.load_component">
+<span class="sig-name descname"><span class="pre">load_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agentspec_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_component" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given PyAgentSpec Component into the respective AutoGen Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agentspec_component</strong> (<a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a>) – PyAgentSpec Component to be converted to an AutoGen Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AssistantAgent</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecLoader.load_json">
+<span class="sig-name descname"><span class="pre">load_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given Agent Spec JSON representation into the respective AutoGen Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to an AutoGen Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AssistantAgent</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml">
+<span class="sig-name descname"><span class="pre">load_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given Agent Spec YAML representation into the respective AutoGen Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to an AutoGen Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AssistantAgent</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -726,21 +734,6 @@ into the equivalent solution, as per each framework’s definition, and return a
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#crewai">CrewAI</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_component()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_json()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_yaml()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_component()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_json()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_yaml()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langgraph">LangGraph</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.langgraph.AgentSpecExporter"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.langgraph.AgentSpecExporter.to_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_component()</span></code></a></li>
@@ -756,7 +749,21 @@ into the equivalent solution, as per each framework’s definition, and return a
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autogen">AutoGen</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autogen">AutoGen</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecExporter"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_json()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_yaml()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecLoader"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_json()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_yaml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
