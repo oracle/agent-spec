@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecting…</title>
+</head>
+<body>
+  <p>Redirecting to development docs…</p>
+
+  <script>
+    (function () {
+      const basePath = "/agent-spec/";
+      const p = window.location.pathname;
+
+      if (!p.startsWith(basePath)) return;
+
+      const rel = p.slice(basePath.length).replace(/^\/+/, "");
+
+      if (rel.startsWith("development/")) return;
+
+      if (/^\d+\.\d+\.\d+\//.test(rel)) return;
+
+      window.location.replace(basePath + "development/" + rel + window.location.search + window.location.hash);
+    })();
+  </script>
+</body>
+</html>
