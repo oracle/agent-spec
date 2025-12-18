@@ -3,20 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting…</title>
+  <meta http-equiv="refresh" content="0; url=development/">
+  <link rel="canonical" href="development/">
 </head>
 <body>
-  <p>Redirecting to the latest stable documentation…</p>
-
-  <script>
-    fetch("switcher.json")
-      .then(response => response.json())
-      .then(versions => {
-        const stable = versions.find(v => v.version !== "dev");
-        window.location.replace(stable ? stable.url : "development/");
-      })
-      .catch(() => {
-        window.location.replace("development/");
-      });
-  </script>
+  <p>If you are not redirected automatically, <a href="development/">click here</a>.</p>
+  <script>window.location.replace("development/");</script>
 </body>
 </html>
