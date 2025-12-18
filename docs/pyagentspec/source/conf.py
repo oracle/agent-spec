@@ -49,6 +49,14 @@ stable_release = os.getenv("STABLE_RELEASE") or version_file
 if stable_release is None:
     raise Exception("Error: STABLE_RELEASE environment variable is not set.")
 
+docs_version = os.getenv("DOCS_VERSION")
+
+if not docs_version:
+    if any(x in release for x in (".dev", "a", "b", "rc")):
+        docs_version = "dev"
+    else:
+        docs_version = stable_release
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -149,7 +157,7 @@ html_theme_options = {
     "navbar_start": ["navbar-logo", "version-switcher"],
     "switcher": {
         "json_url": "https://oracle.github.io/agent-spec/switcher.json",
-        "version_match": stable_release,
+        "version_match": docs_version,
     },
     "navbar_center": [
         "navbar-new"
