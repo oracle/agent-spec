@@ -59,6 +59,10 @@ def crewai_flow() -> "CrewAIFlow":
 
 
 def _get_tool_registry(flow: "CrewAIFlow") -> Dict[str, Any]:
+    """
+    CrewAI flows store the callables for their nodes in a private dict field called _methods.
+    We can reuse this as the tool registry for AgentSpecLoader.
+    """
     return flow._methods
 
 

@@ -275,13 +275,13 @@ class CrewAIToAgentSpecConverter:
                 outputs=node_outputs,
             )
             node = AgentSpecToolNode(
-                name=str(method_name),
+                name=method_name,
                 tool=tool,
                 inputs=node_inputs,
                 outputs=node_outputs,
             )
-            nodes[str(method_name)] = node
-            referenced_objects[str(method_name)] = node
+            nodes[method_name] = node
+            referenced_objects[method_name] = node
 
         # Start node with inferred properties
         start_node_properties = [
@@ -353,9 +353,8 @@ class CrewAIToAgentSpecConverter:
                 data_flow_edges,
             )
 
-        flow_name = getattr(crewai_flow, "name", None) or crewai_flow.__class__.__name__
         return AgentSpecFlow(
-            name=flow_name,
+            name=(crewai_flow.name or crewai_flow.__class__.__name__),
             start_node=start_node,
             nodes=list(nodes.values()),
             control_flow_connections=control_flow_edges,

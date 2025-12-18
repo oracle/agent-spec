@@ -15,6 +15,8 @@ from pyagentspec.tools import ServerTool
 
 @pytest.mark.usefixtures("mute_crewai_event_bus")
 def test_toolnode_can_be_imported_and_executed() -> None:
+    from crewai import Flow as CrewAIFlow
+
     from pyagentspec.adapters.crewai import AgentSpecLoader
 
     x_property = Property(json_schema={"title": "input", "type": "number"})
@@ -62,6 +64,9 @@ def test_toolnode_can_be_imported_and_executed() -> None:
 
     tool_registry = {"square_tool": square_tool_callable}
     flow_instance = AgentSpecLoader(tool_registry).load_component(flow)
+
+    assert isinstance(flow_instance, CrewAIFlow)
+
     result = flow_instance.kickoff({"input": 4})
 
     assert isinstance(result, dict)

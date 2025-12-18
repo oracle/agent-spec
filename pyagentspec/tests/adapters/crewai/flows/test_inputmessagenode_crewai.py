@@ -14,6 +14,8 @@ from pyagentspec.property import StringProperty
 
 @pytest.mark.usefixtures("mute_crewai_event_bus")
 def test_inputmessagenode_can_be_imported_and_executed(monkeypatch) -> None:
+    from crewai import Flow as CrewAIFlow
+
     from pyagentspec.adapters.crewai import AgentSpecLoader
 
     # Mock interactive input() used by InputMessageNodeExecutor
@@ -48,6 +50,9 @@ def test_inputmessagenode_can_be_imported_and_executed(monkeypatch) -> None:
     )
 
     flow_instance = AgentSpecLoader().load_component(flow)
+
+    assert isinstance(flow_instance, CrewAIFlow)
+
     result = flow_instance.kickoff()
 
     assert isinstance(result, dict)
