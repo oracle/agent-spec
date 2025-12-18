@@ -31,7 +31,6 @@ Extra dependencies
 
 |project| offers optional extra dependencies that can be installed to enable additional features.
 
-* The ``crewai`` extra dependency gives access to the CrewAI runtime adapter.
 * The ``autogen`` extra dependency gives access to the AutoGen runtime adapter.
 * The ``langgraph`` extra dependency gives access to the LangGraph runtime adapter.
 
