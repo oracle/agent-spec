@@ -19,13 +19,23 @@ or create them from object representations with the assurance of conformance to 
 
 You can download the Agent Spec technical report at the following :download:`link <../_static/agentspec_technical_report.pdf>`.
 
-You can also find the nightly version of the Agent Spec language specification
-with all the latest updates at :ref:`this link<agentspecspec_nightly>`.
+.. only:: stable
 
-.. toctree::
-   :maxdepth: 2
+    .. toctree::
+        :maxdepth: 2
 
-   Introduction, motivation & vision <intro_and_motivation>
-   Language specification (v25.4.1) <language_spec_25_4_1>
-   Positioning in the agentic ecosystem <positioning>
-   Tracing <tracing>
+        Introduction, motivation & vision <intro_and_motivation>
+        Language specification (v25.4.1) <language_spec_25_4_1>
+        Positioning in the agentic ecosystem <positioning>
+        Tracing <tracing>
+
+.. only:: dev
+
+    .. toctree::
+        :maxdepth: 2
+
+        Introduction, motivation & vision <intro_and_motivation>
+        Language specification (v25.4.1) <language_spec_25_4_1>
+        Language specification (under development) <language_spec_nightly>
+        Positioning in the agentic ecosystem <positioning>
+        Tracing <tracing>
