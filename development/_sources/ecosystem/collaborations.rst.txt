@@ -8,6 +8,9 @@ Agent Spec Collaborations
 .. |agntcy-icon| image:: ../_static/icons/agntcy-icon.svg
    :width: 200px
 
+.. |agui-icon| image:: ../_static/icons/agui-icon.svg
+   :width: 200px
+
 
 Open Agent Specification is partnering with leading open-source AI Agent initiatives to advance
 new frontiers like **deep observability**, **autonomous agent discovery**, and standardized,
@@ -28,5 +31,18 @@ event-driven **UI interactions** across every surface.
         AGNTCY supports Agent Spec metadata in OASF Agent records to
         enable developers to specify how to consume a deployed agent or
         instantiate new agents with minimal effort.
+
+        :bdg-success:`agent discovery` :bdg-info:`agent deployment`
+
+
+    .. grid-item-card:: |agui-icon|
+        :link: https://docs.ag-ui.com/introduction
+        :link-alt: AG-UI CopilotKit integration with Agent Spec
+
+        **AG-UI**
+
+        The integration of AG-UI with Open Agent Spec allows developers to easily
+        connect any AG-UI-compatible frontend with Agent Spec, enabling users to
+        load any Agent Spec config file, choosing a supported runtime to execute it.
 
         :bdg-success:`agent discovery` :bdg-info:`agent deployment`
