@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -53,11 +54,12 @@
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_swarm';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -67,7 +69,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="How to Build a Manager-Worker Multi-Agent System" href="howto_managerworkers.html" />
-    <link rel="prev" title="How to Build A2A Agents" href="howto_a2aagent.html" />
+    <link rel="prev" title="How to Use A2A Agents" href="howto_a2aagent.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="26.1" />
@@ -184,10 +186,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -289,10 +291,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -342,6 +344,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -355,16 +358,18 @@
 <li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -380,8 +385,22 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -456,8 +475,8 @@
                   
   <section id="how-to-build-a-swarm-of-agents">
 <h1>How to Build a Swarm of Agents<a class="headerlink" href="#how-to-build-a-swarm-of-agents" title="Permalink to this heading">#</a></h1>
-<p>The Swarm pattern is a type of agentic pattern that takes inspiration from <a class="reference external" href="https://en.wikipedia.org/wiki/Swarm_intelligence">Swarm intelligence</a>.
-It is often observed in biological systems such as ant colonies, bee hives, and bird flocks.
+<p>The Swarm pattern is a type of agentic pattern that takes inspiration from <a class="reference external" href="https://en.wikipedia.org/wiki/Swarm_intelligence">Swarm intelligence</a>,
+a phenomenon commonly seen in ant colonies, bee hives, and bird flocks, where coordinated behavior emerges from many simple actors rather than a central controller.
 In this agentic pattern, each agent is assigned a specific responsibility and can delegate tasks to other specialized agents to improve overall performance.</p>
 <p><strong>When to use the Swarm pattern?</strong></p>
 <p>Compared to the <strong>hierarchical pattern</strong>, the communication in <a class="reference internal" href="../api/agenticpatterns.html#swarm"><span class="std std-ref">Swarm</span></a> pattern reduces the number of LLM calls
@@ -495,7 +514,16 @@ Defining the agent with Agent Spec requires to pass the configuration for the LL
 There are several options such as using OCI GenAI Service or self hosting a model with vLLM.</p>
 <p>Start by defining the LLM configuration to be shared across all agents.</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">OCI GenAI</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">vLLM</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Ollama</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciGenAiConfig</span>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">OpenAI Compatible Model</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">OCI GenAI</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">vLLM</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Ollama</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;VLLM_URL&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciGenAiConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
 
 <span class="n">client_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
@@ -513,7 +541,7 @@ There are several options such as using OCI GenAI Service or self hosting a mode
 <span class="p">)</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
 
 <span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
@@ -522,7 +550,7 @@ There are several options such as using OCI GenAI Service or self hosting a mode
 <span class="p">)</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaConfig</span>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaConfig</span>
 
 <span class="n">llm_config</span> <span class="o">=</span> <span class="n">OllamaConfig</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ollama Config&quot;</span><span class="p">,</span>
@@ -879,7 +907,7 @@ See, for example, <a class="reference internal" href="howto_execute_agentspec_wi
 <span class="w">            </span><span class="p">]</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.2&quot;</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1063,23 +1091,35 @@ See, for example, <a class="reference internal" href="howto_execute_agentspec_wi
 <span class="w">      </span><span class="nt">outputs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">treatment_info</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.2</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">26.1.0</span>
 </pre></div>
 </div>
 </div></div>
 </details></section>
 </section>
-<section id="enabling-handoff-in-the-swarm">
-<h2>Enabling handoff in the Swarm<a class="headerlink" href="#enabling-handoff-in-the-swarm" title="Permalink to this heading">#</a></h2>
-<p>By default, communication in the <code class="docutils literal notranslate"><span class="pre">Swarm</span></code> pattern is done with agent sending blocking messages/requests to each other.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">handoff</span></code> mechanism provides an alternative: when enabled, agents can handoff the conversation — that is, transfer the message history between
-the user and one agent to another agent within the Swarm.
-Agents can still communicate with each other as they do when <code class="docutils literal notranslate"><span class="pre">handoff=False</span></code>.</p>
-<p>A key benefit of using <code class="docutils literal notranslate"><span class="pre">handoff</span></code> is reduced response latency.
-Talking to other agents increases the “distance” between the human user and the current agent.
-Transferring a conversation to another agent keeps this distance unchanged (in other words, the agent interacting with the user is different, but the user is still the same).</p>
-<p>To enable <code class="docutils literal notranslate"><span class="pre">handoff</span></code> in a Swarm, set the <code class="docutils literal notranslate"><span class="pre">handoff</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">assistant</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
+<section id="different-handoff-modes-in-swarm">
+<h2>Different handoff modes in Swarm<a class="headerlink" href="#different-handoff-modes-in-swarm" title="Permalink to this heading">#</a></h2>
+<p>One of the key benefits of Swarm is its handoff mechanism. When enabled, an agent can hand off its conversation — that is, transfer the entire message history between it and the human user — to another agent within the Swarm.</p>
+<p>The handoff mechanism helps reduce response latency.
+Normally, when agents talk to each other, the “distance” between the human user and the final answering agent increases, because messages must travel through multiple agents.
+Handoff avoids this by directly transferring the conversation to another agent: while the agent changes, the user’s distance to the active agent stays the same.</p>
+<p>Swarm provides three handoff modes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.NEVER</span></code>
+Disables the handoff mechanism. Agents can still communicate with each other, but cannot transfer the entire user conversation to another agent.
+In this mode, the  <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> is the only agent that can directly interact with the human user.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.OPTIONAL</span></code> (default)
+Agents may perform a handoff when it is beneficial.
+A handoff is performed only when the receiving agent is able to take over and independently address the user’s request.
+This strikes a balance between multi-agent collaboration and minimizing overhead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.ALWAYS</span></code>
+Agents must use the handoff mechanism whenever delegating work to another agent. Direct <em>send-message</em> tools between agents are disabled in this mode.
+This mode is useful when most user requests are best handled by a single expert agent rather than through multi-agent collaboration.</p></li>
+</ul>
+<p>To set the handoff mode, simply use <a class="reference internal" href="../api/agenticpatterns.html#handoffmode"><span class="std std-ref">HandoffMode</span></a> and select the desired mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.swarm</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandoffMode</span>
+
+<span class="n">assistant</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
     <span class="n">first_agent</span><span class="o">=</span><span class="n">general_practitioner</span><span class="p">,</span>
     <span class="n">relationships</span><span class="o">=</span><span class="p">[</span>
@@ -1087,7 +1127,7 @@ Transferring a conversation to another agent keeps this distance unchanged (in o
         <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">dermatologist</span><span class="p">),</span>
         <span class="p">(</span><span class="n">dermatologist</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
     <span class="p">],</span>
-    <span class="n">handoff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># &lt;-- Add this</span>
+    <span class="n">handoff</span><span class="o">=</span><span class="n">HandoffMode</span><span class="o">.</span><span class="n">ALWAYS</span><span class="p">,</span>  <span class="c1"># &lt;-- Specify the mode of your choice</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1249,7 +1289,9 @@ Transferring a conversation to another agent keeps this distance unchanged (in o
 </details></section>
 <section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
-<p>Having learned how to define a swarm, you may now proceed to <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">how to use the WayFlow runtime to execute it</span></a>.</p>
+<p>Having learned how to define a swarm, you may now proceed to
+<a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">how to use the WayFlow runtime to execute it</span></a>
+and <a class="reference internal" href="howto_execute_agentspec_across_frameworks.html"><span class="doc">How to Execute Agent Spec Across Frameworks</span></a>.</p>
 </section>
 </section>
 
@@ -1289,7 +1331,7 @@ Transferring a conversation to another agent keeps this distance unchanged (in o
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export-the-agent-spec-configuration">5. Export the Agent Spec configuration</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-handoff-in-the-swarm">Enabling handoff in the Swarm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#different-handoff-modes-in-swarm">Different handoff modes in Swarm</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
 </ul>

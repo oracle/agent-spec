@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -52,11 +53,12 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/llmmodels';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -183,10 +185,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -288,10 +290,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -341,6 +343,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -354,16 +357,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -379,8 +384,22 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -460,7 +479,7 @@
 <h2>LlmConfig<a class="headerlink" href="#llmconfig" title="Permalink to this heading">#</a></h2>
 <span class="target" id="id1"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.llmconfig.LlmConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.llmconfig.</span></span><span class="sig-name descname"><span class="pre">LlmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.llmconfig.LlmConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.llmconfig.</span></span><span class="sig-name descname"><span class="pre">LlmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.llmconfig.LlmConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>A LLM configuration defines how to connect to a LLM to do generation requests.</p>
 <p>This class provides the base class, while concrete classes provide the required
@@ -521,13 +540,60 @@ configuration to connect to specific LLM providers.</p>
 </dd></dl>
 
 </section>
+<section id="openai-api-type">
+<h2>OpenAI API Type<a class="headerlink" href="#openai-api-type" title="Permalink to this heading">#</a></h2>
+<span class="target" id="openaiapitype"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.openaicompatibleconfig.</span></span><span class="sig-name descname"><span class="pre">OpenAIAPIType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of OpenAI API Types.</p>
+<p>chat completions: Chat Completions API
+responses: Responses API</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.CHAT_COMPLETIONS">
+<span class="sig-name descname"><span class="pre">CHAT_COMPLETIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'chat_completions'</span></em><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.CHAT_COMPLETIONS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES">
+<span class="sig-name descname"><span class="pre">RESPONSES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'responses'</span></em><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="oci-api-type">
+<h2>OCI API Type<a class="headerlink" href="#oci-api-type" title="Permalink to this heading">#</a></h2>
+<span class="target" id="ociapitype"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciAPIType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">OciAPIType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of API Types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciAPIType.OCI">
+<span class="sig-name descname"><span class="pre">OCI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'oci'</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OCI" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS">
+<span class="sig-name descname"><span class="pre">OPENAI_CHAT_COMPLETIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'openai_chat_completions'</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES">
+<span class="sig-name descname"><span class="pre">OPENAI_RESPONSES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'openai_responses'</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="all-models">
 <span id="allllms"></span><h2>All models<a class="headerlink" href="#all-models" title="Permalink to this heading">#</a></h2>
 <section id="openai-compatible-models">
 <h3>OpenAI Compatible Models<a class="headerlink" href="#openai-compatible-models" title="Permalink to this heading">#</a></h3>
-<span class="target" id="openaicompatiblemodel"></span><dl class="py class">
+<span class="target" id="openaicompatibleconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.openaicompatibleconfig.</span></span><span class="sig-name descname"><span class="pre">OpenAiCompatibleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.openaicompatibleconfig.</span></span><span class="sig-name descname"><span class="pre">OpenAiCompatibleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_type=OpenAIAPIType.CHAT_COMPLETIONS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LlmConfig</span></code></a></p>
 <p>Class to configure a connection to an LLM that is compatible with OpenAI completions APIs.</p>
 <p>Requires to specify the url of the APIs to contact.</p>
@@ -543,9 +609,25 @@ configuration to connect to specific LLM providers.</p>
 <li><p><strong>default_generation_parameters</strong> (<a class="reference internal" href="#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig" title="pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig"><em>LlmGenerationConfig</em></a><em> | </em><em>None</em>) – Parameters used for the generation call of this LLM</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – Url of the OpenAI compatible model deployment</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) – ID of the model to use</p></li>
+<li><p><strong>api_type</strong> (<a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><em>OpenAIAPIType</em></a>) – OpenAI API protocol to use</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>) – An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key">
+<span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_type">
+<span class="sig-name descname"><span class="pre">api_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><span class="pre">OpenAIAPIType</span></a></em><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_type" title="Permalink to this definition">#</a></dt>
+<dd><p>OpenAI API protocol to use</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.model_id">
 <span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.model_id" title="Permalink to this definition">#</a></dt>
@@ -564,7 +646,7 @@ configuration to connect to specific LLM providers.</p>
 <h4>VLLM Models<a class="headerlink" href="#vllm-models" title="Permalink to this heading">#</a></h4>
 <span class="target" id="vllmconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.vllmconfig.VllmConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.vllmconfig.</span></span><span class="sig-name descname"><span class="pre">VllmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.vllmconfig.VllmConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.vllmconfig.</span></span><span class="sig-name descname"><span class="pre">VllmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_type=OpenAIAPIType.CHAT_COMPLETIONS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.vllmconfig.VllmConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig" title="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig</span></code></a></p>
 <p>Class to configure a connection to a vLLM-hosted LLM.</p>
 <p>Requires to specify the url at which the instance is running.</p>
@@ -580,6 +662,9 @@ configuration to connect to specific LLM providers.</p>
 <li><p><strong>default_generation_parameters</strong> (<a class="reference internal" href="#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig" title="pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig"><em>LlmGenerationConfig</em></a><em> | </em><em>None</em>) – Parameters used for the generation call of this LLM</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – Url of the OpenAI compatible model deployment</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) – ID of the model to use</p></li>
+<li><p><strong>api_type</strong> (<a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><em>OpenAIAPIType</em></a>) – OpenAI API protocol to use</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>) – An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p></li>
 </ul>
 </dd>
 </dl>
@@ -590,7 +675,7 @@ configuration to connect to specific LLM providers.</p>
 <h4>Ollama Models<a class="headerlink" href="#ollama-models" title="Permalink to this heading">#</a></h4>
 <span class="target" id="ollamaconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ollamaconfig.OllamaConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ollamaconfig.</span></span><span class="sig-name descname"><span class="pre">OllamaConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ollamaconfig.OllamaConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ollamaconfig.</span></span><span class="sig-name descname"><span class="pre">OllamaConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_type=OpenAIAPIType.CHAT_COMPLETIONS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ollamaconfig.OllamaConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig" title="pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig</span></code></a></p>
 <p>Class to configure a connection to a local model ran with Ollama.</p>
 <p>Requires to specify the url and port at which the model is running.</p>
@@ -606,6 +691,9 @@ configuration to connect to specific LLM providers.</p>
 <li><p><strong>default_generation_parameters</strong> (<a class="reference internal" href="#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig" title="pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig"><em>LlmGenerationConfig</em></a><em> | </em><em>None</em>) – Parameters used for the generation call of this LLM</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – Url of the OpenAI compatible model deployment</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) – ID of the model to use</p></li>
+<li><p><strong>api_type</strong> (<a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><em>OpenAIAPIType</em></a>) – OpenAI API protocol to use</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>) – An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p></li>
 </ul>
 </dd>
 </dl>
@@ -617,7 +705,7 @@ configuration to connect to specific LLM providers.</p>
 <h3>OpenAI Models<a class="headerlink" href="#openai-models" title="Permalink to this heading">#</a></h3>
 <span class="target" id="openaiconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.openaiconfig.OpenAiConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.openaiconfig.</span></span><span class="sig-name descname"><span class="pre">OpenAiConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.openaiconfig.OpenAiConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.openaiconfig.</span></span><span class="sig-name descname"><span class="pre">OpenAiConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_type=OpenAIAPIType.CHAT_COMPLETIONS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.openaiconfig.OpenAiConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LlmConfig</span></code></a></p>
 <p>Class to configure a connection to a OpenAI LLM.</p>
 <p>Requires to specify the identity of the model to use.</p>
@@ -632,9 +720,25 @@ configuration to connect to specific LLM providers.</p>
 <li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
 <li><p><strong>default_generation_parameters</strong> (<a class="reference internal" href="#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig" title="pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig"><em>LlmGenerationConfig</em></a><em> | </em><em>None</em>) – Parameters used for the generation call of this LLM</p></li>
 <li><p><strong>model_id</strong> (<em>str</em>) – ID of the model to use</p></li>
+<li><p><strong>api_type</strong> (<a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><em>OpenAIAPIType</em></a>) – OpenAI API protocol to use</p></li>
+<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>) – An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaiconfig.OpenAiConfig.api_key">
+<span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.api_key" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+excluded and replaced by a reference when exporting the configuration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.openaiconfig.OpenAiConfig.api_type">
+<span class="sig-name descname"><span class="pre">api_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType" title="pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><span class="pre">OpenAIAPIType</span></a></em><a class="headerlink" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.api_type" title="Permalink to this definition">#</a></dt>
+<dd><p>OpenAI API protocol to use</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.openaiconfig.OpenAiConfig.model_id">
 <span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.model_id" title="Permalink to this definition">#</a></dt>
@@ -648,9 +752,9 @@ configuration to connect to specific LLM providers.</p>
 <h3>OciGenAi Models<a class="headerlink" href="#ocigenai-models" title="Permalink to this heading">#</a></h3>
 <span class="target" id="servingmode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.ServingMode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">ServingMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.ServingMode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">ServingMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.ServingMode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Serving mode to use for the GenAI service</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.ServingMode.DEDICATED">
 <span class="sig-name descname"><span class="pre">DEDICATED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DEDICATED'</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.ServingMode.DEDICATED" title="Permalink to this definition">#</a></dt>
@@ -665,7 +769,7 @@ configuration to connect to specific LLM providers.</p>
 
 <span class="target" id="modelprovider"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.ModelProvider">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">ModelProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.ModelProvider" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">ModelProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.ModelProvider" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Provider of the model. It is used to ensure the requests to this model respect
 the format expected by the provider.</p>
@@ -693,7 +797,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ocigenaiconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">OciGenAiConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compartment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serving_mode=ServingMode.ON_DEMAND</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ocigenaiconfig.</span></span><span class="sig-name descname"><span class="pre">OciGenAiConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_generation_parameters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compartment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serving_mode=ServingMode.ON_DEMAND</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_type=OciAPIType.OCI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation_store_id=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LlmConfig</span></code></a></p>
 <p>Class to configure a connection to a OCI GenAI hosted model.</p>
 <p>Requires to specify the model id and the client configuration to the OCI GenAI service.</p>
@@ -710,11 +814,19 @@ the format expected by the provider.</p>
 <li><p><strong>model_id</strong> (<em>str</em>) – The identifier of the model to use.</p></li>
 <li><p><strong>compartment_id</strong> (<em>str</em>) – The OCI compartment ID where the model is hosted.</p></li>
 <li><p><strong>serving_mode</strong> (<a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.ServingMode" title="pyagentspec.llms.ocigenaiconfig.ServingMode"><em>ServingMode</em></a>) – The serving mode for the model.</p></li>
-<li><p><strong>provider</strong> (<a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.ModelProvider" title="pyagentspec.llms.ocigenaiconfig.ModelProvider"><em>ModelProvider</em></a><em> | </em><em>None</em>) – The provider of the model. If None, it will be automatically detected by the runtime using the model ID</p></li>
+<li><p><strong>provider</strong> (<a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.ModelProvider" title="pyagentspec.llms.ocigenaiconfig.ModelProvider"><em>ModelProvider</em></a><em> | </em><em>None</em>) – The provider of the model. If None, it will be automatically detected by the runtime using the model ID.</p></li>
 <li><p><strong>client_config</strong> (<a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><em>OciClientConfig</em></a>) – The client configuration for connecting to OCI GenAI service.</p></li>
+<li><p><strong>api_type</strong> (<a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType" title="pyagentspec.llms.ocigenaiconfig.OciAPIType"><em>OciAPIType</em></a>) – API protocol to use.</p></li>
+<li><p><strong>conversation_store_id</strong> (<em>str</em><em> | </em><em>None</em>) – ID of the conversation store to persist conversations when using the openai responses API.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.api_type">
+<span class="sig-name descname"><span class="pre">api_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType" title="pyagentspec.llms.ocigenaiconfig.OciAPIType"><span class="pre">OciAPIType</span></a></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.api_type" title="Permalink to this definition">#</a></dt>
+<dd><p>API protocol to use.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.client_config">
 <span class="sig-name descname"><span class="pre">client_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><span class="pre">OciClientConfig</span></a></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.client_config" title="Permalink to this definition">#</a></dt>
@@ -728,6 +840,12 @@ the format expected by the provider.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.conversation_store_id">
+<span class="sig-name descname"><span class="pre">conversation_store_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.conversation_store_id" title="Permalink to this definition">#</a></dt>
+<dd><p>ID of the conversation store to persist conversations when using the openai responses API.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id">
 <span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id" title="Permalink to this definition">#</a></dt>
 <dd><p>The identifier of the model to use.</p>
@@ -736,7 +854,7 @@ the format expected by the provider.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.provider">
 <span class="sig-name descname"><span class="pre">provider</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.llms.ocigenaiconfig.ModelProvider" title="pyagentspec.llms.ocigenaiconfig.ModelProvider"><span class="pre">ModelProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.provider" title="Permalink to this definition">#</a></dt>
-<dd><p>The provider of the model. If None, it will be automatically detected by the runtime using the model ID</p>
+<dd><p>The provider of the model. If None, it will be automatically detected by the runtime using the model ID.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -749,7 +867,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ociclientconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ociclientconfig.OciClientConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>Base abstract class for OCI client config.</p>
 <dl class="field-list simple">
@@ -780,7 +898,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ociclientconfigwithapikey"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithApiKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='API_KEY'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_file_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithApiKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='API_KEY'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_file_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OciClientConfig</span></code></a></p>
 <p>OCI client config class for authentication using API_KEY and a config file.</p>
 <dl class="field-list simple">
@@ -818,7 +936,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ociclientconfigwithsecuritytoken"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ociclientconfig.OciClientConfigWithSecurityToken">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithSecurityToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='SECURITY_TOKEN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_file_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithSecurityToken" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithSecurityToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='SECURITY_TOKEN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_file_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithSecurityToken" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OciClientConfig</span></code></a></p>
 <p>OCI client config class for authentication using SECURITY_TOKEN.</p>
 <dl class="field-list simple">
@@ -856,7 +974,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ociclientconfigwithinstanceprincipal"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ociclientconfig.OciClientConfigWithInstancePrincipal">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithInstancePrincipal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='INSTANCE_PRINCIPAL'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithInstancePrincipal" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithInstancePrincipal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='INSTANCE_PRINCIPAL'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithInstancePrincipal" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OciClientConfig</span></code></a></p>
 <p>OCI client config class for authentication using INSTANCE_PRINCIPAL.</p>
 <dl class="field-list simple">
@@ -882,7 +1000,7 @@ the format expected by the provider.</p>
 
 <span class="target" id="ociclientconfigwithresourceprincipal"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.llms.ociclientconfig.OciClientConfigWithResourcePrincipal">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithResourcePrincipal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='RESOURCE_PRINCIPAL'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithResourcePrincipal" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.llms.ociclientconfig.</span></span><span class="sig-name descname"><span class="pre">OciClientConfigWithResourcePrincipal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_type='RESOURCE_PRINCIPAL'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.llms.ociclientconfig.OciClientConfigWithResourcePrincipal" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OciClientConfig</span></code></a></p>
 <p>OCI client config class for authentication using RESOURCE_PRINCIPAL.</p>
 <dl class="field-list simple">
@@ -946,9 +1064,28 @@ the format expected by the provider.</p>
 </li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-api-type">OpenAI API Type</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType"><code class="docutils literal notranslate"><span class="pre">OpenAIAPIType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.CHAT_COMPLETIONS"><code class="docutils literal notranslate"><span class="pre">OpenAIAPIType.CHAT_COMPLETIONS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES"><code class="docutils literal notranslate"><span class="pre">OpenAIAPIType.RESPONSES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oci-api-type">OCI API Type</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType"><code class="docutils literal notranslate"><span class="pre">OciAPIType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OCI"><code class="docutils literal notranslate"><span class="pre">OciAPIType.OCI</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS"><code class="docutils literal notranslate"><span class="pre">OciAPIType.OPENAI_CHAT_COMPLETIONS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES"><code class="docutils literal notranslate"><span class="pre">OciAPIType.OPENAI_RESPONSES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-models">All models</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-compatible-models">OpenAI Compatible Models</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig"><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key"><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig.api_key</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_type"><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig.api_type</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.model_id"><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig.model_id</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.url"><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig.url</span></code></a></li>
 </ul>
@@ -965,6 +1102,8 @@ the format expected by the provider.</p>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openai-models">OpenAI Models</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaiconfig.OpenAiConfig"><code class="docutils literal notranslate"><span class="pre">OpenAiConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.api_key"><code class="docutils literal notranslate"><span class="pre">OpenAiConfig.api_key</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.api_type"><code class="docutils literal notranslate"><span class="pre">OpenAiConfig.api_type</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.openaiconfig.OpenAiConfig.model_id"><code class="docutils literal notranslate"><span class="pre">OpenAiConfig.model_id</span></code></a></li>
 </ul>
 </li>
@@ -984,8 +1123,10 @@ the format expected by the provider.</p>
 </ul>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.api_type"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.api_type</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.client_config"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.client_config</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.compartment_id"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.compartment_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.conversation_store_id"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.conversation_store_id</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.model_id</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.provider"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.provider</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.serving_mode"><code class="docutils literal notranslate"><span class="pre">OciGenAiConfig.serving_mode</span></code></a></li>

@@ -599,19 +599,24 @@ Therefore, providing a proper description might improve the quality of the final
     In case structured generation is requested to an LLM that does not natively support it, it's up to
     the Agent Spec Runtime implementation to raise an exception, or to implement it in a different form.
 
-
+.. _openaicompatiblellms:
 
 OpenAI Compatible LLMs
 ^^^^^^^^^^^^^^^^^^^^^^
 
-This class of LLMs groups all the LLMs that are compatible with the
-`OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_.
+This class of LLMs groups all the LLMs that are compatible with either the
+`OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
+The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely
+``chat_completions`` or ``responses``. By default, the API type is set to chat completions. Additionally, an optional
+``api_key`` can be set for the remote LLM model.
 
 .. code-block:: python
 
    class OpenAiCompatibleConfig(LlmConfig):
      model_id: str
      url: str
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     api_key: SensitiveField[Optional[str]] = None
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -629,6 +634,8 @@ Ollama
 ''''''
 
 Used to indicate all the LLMs deployed through `Ollama <https://ollama.com/>`_.
+Note that as of November 2025, Ollama does not support the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_,
+so using this API type may lead to unexpected behavior.
 
 .. code-block:: python
 
@@ -640,12 +647,17 @@ OpenAI
 ^^^^^^
 
 This class of LLMs refers to the models offered by `OpenAI <https://openai.com>`_.
+Similar to :ref:`OpenAI Compatible LLMs <openaicompatiblellms>`, you can also configure the ``api_type`` parameter,
+which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
+By default, the API type is set to chat completions. Additionally, an optional
+``api_key`` can be set for the remote LLM model.
 
 .. code-block:: python
 
    class OpenAiConfig(LlmConfig):
      model_id: str
-
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     api_key: SensitiveField[Optional[str]] = None
 
 OCI GenAI
 ^^^^^^^^^
@@ -666,6 +678,11 @@ models. When ``None``, it is automatically detected based on the ``model_id``. W
 the ``model_id`` does not indicate what ``provider`` should be used so the user has to specify it manually,
 knowing what model it is.
 
+The API type can be configured by using the ``api_type`` parameter, which takes one of 3 string values, namely ``oci``,
+``openai_chat_completions`` and ``openai_responses``. By default, the API type is set to ``oci``.
+The ``conversation_store_id`` parameter allows to specify the conversation store OCI resource to use top persist
+conversations when using the openai responses API.
+
 .. code-block:: python
 
    class OciGenAiConfig(LlmConfig):
@@ -674,6 +691,8 @@ knowing what model it is.
      serving_mode: Literal["ON_DEMAND", "DEDICATED"] = "ON_DEMAND"
      provider: Optional[Literal["META", "GROK", "COHERE", "OTHER"]] = None
      client_config: OciClientConfig
+     api_type: Literal["chat_completions", "responses"] = "chat_completions"
+     conversation_store_id: Optional[str] = None
 
 .. note::
     The authentication components must not contain any sensitive information about the authentication,
@@ -709,7 +728,7 @@ Client configuration that should be used if users want to use authentication thr
 
     class OciClientConfigWithSecurityToken(OciClientConfig):
         auth_profile: str
-        auth_file_location: str
+        auth_file_location: SensitiveField[str]
         auth_type: Literal["SECURITY_TOKEN"] = "SECURITY_TOKEN"
 
 OciClientConfigWithApiKey
@@ -721,7 +740,7 @@ Client configuration that should be used if users want to use authentication wit
 
     class OciClientConfigWithApiKey(OciClientConfig):
         auth_profile: str
-        auth_file_location: str
+        auth_file_location: SensitiveField[str]
         auth_type: Literal["API_KEY"] = "API_KEY"
 
 OciClientConfigWithInstancePrincipal
@@ -760,6 +779,11 @@ on the type of the tool:
   must be available to the Agent's environment. It is expected that
   this type of tool will be very limited in number, and relatively
   general in functionality (e.g., human-in-the-loop).
+- **BuiltinTools** are defined and implemented by the execution engine.
+  Which built-in tools are available, their semantics and how to configure
+  them depends on, and should be verified by, the execution engine.
+  Built-in tools are expected to be executed in the same runtime
+  environment that the Agent is being executed in.
 - **ClientTools** are not executed by the executor, the client must
   execute the tool and provide the results back to the executor (similar
   to OpenAI's function calling model)
@@ -791,8 +815,9 @@ user/operator approval before running the tool, which is especially relevant
 for tools performing critical or sensitive actions.
 
 While ServerTool and ClientTool do not require specific additional
-parameters, the RemoteTool requires to include also the details needed
-to perform the remote call to the tool.
+parameters, the RemoteTool, MCPTool and the BuiltinTool require to include also
+the details needed to perform the remote call to the tool or to identify
+the correct built-in tool.
 
 .. code-block:: python
 
@@ -814,9 +839,16 @@ to perform the remote call to the tool.
      data: Dict[str, Any]
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
+     sensitive_headers: SensitiveField[Dict[str, Any]]
 
    class MCPTool(Tool):
      client_transport: ClientTransport
+
+   class BuiltinTool(Tool):
+     tool_type: str
+     configuration: Optional[Dict[str, Any]]
+     executor_name: Optional[Union[str, List[str]]]
+     tool_version: Optional[str]
 
 An important security aspect of Agent Spec is the exclusion of arbitrary
 code from the agent representation. The representation contains a complete description
@@ -841,7 +873,7 @@ in the right manner.
 Note that, similarly to the APINode, we allow users to use placeholders
 (as described in section 5.3.4) in all the string attributes of the
 RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
-of data, query_params, and headers).
+of data, query_params, headers, and sensitive_headers).
 
 
 MCP Tools
@@ -947,6 +979,94 @@ pin and validate specific remote MCP tools.
 
 See the :ref:`filter rules for the MCPToolBox <mcp_toolfilter_rules>` to see how the ``MCPToolSpec``
 is used.
+
+Built-in Tools
+^^^^^^^^^^^^^^
+
+Agent Spec execution engines may offer built-in tools out of the box and ready to use.
+For example,
+
+- An executor could provide a tool to search websites.
+  Users do not need to provide a tool implementation, but only need to specify which website to search on.
+- An executor running in a database might expose a native vector retrieval tool
+  with the possibility to configure which tables to search on or how many relevant results to return.
+
+Built-in tools in Agent Spec let users configure these types of tools.
+
+.. code-block:: python
+
+   class BuiltinTool(Tool):
+     tool_type: str
+     configuration: Optional[Dict[str, Any]]
+     executor_name: Optional[Union[str, List[str]]]
+     tool_version: Optional[str]
+
+- ``tool_type`` identifies the runtime-provided built-in tool.
+- ``configuration`` allows to configure the tool.
+  Legal configurations should be documented by the runtime providing the tool.
+  Not all built-in tools require configuration.
+- ``executor_name`` optionally allows to specify the runtime name providing the tool for validation purposes
+  (i.e., for the runtime to check that the tool config is intended for it).
+  The correct value to put should be documented by the runtime providing the tool.
+- ``tool_version``: if the runtime provides multiple versions of the tool, the built-in tool version can be specified here.
+
+The advantage of built-in tools is that no tool implementation needs to be provided by the users.
+The disadvantage is that built-in tools are specific to the Agent Spec execution runtime which provides them.
+In general, which built-in tools are available differs for each execution runtime, and using them might limit cross-framework portability.
+
+
+Implementing Built-in Tools as Execution Engine Developer
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+For Agent Spec execution engine developers implementing built-in tools,
+the following documentation should be provided to users.
+
+- The semantics of tool
+- The name of the tool, passed to the ``tool_type`` field
+- The expected input and output properties (title and type), if any
+- The expected static configuration parameters, if any
+- The executor name. Users can optionally specify this field s.t.
+  the execution engine can validate the tool is intended for it.
+- The tool version. If there are multiple versions of the tool,
+  this field can be used to select which tool to run. Furthermore, it should
+  be documented what the default behavior is if multiple tool versions are
+  available but no ``tool_version`` is specified.
+
+Execution engine developers should validate that inputs, outputs and configuration
+parameters of the built-in tool component provided in the configuration are as expected.
+
+Furthermore, to prevent unintended behavior, execution engine developers should
+validate the ``executor_name`` and ``tool_version`` fields, if they are provided,
+and raise an error if the values are not expected.
+
+.. collapse:: Example documentation for built-in tool...
+
+    **Vector Search Built-in Tool**
+
+    Retrieves the most relevant documents from a table based on cosine similarity
+    between a query text and stored embeddings.
+
+    **Tool Name:** "vector_retrieval_tool"
+
+    **Inputs:**
+
+    - ``StringProperty(title="query")``: user query text.
+
+    **Outputs:**
+
+    - ``ListProperty(title="results", item_type=StringProperty())``:
+        list of retrieved document contents.
+
+    **Configuration Parameters:**
+
+    - ``schema`` (str): schema containing the table.
+    - ``target_table`` (str): name of the table storing embeddings.
+    - ``target_column`` (str): column containing embedding vectors.
+    - ``top_k`` (int): number of nearest results to return.
+
+    **Executor Name:** "my_execution_engine>=25.4.1".
+
+    **Tool Version:**  Our vector_retrieval_tool is not versioned.
 
 
 Execution flows
@@ -1389,6 +1509,14 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - sensitive_headers
+              - Additional headers for the API call. These additional headers are merged with the headers provided
+                as `headers` when executing the request, but these headers are excluded from exported configuration
+                thus they are better suited to contain sensitive information not intended to be shared as widely as
+                the exported configuration.
+              - object[str, any]
+              - No
+              - {}
 
       - Inferred from the json spec retrieved from API Spec URI, if available and reachable.
         Empty otherwise (users will have to manually specify them)
@@ -1714,13 +1842,21 @@ A2AAgent
 ~~~~~~~~
 
 ``A2AAgent`` is an implementation of ``AgenticComponent`` which uses the A2A protocol to communicate with a remote server agent. It handles all necessary data transformation and communication logic to and from the server agent.
+For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Protocol) section <agentspeca2aspec_nightly>`.
 
 .. code-block:: python
 
   class A2AAgent(AgenticComponent):
     agent_url: str
+    connection_config: A2AConnectionConfig # Parameters for HTTP connection settings, including timeouts and SSL/TLS security
+    session_parameters: Optional[Dict[str, Any]] # Parameters controlling session behavior such as polling timeouts and retry logic
 
-`agent_url` specifies the server agent's URL used for establishing a connection.
+- `agent_url`: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
+- `connection_config`: Contains HTTP connection details, including timeouts and SSL/TLS security settings, ensuring a secure and optimized connection with necessary certificates.
+- `session_parameters`: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
+                        These settings include `timeout`, specifying the maximum wait time in seconds before deeming a session unresponsive;
+                        `poll_interval`, defining the interval in seconds between polling attempts to check for server responses;
+                        and `max_retries`, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
 
 RemoteAgent
 ~~~~~~~~~~~
@@ -1757,7 +1893,7 @@ Swarm preserves the standard messaging and execution semantics of ``AgenticCompo
   class Swarm(AgenticComponent):
     first_agent: AgenticComponent
     relationships: List[Tuple[AgenticComponent, AgenticComponent]]
-    handoff: bool
+    handoff: Literal["never", "optional", "always"]
 
 When a Swarm is initialized, the conversation always begins with the ``first_agent``— this is the agent that interacts directly with the human user.
 
@@ -1769,9 +1905,13 @@ From there, the ``first_agent`` may:
 The human user remains in conversation with the ``first agent`` during this time.
 The called agent can, in turn, call other agents it has relationships with to further handle a subtask.
 
-Alternatively, if ``handoff=True``, the first agent can also decide to handoff the conversation with human user to another agent.
-In this mode, the receiving agent takes over the conversation entirely, meanings it now becomes the one interacting directly with the human user.
-This handoof mechanism reduces latency by eliminating unnecessary message relays between agents.
+If ``handoff="optional"``, the first_agent also gains a third option:
+it may hand off the entire conversation to another agent.
+Once the handoff occurs, the receiving agent becomes the new primary point of contact for the human user. This mechanism can significantly reduce latency by avoiding unnecessary back-and-forth message passing between agents.
+
+When ``handoff="always"`` is enabled, an agent cannot call another agent and wait for a reply (i.e. it does not have the second option mentioned above).
+Delegation is only possible through a full handoff of the conversation.
+Handing off the conversation establishes a strict chain-of-ownership: each agent must transfer the entire dialogue context when involving another agent.
 
 Each relationship is defined as a tuple ``(caller_agent, recipient_agent)``
 which represents a one-way communication link from ``caller_agent`` to ``recipient_agent``.
@@ -1830,7 +1970,7 @@ For example, the JSON serialized version of an Agent should look like the follow
        "url": "my.llm.url"
     }
     "tools": [],
-    "agentspec_version": "25.4.2"
+    "agentspec_version": "26.1.0"
   }
 
 For release versioning, Agent Spec follows the format YEAR.QUARTER.PATCH. Agent Spec follows a
@@ -1940,10 +2080,15 @@ the ``url`` and ``headers`` fields.
    class RemoteTransport(ClientTransport):
      url: str
      headers: Dict[str, str]
+     sensitive_headers: SensitiveField[Dict[str, str]]
 
 
 - ``url`` is a string representing the URL to send the request.
 - ``headers`` is a dictionary of additional headers to use in the client.
+- ``sensitive_headers`` are additional headers that should be merged with the ``headers`` provided
+  when executing the request, but these headers are excluded from exported configuration thus they
+  are better suited to contain sensitive information not intended to be shared as widely as the
+  exported configuration.
 
 
 SSE Transport
@@ -1989,9 +2134,9 @@ SSE Transport with mTLS
 .. code-block:: python
 
    class SSEmTLSTransport(SSETransport):
-     key_file: str
-     cert_file: str
-     ca_file: str
+     key_file: SensitiveField[str]
+     cert_file: SensitiveField[str]
+     ca_file: SensitiveField[str]
 
 - ``key_file`` is the path to the client's private key file (PEM format).
 - ``cert_file`` is the path to the client's certificate chain file (PEM format).
@@ -2004,9 +2149,9 @@ Streamable HTTP Transport with mTLS
 .. code-block:: python
 
    class StreamableHTTPmTLSTransport(StreamableHTTPTransport):
-     key_file: str
-     cert_file: str
-     ca_file: str
+     key_file: SensitiveField[str]
+     cert_file: SensitiveField[str]
+     ca_file: SensitiveField[str]
 
 
 - ``key_file`` is the path to the client's private key file (PEM format).
@@ -2019,6 +2164,28 @@ Streamable HTTP Transport with mTLS
     For production use, always prefer secure transports like those with mTLS to ensure
     mutual authentication.
 
+.. _agentspeca2aspec_nightly:
+
+A2A (Agent to Agent Protocol)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication among agents.
+This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively.
+It can also be used to establish a connection with a remote agent, allowing for distributed agentic systems.
+
+The connection to a remote agent or between agents is configured using `A2AConnectionConfig`, which defines the necessary parameters for establishing a secure and reliable HTTP connection.
+This includes settings such as timeouts, retry policies, and SSL/TLS security configurations to ensure encrypted and authenticated communication.
+
+.. code-block:: python
+
+   class A2AConnectionConfig(Component):
+     timeout: float  # Connection timeout in seconds
+     headers: Optional[Dict[str, str]] # A dictionary of HTTP headers to include in requests
+     verify: bool  # Boolean to enable HTTPS or not
+     key_file: Optional[str] # Path to the client's private key file
+     cert_file: Optional[str]  # Path to the client's certificate chain file
+     ssl_ca_cert: Optional[str]  # Path to private key file
+     ca_path: Optional[str]  # Path to the trusted CA certificate file
 
 Ecosystem of plugins
 --------------------
@@ -2176,6 +2343,92 @@ And here's the configuration containing the disaggregated components:
       }
     }
 
+
+
+
+.. _agentspecsensitivefield_nightly:
+
+Sensitive fields
+----------------
+
+Some of the fields in the configuration of Agent Spec components may contain sensitive information
+such as API keys or authentication tokens. To help developers securely support these components,
+AgentSpec runtimes and SDKs must follow these three guidelines:
+
+- **When exporting configurations**: Any sensitive field must be excluded from the configurations.
+- **When loading configurations**: Runtime adapters and SDKs must allow passing the excluded sensitive information.
+- **When loading configurations**: If developers have already inlined the sensitive information into their
+  configurations, runtimes and SDKs should allow loading these configurations too.
+
+See all the fields below that are considered sensitive fields:
+
++----------------------------------+--------------------+
+| Component                        | Attribute          |
++==================================+====================+
+| OpenAiCompatibleConfig           | api_key            |
++----------------------------------+--------------------+
+| OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| OciClientConfigWithSecurityToken | auth_file_location |
++----------------------------------+--------------------+
+| OciClientConfigWithApiKey        | auth_file_location |
++----------------------------------+--------------------+
+| RemoteTool                       | sensitive_headers  |
++----------------------------------+--------------------+
+| ApiNode                          | sensitive_headers  |
++----------------------------------+--------------------+
+| RemoteTransport                  | sensitive_headers  |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | key_file           |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | cert_file          |
++----------------------------------+--------------------+
+| SSEmTLSTransport                 | ca_file            |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | key_file           |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | cert_file          |
++----------------------------------+--------------------+
+| StreamableHTTPmTLSTransport      | ca_file            |
++----------------------------------+--------------------+
+
+
+For example, the following component produced using the `pyagentspec` SDK:
+
+.. code-block:: python
+
+    OpenAiCompatibleConfig(
+        name="llm-config",
+        id="llm-config-id",
+        url="https://some.api.com/v2",
+        model_id="some_model_id",
+        api_key="THIS_IS_SECRET",
+    )
+
+should produce the following configuration, in which the sensitive ``api_key`` is replaced by a reference
+
+.. code-block:: JSON5
+
+    {
+      "component_type" : "OpenAiCompatibleConfig",
+      "id" : "llm-config-id",
+      "name" : "llm-config",
+      "url" : "https://some.api.com/v2",
+      "model_id" : "some_model_id",
+      "api_key" : {
+        "$component_ref" : "llm-config-id.api_key"
+      },
+    }
+
+Such a configuration would then require to pass the referenced sensitive information when loading, as
+in the example code below:
+
+.. code-block:: python
+
+    llm_config = AgentSpecDeserializer().from_json(
+        serialized_llm,
+        components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
+    )
 
 
 Additional components for future versions
@@ -2373,7 +2626,7 @@ Examples of JSON serialization for a few common Components follow.
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
       "component_type": "Agent",
-      "agentspec_version": "25.4.2"
+      "agentspec_version": "26.1.0"
     }
 
 

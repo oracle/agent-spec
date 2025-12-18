@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -52,11 +53,12 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_llm_from_different_providers';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -65,8 +67,8 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to Use OCI Generative AI Agents" href="howto_ociagent.html" />
-    <link rel="prev" title="How to Specify the Generation Configuration when Using LLMs" href="howto_generation_config.html" />
+    <link rel="next" title="How to Specify the Generation Configuration when Using LLMs" href="howto_generation_config.html" />
+    <link rel="prev" title="How to Execute Agent Spec Across Frameworks" href="howto_execute_agentspec_across_frameworks.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="26.1" />
@@ -183,10 +185,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -288,10 +290,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -341,6 +343,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -354,16 +357,18 @@
 <li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -379,8 +384,22 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -460,10 +479,11 @@ The available LLMs are:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../api/llmmodels.html#openaiconfig"><span class="std std-ref">OpenAiConfig</span></a></p></li>
 <li><p><a class="reference internal" href="../api/llmmodels.html#ocigenaiconfig"><span class="std std-ref">OciGenAiConfig</span></a></p></li>
+<li><p><a class="reference internal" href="../api/llmmodels.html#openaicompatibleconfig"><span class="std std-ref">OpenAiCompatibleConfig</span></a></p></li>
 <li><p><a class="reference internal" href="../api/llmmodels.html#vllmconfig"><span class="std std-ref">VllmConfig</span></a></p></li>
 <li><p><a class="reference internal" href="../api/llmmodels.html#ollamaconfig"><span class="std std-ref">OllamaConfig</span></a></p></li>
 </ul>
-<p>Their configuration is specified directly to their respective class constructor.
+<p>Their configuration is specified directly in their respective class constructor.
 This guide will show you how to configure LLMs from different LLM providers with examples and notes on usage.</p>
 <section id="ocigenaiconfig">
 <h2>OciGenAiConfig<a class="headerlink" href="#ocigenaiconfig" title="Permalink to this heading">#</a></h2>
@@ -616,8 +636,20 @@ You can refer to one of those models by using the <code class="docutils literal 
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-2">
-<span id="cmdoption-arg-3"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-2" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-api_type">
+<span id="cmdoption-arg-api-type"></span><span class="sig-name descname"><span class="pre">api_type:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-api_type" title="Permalink to this definition">#</a></dt>
+<dd><p>The API type that should be used. Can be either <code class="docutils literal notranslate"><span class="pre">chat_completions</span></code> or <code class="docutils literal notranslate"><span class="pre">responses</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-api_key">
+<span id="cmdoption-arg-api-key"></span><span id="cmdoption-arg-2"></span><span class="sig-name descname"><span class="pre">api_key:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-api_key" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional api key for the authentication with the OpenAI endpoint.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-3">
+<span id="cmdoption-arg-4"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-3" title="Permalink to this definition">#</a></dt>
 <dd><p>Default parameters for text generation with this model.</p>
 </dd></dl>
 
@@ -636,18 +668,19 @@ the following link: <a class="reference external" href="https://platform.openai.
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;openai-gpt-5&quot;</span><span class="p">,</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;gpt-5&quot;</span><span class="p">,</span>
     <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;optional_api_key&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="vllmconfig">
-<h2>VllmConfig<a class="headerlink" href="#vllmconfig" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://docs.vllm.ai/en/latest/models/supported_models.html">vLLM Models</a> are models hosted with a vLLM server.
-The <code class="docutils literal notranslate"><span class="pre">VllmConfig</span></code> allows users to use this type of models in their agents and flows.</p>
+<section id="openaicompatibleconfig">
+<h2>OpenAiCompatibleConfig<a class="headerlink" href="#openaicompatibleconfig" title="Permalink to this heading">#</a></h2>
+<p>OpenAI Compatible LLMs are all those models that are served through OpenAI APIs, either responses or completions.
+The <code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig</span></code> allows users to use this type of models in their agents and flows.</p>
 <p><strong>Parameters</strong></p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-4">
-<span class="sig-name descname"><span class="pre">model_id:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-4" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-5">
+<span class="sig-name descname"><span class="pre">model_id:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-5" title="Permalink to this definition">#</a></dt>
 <dd><p>Name of the model to use.</p>
 </dd></dl>
 
@@ -658,9 +691,73 @@ The <code class="docutils literal notranslate"><span class="pre">VllmConfig</spa
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-5">
-<span id="cmdoption-arg-6"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-5" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-6">
+<span class="sig-name descname"><span class="pre">api_type:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-6" title="Permalink to this definition">#</a></dt>
+<dd><p>The API type that should be used. Can be either <code class="docutils literal notranslate"><span class="pre">chat_completions</span></code> or <code class="docutils literal notranslate"><span class="pre">responses</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-7">
+<span id="cmdoption-arg-8"></span><span class="sig-name descname"><span class="pre">api_key:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-7" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional api key if the remote server requires it.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-9">
+<span id="cmdoption-arg-10"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-9" title="Permalink to this definition">#</a></dt>
 <dd><p>Default parameters for text generation with this model.</p>
+</dd></dl>
+
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.openaicompatibleconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIAPIType</span>
+
+<span class="n">generation_config</span> <span class="o">=</span> <span class="n">LlmGenerationConfig</span><span class="p">(</span><span class="n">max_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">llm</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vllm-llama-4-maverick&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.vllm.server/llama4mav&quot;</span><span class="p">,</span>
+    <span class="n">api_type</span><span class="o">=</span><span class="n">OpenAIAPIType</span><span class="o">.</span><span class="n">RESPONSES</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;optional_api_key&quot;</span><span class="p">,</span>
+    <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="vllmconfig">
+<h2>VllmConfig<a class="headerlink" href="#vllmconfig" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://docs.vllm.ai/en/latest/models/supported_models.html">vLLM Models</a> are models hosted with a vLLM server.
+The <code class="docutils literal notranslate"><span class="pre">VllmConfig</span></code> allows users to use this type of models in their agents and flows.</p>
+<p><strong>Parameters</strong></p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-11">
+<span class="sig-name descname"><span class="pre">model_id:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-11" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the model to use.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-12">
+<span class="sig-name descname"><span class="pre">url:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-12" title="Permalink to this definition">#</a></dt>
+<dd><p>Hostname and port of the vLLM server where the model is hosted.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-13">
+<span class="sig-name descname"><span class="pre">api_type:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-13" title="Permalink to this definition">#</a></dt>
+<dd><p>The API type that should be used. Can be either <code class="docutils literal notranslate"><span class="pre">chat_completions</span></code> or <code class="docutils literal notranslate"><span class="pre">responses</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-14">
+<span id="cmdoption-arg-15"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-14" title="Permalink to this definition">#</a></dt>
+<dd><p>Default parameters for text generation with this model.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-16">
+<span id="cmdoption-arg-17"></span><span class="sig-name descname"><span class="pre">api_key:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-16" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional api key if the remote vllm server requires it.</p>
 </dd></dl>
 
 <p><strong>Examples</strong></p>
@@ -673,6 +770,7 @@ The <code class="docutils literal notranslate"><span class="pre">VllmConfig</spa
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
     <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.vllm.server/llama4mav&quot;</span><span class="p">,</span>
     <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;optional_api_key&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -680,24 +778,36 @@ The <code class="docutils literal notranslate"><span class="pre">VllmConfig</spa
 <section id="ollamaconfig">
 <h2>OllamaConfig<a class="headerlink" href="#ollamaconfig" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://ollama.com/">Ollama Models</a> are powered by a locally hosted Ollama server.
-The <code class="docutils literal notranslate"><span class="pre">VllmConfig</span></code> allows users to use this type of models in their agents and flows.</p>
+The <code class="docutils literal notranslate"><span class="pre">OllamaConfig</span></code> allows users to use this type of models in their agents and flows.</p>
 <p><strong>Parameters</strong></p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-7">
-<span class="sig-name descname"><span class="pre">model_id:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-7" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-18">
+<span class="sig-name descname"><span class="pre">model_id:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-18" title="Permalink to this definition">#</a></dt>
 <dd><p>Name of the model to use.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-8">
-<span class="sig-name descname"><span class="pre">url:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-8" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-19">
+<span class="sig-name descname"><span class="pre">url:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-19" title="Permalink to this definition">#</a></dt>
 <dd><p>Hostname and port of the vLLM server where the model is hosted.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-9">
-<span id="cmdoption-arg-10"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-9" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-arg-20">
+<span class="sig-name descname"><span class="pre">api_type:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><a class="headerlink" href="#cmdoption-arg-20" title="Permalink to this definition">#</a></dt>
+<dd><p>The API type that should be used. Can be either <code class="docutils literal notranslate"><span class="pre">chat_completions</span></code> or <code class="docutils literal notranslate"><span class="pre">responses</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-21">
+<span id="cmdoption-arg-22"></span><span class="sig-name descname"><span class="pre">default_generation_parameters:</span></span><span class="sig-prename descclassname"> <span class="pre">dict</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-21" title="Permalink to this definition">#</a></dt>
 <dd><p>Default parameters for text generation with this model.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-23">
+<span id="cmdoption-arg-24"></span><span class="sig-name descname"><span class="pre">api_key:</span></span><span class="sig-prename descclassname"> <span class="pre">str</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-23" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional api key if the ollama server requires it.</p>
 </dd></dl>
 
 <p><strong>Examples</strong></p>
@@ -709,7 +819,8 @@ The <code class="docutils literal notranslate"><span class="pre">VllmConfig</spa
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ollama-llama-4&quot;</span><span class="p">,</span>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
     <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.ollama.server/llama4mav&quot;</span><span class="p">,</span>
-    <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span>
+    <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;optional_api_key&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -825,6 +936,7 @@ demonstrating how to declare them using PyAgentSpec syntax.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openaiconfig">OpenAiConfig</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openaicompatibleconfig">OpenAiCompatibleConfig</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vllmconfig">VllmConfig</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ollamaconfig">OllamaConfig</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>

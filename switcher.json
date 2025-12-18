@@ -1,4 +1,4 @@
 [
-  { "version": "development", "url": "https://oracle.github.io/agent-spec/development/" },
-  { "version": "25.4.1", "url": "https://oracle.github.io/agent-spec/25.4.1/" }
+  { "version": "25.4.1", "url": "https://oracle.github.io/agent-spec/25.4.1/" },
+  { "version": "dev", "url": "https://oracle.github.io/agent-spec/development/" }
 ]

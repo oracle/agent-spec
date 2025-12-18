@@ -136,25 +136,27 @@ Click on the components and section names to access the complete API documentati
 **Classes**
 
 
-=============================================================================== ====================================================
+================================================================================== ======================================================
 
-:class:`pyagentspec.tools.Tool <pyagentspec.tools.tool.Tool>`                   :docstring:`pyagentspec.tools.tool.Tool`
+:class:`pyagentspec.tools.Tool <pyagentspec.tools.tool.Tool>`                      :docstring:`pyagentspec.tools.tool.Tool`
 
-:class:`pyagentspec.tools.ClientTool <pyagentspec.tools.clienttool.ClientTool>` :docstring:`pyagentspec.tools.clienttool.ClientTool`
+:class:`pyagentspec.tools.ClientTool <pyagentspec.tools.clienttool.ClientTool>`    :docstring:`pyagentspec.tools.clienttool.ClientTool`
 
-:class:`pyagentspec.tools.RemoteTool <pyagentspec.tools.remotetool.RemoteTool>` :docstring:`pyagentspec.tools.remotetool.RemoteTool`
+:class:`pyagentspec.tools.RemoteTool <pyagentspec.tools.remotetool.RemoteTool>`    :docstring:`pyagentspec.tools.remotetool.RemoteTool`
 
-:class:`pyagentspec.tools.ServerTool <pyagentspec.tools.servertool.ServerTool>` :docstring:`pyagentspec.tools.servertool.ServerTool`
+:class:`pyagentspec.tools.ServerTool <pyagentspec.tools.servertool.ServerTool>`    :docstring:`pyagentspec.tools.servertool.ServerTool`
 
-:class:`pyagentspec.mcp.MCPTool <pyagentspec.mcp.tools.MCPTool>`                :docstring:`pyagentspec.mcp.tools.MCPTool`
+:class:`pyagentspec.tools.Builtintool <pyagentspec.tools.builtintool.BuiltinTool>` :docstring:`pyagentspec.tools.builtintool.BuiltinTool`
 
-:class:`pyagentspec.tools.ToolBox <pyagentspec.tools.toolbox.ToolBox>`          :docstring:`pyagentspec.tools.toolbox.ToolBox`
+:class:`pyagentspec.mcp.MCPTool <pyagentspec.mcp.tools.MCPTool>`                   :docstring:`pyagentspec.mcp.tools.MCPTool`
 
-:class:`pyagentspec.mcp.MCPToolSpec <pyagentspec.mcp.tools.MCPToolSpec>`        :docstring:`pyagentspec.mcp.tools.MCPToolSpec`
+:class:`pyagentspec.tools.ToolBox <pyagentspec.tools.toolbox.ToolBox>`             :docstring:`pyagentspec.tools.toolbox.ToolBox`
 
-:class:`pyagentspec.mcp.MCPToolBox <pyagentspec.mcp.tools.MCPToolBox>`          :docstring:`pyagentspec.mcp.tools.MCPToolBox`
+:class:`pyagentspec.mcp.MCPToolSpec <pyagentspec.mcp.tools.MCPToolSpec>`           :docstring:`pyagentspec.mcp.tools.MCPToolSpec`
 
-=============================================================================== ====================================================
+:class:`pyagentspec.mcp.MCPToolBox <pyagentspec.mcp.tools.MCPToolBox>`             :docstring:`pyagentspec.mcp.tools.MCPToolBox`
+
+================================================================================== ======================================================
 
 :doc:`IO Properties <ioproperties>`
 -----------------------------------
@@ -266,6 +268,34 @@ Click on the components and section names to access the complete API documentati
 
 ==================================================================== ========================================================================
 
+:doc:`A2A <a2a>`
+----------------
+
+**Classes**
+
+
+================================================== ======================================================
+
+:class:`pyagentspec.a2aagent.A2AConnectionConfig`  :docstring:`pyagentspec.a2aagent.A2AConnectionConfig`
+
+:class:`pyagentspec.a2aagent.A2ASessionParameters` :docstring:`pyagentspec.a2aagent.A2ASessionParameters`
+
+================================================== ======================================================
+
+:doc:`Adapters <adapters>`
+--------------------------
+
+**Classes**
+
+
+====================================================== ==========================================================
+
+:class:`pyagentspec.adapters.crewai.AgentSpecExporter` :docstring:`pyagentspec.adapters.crewai.AgentSpecExporter`
+
+:class:`pyagentspec.adapters.crewai.AgentSpecLoader`   :docstring:`pyagentspec.adapters.crewai.AgentSpecLoader`
+
+====================================================== ==========================================================
+
 
 .. toctree::
    :maxdepth: 2
@@ -282,3 +312,5 @@ Click on the components and section names to access the complete API documentati
    Serialization / Deserialization <serialization>
    Agentic Patterns <agenticpatterns>
    Agent Specialization <agent_specialization>
+   A2A <a2a>
+   Adapters <adapters>
