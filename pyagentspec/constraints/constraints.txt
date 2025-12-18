@@ -14,3 +14,4 @@ langgraph==0.6.5
 langchain-core==0.3.75
 langchain-openai==0.3.30
 langchain-ollama==0.3.6
+langgraph-checkpoint>=3.0.1,<4.0.0
