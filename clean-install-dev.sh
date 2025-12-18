@@ -19,7 +19,7 @@ source ./_installation_tools.sh
 
 create_venv
 
-upgrade_pip_or_uv
+upgrade_pip
 
 ./install-all-dev.sh
 

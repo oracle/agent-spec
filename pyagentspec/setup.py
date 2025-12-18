@@ -56,6 +56,7 @@ setup(
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
         "httpx>0.28.0",
+        "urllib3>=2.5.0",  # needed to avoid a CVE present on earlier versions
     ],
     test_suite="tests",
     entry_points={
