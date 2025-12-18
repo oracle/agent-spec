@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -52,11 +53,12 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/agenticpatterns';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -183,10 +185,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -288,10 +290,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -341,6 +343,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -354,16 +357,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -379,8 +384,22 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -460,7 +479,7 @@
 <h2>Swarm class<a class="headerlink" href="#swarm-class" title="Permalink to this heading">#</a></h2>
 <span class="target" id="swarm"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.swarm.Swarm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.swarm.</span></span><span class="sig-name descname"><span class="pre">Swarm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_agent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationships</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handoff=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.swarm.Swarm" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.swarm.</span></span><span class="sig-name descname"><span class="pre">Swarm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_agent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationships</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handoff=HandoffMode.OPTIONAL</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.swarm.Swarm" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgenticComponent</span></code></a></p>
 <p>Defines a <code class="docutils literal notranslate"><span class="pre">Swarm</span></code> conversational component.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">Swarm</span></code> is a multi-agent conversational component in which each agent determines
@@ -499,18 +518,79 @@ Agents in Swarm can be any <code class="docutils literal notranslate"><span clas
 <li><p><strong>relationships</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><em>AgenticComponent</em></a><em>, </em><a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><em>AgenticComponent</em></a><em>]</em><em>]</em>) – Determine the list of allowed interactions in the <code class="docutils literal notranslate"><span class="pre">Swarm</span></code>.
 Each element in the list is a tuple <code class="docutils literal notranslate"><span class="pre">(caller_agent,</span> <span class="pre">recipient_agent)</span></code>
 specifying that the <code class="docutils literal notranslate"><span class="pre">caller_agent</span></code> can query the <code class="docutils literal notranslate"><span class="pre">recipient_agent</span></code>.</p></li>
-<li><p><strong>handoff</strong> (<em>bool</em>) – Controls whether agents in the Swarm can transfer the user conversation between each other.
+<li><p><strong>handoff</strong> (<em>bool</em><em> | </em><a class="reference internal" href="#pyagentspec.swarm.HandoffMode" title="pyagentspec.swarm.HandoffMode"><em>HandoffMode</em></a>) – Specifies how agents are allowed to delegate work. See <code class="docutils literal notranslate"><span class="pre">HandoffMode</span></code> for full details.
 
-When <code class="docutils literal notranslate"><span class="pre">False</span></code>:
-Agents can only communicate with one another, and the <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> remains the sole agent directly interacting with the user throughout the conversation.
+<code class="docutils literal notranslate"><span class="pre">HandoffMode.NEVER</span></code>: Agents can only use <em>send_message</em>. The <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> is the only agent that can interact with the user;
 
-When <code class="docutils literal notranslate"><span class="pre">True</span></code>:
-Agents can <em>handoff</em> the conversation — transferring the entire message history between the user and one agent to another agent within the Swarm.
-This allows different agents to take over the user interaction while maintaining context.
-Agents can still exchange messages with each other as in <code class="docutils literal notranslate"><span class="pre">handoff=False</span></code> mode.</p></li>
+<code class="docutils literal notranslate"><span class="pre">HandoffMode.OPTIONAL</span></code>: Agents may either send messages or fully hand off the conversation. This provides the most flexibility and often results in natural delegation;
+
+<code class="docutils literal notranslate"><span class="pre">HandoffMode.ALWAYS</span></code>: Agents cannot send messages to other agents. Any delegation must be performed through <em>handoff_conversation</em>;
+
+A key benefit of using Handoff is the reduced response latency: While talking to other agents increases the “distance”
+between the human user and the current agent, transferring a conversation to another agent keeps this distance unchanged
+(i.e. the agent interacting with the user is different but the user is still the same). However, transferring the full conversation might increase the token usage.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<span class="target" id="handoffmode"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.swarm.HandoffMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.swarm.</span></span><span class="sig-name descname"><span class="pre">HandoffMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.swarm.HandoffMode" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Controls how agents in a Swarm may delegate work to one another.</p>
+<p>This setting determines whether an agent is equipped with:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>send_message</em> — a tool for asking another agent to perform a sub-task and reply back.</p></li>
+<li><p><em>handoff_conversation</em> — a tool for transferring the full user–agent conversation to another agent.</p></li>
+</ul>
+</div></blockquote>
+<p>Depending on the selected mode, agents have different capabilities for delegation and collaboration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.swarm.HandoffMode.ALWAYS">
+<span class="sig-name descname"><span class="pre">ALWAYS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'always'</span></em><a class="headerlink" href="#pyagentspec.swarm.HandoffMode.ALWAYS" title="Permalink to this definition">#</a></dt>
+<dd><p>Agents receive <strong>only</strong> the <em>handoff_conversation</em> tool.</p>
+<p>Message-passing is disabled:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Agents <em>must</em> hand off the user conversation when delegating work.</p></li>
+<li><p>They cannot simply send a message and receive a response.</p></li>
+</ul>
+</div></blockquote>
+<p>This mode enforces a strict chain-of-ownership: whenever an agent involves another agent,
+it must transfer the full dialogue context. The next agent can either respond directly to the user
+or continue handing off the conversation to another agent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.swarm.HandoffMode.NEVER">
+<span class="sig-name descname"><span class="pre">NEVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'never'</span></em><a class="headerlink" href="#pyagentspec.swarm.HandoffMode.NEVER" title="Permalink to this definition">#</a></dt>
+<dd><p>Agent is not equipped with the <em>handoff_conversation</em> tool.</p>
+<p>Delegation is limited to message-passing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Agents <em>can</em> use <em>send_message</em> to request a sub-task from another agent.</p></li>
+<li><p>Agents <em>cannot</em> transfer the user conversation to another agent.</p></li>
+</ul>
+</div></blockquote>
+<p>As a consequence, the <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> always remains the primary point of contact with the user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.swarm.HandoffMode.OPTIONAL">
+<span class="sig-name descname"><span class="pre">OPTIONAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'optional'</span></em><a class="headerlink" href="#pyagentspec.swarm.HandoffMode.OPTIONAL" title="Permalink to this definition">#</a></dt>
+<dd><p>Agents receive <strong>both</strong> <em>handoff_conversation</em> and <em>send_message</em> tool.</p>
+<p>This gives agents full flexibility:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>They may pass a message to another agent and wait for a reply.</p></li>
+<li><p>Or they may fully hand off the user conversation to another agent.</p></li>
+</ul>
+</div></blockquote>
+<p>Use this mode when you want agents to intelligently choose the most natural delegation strategy.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -518,7 +598,7 @@ Agents can still exchange messages with each other as in <code class="docutils l
 <h2>ManagerWorkers class<a class="headerlink" href="#managerworkers-class" title="Permalink to this heading">#</a></h2>
 <span class="target" id="managerworkers"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.managerworkers.ManagerWorkers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.managerworkers.</span></span><span class="sig-name descname"><span class="pre">ManagerWorkers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.managerworkers.ManagerWorkers" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.managerworkers.</span></span><span class="sig-name descname"><span class="pre">ManagerWorkers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.managerworkers.ManagerWorkers" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgenticComponent</span></code></a></p>
 <p>Defines a <code class="docutils literal notranslate"><span class="pre">ManagerWorkers</span></code> conversational component.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">ManagerWorkers</span></code> is a multi-agent conversational component in which a group manager
@@ -612,6 +692,12 @@ responsible for coordinating and assigning tasks to the workers.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#swarm-class">Swarm class</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.swarm.Swarm"><code class="docutils literal notranslate"><span class="pre">Swarm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.swarm.HandoffMode"><code class="docutils literal notranslate"><span class="pre">HandoffMode</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.swarm.HandoffMode.ALWAYS"><code class="docutils literal notranslate"><span class="pre">HandoffMode.ALWAYS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.swarm.HandoffMode.NEVER"><code class="docutils literal notranslate"><span class="pre">HandoffMode.NEVER</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.swarm.HandoffMode.OPTIONAL"><code class="docutils literal notranslate"><span class="pre">HandoffMode.OPTIONAL</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managerworkers-class">ManagerWorkers class</a><ul class="nav section-nav flex-column">

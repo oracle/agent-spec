@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="_static/core.css" />
   
@@ -52,11 +53,12 @@
     <script src="_static/copybutton.js"></script>
     <script src="_static/js/fix-navigation.js"></script>
     <script src="_static/js/fix-navigation.js"></script>
+    <script src="_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'changelog';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -182,10 +184,10 @@
         <a class="nav-link nav-internal" href="#">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -287,10 +289,10 @@
         <a class="nav-link nav-internal" href="#">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -340,6 +342,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -353,16 +356,18 @@
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -378,8 +383,22 @@
 <li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current nav bd-sidenav">
@@ -456,6 +475,40 @@
 <section id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this heading">#</a></h3>
 <ul>
+<li><p><strong>Added LangGraph adapter to pyagentspec:</strong></p>
+<p>The LangGraph adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+You can access its functionality through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.adapters.langgraph</span></code> subpackage.
+It requires the <code class="docutils literal notranslate"><span class="pre">langgraph</span></code> extra dependency to be installed.</p>
+<p>For more information read the <a class="reference internal" href="api/adapters.html"><span class="doc">API Reference</span></a>.</p>
+</li>
+<li><p><strong>Added AutoGen adapter to pyagentspec:</strong></p>
+<p>The AutoGen adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+You can access its functionality through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.adapters.autogen</span></code> subpackage.
+It requires the <code class="docutils literal notranslate"><span class="pre">autogen</span></code> extra dependency to be installed.</p>
+<p>For more information read the <a class="reference internal" href="api/adapters.html"><span class="doc">API Reference</span></a>.</p>
+</li>
+<li><p><strong>Added CrewAI adapter to pyagentspec:</strong></p>
+<p>The CrewAI adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+You can access its functionality through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.adapters.crewai</span></code> subpackage.
+It requires the <code class="docutils literal notranslate"><span class="pre">crewai</span></code> extra dependency to be installed.</p>
+<p>For more information read the <a class="reference internal" href="api/adapters.html"><span class="doc">API Reference</span></a>.</p>
+</li>
+<li><p><strong>Sensitive Fields Support:</strong></p>
+<p>New fields have been added to Agent Spec components that may carry sensitive data (e.g. the field <cite>api_key</cite> on <a class="reference internal" href="api/llmmodels.html#openaicompatibleconfig"><span class="std std-ref">OpenAiCompatibleConfig</span></a>). To provide this functionality securely, we also introduced the annotation <cite>SensitiveField</cite> such that the sensitive fields are automatically excluded when exporting a Component to its JSON or yaml configuration.</p>
+<p>For more information read the <a class="reference internal" href="agentspec/language_spec_nightly.html#agentspecsensitivefield-nightly"><span class="std std-ref">latest specification</span></a>.</p>
+</li>
+<li><p><strong>OpenAI Responses API Support:</strong></p>
+<p><a class="reference internal" href="api/llmmodels.html#openaicompatibleconfig"><span class="std std-ref">OpenAiCompatibleConfig</span></a> and <a class="reference internal" href="api/llmmodels.html#openaiconfig"><span class="std std-ref">OpenAIModel</span></a> now support the OpenAI Responses API, which can be configured
+using the <code class="docutils literal notranslate"><span class="pre">api_type</span></code> parameter, which accepts values from <a class="reference internal" href="api/llmmodels.html#openaiapitype"><span class="std std-ref">OpenAIAPIType</span></a>.</p>
+<p>This enhancement allows recent OpenAI models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.</p>
+<p>For more information read the <a class="reference internal" href="api/llmmodels.html"><span class="doc">API Reference</span></a>.</p>
+</li>
+<li><p><strong>OCI Responses API Support:</strong></p>
+<p><a class="reference internal" href="api/llmmodels.html#ocigenaiconfig"><span class="std std-ref">OciGenAiConfig</span></a> now supports the OCI Responses API, which can be configured
+using the <code class="docutils literal notranslate"><span class="pre">api_type</span></code> parameter, which accepts values from <a class="reference internal" href="api/llmmodels.html#ociapitype"><span class="std std-ref">OciAPIType</span></a>.</p>
+<p>This enhancement allows recent models to better leverage advanced reasoning capabilities, resulting in significant performance improvements in workflows.</p>
+<p>For more information read the <a class="reference internal" href="api/llmmodels.html"><span class="doc">API Reference</span></a>.</p>
+</li>
 <li><p><strong>ParallelFlowNode and ParallelMapNode</strong></p>
 <p>Added support for parallelization in Agent Spec through <a class="reference internal" href="api/flows.html#parallelflownode"><span class="std std-ref">ParallelFlowNode</span></a>, which runs several
 flows in parallel, and <a class="reference internal" href="api/flows.html#parallelmapnode"><span class="std std-ref">ParallelMapNode</span></a>, which is a parallel version of the <code class="docutils literal notranslate"><span class="pre">MapNode</span></code>.
@@ -470,6 +523,10 @@ For more information read the <a class="reference internal" href="api/tools.html
 <p>Toolboxes are now available in the Agent Spec Language Specification and can be
 passed to <a class="reference internal" href="api/agent.html#agent"><span class="std std-ref">Agents</span></a>. For more information read the <a class="reference internal" href="api/tools.html"><span class="doc">API Reference</span></a>.</p>
 </li>
+<li><p><strong>BuiltinTool</strong></p>
+<p>Executor-specific built-in tools are now available in the Agent Spec Language Specification.
+For more information read the <a class="reference internal" href="api/tools.html"><span class="doc">API Reference</span></a>.</p>
+</li>
 <li><p><strong>Structured Generation</strong></p>
 <p>Formally introduced Structured Generation in the Agent Spec Language Specification.
 Structured Generation is now supported in the LlmNode, as well as the Agent.</p>
@@ -483,10 +540,59 @@ For more information check out the corresponding <a class="reference internal" h
 For more information read the <a class="reference internal" href="api/agent_specialization.html"><span class="doc">API Reference</span></a>.</p>
 </li>
 <li><p><strong>ManagerWorkers</strong></p>
-<p>Introduced ManagerWorkers in the Agent Spec Language Specification
+<p>Introduced ManagerWorkers in the Agent Spec Language Specification.
 For more information check out the corresponding <a class="reference internal" href="howtoguides/howto_managerworkers.html"><span class="doc">managerworkers how-to guide</span></a> or read the <a class="reference internal" href="api/agenticpatterns.html#managerworkers"><span class="std std-ref">API Reference</span></a>.</p>
 </li>
 </ul>
+</section>
+<section id="improvements">
+<h3>Improvements<a class="headerlink" href="#improvements" title="Permalink to this heading">#</a></h3>
+<ul>
+<li><p><strong>Python 3.14 support</strong></p>
+<p>Introduced support for Python version 3.14.</p>
+</li>
+</ul>
+</section>
+<section id="breaking-changes">
+<h3>Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Sensitive Fields</strong></p></li>
+</ul>
+<p>The below fields have been marked as carrying sensitive information and will be excluded from newly generated configurations automatically. See <a class="reference internal" href="agentspec/language_spec_nightly.html#agentspecsensitivefield-nightly"><span class="std std-ref">latest specification</span></a> for more information on this. This change is implemented retroactively to impact older configurations too.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>SSEmTLSTransport</p></td>
+<td><p>key_file</p></td>
+</tr>
+<tr class="row-even"><td><p>SSEmTLSTransport</p></td>
+<td><p>cert_file</p></td>
+</tr>
+<tr class="row-odd"><td><p>SSEmTLSTransport</p></td>
+<td><p>ca_file</p></td>
+</tr>
+<tr class="row-even"><td><p>StreamableHTTPmTLSTransport</p></td>
+<td><p>key_file</p></td>
+</tr>
+<tr class="row-odd"><td><p>StreamableHTTPmTLSTransport</p></td>
+<td><p>cert_file</p></td>
+</tr>
+<tr class="row-even"><td><p>StreamableHTTPmTLSTransport</p></td>
+<td><p>ca_file</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These field will now require to be passed explicitly when loading an exported configuration, as in the example below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AgentSpecDeserializer</span><span class="p">()</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
+    <span class="n">serialized_component</span><span class="p">,</span>
+    <span class="n">components_registry</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;&lt;component_id&gt;.key_file&quot;</span><span class="p">:</span> <span class="s2">&quot;client.key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;component_id&gt;.cert_file&quot;</span><span class="p">:</span> <span class="s2">&quot;client.crt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;component_id&gt;.ca_file&quot;</span><span class="p">:</span> <span class="s2">&quot;trustedCA.pem&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="agent-spec-25-4-1-initial-release">
@@ -529,6 +635,8 @@ that enable running Agent Spec representations on several popular, publicly avai
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-spec-release">Agent Spec 26.1.0.dev0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements">Improvements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#breaking-changes">Breaking Changes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-spec-25-4-1-initial-release">Agent Spec 25.4.1 — Initial release</a></li>

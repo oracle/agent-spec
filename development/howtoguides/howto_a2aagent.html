@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>How to Build A2A Agents &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>How to Use A2A Agents &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -53,11 +54,12 @@
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_a2aagent';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -184,10 +186,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -289,10 +291,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -342,6 +344,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -355,16 +358,18 @@
 <li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Build an A2A Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -380,8 +385,22 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -437,7 +456,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-to Guides</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Build A2A Agents</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Use A2A Agents</span></li>
   </ul>
 </nav>
 </div>
@@ -454,8 +473,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="how-to-build-a2a-agents">
-<h1>How to Build A2A Agents<a class="headerlink" href="#how-to-build-a2a-agents" title="Permalink to this heading">#</a></h1>
+  <section id="how-to-use-a2a-agents">
+<h1>How to Use A2A Agents<a class="headerlink" href="#how-to-use-a2a-agents" title="Permalink to this heading">#</a></h1>
 <p><a class="reference external" href="https://a2a-protocol.org/latest/">A2A Protocol</a> is an open standard that defines how two agents can communicate
 with each other. It covers both the serving and consumption aspects of agent interaction.</p>
 <p>In this guide, you will learn how to build an A2A agent with the <a class="reference internal" href="../api/remoteagent.html#a2aagent"><span class="std std-ref">A2AAgent</span></a> class from the <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code> package.</p>
@@ -463,16 +482,36 @@ with each other. It covers both the serving and consumption aspects of agent int
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h2>
 <p>To get started with an A2A agent, you need the URL of the remote server agent you wish to connect to.
 Once you have this information, creating your A2A agent is straightforward and can be done in just a few lines of code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.a2aagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">A2AAgent</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.a2aagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">A2AAgent</span><span class="p">,</span> <span class="n">A2AConnectionConfig</span><span class="p">,</span> <span class="n">A2ASessionParameters</span>
 
 <span class="c1"># Define the URL endpoint of the remote server agent to connect</span>
 <span class="c1"># Replace &quot;&lt;IP ADDRESS&gt;&quot; with the actual IP address or hostname of the server agent</span>
 <span class="n">SERVER_AGENT_URL</span> <span class="o">=</span> <span class="s2">&quot;&lt;IP ADDRESS&gt;&quot;</span>
 
+<span class="c1"># Define the connection configuration with timeout and paths to SSL/TLS certificates</span>
+<span class="c1"># This ensures a secure connection to the remote server agent</span>
+<span class="n">a2aconnection_config</span> <span class="o">=</span> <span class="n">A2AConnectionConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;connection_config&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Connection timeout in seconds</span>
+    <span class="n">key_file</span><span class="o">=</span><span class="s2">&quot;/path/to/client/key.pem&quot;</span><span class="p">,</span>    <span class="c1"># Path to client private key</span>
+    <span class="n">cert_file</span><span class="o">=</span><span class="s2">&quot;/path/to/client/cert.pem&quot;</span><span class="p">,</span>  <span class="c1"># Path to client certificate for SSL/TLS</span>
+    <span class="n">ssl_ca_cert</span><span class="o">=</span><span class="s2">&quot;/path/to/ca/cert.pem&quot;</span>     <span class="c1"># Path to CA certificate for server verification</span>
+<span class="p">)</span>
+
+<span class="c1"># Define session parameters for controlling communication behavior</span>
+<span class="c1"># These settings help manage session timeouts and retry mechanisms for reliability</span>
+<span class="n">a2asession_params</span> <span class="o">=</span> <span class="n">A2ASessionParameters</span><span class="p">(</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="c1"># Timeout in seconds for polling responses from the server</span>
+    <span class="n">poll_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># Polling time interval in seconds</span>
+    <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1"># Maximum number of retries on connection or request failure</span>
+<span class="p">)</span>
+
 <span class="c1"># Create an A2A Agent instance to communicate with the specified server agent&#39;s URL</span>
 <span class="n">a2a_agent</span> <span class="o">=</span> <span class="n">A2AAgent</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test A2A Agent&quot;</span><span class="p">,</span>
-    <span class="n">agent_url</span><span class="o">=</span><span class="n">SERVER_AGENT_URL</span>
+    <span class="n">agent_url</span><span class="o">=</span><span class="n">SERVER_AGENT_URL</span><span class="p">,</span>
+    <span class="n">connection_config</span><span class="o">=</span><span class="n">a2aconnection_config</span><span class="p">,</span>
+    <span class="n">session_parameters</span><span class="o">=</span><span class="n">a2asession_params</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -499,7 +538,20 @@ It follows that A2A agents can be used in <code class="docutils literal notransl
 <span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
 <span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
 <span class="w">    </span><span class="nt">&quot;agent_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;IP ADDRESS&gt;&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.2&quot;</span>
+<span class="w">    </span><span class="nt">&quot;connection_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;verify&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;key_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/client/key.pem&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;cert_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/client/cert.pem&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;ssl_ca_cert&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/ca/cert.pem&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;session_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">60.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;poll_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">60.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;max_retries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -517,7 +569,18 @@ It follows that A2A agents can be used in <code class="docutils literal notransl
 <span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 <span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 <span class="nt">agent_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP ADDRESS&gt;</span>
-<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.2</span>
+<span class="nt">connection_config</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30.0</span>
+<span class="w">  </span><span class="nt">headers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">key_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/client/key.pem</span>
+<span class="w">  </span><span class="nt">cert_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/client/cert.pem</span>
+<span class="w">  </span><span class="nt">ssl_ca_cert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/ca/cert.pem</span>
+<span class="nt">session_parameters</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60.0</span>
+<span class="w">  </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60.0</span>
+<span class="w">  </span><span class="nt">max_retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">26.1.0</span>
 </pre></div>
 </div>
 </div></div>
@@ -526,24 +589,45 @@ It follows that A2A agents can be used in <code class="docutils literal notransl
 <h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
 <p>This how-to guide covered how to define an A2A Agent in Agent Spec.</p>
 <details class="summary-below-is-the-complete-code-from-this-guide">
-<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.a2aagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">A2AAgent</span>
+<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.a2aagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">A2AAgent</span><span class="p">,</span> <span class="n">A2AConnectionConfig</span><span class="p">,</span> <span class="n">A2ASessionParameters</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="c1"># Define the URL endpoint of the remote server agent to connect</span>
 <span class="linenos"> 4</span><span class="c1"># Replace &quot;&lt;IP ADDRESS&gt;&quot; with the actual IP address or hostname of the server agent</span>
 <span class="linenos"> 5</span><span class="n">SERVER_AGENT_URL</span> <span class="o">=</span> <span class="s2">&quot;&lt;IP ADDRESS&gt;&quot;</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="c1"># Create an A2A Agent instance to communicate with the specified server agent&#39;s URL</span>
-<span class="linenos"> 8</span><span class="n">a2a_agent</span> <span class="o">=</span> <span class="n">A2AAgent</span><span class="p">(</span>
-<span class="linenos"> 9</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test A2A Agent&quot;</span><span class="p">,</span>
-<span class="linenos">10</span>    <span class="n">agent_url</span><span class="o">=</span><span class="n">SERVER_AGENT_URL</span>
-<span class="linenos">11</span><span class="p">)</span>
+<span class="linenos"> 7</span><span class="c1"># Define the connection configuration with timeout and paths to SSL/TLS certificates</span>
+<span class="linenos"> 8</span><span class="c1"># This ensures a secure connection to the remote server agent</span>
+<span class="linenos"> 9</span><span class="n">a2aconnection_config</span> <span class="o">=</span> <span class="n">A2AConnectionConfig</span><span class="p">(</span>
+<span class="linenos">10</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;connection_config&quot;</span><span class="p">,</span>
+<span class="linenos">11</span>    <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Connection timeout in seconds</span>
+<span class="linenos">12</span>    <span class="n">key_file</span><span class="o">=</span><span class="s2">&quot;/path/to/client/key.pem&quot;</span><span class="p">,</span>    <span class="c1"># Path to client private key</span>
+<span class="linenos">13</span>    <span class="n">cert_file</span><span class="o">=</span><span class="s2">&quot;/path/to/client/cert.pem&quot;</span><span class="p">,</span>  <span class="c1"># Path to client certificate for SSL/TLS</span>
+<span class="linenos">14</span>    <span class="n">ssl_ca_cert</span><span class="o">=</span><span class="s2">&quot;/path/to/ca/cert.pem&quot;</span>     <span class="c1"># Path to CA certificate for server verification</span>
+<span class="linenos">15</span><span class="p">)</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1"># Define session parameters for controlling communication behavior</span>
+<span class="linenos">18</span><span class="c1"># These settings help manage session timeouts and retry mechanisms for reliability</span>
+<span class="linenos">19</span><span class="n">a2asession_params</span> <span class="o">=</span> <span class="n">A2ASessionParameters</span><span class="p">(</span>
+<span class="linenos">20</span>    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="c1"># Timeout in seconds for polling responses from the server</span>
+<span class="linenos">21</span>    <span class="n">poll_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># Polling time interval in seconds</span>
+<span class="linenos">22</span>    <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1"># Maximum number of retries on connection or request failure</span>
+<span class="linenos">23</span><span class="p">)</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="c1"># Create an A2A Agent instance to communicate with the specified server agent&#39;s URL</span>
+<span class="linenos">26</span><span class="n">a2a_agent</span> <span class="o">=</span> <span class="n">A2AAgent</span><span class="p">(</span>
+<span class="linenos">27</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test A2A Agent&quot;</span><span class="p">,</span>
+<span class="linenos">28</span>    <span class="n">agent_url</span><span class="o">=</span><span class="n">SERVER_AGENT_URL</span><span class="p">,</span>
+<span class="linenos">29</span>    <span class="n">connection_config</span><span class="o">=</span><span class="n">a2aconnection_config</span><span class="p">,</span>
+<span class="linenos">30</span>    <span class="n">session_parameters</span><span class="o">=</span><span class="n">a2asession_params</span>
+<span class="linenos">31</span><span class="p">)</span>
 </pre></div>
 </div>
 </details></section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
 <p>Now that you have learned how to build A2A Agents,
-you can proceed to <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">How to Use the WayFlow Runtime to Execute Agent Spec</span></a>.</p>
+you can proceed to <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">How to Use the WayFlow Runtime to Execute Agent Spec</span></a>
+and <a class="reference internal" href="howto_execute_agentspec_across_frameworks.html"><span class="doc">How to Execute Agent Spec Across Frameworks</span></a>.</p>
 </section>
 </section>
 

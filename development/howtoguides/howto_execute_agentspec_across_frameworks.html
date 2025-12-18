@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/core.css" />
   
@@ -53,11 +54,12 @@
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_execute_agentspec_across_frameworks';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0.dev0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -66,7 +68,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to use custom components with the Plugin System" href="howto_plugin.html" />
+    <link rel="next" title="How to Use LLMs from Different LLM Providers" href="howto_llm_from_different_providers.html" />
     <link rel="prev" title="How to Execute Agent Spec Configuration with WayFlow" href="howto_execute_agentspec_with_wayflow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -184,10 +186,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -289,10 +291,10 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../misc/reference_sheet.html">Reference Sheet</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../contributing.html">Contributing</a>
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
     </li>
   </ul>
 </nav></div>
@@ -342,6 +344,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
@@ -355,16 +358,18 @@
 <li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Build an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
@@ -380,8 +385,22 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 </ul>
 </details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/crewai.html">CrewAI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="nav bd-sidenav">
@@ -563,17 +582,14 @@ The example uses a pre-built Agent Spec representation of the agent, shown below
 </pre></div>
 </div>
 </div></div>
-<p>It also assumes having a common registry of tool implementations containing the tool utilized by this agent.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<p>It also assumes a common registry of tool implementations containing the tools used by this agent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints &#39;Hello world!&#39;&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">rag_tool</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rag_tool</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Search and return the list of results&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;result 1&quot;</span><span class="p">,</span> <span class="s2">&quot;result 2&quot;</span><span class="p">]</span>
 
@@ -587,14 +603,19 @@ The example uses a pre-built Agent Spec representation of the agent, shown below
 <section id="adapters">
 <h2>Adapters<a class="headerlink" href="#adapters" title="Permalink to this heading">#</a></h2>
 <p>Using adapters is the recommended way of integrating an agentic framework runtime.
-Ideally, an adapter should translate programmatically the representation of the Agent Spec components
+Ideally, an adapter should programmatically translate the representation of the Agent Spec components
 into the equivalent solution, as per each framework’s definition, and return an object that developers can run.</p>
 <p>As a reference runtime for Agent Spec, <a class="reference external" href="https://github.com/oracle/wayflow">WayFlow</a> offers an Agent Spec adapter as part of the package.
-Besides WayFlow, the Agent Spec team provides the implementation of adapters for two other common agentic frameworks:</p>
+Additionally, we provide the adapter implementation for some of the most common agentic frameworks:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/adapters/langgraphagentspecadapter">LangGraph</a></p></li>
-<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/adapters/autogenagentspecadapter">AutoGen</a></p></li>
+<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/langgraph">LangGraph</a></p></li>
+<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/autogen">AutoGen</a></p></li>
+<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/crewai">CrewAI</a></p></li>
 </ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Click here to <a class="reference internal" href="../ecosystem/integrations.html"><span class="doc">learn more about the Agent Spec ecosystem</span></a></p>
+</div>
 <p>Each adapter contains two main public classes, <code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code> and <code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code> exposes APIs to export an object of the reference agentic framework into the equivalent
 Agent Spec representation in one of the following forms: YAML, JSON, or PyAgentSpec Component object.</p>
@@ -607,19 +628,19 @@ Agent Spec representation in one of the following forms: YAML, JSON, or PyAgentS
     <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">framework_component</span><span class="p">:</span> <span class="n">FrameworkComponent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the given framework component into the respective Agent Spec JSON representation.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autogen_component</span><span class="p">:</span> <span class="n">FrameworkComponent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Component</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">framework_component</span><span class="p">:</span> <span class="n">FrameworkComponent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Component</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the given framework component into the respective PyAgentSpec Component.&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code> exposes APIs to load an Agent Spec representation in one of the aforementioned forms, i.e.,
 YAML, JSON, or PyAgentSpec Component object, into the corresponding agentic framework’s object.
-The loader requires to specify the registry of tool implementations.
-These tools will be mapped to the ServerTools used in the Agent Spec representation to load and transform.</p>
+The loader requires you to specify the registry of tool implementations.
+These tools will be mapped to the ServerTools used in the Agent Spec representation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AgentSpecLoader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to convert Agent Spec configurations to agentic framework objects.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ask for the tool registry containing the implementation of ServerTools&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide the tool registry containing the implementations of ServerTools&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">load_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_assistant</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrameworkComponent</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the given Agent Spec YAML representation into the respective framework Component&quot;&quot;&quot;</span>
@@ -763,24 +784,62 @@ to produce the corresponding WayFlow implementation.</p>
 </div>
 </section>
 </section>
-<section id="using-the-agent-spec-adapter-from-wayflow">
-<h2>Using the Agent Spec adapter from WayFlow<a class="headerlink" href="#using-the-agent-spec-adapter-from-wayflow" title="Permalink to this heading">#</a></h2>
-<p>The execution of this section requires to install the package <code class="docutils literal notranslate"><span class="pre">wayflowcore</span></code>.</p>
+<section id="using-the-native-agent-spec-adapters">
+<h2>Using the native Agent Spec adapters<a class="headerlink" href="#using-the-native-agent-spec-adapters" title="Permalink to this heading">#</a></h2>
+<p>The execution of this section requires installing pyagentspec with the extension corresponding
+to the framework you want to use Agent Spec with.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">LangGraph</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">CrewAI</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">AutoGen</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;langgraph&quot; extension.</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[langgraph]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Agent Spec component into a LangGraph assistant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.langgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span> <span class="k">as</span> <span class="n">LangGraphLoader</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LangGraphLoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="n">tool_registry</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;crewai&quot; extension.</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[crewai]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Agent Spec component into a CrewAI assistant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.crewai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span> <span class="k">as</span> <span class="n">CrewAILoader</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">CrewAILoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="n">tool_registry</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;autogen&quot; extension.</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[autogen]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Agent Spec component into a AutoGen assistant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.autogen</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span> <span class="k">as</span> <span class="n">AutoGenLoader</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">AutoGenLoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="n">tool_registry</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+<p>The transformation can be easily performed using this library by using the <code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code> object,
+and calling the <code class="docutils literal notranslate"><span class="pre">load_json</span></code> method directly on the Agent Spec JSON representation of the agent,
+or the <code class="docutils literal notranslate"><span class="pre">load_component</span></code> method on the PyAgentSpec component object.</p>
+<p>You can find more information about the Agent Spec adapter in the Agent Spec <a class="reference internal" href="../api/adapters.html"><span class="doc">API Documentation</span></a>.</p>
+</section>
+<section id="using-the-wayflow-agent-spec-adapter">
+<h2>Using the WayFlow Agent Spec adapter<a class="headerlink" href="#using-the-wayflow-agent-spec-adapter" title="Permalink to this heading">#</a></h2>
+<p>The execution of this section requires installing the package <code class="docutils literal notranslate"><span class="pre">wayflowcore</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;wayflowcore==26.1.0.dev0&quot;</span>
 </pre></div>
 </div>
 <p>The transformation can be easily performed using this library by creating an <code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code> object,
 and calling the <code class="docutils literal notranslate"><span class="pre">load_json</span></code> method directly on the Agent Spec JSON representation of the agent,
 or the <code class="docutils literal notranslate"><span class="pre">load_component</span></code> method on the PyAgentSpec component object.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.agentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">tool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.agentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span> <span class="k">as</span> <span class="n">WayFlowLoader</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">AgentSpecLoader</span><span class="p">(</span>
-    <span class="n">tool_registry</span><span class="o">=</span><span class="p">{</span>
-        <span class="n">tool_name</span><span class="p">:</span> <span class="n">tool</span><span class="p">(</span><span class="n">tool_function</span><span class="p">,</span> <span class="n">description_mode</span><span class="o">=</span><span class="s2">&quot;only_docstring&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_function</span> <span class="ow">in</span> <span class="n">tool_registry</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">WayFlowLoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="n">tool_registry</span><span class="p">)</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -948,7 +1007,8 @@ your preferred one using your own Agent Spec configuration.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution">6. Execution</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-agent-spec-adapter-from-wayflow">Using the Agent Spec adapter from WayFlow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-native-agent-spec-adapters">Using the native Agent Spec adapters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-wayflow-agent-spec-adapter">Using the WayFlow Agent Spec adapter</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
 </ul>

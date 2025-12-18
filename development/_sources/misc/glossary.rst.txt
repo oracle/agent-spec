@@ -152,10 +152,12 @@ This approach is particularly valuable for generating data in formats like JSON,
 Tool
 ====
 
-Agent Spec supports three types of tools:
+Agent Spec supports five types of tools:
 
 * :ref:`Server Tools <servertool>` are the simplest types of function tools, executed in the same environment as the agent.
+* :ref:`Built-in Tools <builtintool>` are executor-specific pre-defined tools, executed in the same environment as the agent.
 * :ref:`Client Tools <clienttool>` are meant to be executed on the client side.
+* :ref:`MCP Tools <mcptool>` to call MCP servers.
 * :ref:`Remote Tools <remotetool>` to call remote APIs.
 
 .. _defservertool:
@@ -169,6 +171,14 @@ For more information, see the :ref:`API Reference <servertool>`.
 
 .. _defclienttool:
 
+Built-in Tool
+-------------
+
+A :ref:`BuiltinTool <builtintool>` is pre-defined by the Agent Spec execution engine and is run in the same environment where the assistant is being executed.
+What built-in tools are supported and how to configure them depends on the execution engine.
+
+For more information, see the :ref:`API Reference <builtintool>`.
+
 Client Tool
 -----------
 
@@ -177,6 +187,13 @@ Unlike a :ref:`Server Tool <servertool>`, which executes directly on the server,
 The client then returns the result to the assistant.
 
 For implementation details, see the :ref:`API Reference <clienttool>`.
+
+MCP Tool
+-----------
+
+A :ref:`MCP Tool <mcptool>` is an Agent Spec tool type for integrating with servers that implement the Model Context Protocol (MCP).
+
+For implementation details, see the :ref:`API Reference <mcptool>`.
 
 Remote Tool
 -----------

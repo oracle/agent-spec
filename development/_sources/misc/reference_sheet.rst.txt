@@ -96,6 +96,7 @@ Specifying a RemoteTool
      data: Dict[str, Any]
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
+     sensitive_headers: SensitiveField[Dict[str, Any]]
 
 For more details on tools, see the :ref:`Agent Spec Language Specification <agentspecspec>`.
 
@@ -151,7 +152,7 @@ Example configuration:
       "tools": [],
       "human_in_the_loop": true,
       "component_type": "Agent",
-      "agentspec_version": "25.4.2"
+      "agentspec_version": "26.1.0"
     }
 
 .. note::
@@ -187,7 +188,7 @@ Example with a ServerTool:
       ],
       "requires_confirmation": true,
       "component_type": "ServerTool",
-      "agentspec_version": "25.4.2"
+      "agentspec_version": "26.1.0"
     }
 
 .. note::
