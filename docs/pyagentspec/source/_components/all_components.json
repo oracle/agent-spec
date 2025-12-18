@@ -275,13 +275,5 @@
             {"path": "pyagentspec.a2aagent.A2AConnectionConfig"},
             {"path": "pyagentspec.a2aagent.A2ASessionParameters"}
         ]
-    },
-    {
-        "name": "Adapters",
-        "path": "adapters",
-        "classes": [
-            {"path": "pyagentspec.adapters.crewai.AgentSpecExporter"},
-            {"path": "pyagentspec.adapters.crewai.AgentSpecLoader"}
-        ]
     }
 ]

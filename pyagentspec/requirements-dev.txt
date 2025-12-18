@@ -33,7 +33,7 @@ sphinx_design==0.6.1
 
 -c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
--e .[crewai,autogen,langgraph]
+-e .[autogen,langgraph]
 # or
 -e .
 

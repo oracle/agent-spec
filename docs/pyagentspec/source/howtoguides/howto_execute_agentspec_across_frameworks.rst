@@ -43,7 +43,6 @@ Additionally, we provide the adapter implementation for some of the most common 
 
 - `LangGraph <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/langgraph>`_
 - `AutoGen <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/autogen>`_
-- `CrewAI <https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/crewai>`_
 
 .. seealso::
 
@@ -198,18 +197,6 @@ to the framework you want to use Agent Spec with.
             :language: python
             :start-after: .. using-langgraph-agentspec-adapter:
             :end-before: .. end-using-langgraph-agentspec-adapter:
-
-    .. tab:: CrewAI
-
-        .. code-block:: bash
-
-            # To use this adapter, please install pyagentspec with the "crewai" extension.
-            pip install "pyagentspec[crewai]"
-
-        .. literalinclude:: ../code_examples/wayflow_cross_framework_agent.py
-            :language: python
-            :start-after: .. using-crewai-agentspec-adapter:
-            :end-before: .. end-using-crewai-agentspec-adapter:
 
     .. tab:: AutoGen
 

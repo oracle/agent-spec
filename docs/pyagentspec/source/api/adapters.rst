@@ -7,16 +7,6 @@ into the equivalent solution, as per each framework's definition, and return an 
 
 This page presents all APIs and classes related to Agent Spec Adapters.
 
-CrewAI
-------
-
-.. _adapters_crewai_exporter:
-.. autoclass:: pyagentspec.adapters.crewai.AgentSpecExporter
-
-.. _adapters_crewai_loader:
-.. autoclass:: pyagentspec.adapters.crewai.AgentSpecLoader
-
-
 LangGraph
 ---------
 

@@ -10,4 +10,4 @@ source ../_installation_tools.sh
 
 upgrade_pip
 
-python -m pip install -e .[crewai] -c constraints/constraints.txt
+python -m pip install -e . -c constraints/constraints.txt

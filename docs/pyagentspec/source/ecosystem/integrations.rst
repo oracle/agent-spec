@@ -11,15 +11,11 @@ Agent Spec Integrations
 .. |autogen-icon| image:: ../_static/icons/autogen-icon.svg
    :width: 80px
 
-.. |crewai-icon| image:: ../_static/icons/crewai-icon.png
-   :width: 200px
-
-
 .. |wayflow-icon| image:: ../_static/icons/wayflow-icon.svg
    :width: 250px
 
 
-Open Agent Specification provides support for **LangGraph**, **CrewAI**, **WayFlow**, as well as integrations
+Open Agent Specification provides support for **LangGraph**, and **WayFlow**, as well as integrations
 for a growing collection of AI Agents frameworks. Learn more in our guide on
 :doc:`running Agent Spec configurations across frameworks  <../howtoguides/howto_execute_agentspec_across_frameworks>`
 
@@ -52,16 +48,6 @@ for a growing collection of AI Agents frameworks. Learn more in our guide on
 
 
 .. grid:: 2
-
-    .. grid-item-card:: |crewai-icon|
-        :link: https://docs.crewai.com/
-        :link-alt: CrewAI Docs
-
-        **CrewAI**
-
-        Enables the design of collaborative AI agents and workflows, incorporating guardrails, memory, and observability for production-ready multi-agent systems.
-
-        :bdg-success:`available`
 
     .. grid-item-card:: |autogen-icon|
         :link: https://microsoft.github.io/autogen/

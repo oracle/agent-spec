@@ -63,10 +63,6 @@ setup(
     },
     include_package_data=True,
     extras_require={
-        "crewai": [
-            "crewai[litellm]>=1.6.1; python_version < '3.14'",
-            "litellm>=1.79.0; python_version < '3.14'",
-        ],
         "autogen": [
             "autogen-core>=0.5.6; python_version < '3.13'",
             "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
