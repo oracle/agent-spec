@@ -23,14 +23,6 @@ New features
 
   For more information read the :doc:`API Reference <api/adapters>`.
 
-* **Added CrewAI adapter to pyagentspec:**
-
-  The CrewAI adapter is now available as part of ``pyagentspec``.
-  You can access its functionality through the ``pyagentspec.adapters.crewai`` subpackage.
-  It requires the ``crewai`` extra dependency to be installed.
-
-  For more information read the :doc:`API Reference <api/adapters>`.
-
 * **Sensitive Fields Support:**
 
   New fields have been added to Agent Spec components that may carry sensitive data (e.g. the field `api_key` on :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>`). To provide this functionality securely, we also introduced the annotation `SensitiveField` such that the sensitive fields are automatically excluded when exporting a Component to its JSON or yaml configuration.

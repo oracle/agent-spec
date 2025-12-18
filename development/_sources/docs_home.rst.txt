@@ -120,7 +120,6 @@ Agent Spec is developed jointly between Oracle Cloud Infrastructure and Oracle L
 
    LangGraph <adapters/langgraph>
    WayFlow <adapters/wayflow>
-   CrewAI <adapters/crewai>
    AutoGen <adapters/autogen>
 
 
