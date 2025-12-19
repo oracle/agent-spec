@@ -308,3 +308,44 @@ def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
         yaml_content=serialized_agent, components_registry=sensitive_fields
     )
     assert deserialized_agent == agent
+
+
+@pytest.fixture
+def agent_with_non_empty_transforms(vllmconfig):
+    datastore, _ = DATASTORES_AND_THEIR_SENSITIVE_FIELDS[0]
+    transforms = [
+        create_message_summarization_transform(datastore),
+    ]
+
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        transforms=transforms,
+    )
+    return agent
+
+
+def test_serializing_agent_with_non_empty_transforms_and_unsupported_version_raises(
+    agent_with_non_empty_transforms,
+):
+    serializer = AgentSpecSerializer()
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = serializer.to_yaml(
+            agent_with_non_empty_transforms, agentspec_version=AgentSpecVersionEnum.v25_4_1
+        )
+
+
+def test_deserializing_agent_with_non_empty_transforms_and_unsupported_version_raises(
+    agent_with_non_empty_transforms,
+):
+    serializer = AgentSpecSerializer()
+    serialized_node = serializer.to_yaml(agent_with_non_empty_transforms)
+    assert "agentspec_version: 25.4.2" in serialized_node
+    serialized_node = serialized_node.replace(
+        "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"
+    )
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(serialized_node)
