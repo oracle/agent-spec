@@ -3,28 +3,66 @@
 Installation
 ============
 
-You can find all versions and supported platforms of |project| in the :package_index:`\ `.
+.. only:: stable
 
-To install version |package_name| |stable_release|, run:
+  You can find all versions and supported platforms of |project| in the :package_index:`\ `.
 
-.. code-block:: bash
-    :substitutions:
+  For example, if you want to install |package_name| |stable_release|:
 
-    pip install "|package_name|==|stable_release|"
+  .. code-block:: bash
+      :substitutions:
 
-Installing with ``pip`` pulls prebuilt binary wheels on supported platforms.
+      pip install "|package_name|==|stable_release|"
 
-.. only:: builder_html
+  Installing with ``pip`` pulls prebuilt binary wheels on supported platforms.
 
-    The list of package versions used in the internal CI is available at:
-    :download:`constraints.txt <../../../pyagentspec/constraints/constraints.txt>`
+  .. only:: builder_html
 
-    To install |project| using these exact versions, download the file and run:
+      The list below shows the package versions used in the CI environment, with Business Approval requests filed for each as part of the release process.
+      :download:`constraints.txt <../../../pyagentspec/constraints/constraints.txt>`
+
+      If you want to install |project| with exactly these package versions, download the file and run:
+
+      .. code-block:: bash
+          :substitutions:
+
+          pip install "|package_name|==|stable_release|"  -c constraints.txt
+
+.. only:: dev
+
+  1. Clone the `repository <https://github.com/oracle/agent-spec>`_.
 
     .. code-block:: bash
-        :substitutions:
+      :substitutions:
 
-        pip install "|package_name|==|stable_release|" -c constraints.txt
+      git clone git@github.com:oracle/agent-spec.git
+
+  .. tip::
+      If you face any problem, check with the Agent Spec team.
+
+  Next, install PyAgentSpec directly from source.
+
+  1. Create a fresh Python environment for building and running Agent Spec assistants:
+
+    .. code-block:: bash
+      :substitutions:
+
+        python3.10 -m venv <venv_name>
+        source <venv_name>/bin/activate
+
+  2. Move to the *agent-spec/pyagentspec* directory:
+
+    .. code-block:: bash
+      :substitutions:
+
+        cd agent-spec/pyagentspec
+
+  3. Install ``pyagentspec``:
+
+    .. code-block:: bash
+      :substitutions:
+
+        bash install-dev.sh
 
 Extra dependencies
 ------------------
