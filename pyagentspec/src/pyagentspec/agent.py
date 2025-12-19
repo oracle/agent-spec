@@ -77,7 +77,7 @@ class Agent(AgenticComponent):
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         parent_min_version = super()._infer_min_agentspec_version_from_configuration()
         current_object_min_version = self.min_agentspec_version
-        if self.toolboxes or not self.human_in_the_loop:
+        if self.toolboxes or not self.human_in_the_loop or self.transforms:
             # We first check if the component requires toolboxes)
             # If that's the case, we set the min version to 25.4.2, when toolboxes were introduced
             # Similarly, human_in_the_loop was only added in 25.4.2 (human_in_the_loop=True was
