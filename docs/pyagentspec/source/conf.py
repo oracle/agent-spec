@@ -37,10 +37,6 @@ html_static_path = ["_static"]
 with open(Path(__file__).parents[3] / "VERSION", "r") as f:
     version_file = f.read().strip()
 
-# The IDE complains, but the tags set exists
-# We add stable as current version, we might add the version switch in the future
-tags.add("stable")  # type: ignore
-
 # The full version, including alpha/beta/rc tags.
 release = pyagentspec.__version__
 
@@ -56,6 +52,13 @@ if not docs_version:
         docs_version = "dev"
     else:
         docs_version = stable_release
+
+# The IDE complains, but the tags set exists
+# We add stable as current version, we might add the version switch in the future
+if docs_version == "dev":
+    tags.add("dev")  # type: ignore
+else:
+    tags.add("stable")  # type: ignore
 
 # -- General configuration ---------------------------------------------------
 
@@ -78,6 +81,11 @@ extensions = [
     "generate_api_table_ext",  # is used to automatically generate the API table
     "sphinx_design",
 ]
+
+if docs_version == "dev":
+    language_spec_file = "language_spec_nightly"
+else:
+    language_spec_file = f"language_spec_{docs_version.replace('.', '_')}"
 
 # Set the variables that should be replaced in the substitution-extensions directives
 rst_prolog = f"""
@@ -128,7 +136,7 @@ autodoc_default_options = {
 autodoc_typehints = "description"
 
 # Redirects
-rediraffe_redirects = {"agentspec/language_spec.rst": "agentspec/language_spec_25_4_1.rst"}
+rediraffe_redirects = {"agentspec/language_spec.rst": f"agentspec/{language_spec_file}.rst"}
 
 
 # -- Options for HTML output -------------------------------------------------
