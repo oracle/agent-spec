@@ -25,7 +25,7 @@ Entity = Annotated[Property, AfterValidator(is_object_property)]
 
 
 class Datastore(Component, abstract=True):
-    """Base class for Datastores. Datastores store and retrive data."""
+    """Base class for Datastores. Datastores store and retrieve data."""
 
 
 class RelationalDatastore(Datastore, abstract=True):
