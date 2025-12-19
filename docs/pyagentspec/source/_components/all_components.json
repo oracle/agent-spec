@@ -272,23 +272,23 @@
         "name": "Datastores",
         "path": "datastores",
         "classes": [
-            {"path": "pyagentspec.datastores.datastore.Datastore"},
-            {"path": "pyagentspec.datastores.datastore.RelationalDatastore"},
-            {"path": "pyagentspec.datastores.datastore.InMemoryCollectionDatastore"},
-            {"path": "pyagentspec.datastores.oracle.OracleDatabaseDatastore"},
-            {"path": "pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig"},
-            {"path": "pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig"},
-            {"path": "pyagentspec.datastores.postgres.PostgresDatabaseDatastore"},
-            {"path": "pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig"}
+            {"path": "pyagentspec.datastores.Datastore"},
+            {"path": "pyagentspec.datastores.RelationalDatastore"},
+            {"path": "pyagentspec.datastores.InMemoryCollectionDatastore"},
+            {"path": "pyagentspec.datastores.OracleDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.TlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.MTlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.PostgresDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.TlsPostgresDatabaseConnectionConfig"}
         ]
     },
     {
         "name": "Transforms",
         "path": "transforms",
         "classes": [
-            {"path": "pyagentspec.transforms.transforms.MessageTransform"},
-            {"path": "pyagentspec.transforms.summarization.MessageSummarizationTransform"},
-            {"path": "pyagentspec.transforms.summarization.ConversationSummarizationTransform"}
+            {"path": "pyagentspec.transforms.MessageTransform"},
+            {"path": "pyagentspec.transforms.MessageSummarizationTransform"},
+            {"path": "pyagentspec.transforms.ConversationSummarizationTransform"}
         ]
     },
     {

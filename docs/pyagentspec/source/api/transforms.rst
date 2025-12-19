@@ -10,7 +10,7 @@ MessageTransform
 ~~~~~~~~~~~~~~~~
 
 .. _messagetransform:
-.. autoclass:: pyagentspec.transforms.transforms.MessageTransform
+.. autoclass:: pyagentspec.transforms.MessageTransform
     :exclude-members: model_post_init, model_config
 
 Summarization transforms
@@ -20,12 +20,12 @@ MessageSummarizationTransform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _messagesummarizationtransform:
-.. autoclass:: pyagentspec.transforms.summarization.MessageSummarizationTransform
+.. autoclass:: pyagentspec.transforms.MessageSummarizationTransform
     :exclude-members: model_post_init, model_config
 
 ConversationSummarizationTransform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _conversationsummarizationtransform:
-.. autoclass:: pyagentspec.transforms.summarization.ConversationSummarizationTransform
+.. autoclass:: pyagentspec.transforms.ConversationSummarizationTransform
     :exclude-members: model_post_init, model_config
