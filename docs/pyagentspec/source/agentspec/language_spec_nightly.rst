@@ -2059,6 +2059,57 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
 - ``sslcrl``: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
 
 
+Transforms
+^^^^^^^^^^
+
+Transforms extend the base ``MessageTransform`` component can be used in agents. they apply a transformation to the messages before it's passed to the LLM.
+
+.. code-block:: python
+
+    class MessageTransform(Component, abstract=True):
+        pass
+
+MessageSummarizationTransform
+'''''''''''''''''''''''''''''
+
+Summarizes messages exceeding a given number of characters using an LLM and caches the summaries in a ``Datastore``. This is useful for conversations with long messagwes where the context can become too large for the agent LLM to handle.
+
+.. code-block:: python
+
+    class MessageSummarizationTransform(MessageTransform):
+        llm: LlmConfig
+        max_message_size: int = 20_000
+        summarization_instructions: str = (
+            "Please make a summary of this message. Include relevant information and keep it short. "
+            "Your response will replace the message, so just output the summary directly, no introduction needed."
+        )
+        summarized_message_template: str = "Summarized message: {{summary}}"
+        datastore: Optional[Datastore] = None
+        max_cache_size: Optional[int] = 10_000
+        max_cache_lifetime: Optional[int] = 4 * 3600
+        cache_collection_name: str = "summarized_messages_cache"
+
+ConversationSummarizationTransform
+''''''''''''''''''''''''''''''''''
+
+Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``. This is useful to reduce long conversation history into a concise context for downstream LLM calls.
+
+.. code-block:: python
+
+    class ConversationSummarizationTransform(MessageTransform):
+        llm: LlmConfig
+        max_num_messages: int = 50
+        min_num_messages: int = 10
+        summarization_instructions: str = (
+            "Please make a summary of this conversation. Include relevant information and keep it short. "
+            "Your response will replace the messages, so just output the summary directly, no introduction needed."
+        )
+        summarized_conversation_template: str = "Summarized conversation: {{summary}}"
+        datastore: Optional[Datastore] = None
+        max_cache_size: Optional[int] = 10_000
+        max_cache_lifetime: Optional[int] = 4 * 3600
+        cache_collection_name: str = "summarized_conversations_cache"
+
 Versioning
 ----------
 
