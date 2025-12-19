@@ -4,14 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any
-
-import pytest
-
 from pyagentspec.datastores import (
     InMemoryCollectionDatastore,
 )
-from pyagentspec.datastores.datastore import Datastore
 from pyagentspec.datastores.oracle import (
     MTlsOracleDatabaseConnectionConfig,
     OracleDatabaseDatastore,
@@ -28,8 +23,6 @@ from pyagentspec.property import (
     Property,
     StringProperty,
 )
-from pyagentspec.serialization.deserializer import AgentSpecDeserializer
-from pyagentspec.serialization.serializer import AgentSpecSerializer
 
 FAKE_PASSWORD = "testpass"  # nosec B105
 FAKE_TESTUSER = "testuser"
@@ -124,28 +117,9 @@ def postgres_datastore_tls(schema):
     )
 
 
-@pytest.mark.parametrize(
-    "datastore, sensitive_fields",
-    [
-        (oracle_datastore_tls(SCHEMA), ORACLE_TLS_SENSITIVE_FIELDS),
-        (oracle_datastore_mtls(SCHEMA), ORACLE_MTLS_SENSITIVE_FIELDS),
-        (postgres_datastore_tls(SCHEMA), POSTGRES_TLS_SENSITIVE_FIELDS),
-        (in_memory_datastore(SCHEMA), IN_MEMORY_SENSITIVE_FIELDS),
-    ],
-)
-def test_can_serialize_and_deserialize_datastore(
-    datastore: Datastore, sensitive_fields: dict[str, Any]
-) -> None:
-    serialized_ds = AgentSpecSerializer().to_yaml(datastore)
-    print(serialized_ds)
-    assert len(serialized_ds.strip()) > 0
-    deserialized_ds = AgentSpecDeserializer().from_yaml(
-        yaml_content=serialized_ds, components_registry=sensitive_fields
-    )
-    assert deserialized_ds == datastore
-    serialized_ds = AgentSpecSerializer().to_json(datastore)
-    assert len(serialized_ds.strip()) > 0
-    deserialized_ds = AgentSpecDeserializer().from_yaml(
-        yaml_content=serialized_ds, components_registry=sensitive_fields
-    )
-    assert deserialized_ds == datastore
+DATASTORES_AND_THEIR_SENSITIVE_FIELDS = [
+    (in_memory_datastore(SCHEMA), IN_MEMORY_SENSITIVE_FIELDS),
+    (oracle_datastore_tls(SCHEMA), ORACLE_TLS_SENSITIVE_FIELDS),
+    (oracle_datastore_mtls(SCHEMA), ORACLE_MTLS_SENSITIVE_FIELDS),
+    (postgres_datastore_tls(SCHEMA), POSTGRES_TLS_SENSITIVE_FIELDS),
+]
