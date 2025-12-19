@@ -19,6 +19,11 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
+from .datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
+from .transforms import (
+    create_conversation_summarization_transform,
+    create_message_summarization_transform,
+)
 
 
 @pytest.fixture()
@@ -273,3 +278,33 @@ def test_deserializing_agent_with_builtin_tools_and_unsupported_version_raises(
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         _ = AgentSpecDeserializer().from_yaml(serialized_node)
+
+
+@pytest.mark.parametrize(
+    "datastore, sensitive_fields",
+    DATASTORES_AND_THEIR_SENSITIVE_FIELDS,
+)
+def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
+    datastore, sensitive_fields, vllmconfig
+):
+    transforms = [
+        create_message_summarization_transform(datastore),
+        create_conversation_summarization_transform(datastore),
+    ]
+
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        transforms=transforms,
+    )
+
+    serializer = AgentSpecSerializer()
+    serialized_agent = serializer.to_yaml(agent)
+    assert len(serialized_agent.strip()) > 0
+
+    deserialized_agent = AgentSpecDeserializer().from_yaml(
+        yaml_content=serialized_agent, components_registry=sensitive_fields
+    )
+    assert deserialized_agent == agent
