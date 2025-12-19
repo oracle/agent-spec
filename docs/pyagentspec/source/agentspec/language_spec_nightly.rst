@@ -1983,7 +1983,7 @@ Relational datastores (``OracleDatabaseDatastore``, ``PostgresDatabaseDatastore`
 OracleDatabaseDatastore
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``OracleDatabaseConnectionConfig`` object for configuration.
+The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``OracleDatabaseConnectionConfig`` object for configuration. Sensitive information (e.g., wallets, keys) is excluded from exported configurations and should be loaded at deserialization time.
 
 .. code-block:: python
 
@@ -2008,11 +2008,11 @@ The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``Ora
         protocol: Literal["tcp", "tcps"] = "tcps"
         config_dir: Optional[str] = None
 
-- **user**: User used to connect to the database
-- **password**: Password for the provided user
-- **dsn**: Connection string for the database (e.g., created using `oracledb.make_dsn`)
-- **protocol**: 'tcp' or 'tcps' indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)
-- **config_dir**: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.
+- ``user``: User used to connect to the database
+- ``password``: Password for the provided user
+- ``dsn``: Connection string for the database (e.g., created using `oracledb.make_dsn`)
+- ``protocol``: 'tcp' or 'tcps' indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)
+- ``config_dir``: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.
 
 ``MTlsOracleDatabaseConnectionConfig`` For Oracle DB connections using mutual TLS (wallet authentication).
 
@@ -2023,23 +2023,21 @@ The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``Ora
         wallet_location: SensitiveField[str]
         wallet_password: SensitiveField[str]
 
-- **wallet_location**: Location where the Oracle Database wallet is stored.
-- **wallet_password**: Password for the provided wallet.
+- ``wallet_location``: Location where the Oracle Database wallet is stored.
+- ``wallet_password``: Password for the provided wallet.
 
 PostgresDatastore
 ^^^^^^^^^^^^^^^^^
+
+The ``PostgresDatabaseDatastore`` is a relational datastore intended to store entities in PostgreSQL databases. It requires a ``PostgresDatabaseConnectionConfig`` object for connection and authentication details. Sensitive information (e.g., user, password, SSL keys) is excluded from exported configurations and should be loaded at deserialization time.
 
 .. code-block:: python
 
     class PostgresDatabaseDatastore(RelationalDatastore):
         connection_config: PostgresDatabaseConnectionConfig
 
-.. code-block:: python
-
     class PostgresDatabaseConnectionConfig(Component, is_abstract=True):
         pass
-
-.. code-block:: python
 
     class TlsPostgresDatabaseConnectionConfig(PostgresDatabaseConnectionConfig):
         user: SensitiveField[str]
@@ -2051,14 +2049,14 @@ PostgresDatastore
         sslrootcert: Optional[str] = None
         sslcrl: Optional[str] = None
 
-- **user**: User of the postgres database
-- **password**: Password of the postgres database
-- **url**: URL to access the postgres database
-- **sslmode**: SSL mode for the PostgreSQL connection.
-- **sslcert**: Path of the client SSL certificate, replacing the default `~/.postgresql/postgresql.crt`. Ignored if an SSL connection is not made.
-- **sslkey**: Path of the file containing the secret key used for the client certificate, replacing the default `~/.postgresql/postgresql.key`. Ignored if an SSL connection is not made.
-- **sslrootcert**: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.
-- **sslcrl**: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
+- ``user``: User of the postgres database
+- ``password``: Password of the postgres database
+- ``url``: URL to access the postgres database
+- ``sslmode``: SSL mode for the PostgreSQL connection.
+- ``sslcert``: Path of the client SSL certificate, replacing the default `~/.postgresql/postgresql.crt`. Ignored if an SSL connection is not made.
+- ``sslkey``: Path of the file containing the secret key used for the client certificate, replacing the default `~/.postgresql/postgresql.key`. Ignored if an SSL connection is not made.
+- ``sslrootcert``: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.
+- ``sslcrl``: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
 
 
 Versioning
