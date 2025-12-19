@@ -383,6 +383,11 @@ following goals :
         discovered from an MCP server.
       - * A ToolBox connecting to an MCP server and exposing its tools to an Agent
 
+    * - Datastore
+      - A component that provides storage capabilities for agentic systems, enabling them to store and access data.
+      - * An in-memory datastore for testing
+        * An Oracle Database datastore for production use
+
 
 
 Agentic Components
@@ -2434,6 +2439,116 @@ in the example code below:
         serialized_llm,
         components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
     )
+
+
+Datastore Components
+
+~~~~~~~~~~~~~~~~~~~~
+
+Datastore (abstract) Interface to enable agentic systems to store, and access data.
+
+.. code-block:: python
+
+    class Datastore(Component, abstract=True):
+        pass
+
+All datastores currently defined in this version represent collections of objects defined by their type as an `Entity`, however the Datastore parent type is left without constraint to enable future extension or the development of plugins with different Datastore structure (e.g. key-value stores, or graph database, or unstructured data storage)
+
+Relational datastores & In-Memory datastore
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Relational datastores (OracleDatabaseDatastore) and their drop-in in-memory replacement (InMemoryCollectionDatastore) contain many collections (tables) where each collection is a set entities. They need to have a predefined fixed schema. A schema is a mapping from a collection name to an Entity object defining the entity(row).
+
+.. code-block:: python
+
+    class InMemoryCollectionDatastore(Datastore):
+        datastore_schema: Dict[str, Entity]
+
+.. code-block:: python
+
+    class RelationalDatastore(Datastore, is_abstract=True):
+        datastore_schema: Dict[str, Entity]
+
+OracleDatabaseDatastore  backed by Oracle Database
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    class OracleDatabaseDatastore(RelationalDatastore):
+        connection_config: OracleDatabaseConnectionConfig
+
+OracleDatabaseConnectionConfig (abstract) Base class used for configuring connections to Oracle Database.
+
+.. code-block:: python
+
+    class OracleDatabaseConnectionConfig(Component, is_abstract=True):
+        pass
+
+TlsOracleDatabaseConnectionConfig For standard TLS Oracle Database connections.
+
+.. code-block:: python
+
+    class TlsOracleDatabaseConnectionConfig(OracleDatabaseConnectionConfig):
+        user: SensitiveField[str]
+        password: SensitiveField[str]
+        dsn: SensitiveField[str]
+        protocol: Literal["tcp", "tcps"] = "tcps"
+        config_dir: Optional[str] = None
+
+- **user**: User used to connect to the database
+- **password**: Password for the provided user
+- **dsn**: Connection string for the database (e.g., created using `oracledb.make_dsn`)
+- **protocol**: 'tcp' or 'tcps' indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)
+- **config_dir**: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.
+
+MTlsOracleDatabaseConnectionConfig For Oracle DB connections using mutual TLS (wallet authentication).
+
+.. code-block:: python
+
+    class MTlsOracleDatabaseConnectionConfig(TlsOracleDatabaseConnectionConfig):
+
+        wallet_location: SensitiveField[str]
+        wallet_password: SensitiveField[str]
+
+- **wallet_location**: Location where the Oracle Database wallet is stored.
+- **wallet_password**: Password for the provided wallet.
+
+PostgresDatastore backed by a Postgres Database
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    class PostgresDatabaseDatastore(RelationalDatastore):
+        connection_config: PostgresDatabaseConnectionConfig
+
+.. code-block:: python
+
+    class PostgresDatabaseConnectionConfig(Component, is_abstract=True):
+        pass
+
+.. code-block:: python
+
+    class TlsPostgresDatabaseConnectionConfig(PostgresDatabaseConnectionConfig):
+        user: SensitiveField[str]
+        password: SensitiveField[str]
+        url: str
+        sslmode: Literal["disable","allow", "prefer","require","verify-ca","verify-full"] = "require"
+        sslcert: Optional[str] = None
+        sslkey: Optional[SensitiveField[str]] = None
+        sslrootcert: Optional[str] = None
+        sslcrl: Optional[str] = None
+
+- **user**: User of the postgres database
+- **password**: Password of the postgres database
+- **url**: URL to access the postgres database
+- **sslmode**: SSL mode for the PostgreSQL connection.
+- **sslcert**: Path of the client SSL certificate, replacing the default `~/.postgresql/postgresql.crt`. Ignored if an SSL connection is not made.
+- **sslkey**: Path of the file containing the secret key used for the client certificate, replacing the default `~/.postgresql/postgresql.key`. Ignored if an SSL connection is not made.
+- **sslrootcert**: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.
+- **sslcrl**: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
 
 
 Additional components for future versions
