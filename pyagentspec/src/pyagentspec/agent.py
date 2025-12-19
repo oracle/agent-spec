@@ -16,6 +16,7 @@ from pyagentspec.property import Property
 from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.transforms import MessageTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 
@@ -54,6 +55,8 @@ class Agent(AgenticComponent):
     """List of toolboxes that are passed to the agent."""
     human_in_the_loop: bool = True
     """Flag that determines if the Agent can request input from the user."""
+    transforms: List[MessageTransform] = []
+    """Additional message transforms that the agent will use to modify its vision of the messages"""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default

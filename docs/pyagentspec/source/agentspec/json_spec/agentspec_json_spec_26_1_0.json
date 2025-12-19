@@ -152,10 +152,30 @@
         }
       ]
     },
+    "ConversationSummarizationTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseConversationSummarizationTransform"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "DataFlowEdge": {
       "anyOf": [
         {
           "$ref": "#/$defs/BaseDataFlowEdge"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "Datastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseDatastore"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -201,6 +221,16 @@
       ],
       "title": "HandoffMode",
       "type": "string"
+    },
+    "InMemoryCollectionDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseInMemoryCollectionDatastore"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
     },
     "InputMessageNode": {
       "anyOf": [
@@ -306,6 +336,16 @@
         }
       ]
     },
+    "MTlsOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseMTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ManagerWorkers": {
       "anyOf": [
         {
@@ -320,6 +360,16 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseMapNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "MessageSummarizationTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseMessageSummarizationTransform"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -466,6 +516,26 @@
         }
       ]
     },
+    "OracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "OracleDatabaseDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOracleDatabaseDatastore"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "OutputMessageNode": {
       "anyOf": [
         {
@@ -490,6 +560,26 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseParallelMapNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "PostgresDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BasePostgresDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "PostgresDatabaseDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BasePostgresDatabaseDatastore"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -647,6 +737,26 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseSwarm"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "TlsOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "TlsPostgresDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseTlsPostgresDatabaseConnectionConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -1889,6 +1999,119 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseConversationSummarizationTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "llm": {
+          "$ref": "#/$defs/LlmConfig"
+        },
+        "max_num_messages": {
+          "default": 50,
+          "title": "Max Num Messages",
+          "type": "integer"
+        },
+        "min_num_messages": {
+          "default": 10,
+          "title": "Min Num Messages",
+          "type": "integer"
+        },
+        "summarization_instructions": {
+          "default": "Please make a summary of this conversation. Include relevant information and keep it short. Your response will replace the messages, so just output the summary directly, no introduction needed.",
+          "title": "Summarization Instructions",
+          "type": "string"
+        },
+        "summarized_conversation_template": {
+          "default": "Summarized conversation: {{summary}}",
+          "title": "Summarized Conversation Template",
+          "type": "string"
+        },
+        "datastore": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Datastore"
+            }
+          ],
+          "default": null
+        },
+        "max_cache_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": 10000,
+          "title": "Max Cache Size"
+        },
+        "max_cache_lifetime": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": 14400,
+          "title": "Max Cache Lifetime"
+        },
+        "cache_collection_name": {
+          "default": "summarized_conversations_cache",
+          "title": "Cache Collection Name",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "ConversationSummarizationTransform"
+        }
+      },
+      "required": [
+        "llm",
+        "name"
+      ],
+      "title": "ConversationSummarizationTransform",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseDataFlowEdge": {
       "additionalProperties": false,
       "description": "A data flow edge specifies how the output of a node propagates as input of another node.\n\nAn outputs can be propagated as input of several nodes.",
@@ -1956,6 +2179,20 @@
       "title": "DataFlowEdge",
       "type": "object",
       "x-abstract-component": false
+    },
+    "BaseDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InMemoryCollectionDatastore"
+        },
+        {
+          "$ref": "#/$defs/OracleDatabaseDatastore"
+        },
+        {
+          "$ref": "#/$defs/PostgresDatabaseDatastore"
+        }
+      ],
+      "x-abstract-component": true
     },
     "BaseEndNode": {
       "additionalProperties": false,
@@ -2252,6 +2489,64 @@
         "subflow"
       ],
       "title": "FlowNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseInMemoryCollectionDatastore": {
+      "additionalProperties": false,
+      "description": "In-memory datastore for testing and development purposes.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "datastore_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Property"
+          },
+          "title": "Datastore Schema",
+          "type": "object"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "InMemoryCollectionDatastore"
+        }
+      },
+      "required": [
+        "datastore_schema",
+        "name"
+      ],
+      "title": "InMemoryCollectionDatastore",
       "type": "object",
       "x-abstract-component": false
     },
@@ -2720,6 +3015,102 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseMTlsOracleDatabaseConnectionConfig": {
+      "additionalProperties": false,
+      "description": "Mutual-TLS Connection Configuration to Oracle Database.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "user": {
+          "title": "User",
+          "type": "string"
+        },
+        "password": {
+          "title": "Password",
+          "type": "string"
+        },
+        "dsn": {
+          "title": "Dsn",
+          "type": "string"
+        },
+        "config_dir": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Config Dir"
+        },
+        "protocol": {
+          "default": "tcps",
+          "enum": [
+            "tcp",
+            "tcps"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "wallet_location": {
+          "title": "Wallet Location",
+          "type": "string"
+        },
+        "wallet_password": {
+          "title": "Wallet Password",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "MTlsOracleDatabaseConnectionConfig"
+        }
+      },
+      "required": [
+        "dsn",
+        "name",
+        "password",
+        "user",
+        "wallet_location",
+        "wallet_password"
+      ],
+      "title": "MTlsOracleDatabaseConnectionConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseManagerWorkers": {
       "additionalProperties": false,
       "description": "Defines a ``ManagerWorkers`` conversational component.\n\nA ``ManagerWorkers`` is a multi-agent conversational component in which a group manager\nassigns tasks to the workers. The group manager and workers can be instantiated from\nany ``AgenticComponent`` type.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.managerworkers import ManagerWorkers\n>>> manager_agent = Agent(\n...     name=\"manager_agent\",\n...     description=\"Agent that manages a group of math agents\",\n...     llm_config=llm_config,\n...     system_prompt=\"You are the manager of a group of math agents\"\n... )\n>>> multiplication_agent = Agent(\n...     name=\"multiplication_agent\",\n...     description=\"Agent that can do multiplication\",\n...     llm_config=llm_config,\n...     system_prompt=\"You can do multiplication.\"\n... )\n>>> division_agent = Agent(\n...     name=\"division_agent\",\n...     description=\"Agent that can do division\",\n...     llm_config=llm_config,\n...     system_prompt=\"You can do division.\"\n... )\n>>> group = ManagerWorkers(\n...     name=\"managerworkers\",\n...     group_manager=manager_agent,\n...     workers=[multiplication_agent, division_agent],\n... )",
@@ -2915,6 +3306,114 @@
         "subflow"
       ],
       "title": "MapNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseMessageSummarizationTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "llm": {
+          "$ref": "#/$defs/LlmConfig"
+        },
+        "max_message_size": {
+          "default": 20000,
+          "title": "Max Message Size",
+          "type": "integer"
+        },
+        "summarization_instructions": {
+          "default": "Please make a summary of this message. Include relevant information and keep it short. Your response will replace the message, so just output the summary directly, no introduction needed.",
+          "title": "Summarization Instructions",
+          "type": "string"
+        },
+        "summarized_message_template": {
+          "default": "Summarized message: {{summary}}",
+          "title": "Summarized Message Template",
+          "type": "string"
+        },
+        "datastore": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Datastore"
+            }
+          ],
+          "default": null
+        },
+        "max_cache_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": 10000,
+          "title": "Max Cache Size"
+        },
+        "max_cache_lifetime": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": 14400,
+          "title": "Max Cache Lifetime"
+        },
+        "cache_collection_name": {
+          "default": "summarized_messages_cache",
+          "title": "Cache Collection Name",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "MessageSummarizationTransform"
+        }
+      },
+      "required": [
+        "llm",
+        "name"
+      ],
+      "title": "MessageSummarizationTransform",
       "type": "object",
       "x-abstract-component": false
     },
@@ -3704,6 +4203,79 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/TlsOracleDatabaseConnectionConfig"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseOracleDatabaseDatastore": {
+      "additionalProperties": false,
+      "description": "Datastore that uses Oracle Database as the storage mechanism.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "datastore_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Property"
+          },
+          "title": "Datastore Schema",
+          "type": "object"
+        },
+        "connection_config": {
+          "$ref": "#/$defs/OracleDatabaseConnectionConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OracleDatabaseDatastore"
+        }
+      },
+      "required": [
+        "connection_config",
+        "datastore_schema",
+        "name"
+      ],
+      "title": "OracleDatabaseDatastore",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseOutputMessageNode": {
       "additionalProperties": false,
       "description": "This node appends an agent message to the ongoing flow conversation.\n\n- **Inputs**\n    One per variable in the message.\n- **Outputs**\n    No outputs.\n- **Branches**\n    One, the default next.\n\nExamples\n--------\n>>> from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge\n>>> from pyagentspec.flows.flow import Flow\n>>> from pyagentspec.flows.nodes import StartNode, EndNode, InputMessageNode, OutputMessageNode, LlmNode\n>>> from pyagentspec.property import StringProperty\n>>> start_node = StartNode(name=\"start\")\n>>> prompt_node = OutputMessageNode(name=\"ask_input\", message=\"What is the paragraph you want to rephrase?\")\n>>> input_node = InputMessageNode(name=\"user_input\", outputs=[StringProperty(title=\"user_input\")])\n>>> llm_node = LlmNode(\n...     name=\"rephrase\",\n...     llm_config=llm_config,\n...     prompt_template=\"Rephrase {{user_input}}\",\n...     outputs=[StringProperty(title=\"rephrased_user_input\")],\n... )\n>>> output_node = OutputMessageNode(name=\"ask_input\", message=\"{{rephrased_user_input}}\")\n>>> end_node = EndNode(name=\"end\")\n>>> flow = Flow(\n...     name=\"rephrase_paragraph_flow\",\n...     start_node=start_node,\n...     nodes=[start_node, prompt_node, input_node, llm_node, output_node, end_node],\n...     control_flow_connections=[\n...         ControlFlowEdge(name=\"ce1\", from_node=start_node, to_node=prompt_node),\n...         ControlFlowEdge(name=\"ce2\", from_node=prompt_node, to_node=input_node),\n...         ControlFlowEdge(name=\"ce3\", from_node=input_node, to_node=llm_node),\n...         ControlFlowEdge(name=\"ce4\", from_node=llm_node, to_node=output_node),\n...         ControlFlowEdge(name=\"ce5\", from_node=output_node, to_node=end_node),\n...     ],\n...     data_flow_connections=[\n...         DataFlowEdge(\n...             name=\"de1\",\n...             source_node=input_node,\n...             source_output=\"user_input\",\n...             destination_node=llm_node,\n...             destination_input=\"user_input\",\n...         ),\n...         DataFlowEdge(\n...             name=\"de2\",\n...             source_node=llm_node,\n...             source_output=\"rephrased_user_input\",\n...             destination_node=output_node,\n...             destination_input=\"rephrased_user_input\",\n...         ),\n...     ]\n... )",
@@ -3993,6 +4565,76 @@
         "subflow"
       ],
       "title": "ParallelMapNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BasePostgresDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TlsPostgresDatabaseConnectionConfig"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BasePostgresDatabaseDatastore": {
+      "additionalProperties": false,
+      "description": "Datastore that uses PostgreSQL Database as the storage mechanism.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "datastore_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Property"
+          },
+          "title": "Datastore Schema",
+          "type": "object"
+        },
+        "connection_config": {
+          "$ref": "#/$defs/PostgresDatabaseConnectionConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "PostgresDatabaseDatastore"
+        }
+      },
+      "required": [
+        "connection_config",
+        "datastore_schema",
+        "name"
+      ],
+      "title": "PostgresDatabaseDatastore",
       "type": "object",
       "x-abstract-component": false
     },
@@ -5021,6 +5663,225 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseTlsOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "additionalProperties": false,
+          "description": "TLS Connection Configuration to Oracle Database.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "user": {
+              "title": "User",
+              "type": "string"
+            },
+            "password": {
+              "title": "Password",
+              "type": "string"
+            },
+            "dsn": {
+              "title": "Dsn",
+              "type": "string"
+            },
+            "config_dir": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Config Dir"
+            },
+            "protocol": {
+              "default": "tcps",
+              "enum": [
+                "tcp",
+                "tcps"
+              ],
+              "title": "Protocol",
+              "type": "string"
+            },
+            "$referenced_components": {
+              "$ref": "#/$defs/ReferencedComponents"
+            },
+            "component_type": {
+              "const": "TlsOracleDatabaseConnectionConfig"
+            }
+          },
+          "required": [
+            "dsn",
+            "name",
+            "password",
+            "user"
+          ],
+          "title": "TlsOracleDatabaseConnectionConfig",
+          "type": "object"
+        }
+      ],
+      "x-abstract-component": false
+    },
+    "BaseTlsPostgresDatabaseConnectionConfig": {
+      "additionalProperties": false,
+      "description": "Configuration for a PostgreSQL connection with TLS/SSL support.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "user": {
+          "title": "User",
+          "type": "string"
+        },
+        "password": {
+          "title": "Password",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "sslmode": {
+          "default": "require",
+          "enum": [
+            "allow",
+            "disable",
+            "prefer",
+            "require",
+            "verify-ca",
+            "verify-full"
+          ],
+          "title": "Sslmode",
+          "type": "string"
+        },
+        "sslcert": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sslcert"
+        },
+        "sslkey": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sslkey"
+        },
+        "sslrootcert": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sslrootcert"
+        },
+        "sslcrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sslcrl"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "TlsPostgresDatabaseConnectionConfig"
+        }
+      },
+      "required": [
+        "name",
+        "password",
+        "url",
+        "user"
+      ],
+      "title": "TlsPostgresDatabaseConnectionConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseTool": {
       "anyOf": [
         {
@@ -5271,7 +6132,13 @@
             "$ref": "#/$defs/BaseControlFlowEdge"
           },
           {
+            "$ref": "#/$defs/BaseConversationSummarizationTransform"
+          },
+          {
             "$ref": "#/$defs/BaseDataFlowEdge"
+          },
+          {
+            "$ref": "#/$defs/BaseDatastore"
           },
           {
             "$ref": "#/$defs/BaseEndNode"
@@ -5281,6 +6148,9 @@
           },
           {
             "$ref": "#/$defs/BaseFlowNode"
+          },
+          {
+            "$ref": "#/$defs/BaseInMemoryCollectionDatastore"
           },
           {
             "$ref": "#/$defs/BaseInputMessageNode"
@@ -5301,10 +6171,16 @@
             "$ref": "#/$defs/BaseMCPToolSpec"
           },
           {
+            "$ref": "#/$defs/BaseMTlsOracleDatabaseConnectionConfig"
+          },
+          {
             "$ref": "#/$defs/BaseManagerWorkers"
           },
           {
             "$ref": "#/$defs/BaseMapNode"
+          },
+          {
+            "$ref": "#/$defs/BaseMessageSummarizationTransform"
           },
           {
             "$ref": "#/$defs/BaseNode"
@@ -5340,6 +6216,12 @@
             "$ref": "#/$defs/BaseOpenAiConfig"
           },
           {
+            "$ref": "#/$defs/BaseOracleDatabaseConnectionConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOracleDatabaseDatastore"
+          },
+          {
             "$ref": "#/$defs/BaseOutputMessageNode"
           },
           {
@@ -5347,6 +6229,12 @@
           },
           {
             "$ref": "#/$defs/BaseParallelMapNode"
+          },
+          {
+            "$ref": "#/$defs/BasePostgresDatabaseConnectionConfig"
+          },
+          {
+            "$ref": "#/$defs/BasePostgresDatabaseDatastore"
           },
           {
             "$ref": "#/$defs/BaseRemoteAgent"
@@ -5383,6 +6271,12 @@
           },
           {
             "$ref": "#/$defs/BaseSwarm"
+          },
+          {
+            "$ref": "#/$defs/BaseTlsOracleDatabaseConnectionConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseTlsPostgresDatabaseConnectionConfig"
           },
           {
             "$ref": "#/$defs/BaseTool"
@@ -5634,10 +6528,40 @@
         }
       }
     },
+    "VersionedConversationSummarizationTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseConversationSummarizationTransform"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedDataFlowEdge": {
       "anyOf": [
         {
           "$ref": "#/$defs/BaseDataFlowEdge"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseDatastore"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -5683,6 +6607,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseFlowNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedInMemoryCollectionDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseInMemoryCollectionDatastore"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -5784,6 +6723,21 @@
         }
       }
     },
+    "VersionedMTlsOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseMTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedManagerWorkers": {
       "anyOf": [
         {
@@ -5803,6 +6757,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseMapNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedMessageSummarizationTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseMessageSummarizationTransform"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -5979,6 +6948,21 @@
         }
       }
     },
+    "VersionedOracleDatabaseDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOracleDatabaseDatastore"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedOutputMessageNode": {
       "anyOf": [
         {
@@ -6013,6 +6997,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseParallelMapNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedPostgresDatabaseDatastore": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BasePostgresDatabaseDatastore"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -6204,6 +7203,36 @@
         }
       }
     },
+    "VersionedTlsOracleDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseTlsOracleDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedTlsPostgresDatabaseConnectionConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseTlsPostgresDatabaseConnectionConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedTool": {
       "anyOf": [
         {
@@ -6328,7 +7357,13 @@
       "$ref": "#/$defs/VersionedControlFlowEdge"
     },
     {
+      "$ref": "#/$defs/VersionedConversationSummarizationTransform"
+    },
+    {
       "$ref": "#/$defs/VersionedDataFlowEdge"
+    },
+    {
+      "$ref": "#/$defs/VersionedDatastore"
     },
     {
       "$ref": "#/$defs/VersionedEndNode"
@@ -6338,6 +7373,9 @@
     },
     {
       "$ref": "#/$defs/VersionedFlowNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedInMemoryCollectionDatastore"
     },
     {
       "$ref": "#/$defs/VersionedInputMessageNode"
@@ -6358,10 +7396,16 @@
       "$ref": "#/$defs/VersionedMCPToolSpec"
     },
     {
+      "$ref": "#/$defs/VersionedMTlsOracleDatabaseConnectionConfig"
+    },
+    {
       "$ref": "#/$defs/VersionedManagerWorkers"
     },
     {
       "$ref": "#/$defs/VersionedMapNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedMessageSummarizationTransform"
     },
     {
       "$ref": "#/$defs/VersionedNode"
@@ -6397,6 +7441,9 @@
       "$ref": "#/$defs/VersionedOpenAiConfig"
     },
     {
+      "$ref": "#/$defs/VersionedOracleDatabaseDatastore"
+    },
+    {
       "$ref": "#/$defs/VersionedOutputMessageNode"
     },
     {
@@ -6404,6 +7451,9 @@
     },
     {
       "$ref": "#/$defs/VersionedParallelMapNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedPostgresDatabaseDatastore"
     },
     {
       "$ref": "#/$defs/VersionedRemoteAgent"
@@ -6440,6 +7490,12 @@
     },
     {
       "$ref": "#/$defs/VersionedSwarm"
+    },
+    {
+      "$ref": "#/$defs/VersionedTlsOracleDatabaseConnectionConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedTlsPostgresDatabaseConnectionConfig"
     },
     {
       "$ref": "#/$defs/VersionedTool"
