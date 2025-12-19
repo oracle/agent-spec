@@ -4,7 +4,7 @@ src_paths = [
     "pyagentspec/tests",
 ]
 profile = "black"
-line_length = 100
+line_length = 20
 
 [tool.black]
 line-length = 100
