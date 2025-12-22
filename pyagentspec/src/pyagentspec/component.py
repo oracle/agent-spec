@@ -107,11 +107,10 @@ class AbstractableModel(BaseModel):
 
     Example Usage:
     --------------
-    ```python
-    class Component(AbstractableModel, abstract=True):
-        pass
-    ```
+    .. code-block:: python
 
+        class Component(AbstractableModel, abstract=True):
+            pass
     """
 
     _is_abstract: bool = False
@@ -313,6 +312,7 @@ class Component(AbstractableModel, abstract=True):
 
         Returns
         -------
+        Component:
             The component's class
         """
         # We start from the top level component, and we look for the subclass with the given name
@@ -450,6 +450,7 @@ class Component(AbstractableModel, abstract=True):
 
         Returns
         -------
+        JsonSchemaValue:
             The json schema specification for the chosen Agent Spec Component
         """
         if cls._is_abstract:
@@ -500,6 +501,7 @@ class Component(AbstractableModel, abstract=True):
 
         Returns
         -------
+        ComponentT:
             The constructed component
         """
         from pyagentspec.serialization import AgentSpecDeserializer
