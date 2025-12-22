@@ -45,4 +45,4 @@ event-driven **UI interactions** across every surface.
         connect any AG-UI-compatible frontend with Agent Spec, enabling users to
         load any Agent Spec config file, choosing a supported runtime to execute it.
 
-        :bdg-success:`agent discovery` :bdg-info:`agent deployment`
+        :bdg-success:`agentic frontends`
