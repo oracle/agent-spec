@@ -4,9 +4,13 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import pytest
+
 from pyagentspec.llms import OpenAiConfig
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
+
+from ..datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
 
 
 def create_test_llm_config():
@@ -55,3 +59,18 @@ def create_conversation_summarization_transform(datastore):
         max_cache_lifetime=12 * 3600,
         cache_collection_name="conversation_summaries_cache",
     )
+
+
+def parametrize_transform_and_datastore(f):
+    f = pytest.mark.parametrize(
+        "datastore, sensitive_fields",
+        DATASTORES_AND_THEIR_SENSITIVE_FIELDS,
+    )(f)
+    f = pytest.mark.parametrize(
+        "transform_factory",
+        [
+            create_message_summarization_transform,
+            create_conversation_summarization_transform,
+        ],
+    )(f)
+    return f

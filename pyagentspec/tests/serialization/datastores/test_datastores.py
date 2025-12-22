@@ -8,6 +8,7 @@ import pytest
 
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .conftest import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
 
@@ -27,3 +28,11 @@ def test_can_serialize_and_deserialize_datastore(datastore, sensitive_fields) ->
         yaml_content=serialized_ds, components_registry=sensitive_fields
     )
     assert deserialized_ds == datastore
+
+
+@pytest.mark.parametrize("datastore, sensitive_fields", DATASTORES_AND_THEIR_SENSITIVE_FIELDS)
+def test_serialization_with_unsupported_version_raises(datastore, sensitive_fields) -> None:
+    with pytest.raises(
+        ValueError, match="Invalid agentspec_version:.*but the minimum allowed version is.*"
+    ):
+        _ = AgentSpecSerializer().to_json(datastore, agentspec_version=AgentSpecVersionEnum.v25_4_1)
