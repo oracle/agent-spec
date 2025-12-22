@@ -149,7 +149,7 @@ html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "icon_links": [
         {
-            "name": "WayFlow GitHub repository",
+            "name": "Agent Spec GitHub repository",
             "url": "https://github.com/oracle/agent-spec",
             "icon": "_static/icons/github-icon.svg",
             "type": "local",
