@@ -31,8 +31,22 @@ def test_can_serialize_and_deserialize_datastore(datastore, sensitive_fields) ->
 
 
 @pytest.mark.parametrize("datastore, sensitive_fields", DATASTORES_AND_THEIR_SENSITIVE_FIELDS)
-def test_serialization_with_unsupported_version_raises(datastore, sensitive_fields) -> None:
+def test_datastore_serialization_with_unsupported_version_raises(
+    datastore, sensitive_fields
+) -> None:
     with pytest.raises(
         ValueError, match="Invalid agentspec_version:.*but the minimum allowed version is.*"
     ):
         _ = AgentSpecSerializer().to_json(datastore, agentspec_version=AgentSpecVersionEnum.v25_4_1)
+
+
+@pytest.mark.parametrize("datastore, sensitive_fields", DATASTORES_AND_THEIR_SENSITIVE_FIELDS)
+def test_deserialization_with_unsupported_version_raises(datastore, sensitive_fields) -> None:
+    serialized_ds = AgentSpecSerializer().to_yaml(datastore)
+    assert "agentspec_version: 25.4.2" in serialized_ds
+    serialized_ds = serialized_ds.replace("agentspec_version: 25.4.2", "agentspec_version: 25.4.1")
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(
+            yaml_content=serialized_ds, components_registry=sensitive_fields
+        )
