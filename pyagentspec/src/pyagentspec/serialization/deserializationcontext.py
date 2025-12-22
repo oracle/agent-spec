@@ -287,7 +287,6 @@ class _DeserializationContextImpl(DeserializationContext):
             return self._load_reference(content["$component_ref"], annotation=annotation)
 
         origin_type = get_origin(annotation)
-
         if origin_type is Annotated:
             inner_annotation, _ = get_args(annotation)
             return self._load_field(content, inner_annotation)
@@ -311,8 +310,7 @@ class _DeserializationContextImpl(DeserializationContext):
                 and inspect.isclass(annotation)
                 and issubclass(annotation, Property)
             ):
-                if isinstance(content, Property):
-                    # already an instantiated property (e.g. partial config)
+                if isinstance(content, annotation):
                     return content, []
                 return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
@@ -390,6 +388,10 @@ class _DeserializationContextImpl(DeserializationContext):
                 if content is None:
                     return None, []
                 inner_annotations.remove(type(None))
+
+                # This check is needed because `is_optional_type` accepts Union[T,G,None]
+                if len(inner_annotations) == 1:
+                    return self._load_field(content, inner_annotations[0])
 
             # Try to deserialize components/pydantic models according to any of the annotations
             # If any of them works, we will proceed with that. This is our best effort.
