@@ -7,14 +7,22 @@
 
 from typing import Literal, Optional
 
+from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
+
 from pyagentspec.component import Component
 from pyagentspec.sensitive_field import SensitiveField
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .datastore import RelationalDatastore
 
 
 class PostgresDatabaseConnectionConfig(Component, abstract=True):
     """Base class for a PostgreSQL connection."""
+
+    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+    )
 
 
 class PostgresDatabaseDatastore(RelationalDatastore):
