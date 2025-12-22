@@ -74,4 +74,5 @@ tools:
   url: https://my.url/tool
   requires_confirmation: false
 human_in_the_loop: false
+transforms: []
 agentspec_version: 25.4.2
