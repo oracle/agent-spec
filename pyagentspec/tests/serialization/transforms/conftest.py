@@ -6,14 +6,18 @@
 
 from pyagentspec.llms import OpenAiConfig
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 def create_test_llm_config():
-    return OpenAiConfig(
+    config = OpenAiConfig(
         id="test_llm",
         name="test_openai_config",
         model_id="gpt-3.5-turbo",
     )
+    # Set to v25_4_2 to match the serialized agentspec_version, ensuring deserialized == original
+    config.min_agentspec_version = AgentSpecVersionEnum.v25_4_2
+    return config
 
 
 def create_message_summarization_transform(datastore):

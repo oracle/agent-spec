@@ -15,10 +15,6 @@ from pyagentspec.property import BooleanProperty, StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.tools import BuiltinTool, ClientTool, RemoteTool, ServerTool
-from pyagentspec.transforms.summarization import (
-    ConversationSummarizationTransform,
-    MessageSummarizationTransform,
-)
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
@@ -300,13 +296,8 @@ def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
     # the agent with non-empty transforms would serialize to v25_4_2 (due to the transforms requiring that version).
     # During deserialization, all fields including vllmconfig would be deserialized to v25_4_2,
     # but vllmconfig's min_agentspec_version would still be v25_4_1, causing the test deserialized == original to fail.
-    # Therefore, we explicitly set the version to v25_4_2 for vllmconfig and the transforms' LLMs.
+    # Therefore, we explicitly set the version to v25_4_2
     vllmconfig.min_agentspec_version = AgentSpecVersionEnum.v25_4_2
-    for transform in transforms:
-        if isinstance(
-            transform, (ConversationSummarizationTransform, MessageSummarizationTransform)
-        ):
-            transform.llm.min_agentspec_version = AgentSpecVersionEnum.v25_4_2
 
     agent = Agent(
         id="agent1",
