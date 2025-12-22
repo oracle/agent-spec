@@ -114,13 +114,13 @@ Agent Spec is developed jointly between Oracle Cloud Infrastructure and Oracle L
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Adapters
    :hidden:
 
-   LangGraph <adapters/langgraph>
-   WayFlow <adapters/wayflow>
-   AutoGen <adapters/autogen>
+   LangGraph <adapters/langgraph/index>
+   WayFlow <adapters/wayflow/index>
+   AutoGen <adapters/autogen/index>
 
 
 .. toctree::
