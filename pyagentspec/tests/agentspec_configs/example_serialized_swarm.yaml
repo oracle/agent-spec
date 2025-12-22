@@ -36,6 +36,7 @@ $referenced_components:
     system_prompt: You are a general practitioner
     tools: []
     toolboxes: []
+    transforms: []
     human_in_the_loop: true
   vllm:
     component_type: VllmConfig
@@ -61,6 +62,7 @@ $referenced_components:
     system_prompt: You are a pharmacist
     tools: []
     toolboxes: []
+    transforms: []
     human_in_the_loop: true
   dermatologist:
     component_type: Agent
@@ -75,5 +77,6 @@ $referenced_components:
     system_prompt: You are a dermatologist
     tools: []
     toolboxes: []
+    transforms: []
     human_in_the_loop: true
 agentspec_version: 25.4.2

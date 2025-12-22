@@ -59,6 +59,7 @@ agent:
     - title: forecast
       type: string
     requires_confirmation: false
+  transforms: []
   human_in_the_loop: true
 agent_specialization_parameters:
   component_type: AgentSpecializationParameters
