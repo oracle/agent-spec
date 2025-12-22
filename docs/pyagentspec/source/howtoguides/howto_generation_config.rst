@@ -5,7 +5,7 @@ How to Specify the Generation Configuration when Using LLMs
 Generation parameters, such as temperature, top-p, and the maximum number of output tokens,
 are useful for achieving the desired performance with Large Language Models (LLMs).
 In Agent Spec, these parameters can be configured in the ``default_generation_parameters``
-of the :class:`LlmConfig`.
+of the :ref:`LlmConfig <LlmConfig>`.
 
 This guide will show you how to:
 
@@ -62,9 +62,9 @@ Configure the generation parameters for a flow
 Customizing the generation configuration for a flow requires to specify the generation configuration of the
 llm used by a node.
 
-Refer to the previous section to learn how to configure the generation parameters when initializing an LLM using the :class:`LlmGenerationConfig` class.
+Refer to the previous section to learn how to configure the generation parameters when initializing an LLM using the :ref:`LlmGenerationConfig <LlmGenerationConfig>` class.
 
-For example, you can then create a one-step flow using the :class:`LlmNode` with custom generation parameters as follows.
+For example, you can then create a one-step flow using the :ref:`LlmNode <LlmNode>` with custom generation parameters as follows.
 
 .. literalinclude:: ../code_examples/howto_generation_config.py
     :language: python
