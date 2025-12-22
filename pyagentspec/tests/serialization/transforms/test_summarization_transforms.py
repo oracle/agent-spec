@@ -46,3 +46,20 @@ def test_transform_serialization_with_unsupported_version_raises(
         ValueError, match="Invalid agentspec_version:.*but the minimum allowed version is.*"
     ):
         _ = AgentSpecSerializer().to_json(transform, agentspec_version=AgentSpecVersionEnum.v25_4_1)
+
+
+@parametrize_transform_and_datastore
+def test_transform_deserialization_with_unsupported_version_raises(
+    transform_factory, datastore, sensitive_fields
+):
+    transform = transform_factory(datastore)
+    serialized_transform = AgentSpecSerializer().to_yaml(transform)
+    assert "agentspec_version: 25.4.2" in serialized_transform
+    serialized_transform = serialized_transform.replace(
+        "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"
+    )
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(
+            yaml_content=serialized_transform, components_registry=sensitive_fields
+        )
