@@ -376,6 +376,16 @@
         }
       ]
     },
+    "MessageTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseMessageTransform"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ModelProvider": {
       "description": "Provider of the model. It is used to ensure the requests to this model respect\nthe format expected by the provider.",
       "enum": [
@@ -1102,6 +1112,14 @@
           "default": true,
           "title": "Human In The Loop",
           "type": "boolean"
+        },
+        "transforms": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MessageTransform"
+          },
+          "title": "Transforms",
+          "type": "array"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -3416,6 +3434,17 @@
       "title": "MessageSummarizationTransform",
       "type": "object",
       "x-abstract-component": false
+    },
+    "BaseMessageTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ConversationSummarizationTransform"
+        },
+        {
+          "$ref": "#/$defs/MessageSummarizationTransform"
+        }
+      ],
+      "x-abstract-component": true
     },
     "BaseNode": {
       "anyOf": [
@@ -6181,6 +6210,9 @@
           },
           {
             "$ref": "#/$defs/BaseMessageSummarizationTransform"
+          },
+          {
+            "$ref": "#/$defs/BaseMessageTransform"
           },
           {
             "$ref": "#/$defs/BaseNode"

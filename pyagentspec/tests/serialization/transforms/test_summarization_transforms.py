@@ -9,25 +9,12 @@ import pytest
 
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
+from pyagentspec.versioning import AgentSpecVersionEnum
 
-from ..datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
-from .conftest import (
-    create_conversation_summarization_transform,
-    create_message_summarization_transform,
-)
+from .conftest import parametrize_transform_and_datastore
 
 
-@pytest.mark.parametrize(
-    "datastore, sensitive_fields",
-    DATASTORES_AND_THEIR_SENSITIVE_FIELDS,
-)
-@pytest.mark.parametrize(
-    "transform_factory",
-    [
-        create_message_summarization_transform,
-        create_conversation_summarization_transform,
-    ],
-)
+@parametrize_transform_and_datastore
 def test_can_serialize_and_deserialize_transform_with_all_datastores(
     transform_factory, datastore, sensitive_fields
 ):
@@ -48,3 +35,14 @@ def test_can_serialize_and_deserialize_transform_with_all_datastores(
         yaml_content=serialized_transform, components_registry=sensitive_fields
     )
     assert deserialized_transform == transform
+
+
+@parametrize_transform_and_datastore
+def test_transform_serialization_with_unsupported_version_raises(
+    transform_factory, datastore, sensitive_fields
+):
+    transform = transform_factory(datastore)
+    with pytest.raises(
+        ValueError, match="Invalid agentspec_version:.*but the minimum allowed version is.*"
+    ):
+        _ = AgentSpecSerializer().to_json(transform, agentspec_version=AgentSpecVersionEnum.v25_4_1)
