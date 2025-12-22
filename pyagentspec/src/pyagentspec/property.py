@@ -138,7 +138,7 @@ class Property(BaseModel):
 
         Returns
         -------
-        JsonSchemaValue
+        JsonSchemaValue:
             The input JSON schema
         """
         Draft202012Validator.check_schema(schema)

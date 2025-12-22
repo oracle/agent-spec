@@ -78,3 +78,6 @@ Nodes
 .. _toolnode:
 .. autoclass:: pyagentspec.flows.nodes.toolnode.ToolNode
     :exclude-members: model_post_init, model_config
+
+
+.. autoclass:: pyagentspec.flows.nodes.mapnode.ReductionMethod
