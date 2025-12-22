@@ -6,10 +6,12 @@
 """This module defines the base, relational and in-memory datastore component."""
 from typing import Annotated, Dict
 
-from pydantic import AfterValidator
+from pydantic import AfterValidator, Field
+from pydantic.json_schema import SkipJsonSchema
 
 from pyagentspec.component import Component
 from pyagentspec.property import Property
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 def is_object_property(value: Property) -> Property:
@@ -26,6 +28,10 @@ Entity = Annotated[Property, AfterValidator(is_object_property)]
 
 class Datastore(Component, abstract=True):
     """Base class for Datastores. Datastores store and retrieve data."""
+
+    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+    )
 
 
 class RelationalDatastore(Datastore, abstract=True):

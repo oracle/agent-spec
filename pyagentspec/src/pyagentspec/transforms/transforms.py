@@ -4,8 +4,16 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 """This file defines the base MessageTransform"""
+from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
+
 from pyagentspec.component import Component
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 class MessageTransform(Component, abstract=True):
     """Base class for message transformation components."""
+
+    min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
+        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+    )
