@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent Spec Adapters &#8212; PyAgentSpec 26.1.0.dev4 documentation</title>
+    <title>Agent Spec Adapters &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
   
   
   
@@ -137,8 +137,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev4 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev4 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
   
   
 </a></div>
@@ -491,7 +491,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective PyAgentSpec Component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to a corresponding PyAgentSpec Component.</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to a corresponding PyAgentSpec Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a></p>
@@ -505,7 +505,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective AgentSpec JSON representation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
@@ -519,7 +519,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd><p>Transform the given LangGraph component into the respective AgentSpec YAML representation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>StateT</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
+<dd class="field-odd"><p><strong>langgraph_component</strong> (<em>StateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>CompiledStateGraph</em><em>[</em><em>Any</em><em>, </em><em>Any</em><em>, </em><em>Any</em><em>]</em>) – LangGraph Component to serialize to an AgentSpec configuration</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
@@ -553,7 +553,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>agentspec_component</strong> (<a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a>) – PyAgentSpec Component to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -567,7 +567,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -581,7 +581,7 @@ into the equivalent solution, as per each framework’s definition, and return a
 <dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – SerializedAgent Spec configuration to be converted to a LangGraph Component.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>, <em>StateT</em>]</p>
+<dd class="field-even"><p><em>CompiledStateGraph</em>[<em>Any</em>, <em>Any</em>, <em>Any</em>]</p>
 </dd>
 </dl>
 </dd></dl>
