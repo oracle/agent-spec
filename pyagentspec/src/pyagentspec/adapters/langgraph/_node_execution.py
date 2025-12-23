@@ -6,7 +6,7 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import httpx
 
@@ -44,6 +44,9 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as pyagentspec_empty_default
+from pyagentspec.tracing.events import NodeExecutionEnd as AgentSpecNodeExecutionEnd
+from pyagentspec.tracing.events import NodeExecutionStart as AgentSpecNodeExecutionStart
+from pyagentspec.tracing.spans import NodeExecutionSpan as AgentSpecNodeExecutionSpan
 
 MessageLike = Union[BaseMessage, List[str], Tuple[str, str], str, Dict[str, Any]]
 
@@ -55,8 +58,19 @@ class NodeExecutor(ABC):
 
     def __call__(self, state: FlowStateSchema) -> Any:
         inputs = self._get_inputs(state)
-        outputs, execution_details = self._execute(inputs, state.get("messages", []))
-        return self._update_status(outputs, execution_details, state)
+        span_name = f"{self.node.__class__.__name__}Execution[{self.node.name}]"
+        with AgentSpecNodeExecutionSpan(name=span_name, node=self.node) as span:
+            span.add_event(AgentSpecNodeExecutionStart(node=self.node, inputs=inputs))
+            outputs, execution_details = self._execute(inputs, state.get("messages", []))
+            updated_status = self._update_status(outputs, execution_details, state)
+            span.add_event(
+                AgentSpecNodeExecutionEnd(
+                    node=self.node,
+                    outputs=updated_status["outputs"],
+                    branch_selected=updated_status["node_execution_details"]["branch"],
+                )
+            )
+        return updated_status
 
     def attach_edge(self, edge: DataFlowEdge) -> None:
         self.edges.append(edge)
@@ -282,7 +296,7 @@ class ToolNodeExecutor(NodeExecutor):
             # Plain callable: we call it like a function
             tool_output = tool(**inputs)
 
-        if isinstance(tool_output, dict):
+        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
             # useful for multiple outputs, avoid nesting dictionaries
             return tool_output, NodeExecutionDetails()
 
@@ -326,6 +340,7 @@ class AgentNodeExecutor(NodeExecutor):
             ] = AgentSpecToLangGraphConverter()._create_react_agent_with_given_info(
                 name=agentspec_component.name,
                 system_prompt=system_prompt,
+                agent=agentspec_component,
                 llm_config=agentspec_component.llm_config,
                 tools=agentspec_component.tools,
                 toolboxes=agentspec_component.toolboxes,
@@ -340,6 +355,7 @@ class AgentNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent = self._create_react_agent_with_given_input_values(inputs)
+        agentspec_agent = cast(AgentSpecAgent, self.node.agent)
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,
@@ -352,8 +368,8 @@ class AgentNodeExecutor(NodeExecutor):
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
-
-        return dict(result.get("structured_response", {})), NodeExecutionDetails()
+        outputs = dict(result.get("structured_response", {}))
+        return outputs, NodeExecutionDetails()
 
 
 class InputMessageNodeExecutor(NodeExecutor):

@@ -26,7 +26,8 @@ if TYPE_CHECKING:
     import langgraph_core  # type: ignore
     from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
-    from langchain_core.messages import BaseMessage, SystemMessage
+    from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
+    from langchain_core.outputs import ChatGenerationChunk, GenerationChunk, LLMResult
     from langchain_core.runnables import RunnableBinding, RunnableConfig
     from langchain_core.tools import BaseTool, StructuredTool
     from langgraph.graph import StateGraph
@@ -60,8 +61,12 @@ else:
     BranchSpec = LazyLoader("langgraph.graph._branch").BranchSpec
     SystemMessage = LazyLoader("langchain_core.messages").SystemMessage
     BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
+    ToolMessage = LazyLoader("langchain_core.messages").ToolMessage
     BaseChatModel = LazyLoader("langchain_core.language_models").BaseChatModel
     BaseStore = LazyLoader("langgraph.store.base").BaseStore
+    ChatGenerationChunk = LazyLoader("langchain_core.outputs").ChatGenerationChunk
+    GenerationChunk = LazyLoader("langchain_core.outputs").GenerationChunk
+    LLMResult = LazyLoader("langchain_core.outputs").LLMResult
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
@@ -142,6 +147,7 @@ __all__ = [
     "BaseTool",
     "SystemMessage",
     "BaseMessage",
+    "ToolMessage",
     "BaseChatModel",
     "BaseStore",
     "Checkpointer",
@@ -150,4 +156,7 @@ __all__ = [
     "Messages",
     "BranchSpec",
     "BaseCallbackHandler",
+    "ChatGenerationChunk",
+    "GenerationChunk",
+    "LLMResult",
 ]
