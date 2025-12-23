@@ -27,7 +27,6 @@ group_manager:
     customer interactions and orchestrating the resolution process efficiently.
   tools: []
   toolboxes: []
-  transforms: []
   human_in_the_loop: true
 workers:
 - component_type: Agent
@@ -44,7 +43,6 @@ workers:
     refund requests accurately and efficiently based on company policy.
   tools: []
   toolboxes: []
-  transforms: []
   human_in_the_loop: true
 - component_type: Agent
   id: satisfaction_surveyor
@@ -60,7 +58,6 @@ workers:
     customer interactions and orchestrating the resolution process efficiently.
   tools: []
   toolboxes: []
-  transforms: []
   human_in_the_loop: true
 $referenced_components:
   vllm:

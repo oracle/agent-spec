@@ -73,5 +73,4 @@ $referenced_components:
     headers: null
     sensitive_headers: null
 human_in_the_loop: true
-transforms: []
 agentspec_version: 25.4.2
