@@ -27,7 +27,7 @@ Entity = Annotated[Property, AfterValidator(is_object_property)]
 
 
 class Datastore(Component, abstract=True):
-    """Base class for Datastores. Datastores store and retrieve data."""
+    """Base class for Datastores. Datastores configure how to store and retrieve data."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
         default=AgentSpecVersionEnum.v26_1_1, init=False, exclude=True

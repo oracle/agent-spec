@@ -1956,7 +1956,7 @@ The ManagerWorkers has two main parameters:
 Datastores
 ~~~~~~~~~~
 
-The core abstract is Datastore which enables agentic systems to store, and access data.
+Datastores are the AgentSpec abstraction that enables agentic systems to store, and access data.
 
 .. code-block:: python
 
@@ -2062,7 +2062,7 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
 Transforms
 ^^^^^^^^^^
 
-Transforms extend the base ``MessageTransform`` component can be used in agents. they apply a transformation to the messages before it's passed to the LLM.
+Transforms extend the base ``MessageTransform`` component can be used in agents. They apply a transformation to the messages before they are passed to the LLM.
 
 .. code-block:: python
 
@@ -2072,7 +2072,7 @@ Transforms extend the base ``MessageTransform`` component can be used in agents.
 MessageSummarizationTransform
 '''''''''''''''''''''''''''''
 
-Summarizes messages exceeding a given number of characters using an LLM and caches the summaries in a ``Datastore``. This is useful for conversations with long messagwes where the context can become too large for the agent LLM to handle.
+Summarizes messages exceeding a given number of characters using an LLM and caches the summaries in a ``Datastore``. This is useful for conversations with long messages where the context can become too large for the agent LLM to handle.
 
 .. code-block:: python
 

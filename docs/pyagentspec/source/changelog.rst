@@ -128,7 +128,7 @@ New features
   Added support for datastores in Agent Spec through :ref:`OracleDatabaseDatastore <oracledatabasedatastore>` and :ref:`PostgresDatabaseDatastore <postgresdatabasedatastore>`.
   Datastores enable persistent storage and caching capabilities for agent workflows. :ref:`InMemoryCollectionDatastore <inmemorycollectiondatastore>` provides a drop-in replacement for development and prototyping.
 
-* **Transforms**
+* **Context Summarization Transforms**
 
   Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
   We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
