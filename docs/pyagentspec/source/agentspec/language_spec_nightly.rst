@@ -425,6 +425,7 @@ for interactions with the agentic system.
      tools: List[Tool]
      toolboxes: List[ToolBox]
      human_in_the_loop: bool
+     transforms: List[MessageTransform]
 
 Its main goal is to accomplish any task assigned in the ``system_prompt`` and terminate,
 with or without any interaction with the user.
@@ -454,6 +455,9 @@ registry for the Agent. In case of tool name collisions across different sources
 - The specification recommends optional namespacing (e.g., toolbox_name.tool_name) and leaves
   the exact behavior to the runtime. Runtimes MAY error on collisions.
 - Implementations SHOULD provide clear diagnostics when collisions occur.
+
+Transforms, when present, apply transformations to the messages before they are passed to the LLM,
+allowing for message summarization, conversation summarization, or other modifications to optimize the agent's context.
 
 This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, ...).
