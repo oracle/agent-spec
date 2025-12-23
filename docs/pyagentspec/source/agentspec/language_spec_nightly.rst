@@ -2077,17 +2077,17 @@ Summarizes messages exceeding a given number of characters using an LLM and cach
 .. code-block:: python
 
     class MessageSummarizationTransform(MessageTransform):
-        llm: LlmConfig
-        max_message_size: int = 20_000
+        llm: LlmConfig  # LLM to use for the summarization.
+        max_message_size: int = 20_000  # The maximum size in number of characters for the content of a message.
         summarization_instructions: str = (
             "Please make a summary of this message. Include relevant information and keep it short. "
             "Your response will replace the message, so just output the summary directly, no introduction needed."
-        )
-        summarized_message_template: str = "Summarized message: {{summary}}"
-        datastore: Optional[Datastore] = None
-        max_cache_size: Optional[int] = 10_000
-        max_cache_lifetime: Optional[int] = 4 * 3600
-        cache_collection_name: str = "summarized_messages_cache"
+        )  # Instruction for the LLM on how to summarize the messages.
+        summarized_message_template: str = "Summarized message: {{summary}}"  # Jinja2 template on how to present the summary (with variable `summary`) to the agent using the transform.
+        datastore: Optional[Datastore] = None  # Datastore on which to store the cache. If None, an in-memory Datastore will be created automatically. The datastore needs to have a collection called `cache_collection_name`.
+        max_cache_size: Optional[int] = 10_000  # The number of cache entries (messages) kept in the cache. If None, there is no limit on cache size and no eviction occurs.
+        max_cache_lifetime: Optional[int] = 4 * 3600  # max lifetime of a message in the cache in seconds. If None, cached data persists indefinitely.
+        cache_collection_name: str = "summarized_messages_cache"  # Name of the collection/table in the cache for storing summarized messages.
 
 ConversationSummarizationTransform
 ''''''''''''''''''''''''''''''''''
@@ -2097,18 +2097,18 @@ Summarizes conversations exceeding a given number of messages using an LLM and c
 .. code-block:: python
 
     class ConversationSummarizationTransform(MessageTransform):
-        llm: LlmConfig
-        max_num_messages: int = 50
-        min_num_messages: int = 10
+        llm: LlmConfig  # LLM to use for the summarization.
+        max_num_messages: int = 50  # Number of message after which we trigger summarization.
+        min_num_messages: int = 10  # Number of recent messages to keep from summarizing.
         summarization_instructions: str = (
             "Please make a summary of this conversation. Include relevant information and keep it short. "
             "Your response will replace the messages, so just output the summary directly, no introduction needed."
-        )
-        summarized_conversation_template: str = "Summarized conversation: {{summary}}"
-        datastore: Optional[Datastore] = None
-        max_cache_size: Optional[int] = 10_000
-        max_cache_lifetime: Optional[int] = 4 * 3600
-        cache_collection_name: str = "summarized_conversations_cache"
+        )  # Instruction for the LLM on how to summarize the conversation.
+        summarized_conversation_template: str = "Summarized conversation: {{summary}}"  # Jinja2 template on how to present the summary (with variable `summary`) to the agent using the transform.
+        datastore: Optional[Datastore] = None  # Datastore on which to store the cache. If None, an in-memory Datastore will be created automatically.
+        max_cache_size: Optional[int] = 10_000  # The maximum number of entries kept in the cache
+        max_cache_lifetime: Optional[int] = 4 * 3600  # max lifetime of an element in the cache in seconds
+        cache_collection_name: str = "summarized_conversations_cache"  # the collection in the cache datastore where summarized conversations will be stored
 
 Versioning
 ----------
