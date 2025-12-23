@@ -1,10 +1,12 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+
+import pytest
 
 from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
@@ -14,9 +16,8 @@ from pyagentspec.llms import VllmConfig
 from pyagentspec.property import StringProperty
 
 
-def test_agentnode_can_be_imported_and_executed() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
+@pytest.fixture()
+def agent_flow() -> Flow:
     nationality_property = StringProperty(title="nationality")
     car_property = StringProperty(title="car")
     llm_config = VllmConfig(
@@ -65,11 +66,31 @@ def test_agentnode_can_be_imported_and_executed() -> None:
         outputs=[car_property],
     )
 
-    agent = AgentSpecLoader().load_component(flow)
+    return flow
+
+
+def test_agentnode_can_be_imported_and_executed(agent_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(agent_flow)
     result = agent.invoke({"inputs": {"nationality": "italian"}})
 
     assert "outputs" in result
     assert "messages" in result
 
     outputs = result["outputs"]
-    assert car_property.title in outputs
+    assert "car" in outputs
+
+
+@pytest.mark.anyio
+async def test_agentnode_can_be_executed_async(agent_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(agent_flow)
+    result = await agent.ainvoke({"inputs": {"nationality": "italian"}})
+
+    assert "outputs" in result
+    assert "messages" in result
+
+    outputs = result["outputs"]
+    assert "car" in outputs

@@ -7,16 +7,23 @@
 import ast
 import json
 import typing
-from contextvars import Context, copy_context
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict, TypeVar, Union
 from uuid import UUID
 
-from langchain_core.callbacks import BaseCallbackHandler as LangchainBaseCallbackHandler
-from langchain_core.messages import BaseMessage, ToolMessage
-from langchain_core.outputs import ChatGenerationChunk, GenerationChunk, LLMResult
 from typing_extensions import NotRequired
 
+from pyagentspec.adapters.langgraph._types import (
+    AsyncCallbackHandler,
+    BaseCallbackHandler,
+    BaseMessage,
+    ChatGenerationChunk,
+    GenerationChunk,
+    LLMResult,
+    ToolMessage,
+)
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.property import Property as AgentSpecProperty
+from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tracing.events import (
     LlmGenerationChunkReceived as AgentSpecLlmGenerationChunkReceived,
@@ -30,6 +37,8 @@ from pyagentspec.tracing.messages.message import Message as AgentSpecMessage
 from pyagentspec.tracing.spans import LlmGenerationSpan as AgentSpecLlmGenerationSpan
 from pyagentspec.tracing.spans import Span as AgentSpecSpan
 from pyagentspec.tracing.spans import ToolExecutionSpan as AgentSpecToolExecutionSpan
+from pyagentspec.tracing.spans.span import _ACTIVE_SPAN_STACK, get_active_span_stack
+from pyagentspec.tracing.trace import get_trace
 
 MessageInProgress = TypedDict(
     "MessageInProgress",
@@ -52,55 +61,122 @@ LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
 
 T = TypeVar("T")
 
+# NOTE ABOUT CONTEXTVARS AND THE ACTIVE SPAN STACK
+#
+# LangGraph schedules callbacks on executors and wraps them with copy_context().run(...),
+# which means each callback may observe a different ContextVars snapshot. If we naively
+# call span.add_event/span.end inside these callbacks, the _ACTIVE_SPAN_STACK ContextVar
+# would not reflect the stack we had when we started the span, and nested push/pop
+# operations would become inconsistent (e.g., popping an empty stack).
+#
+# To keep the span stack consistent across callbacks for the same run, we adopt the same
+# approach used in crewai_tracing.py: we capture and store a copy of the active span stack
+# immediately after span.start/span.start_async and then, for each callback, we:
+#   - set _ACTIVE_SPAN_STACK to the stored stack,
+#   - invoke the target function (sync or async),
+#   - refresh our stored snapshot from the new _ACTIVE_SPAN_STACK so nested changes persist.
+#
+# This per-run stack management ensures that callbacks running on different threads (or
+# created from different copy_context snapshots) still participate in the same logical
+# span stack for that run. It avoids the pitfalls of constructing/awaiting coroutines
+# via Context.run and keeps the behavior aligned with the crewai adapter.
 
-class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
 
-    def __init__(
-        self,
-        llm_config: AgentSpecLlmConfig,
-        tools: Optional[List[AgentSpecTool]] = None,
-    ) -> None:
-        # This is only added during tool-call streaming to associate run_id with tool_call_id
-        # (tool_call_id is not available mid-stream)
-        self.messages_in_process: MessagesInProgressRecord = {}
+class AgentSpecCallbackHandler(BaseCallbackHandler):
+
+    def __init__(self) -> None:
         # Track spans per run_id
         self.agentspec_spans_registry: Dict[str, AgentSpecSpan] = {}
-        # Track the ContextVars context captured right after span.start()
-        # so we can run subsequent callbacks in the same context
-        self._span_contexts: Dict[str, Context] = {}
-        # configs for spans
-        self.llm_config = llm_config
-        self.tools_map: Dict[str, AgentSpecTool] = {t.name: t for t in (tools or [])}
+        # Track the active span stack captured right after span.start()
+        # so we can run subsequent callbacks against the same stack
+        self._span_stacks: Dict[str, List[AgentSpecSpan]] = {}
 
-    # ---- internal helpers to keep callbacks DRY ----
     def _run_in_ctx(self, run_id_str: str, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
-        ctx = self._span_contexts.get(run_id_str)
-        if ctx is None:
+        stack = self._span_stacks.get(run_id_str)
+        if stack is None:
             raise RuntimeError(
                 f"[AgentSpecCallbackHandler] Missing Context for run_id={run_id_str}. "
                 "Span was not started (or context not captured) before this callback."
             )
-        # LangGraph schedules callbacks via ``run_in_executor`` which wraps every submitted
-        # callable in ``copy_context().run`` (``https://github.com/langchain-ai/langgraph/blob/main/libs/langgraph/langgraph/_internal/_runnable.py#L522``). Each
-        # worker thread therefore executes in a fresh `ContextVar` snapshot. Calling
-        # `func` directly here would use that executor snapshot, so `_ACTIVE_SPAN_STACK`
-        # would not include the span we started earlier, leading to pops on an empty stack
-        # inside `pyagentspec.tracing.spans.span._pop_span_from_active_stack`. Running inside
-        # the stored context keeps the span stack in sync with the callbacks.
-        # Note that using async callback APIs (AsyncCallbackHandler) would not help since it uses the same executor wrapper code.
-        # Note that adding a dummy span in the main loop does not help, the issue still persists because the context was not copied.
-        return ctx.run(func, *args, **kwargs)
+        # Set the active span stack for this callback, then update our record
+        _ACTIVE_SPAN_STACK.set(stack)
+        result = func(*args, **kwargs)
+        self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+        return result
 
     def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
+        # If we're inside an async Trace, avoid calling sync APIs
+        tr = get_trace()
+        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
+            return
         self._run_in_ctx(run_id_str, span.add_event, event)
 
     def _end_span(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        tr = get_trace()
+        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
+            self._span_stacks.pop(run_id_str)
+            return
         self._run_in_ctx(run_id_str, span.end)
-        self._span_contexts.pop(run_id_str)
+        self._span_stacks.pop(run_id_str)
 
     def _start_and_copy_ctx(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        tr = get_trace()
+        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
+            self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+            return
         span.start()
-        self._span_contexts[run_id_str] = copy_context()
+        self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+
+
+class AgentSpecAsyncCallbackHandler(AsyncCallbackHandler):
+    def __init__(self) -> None:
+        # Track spans per run_id
+        self.agentspec_spans_registry: Dict[str, AgentSpecSpan] = {}
+        # Track the active span stack captured right after span.start_async()
+        self._span_stacks: Dict[str, List[AgentSpecSpan]] = {}
+
+    def _get_stack(self, run_id_str: str) -> List[AgentSpecSpan]:
+        stack = self._span_stacks.get(run_id_str)
+        if stack is None:
+            raise RuntimeError(
+                f"[AgentSpecAsyncCallbackHandler] Missing Context for run_id={run_id_str}. "
+                "Span was not started (or context not captured) before this callback."
+            )
+        return stack
+
+    async def _run_in_ctx_async(
+        self, run_id_str: str, afunc: Callable[..., typing.Awaitable[T]], *args: Any, **kwargs: Any
+    ) -> T:
+        # Apply the stored active span stack for this run, then await and refresh our record
+        stack = self._get_stack(run_id_str)
+        _ACTIVE_SPAN_STACK.set(stack)
+        result = await afunc(*args, **kwargs)
+        self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+        return result
+
+    async def _add_event_async(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
+        await self._run_in_ctx_async(run_id_str, span.add_event_async, event)
+
+    async def _end_span_async(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        await self._run_in_ctx_async(run_id_str, span.end_async)
+        self._span_stacks.pop(run_id_str, None)
+
+    async def _start_and_copy_ctx_async(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        await span.start_async()
+        self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+
+
+class AgentSpecLlmCallbackHandler(AgentSpecCallbackHandler):
+
+    def __init__(
+        self,
+        llm_config: AgentSpecLlmConfig,
+    ) -> None:
+        super().__init__()
+        self.llm_config = llm_config
+        # This is only added during tool-call streaming to associate run_id with tool_call_id
+        # (tool_call_id is not available mid-stream)
+        self.messages_in_process: MessagesInProgressRecord = {}
 
     def on_chat_model_start(
         self,
@@ -111,30 +187,42 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
+
         run_id_str = str(run_id)
+
         # Create and start the LLM span for this run, capture Context
         span = AgentSpecLlmGenerationSpan(llm_config=self.llm_config)
         self.agentspec_spans_registry[run_id_str] = span
         self._start_and_copy_ctx(run_id_str, span)
 
-        # not sure why it is a list of lists, assert that the outer list is size 1
+        # this is a list of lists because it can be batched, but we assume it to be a batch of size 1
         if len(messages) != 1:
             raise ValueError(
                 f"[on_chat_model_start] langchain messages is a nested list of list of BaseMessage, "
                 "expected the outer list to have size one but got size {len(messages)}"
             )
-        list_of_messages = messages[0]
-
         prompt = [
             AgentSpecMessage(
-                content=_ensure_string(m.content),
+                content=_ensure_string(message.content),
                 sender="",
-                role=LANGCHAIN_ROLES_TO_OPENAI_ROLES[m.type],
+                role=LANGCHAIN_ROLES_TO_OPENAI_ROLES[message.type],
             )
-            for m in list_of_messages
+            for message in messages[0]  # messages[0] is a list of messages
         ]
 
-        tools = list(self.tools_map.values()) if self.tools_map else []
+        tools: List[AgentSpecTool] = [
+            AgentSpecClientTool(
+                name=tool_schema["function"]["name"],
+                description=tool_schema["function"]["description"],
+                inputs=[
+                    AgentSpecProperty(title=property_title, json_schema=property_schema)
+                    for property_title, property_schema in tool_schema["function"]["parameters"][
+                        "properties"
+                    ].items()
+                ],
+            )
+            for tool_schema in kwargs["invocation_params"].get("tools", [])
+        ]
 
         event = AgentSpecLlmGenerationRequest(
             request_id=run_id_str,
@@ -251,6 +339,13 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         self.agentspec_spans_registry.pop(run_id_str, None)
         self.messages_in_process.pop(run_id_str, None)
 
+
+class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
+
+    def __init__(self, tool: AgentSpecTool) -> None:
+        super().__init__()
+        self.tool = tool
+
     def on_tool_start(
         self,
         serialized: Dict[str, Any],
@@ -260,28 +355,17 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-        if kwargs.get("tool_call_id"):
-            # note that this run_id is different from the run_id in LLM events
-            # so we cannot use it to correlate with tool_call_id above
-            raise NotImplementedError(
-                "[on_tool_start] This is implemented starting from langchain 1.1.2, and we should support it"
-            )
         # get run_id and tool config
         run_id_str = str(run_id)
-        tool_name = serialized.get("name")
-        if not tool_name:
-            raise ValueError("[on_tool_start] Expected tool name in serialized metadata")
-        tool_obj = self.tools_map.get(tool_name)
-        if tool_obj is None:
-            raise ValueError(f"[on_tool_start] Unknown tool: {tool_name}")
         # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
-            tool=tool_obj,
+            tool=self.tool,
             inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
         )
         # starting a tool span for this tool
-        tool_span = AgentSpecToolExecutionSpan(tool=tool_obj)
+        span_name = f"ToolExecution[{self.tool.name}]"
+        tool_span = AgentSpecToolExecutionSpan(name=span_name, tool=self.tool)
         self.agentspec_spans_registry[run_id_str] = tool_span
         self._start_and_copy_ctx(run_id_str, tool_span)
         self._add_event(run_id_str, tool_span, request_event)
@@ -294,26 +378,39 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-        if not isinstance(output, ToolMessage):
-            raise ValueError("[on_tool_end] Expected ToolMessage for tool end")
         run_id_str = str(run_id)
         tool_span = self.agentspec_spans_registry.get(run_id_str)
-
-        try:
-            parsed = (
-                json.loads(output.content) if isinstance(output.content, str) else output.content
-            )
-        except json.JSONDecodeError as e:
-            parsed = str(output.content)
-        outputs = parsed if isinstance(parsed, dict) else {"output": parsed}
 
         if not isinstance(tool_span, AgentSpecToolExecutionSpan):
             raise ValueError(
                 f"Expected tool_span to be a ToolExecutionSpan but got {type(tool_span)}"
             )
 
+        if isinstance(output, ToolMessage):
+            try:
+                parsed = (
+                    json.loads(output.content)
+                    if isinstance(output.content, str)
+                    else output.content
+                )
+            except json.JSONDecodeError:
+                parsed = str(output.content)
+            outputs = parsed if isinstance(parsed, dict) else {"output": parsed}
+        else:
+            if (
+                not isinstance(output, dict)
+                and isinstance(self.tool.outputs, list)
+                and len(self.tool.outputs) == 1
+            ):
+                outputs = {self.tool.outputs[0].title: output}
+            else:
+                outputs = output
+
+        # once we use the latest langchain, the tool_call_id will be available in on_tool_start, and we can use it there as well
+        # for now, we MUST use tool_call_id (if given from an agent) as the request_id here so that the AG-UI integration works
+        # see https://docs.ag-ui.com/concepts/events#tool-call-events
         response_event = AgentSpecToolExecutionResponse(
-            request_id=output.tool_call_id,
+            request_id=getattr(output, "tool_call_id", run_id_str),
             tool=tool_span.tool,
             outputs=outputs,
         )
@@ -322,6 +419,235 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         self.agentspec_spans_registry.pop(run_id_str, None)
 
     def on_tool_error(
+        self,
+        error: BaseException,
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        **kwargs: Any,
+    ) -> None:
+        raise error
+
+
+class AgentSpecAsyncLlmCallbackHandler(AgentSpecAsyncCallbackHandler):
+
+    def __init__(self, llm_config: AgentSpecLlmConfig) -> None:
+        super().__init__()
+        self.llm_config = llm_config
+        self.messages_in_process: MessagesInProgressRecord = {}
+
+    async def on_chat_model_start(
+        self,
+        serialized: Dict[str, Any],
+        messages: List[List[BaseMessage]],
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        **kwargs: Any,
+    ) -> Any:
+        run_id_str = str(run_id)
+        span = AgentSpecLlmGenerationSpan(llm_config=self.llm_config)
+        self.agentspec_spans_registry[run_id_str] = span
+        await self._start_and_copy_ctx_async(run_id_str, span)
+
+        if len(messages) != 1:
+            raise ValueError(
+                f"[on_chat_model_start] langchain messages is a nested list of list of BaseMessage, expected the outer list to have size one but got size {len(messages)}"
+            )
+        prompt = [
+            AgentSpecMessage(
+                content=_ensure_string(message.content),
+                sender="",
+                role=LANGCHAIN_ROLES_TO_OPENAI_ROLES[message.type],
+            )
+            for message in messages[0]
+        ]
+
+        tools: List[AgentSpecTool] = [
+            AgentSpecClientTool(
+                name=tool_schema["function"]["name"],
+                description=tool_schema["function"]["description"],
+                inputs=[
+                    AgentSpecProperty(title=property_title, json_schema=property_schema)
+                    for property_title, property_schema in tool_schema["function"]["parameters"][
+                        "properties"
+                    ].items()
+                ],
+            )
+            for tool_schema in kwargs.get("invocation_params", {}).get("tools", [])
+        ]
+
+        event = AgentSpecLlmGenerationRequest(
+            request_id=run_id_str,
+            llm_config=self.llm_config,
+            llm_generation_config=self.llm_config.default_generation_parameters,
+            prompt=prompt,
+            tools=tools,
+        )
+        await self._add_event_async(run_id_str, span, event)
+
+    async def on_llm_new_token(
+        self,
+        token: str,
+        *,
+        chunk: Optional[Union[ChatGenerationChunk, GenerationChunk]] = None,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        tags: Optional[List[str]] = None,
+        **kwargs: Any,
+    ) -> Any:
+        if chunk is None:
+            raise ValueError("[on_llm_new_token] Expected chunk to not be None")
+        run_id_str = str(run_id)
+        span = self.agentspec_spans_registry.get(run_id_str)
+        if not isinstance(span, AgentSpecLlmGenerationSpan):
+            raise RuntimeError("LLM span not started; on_chat_model_start must run first")
+        chunk_message = chunk.message  # type: ignore
+
+        if not isinstance(chunk_message.id, str):
+            raise ValueError(
+                f"[on_llm_new_token] Expected chunk_message.id to be a string but got: {type(chunk_message.id)}"
+            )
+        message_id = chunk_message.id
+
+        agentspec_tool_calls: List[AgentSpecToolCall] = []
+        tool_call_chunks = chunk_message.tool_call_chunks or []  # type: ignore
+        if tool_call_chunks:
+            if len(tool_call_chunks) != 1:
+                raise ValueError(
+                    "[on_llm_new_token] Expected exactly one tool call chunk "
+                    f"if streaming tool calls, but got: {tool_call_chunks}"
+                )
+            tool_call_chunk = tool_call_chunks[0]
+            tool_name, tool_args, call_id = (
+                tool_call_chunk["name"],
+                tool_call_chunk["args"],
+                tool_call_chunk["id"],
+            )
+            if call_id is None:
+                current_stream = self.messages_in_process[run_id]
+                tool_name, call_id = (
+                    current_stream["tool_call_name"],
+                    current_stream["tool_call_id"],
+                )
+            else:
+                self.messages_in_process[run_id] = {
+                    "id": message_id,
+                    "tool_call_id": call_id,
+                    "tool_call_name": tool_name,
+                }
+            agentspec_tool_calls = [
+                AgentSpecToolCall(call_id=call_id, tool_name=tool_name, arguments=tool_args or "")
+            ]
+
+        event = AgentSpecLlmGenerationChunkReceived(
+            request_id=run_id_str,
+            completion_id=message_id,
+            content=_ensure_string(chunk_message.content or ""),
+            llm_config=self.llm_config,
+            tool_calls=agentspec_tool_calls,
+        )
+        await self._add_event_async(run_id_str, span, event)
+
+    @typing.no_type_check
+    async def on_llm_end(
+        self,
+        response: LLMResult,
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        **kwargs: Any,
+    ) -> Any:
+        run_id_str = str(run_id)
+        span = self.agentspec_spans_registry.get(run_id_str)
+        if not isinstance(span, AgentSpecLlmGenerationSpan):
+            raise RuntimeError("LLM span not started; on_chat_model_start must run first")
+        message_id, content, tool_calls = _extract_message_content_and_tool_calls(response)
+        event = AgentSpecLlmGenerationResponse(
+            llm_config=self.llm_config,
+            request_id=run_id_str,
+            completion_id=message_id,
+            content=content,
+            tool_calls=tool_calls,
+        )
+        await self._add_event_async(run_id_str, span, event)
+        await self._end_span_async(run_id_str, span)
+        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.messages_in_process.pop(run_id_str, None)
+
+
+class AgentSpecAsyncToolCallbackHandler(AgentSpecAsyncCallbackHandler):
+
+    def __init__(self, tool: AgentSpecTool) -> None:
+        super().__init__()
+        self.tool = tool
+
+    async def on_tool_start(
+        self,
+        serialized: Dict[str, Any],
+        input_str: str,
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        **kwargs: Any,
+    ) -> Any:
+        run_id_str = str(run_id)
+        request_event = AgentSpecToolExecutionRequest(
+            request_id=run_id_str,
+            tool=self.tool,
+            inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
+        )
+        span_name = f"ToolExecution[{self.tool.name}]"
+        tool_span = AgentSpecToolExecutionSpan(name=span_name, tool=self.tool)
+        self.agentspec_spans_registry[run_id_str] = tool_span
+        await self._start_and_copy_ctx_async(run_id_str, tool_span)
+        await self._add_event_async(run_id_str, tool_span, request_event)
+
+    async def on_tool_end(
+        self,
+        output: Any,
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        **kwargs: Any,
+    ) -> Any:
+        run_id_str = str(run_id)
+        tool_span = self.agentspec_spans_registry.get(run_id_str)
+        if not isinstance(tool_span, AgentSpecToolExecutionSpan):
+            raise ValueError(
+                f"Expected tool_span to be a ToolExecutionSpan but got {type(tool_span)}"
+            )
+
+        if isinstance(output, ToolMessage):
+            try:
+                parsed = (
+                    json.loads(output.content)
+                    if isinstance(output.content, str)
+                    else output.content
+                )
+            except json.JSONDecodeError:
+                parsed = str(output.content)
+            outputs = parsed if isinstance(parsed, dict) else {"output": parsed}
+        else:
+            if (
+                not isinstance(output, dict)
+                and isinstance(self.tool.outputs, list)
+                and len(self.tool.outputs) == 1
+            ):
+                outputs = {self.tool.outputs[0].title: output}
+            else:
+                outputs = output
+
+        response_event = AgentSpecToolExecutionResponse(
+            request_id=getattr(output, "tool_call_id", run_id_str),
+            tool=tool_span.tool,
+            outputs=outputs,
+        )
+        await self._add_event_async(run_id_str, tool_span, response_event)
+        await self._end_span_async(run_id_str, tool_span)
+        self.agentspec_spans_registry.pop(run_id_str, None)
+
+    async def on_tool_error(
         self,
         error: BaseException,
         *,
@@ -360,7 +686,11 @@ def _extract_message_content_and_tool_calls(
     # in that case, chat_generation.generation_info["finish_reason"] is "tool_calls"
     # and tool_calls should not be empty
     if content == "" and not tool_calls:
-        raise ValueError("Expected tool_calls to not be empty when content is empty")
+        raise ValueError(
+            "Expected tool_calls to not be empty when content is empty. "
+            "This issue is LLM-specific depending on their tool-calling capabilities; "
+            "you may want to try again or switch to another LLM."
+        )
     content = _ensure_string(content)
     agentspec_tool_calls = [_build_agentspec_tool_call(tc) for tc in tool_calls]
     # if streaming, response_id is not provided, must rely on run_id

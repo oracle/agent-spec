@@ -4,6 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import pytest
+
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, MapNode, StartNode, ToolNode
@@ -11,8 +13,9 @@ from pyagentspec.property import FloatProperty, ListProperty, Property, UnionPro
 from pyagentspec.tools import ServerTool
 
 
-def test_mapnode_can_be_imported_and_executed() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
+@pytest.fixture()
+def mapnode_flow() -> Flow:
+    pass
 
     # Define subflow for squaring a number
     x_property = Property(json_schema={"title": "input", "type": "number"})
@@ -139,8 +142,31 @@ def test_mapnode_can_be_imported_and_executed() -> None:
     def square_tool(input: int) -> int:
         return int(input) * int(input)
 
+    return mapnode_flow
+
+
+def test_mapnode_can_be_imported_and_executed(mapnode_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def square_tool(input: int) -> int:
+        return int(input) * int(input)
+
     agent = AgentSpecLoader(tool_registry={"square_tool": square_tool}).load_component(mapnode_flow)
     result = agent.invoke({"inputs": {"input_list": [1, 2, 3, 4]}})
+    outputs = result["outputs"]
+    assert "collected_input_square" in outputs
+    assert outputs["collected_input_square"] == [1.0, 4.0, 9.0, 16.0]
+
+
+@pytest.mark.anyio
+async def test_mapnode_can_be_executed_async(mapnode_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def square_tool(input: int) -> int:
+        return int(input) * int(input)
+
+    agent = AgentSpecLoader(tool_registry={"square_tool": square_tool}).load_component(mapnode_flow)
+    result = await agent.ainvoke({"inputs": {"input_list": [1, 2, 3, 4]}})
     outputs = result["outputs"]
     assert "collected_input_square" in outputs
     assert outputs["collected_input_square"] == [1.0, 4.0, 9.0, 16.0]

@@ -4,20 +4,21 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import pytest
+
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, FlowNode, StartNode
 from pyagentspec.property import StringProperty
 
 
-def test_flownode_can_be_imported_and_executed() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
+@pytest.fixture()
+def flow_node_flow() -> Flow:
     custom_property = StringProperty(title="custom_prop")
     start_node = StartNode(name="start", inputs=[custom_property])
     end_node = EndNode(name="end", outputs=[custom_property])
 
-    flow = Flow(
+    subflow = Flow(
         name="subflow",
         start_node=start_node,
         nodes=[start_node, end_node],
@@ -39,12 +40,12 @@ def test_flownode_can_be_imported_and_executed() -> None:
 
     flow_node = FlowNode(
         name="flow_node",
-        subflow=flow,
+        subflow=subflow,
     )
     start_node = StartNode(name="start", inputs=[custom_property])
     end_node = EndNode(name="end", outputs=[custom_property])
 
-    flow = Flow(
+    return Flow(
         name="subflow",
         start_node=start_node,
         nodes=[start_node, flow_node, end_node],
@@ -72,12 +73,31 @@ def test_flownode_can_be_imported_and_executed() -> None:
         outputs=[custom_property],
     )
 
-    agent = AgentSpecLoader().load_component(flow)
-    result = agent.invoke({"inputs": {custom_property.title: "custom"}})
+
+def test_flownode_can_be_imported_and_executed(flow_node_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(flow_node_flow)
+    result = agent.invoke({"inputs": {"custom_prop": "custom"}})
 
     assert "outputs" in result
     assert "messages" in result
 
     outputs = result["outputs"]
-    assert custom_property.title in outputs
-    assert outputs[custom_property.title] == "custom"
+    assert "custom_prop" in outputs
+    assert outputs["custom_prop"] == "custom"
+
+
+@pytest.mark.anyio
+async def test_flownode_can_be_executed_async(flow_node_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(flow_node_flow)
+    result = await agent.ainvoke({"inputs": {"custom_prop": "custom"}})
+
+    assert "outputs" in result
+    assert "messages" in result
+
+    outputs = result["outputs"]
+    assert "custom_prop" in outputs
+    assert outputs["custom_prop"] == "custom"

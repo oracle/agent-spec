@@ -24,10 +24,11 @@ if TYPE_CHECKING:
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
     import langgraph_core  # type: ignore
-    from langchain_core.callbacks import BaseCallbackHandler
+    from langchain_core.callbacks import AsyncCallbackHandler, BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
-    from langchain_core.messages import BaseMessage, SystemMessage
-    from langchain_core.runnables import RunnableBinding, RunnableConfig
+    from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
+    from langchain_core.outputs import ChatGenerationChunk, GenerationChunk, LLMResult
+    from langchain_core.runnables import RunnableBinding, RunnableConfig, RunnableLambda
     from langchain_core.tools import BaseTool, StructuredTool
     from langgraph.graph import StateGraph
     from langgraph.graph._branch import BranchSpec
@@ -54,14 +55,20 @@ else:
     Messages = LazyLoader("langgraph.graph.message").Messages
     CompiledStateGraph = LazyLoader("langgraph.graph.state").CompiledStateGraph
     BaseCallbackHandler = LazyLoader("langchain_core.callbacks").BaseCallbackHandler
+    AsyncCallbackHandler = LazyLoader("langchain_core.callbacks").AsyncCallbackHandler
     RunnableBinding = LazyLoader("langchain_core.runnables").RunnableBinding
     RunnableConfig = LazyLoader("langchain_core.runnables").RunnableConfig
+    RunnableLambda = LazyLoader("langchain_core.runnables").RunnableLambda
     StateNodeSpec = LazyLoader("langgraph.graph._node").StateNodeSpec
     BranchSpec = LazyLoader("langgraph.graph._branch").BranchSpec
     SystemMessage = LazyLoader("langchain_core.messages").SystemMessage
     BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
+    ToolMessage = LazyLoader("langchain_core.messages").ToolMessage
     BaseChatModel = LazyLoader("langchain_core.language_models").BaseChatModel
     BaseStore = LazyLoader("langgraph.store.base").BaseStore
+    ChatGenerationChunk = LazyLoader("langchain_core.outputs").ChatGenerationChunk
+    GenerationChunk = LazyLoader("langchain_core.outputs").GenerationChunk
+    LLMResult = LazyLoader("langchain_core.outputs").LLMResult
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
@@ -144,8 +151,10 @@ __all__ = [
     "RunnableBinding",
     "StructuredTool",
     "BaseTool",
+    "RunnableLambda",
     "SystemMessage",
     "BaseMessage",
+    "ToolMessage",
     "BaseChatModel",
     "BaseStore",
     "Checkpointer",
@@ -154,4 +163,8 @@ __all__ = [
     "Messages",
     "BranchSpec",
     "BaseCallbackHandler",
+    "AsyncCallbackHandler",
+    "ChatGenerationChunk",
+    "GenerationChunk",
+    "LLMResult",
 ]
