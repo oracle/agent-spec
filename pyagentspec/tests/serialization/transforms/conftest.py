@@ -19,8 +19,8 @@ def create_test_llm_config():
         name="test_openai_config",
         model_id="gpt-3.5-turbo",
     )
-    # Set to v25_4_2 to match the serialized agentspec_version, ensuring deserialized == original
-    config.min_agentspec_version = AgentSpecVersionEnum.v25_4_2
+    # Set to v26_1_1 to match the serialized agentspec_version, ensuring deserialized == original
+    config.min_agentspec_version = AgentSpecVersionEnum.v26_1_1
     return config
 
 

@@ -21,7 +21,7 @@ class PostgresDatabaseConnectionConfig(Component, abstract=True):
     """Base class for a PostgreSQL connection."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
+        default=AgentSpecVersionEnum.v26_1_1, init=False, exclude=True
     )
 
 

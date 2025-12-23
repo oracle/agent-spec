@@ -87,5 +87,4 @@ tools:
   executor_name: demo_executor
   tool_version: '1.0'
 human_in_the_loop: true
-transforms: []
 agentspec_version: 25.4.2

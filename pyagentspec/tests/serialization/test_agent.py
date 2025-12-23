@@ -293,11 +293,11 @@ def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
         create_conversation_summarization_transform(datastore),
     ]
     # The default min_agentspec_version for VllmConfig is v25_4_1. If we leave it unchanged,
-    # the agent with non-empty transforms would serialize to v25_4_2 (due to the transforms requiring that version).
-    # During deserialization, all fields including vllmconfig would be deserialized to v25_4_2,
+    # the agent with non-empty transforms would serialize to v26_1_1 (due to the transforms requiring that version).
+    # During deserialization, all fields including vllmconfig would be deserialized to v26_1_1,
     # but vllmconfig's min_agentspec_version would still be v25_4_1, causing the test deserialized == original to fail.
-    # Therefore, we explicitly set the version to v25_4_2
-    vllmconfig.min_agentspec_version = AgentSpecVersionEnum.v25_4_2
+    # Therefore, we explicitly set the version to v26_1_1
+    vllmconfig.min_agentspec_version = AgentSpecVersionEnum.v26_1_1
 
     agent = Agent(
         id="agent1",
@@ -339,7 +339,7 @@ def test_serializing_agent_with_non_empty_transforms_and_unsupported_version_rai
     serializer = AgentSpecSerializer()
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         _ = serializer.to_yaml(
-            agent_with_non_empty_transforms, agentspec_version=AgentSpecVersionEnum.v25_4_1
+            agent_with_non_empty_transforms, agentspec_version=AgentSpecVersionEnum.v26_1_0
         )
 
 
@@ -348,9 +348,9 @@ def test_deserializing_agent_with_non_empty_transforms_and_unsupported_version_r
 ):
     serializer = AgentSpecSerializer()
     serialized_agent = serializer.to_yaml(agent_with_non_empty_transforms)
-    assert "agentspec_version: 25.4.2" in serialized_agent
+    assert "agentspec_version: 26.1.1" in serialized_agent
     serialized_agent = serialized_agent.replace(
-        "agentspec_version: 25.4.2", "agentspec_version: 25.4.1"
+        "agentspec_version: 26.1.1", "agentspec_version: 26.1.0"
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

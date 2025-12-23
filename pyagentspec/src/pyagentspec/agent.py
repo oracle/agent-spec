@@ -72,17 +72,23 @@ class Agent(AgenticComponent):
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("toolboxes")
             fields_to_exclude.add("human_in_the_loop")
+        if agentspec_version < AgentSpecVersionEnum.v26_1_1:
             fields_to_exclude.add("transforms")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         parent_min_version = super()._infer_min_agentspec_version_from_configuration()
         current_object_min_version = self.min_agentspec_version
-        if self.toolboxes or not self.human_in_the_loop or self.transforms:
+        if self.toolboxes or not self.human_in_the_loop:
             # We first check if the component requires toolboxes)
             # If that's the case, we set the min version to 25.4.2, when toolboxes were introduced
             # Similarly, human_in_the_loop was only added in 25.4.2 (human_in_the_loop=True was
             # the de-facto default before)
-            # Similary, transforms was only added in 25.4.2
-            current_object_min_version = AgentSpecVersionEnum.v25_4_2
+            current_object_min_version = max(
+                current_object_min_version, AgentSpecVersionEnum.v25_4_2
+            )
+        if self.transforms:
+            current_object_min_version = max(
+                current_object_min_version, AgentSpecVersionEnum.v26_1_1
+            )
         return max(parent_min_version, current_object_min_version)
