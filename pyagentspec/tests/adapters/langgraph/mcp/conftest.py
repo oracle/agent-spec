@@ -31,10 +31,6 @@ from .encryption import (
     issue_server_cert,
 )
 
-llama70b_api_url = os.environ.get("LLAMA70BV33_API_URL")
-if not llama70b_api_url:
-    raise Exception("LLAMA70BV33_API_URL is not set in the environment")
-
 
 @pytest.fixture
 def big_llama():
@@ -43,7 +39,7 @@ def big_llama():
     return VllmConfig(
         name="TEST MODEL",
         model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=llama70b_api_url,
+        url=os.environ.get("LLAMA70BV33_API_URL"),
     )
 
 
