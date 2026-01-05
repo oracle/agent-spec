@@ -5,14 +5,12 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, List, Tuple, TypedDict, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Tuple, TypedDict, Union
 
-from pydantic import SerializeAsAny
 from typing_extensions import TypeAlias
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
-from pyagentspec.tools import Tool as AgentSpecTool
 
 if TYPE_CHECKING:
     # Important: do not move this import out of the TYPE_CHECKING block so long as langgraph is an optional dependency.
@@ -75,7 +73,6 @@ class LangGraphLlmConfig:
     model_type: str
     model_name: str
     base_url: str
-    tools: List[SerializeAsAny[AgentSpecTool]]
     api_type: OpenAIAPIType = OpenAIAPIType.CHAT_COMPLETIONS
 
 

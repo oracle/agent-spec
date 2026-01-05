@@ -27,6 +27,7 @@ from pyagentspec.adapters.langgraph._types import (
     interrupt,
     langgraph_graph,
 )
+from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
@@ -85,8 +86,22 @@ class NodeExecutor(ABC):
                     value = bool(value)
                 elif property_.type == "integer" and isinstance(value, (float, bool)):
                     value = int(value)
+                elif property_.type == "integer" and isinstance(value, str):
+                    # Try converting numeric strings to integers; if it fails, leave as-is
+                    try:
+                        value = int(value.strip())
+                    except ValueError as e:
+                        if not str(e).startswith("could not convert string to int:"):
+                            raise e
                 elif property_.type == "number" and isinstance(value, (int, bool)):
                     value = float(value)
+                elif property_.type == "number" and isinstance(value, str):
+                    # Try converting numeric strings to floats; if it fails, leave as-is
+                    try:
+                        value = float(value.strip())
+                    except ValueError as e:
+                        if not str(e).startswith("could not convert string to float:"):
+                            raise e
                 results_dict[key] = value
             elif property_.default is not pyagentspec_empty_default:
                 results_dict[key] = property_.default
@@ -217,6 +232,7 @@ class EndNodeExecutor(NodeExecutor):
 
 
 class BranchingNodeExecutor(NodeExecutor):
+    node: AgentSpecBranchingNode
 
     def __init__(self, node: AgentSpecBranchingNode) -> None:
         super().__init__(node)
@@ -254,8 +270,14 @@ class ToolNodeExecutor(NodeExecutor):
         tool = self.tool_callable
 
         if isinstance(tool, BaseTool):
-            # LangChain tool object: uses .invoke
-            tool_output = tool.invoke(inputs)
+            if getattr(tool, "coroutine", None) is None:
+                tool_output = tool.invoke(inputs)
+            else:
+                # this is an async tool (most likely MCP tool), we need to await it but this _execute method needs to be sync
+                async def arun():  # type: ignore
+                    return await tool.ainvoke(inputs)
+
+                tool_output = _run_async_in_sync_simple(arun, method_name="arun")
         else:
             # Plain callable: we call it like a function
             tool_output = tool(**inputs)
@@ -306,6 +328,7 @@ class AgentNodeExecutor(NodeExecutor):
                 system_prompt=system_prompt,
                 llm_config=agentspec_component.llm_config,
                 tools=agentspec_component.tools,
+                toolboxes=agentspec_component.toolboxes,
                 inputs=agentspec_component.inputs or [],
                 outputs=agentspec_component.outputs or [],
                 tool_registry=self.tool_registry,
@@ -363,6 +386,11 @@ class LlmNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecLlmNode):
             raise TypeError("LlmNodeExecutor can only be initialized with LlmNode")
+        outputs = self.node.outputs
+        if outputs is not None and len(outputs) == 1 and outputs[0].type == "string":
+            self.requires_structured_generation = False
+        else:
+            self.requires_structured_generation = True
         if not isinstance(llm, BaseChatModel):
             raise TypeError("Llm can only be initialized with a BaseChatModel")
 
@@ -408,6 +436,10 @@ class LlmNodeExecutor(NodeExecutor):
         else:
             generated_message = self.llm.invoke(invoke_inputs)
             output_name = node_outputs[0].title if node_outputs else "generated_text"
+            if not hasattr(generated_message, "content"):
+                raise ValueError(
+                    "generated_message should not be a dict when not doing structured generation"
+                )
             generated_output = {output_name: generated_message.content}
         return generated_output, NodeExecutionDetails()
 
@@ -488,19 +520,18 @@ class MapNodeExecutor(NodeExecutor):
         if not self.inputs_to_iterate:
             raise ValueError("MapNode has no inputs to iterate")
 
-        num_iterations = None
+        num_inputs_to_iterate = None
         for input_name in self.inputs_to_iterate:
-            if num_iterations is None:
-                num_iterations = len(inputs[input_name])
-            elif len(inputs[input_name]) != num_iterations:
+            if num_inputs_to_iterate is None:
+                num_inputs_to_iterate = len(inputs[input_name])
+            elif len(inputs[input_name]) != num_inputs_to_iterate:
                 raise ValueError(
-                    f"Found inputs to iterate with different sizes ({inputs[input_name]} and {num_iterations})"
+                    f"Found inputs to iterate with different sizes ({inputs[input_name]} and {num_inputs_to_iterate})"
                 )
-
-        if num_iterations is None:
+        if num_inputs_to_iterate is None:
             raise ValueError("MapNode inputs_to_iterate did not match any provided inputs")
 
-        for i in range(num_iterations):
+        for i in range(num_inputs_to_iterate):
             # Need to initialize a new dictionary of inputs at every iteration as it will be modified by the subflow
             subflow_inputs = {
                 input_.title.replace("iterated_", ""): (

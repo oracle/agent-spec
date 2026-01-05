@@ -33,9 +33,12 @@ sphinx_design==0.6.1
 
 -c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
--e .[autogen,langgraph]
+-e .[autogen,langgraph_mcp]
 # or
 -e .
+
+# Additional packages for tests
+cryptography
 
 # For remote tool tests
 fastapi[standard-no-fastapi-cloud-cli]
