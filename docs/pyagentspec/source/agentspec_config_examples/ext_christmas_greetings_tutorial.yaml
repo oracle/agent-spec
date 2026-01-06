@@ -1,0 +1,662 @@
+component_type: Flow
+id: b0c24616-e3e0-4036-a40c-d9dbbbcb14cd
+name: MapNode_Christmas_Greetings_Flow
+description: null
+metadata: {}
+inputs:
+- title: iterated_email_data
+  items:
+    description: Consolidated data for email sending
+    title: email_data
+    type: object
+    properties:
+      recipient_name:
+        description: Name of the recipient
+        type: string
+        default: ''
+      recipient_info:
+        description: Information about the recipient including relationship, and notes
+          etc.
+        type: string
+        default: ''
+      recipient_email:
+        description: The email address of the recipient
+        type: string
+        default: ''
+      sender_name:
+        description: The name of the sender
+        type: string
+        default: ''
+  type: array
+outputs:
+- title: collected_result
+  items:
+    description: Result of the email sending operation.
+    title: result
+    type: string
+  type: array
+start_node:
+  $component_ref: de7770c9-83c2-478e-866b-2293e74cd5ae
+nodes:
+- $component_ref: de7770c9-83c2-478e-866b-2293e74cd5ae
+- $component_ref: b0c4e062-b55f-4c35-9d7f-fb405af0caae
+- $component_ref: dd45279c-3b99-4628-ac83-8b878b49d5be
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 06a57a26-556e-4038-9274-64b4b4bbdac0
+  name: main_start_node_map_node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: de7770c9-83c2-478e-866b-2293e74cd5ae
+  from_branch: null
+  to_node:
+    $component_ref: dd45279c-3b99-4628-ac83-8b878b49d5be
+- component_type: ControlFlowEdge
+  id: 1bec9167-7645-4958-8c93-260912dcd5f9
+  name: map_node_main_end_node_None
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: dd45279c-3b99-4628-ac83-8b878b49d5be
+  from_branch: null
+  to_node:
+    $component_ref: b0c4e062-b55f-4c35-9d7f-fb405af0caae
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 0d64c19b-9e5f-45d6-84ab-808e5acd48c2
+  name: main_start_node_map_node
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: de7770c9-83c2-478e-866b-2293e74cd5ae
+  source_output: iterated_email_data
+  destination_node:
+    $component_ref: dd45279c-3b99-4628-ac83-8b878b49d5be
+  destination_input: iterated_email_data
+- component_type: DataFlowEdge
+  id: 19356eeb-b64c-4e3d-912f-15958ebabdc7
+  name: map_node_main_end_node
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: dd45279c-3b99-4628-ac83-8b878b49d5be
+  source_output: collected_result
+  destination_node:
+    $component_ref: b0c4e062-b55f-4c35-9d7f-fb405af0caae
+  destination_input: collected_result
+$referenced_components:
+  de7770c9-83c2-478e-866b-2293e74cd5ae:
+    component_type: StartNode
+    id: de7770c9-83c2-478e-866b-2293e74cd5ae
+    name: main_start_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: iterated_email_data
+      items:
+        description: Consolidated data for email sending
+        title: email_data
+        type: object
+        properties:
+          recipient_name:
+            description: Name of the recipient
+            type: string
+            default: ''
+          recipient_info:
+            description: Information about the recipient including relationship, and
+              notes etc.
+            type: string
+            default: ''
+          recipient_email:
+            description: The email address of the recipient
+            type: string
+            default: ''
+          sender_name:
+            description: The name of the sender
+            type: string
+            default: ''
+      type: array
+    outputs:
+    - title: iterated_email_data
+      items:
+        description: Consolidated data for email sending
+        title: email_data
+        type: object
+        properties:
+          recipient_name:
+            description: Name of the recipient
+            type: string
+            default: ''
+          recipient_info:
+            description: Information about the recipient including relationship, and
+              notes etc.
+            type: string
+            default: ''
+          recipient_email:
+            description: The email address of the recipient
+            type: string
+            default: ''
+          sender_name:
+            description: The name of the sender
+            type: string
+            default: ''
+      type: array
+    branches:
+    - next
+  b0c4e062-b55f-4c35-9d7f-fb405af0caae:
+    component_type: EndNode
+    id: b0c4e062-b55f-4c35-9d7f-fb405af0caae
+    name: main_end_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: collected_result
+      items:
+        description: Result of the email sending operation.
+        title: result
+        type: string
+      type: array
+    outputs:
+    - title: collected_result
+      items:
+        description: Result of the email sending operation.
+        title: result
+        type: string
+      type: array
+    branches: []
+    branch_name: next
+  dd45279c-3b99-4628-ac83-8b878b49d5be:
+    component_type: MapNode
+    id: dd45279c-3b99-4628-ac83-8b878b49d5be
+    name: map_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: iterated_email_data
+      anyOf:
+      - description: Consolidated data for email sending
+        title: email_data
+        type: object
+        properties:
+          recipient_name:
+            description: Name of the recipient
+            type: string
+            default: ''
+          recipient_info:
+            description: Information about the recipient including relationship, and
+              notes etc.
+            type: string
+            default: ''
+          recipient_email:
+            description: The email address of the recipient
+            type: string
+            default: ''
+          sender_name:
+            description: The name of the sender
+            type: string
+            default: ''
+      - type: array
+        items:
+          description: Consolidated data for email sending
+          title: email_data
+          type: object
+          properties:
+            recipient_name:
+              description: Name of the recipient
+              type: string
+              default: ''
+            recipient_info:
+              description: Information about the recipient including relationship,
+                and notes etc.
+              type: string
+              default: ''
+            recipient_email:
+              description: The email address of the recipient
+              type: string
+              default: ''
+            sender_name:
+              description: The name of the sender
+              type: string
+              default: ''
+    outputs:
+    - title: collected_result
+      type: array
+      items:
+        description: Result of the email sending operation.
+        title: result
+        type: string
+    branches:
+    - next
+    subflow:
+      component_type: Flow
+      id: 2e1bd735-7606-4317-ae9c-334da7a7ab0e
+      name: Christmas_Greetings_Flow
+      description: null
+      metadata: {}
+      inputs:
+      - description: Consolidated data for email sending
+        title: email_data
+        type: object
+        properties:
+          recipient_name:
+            description: Name of the recipient
+            type: string
+            default: ''
+          recipient_info:
+            description: Information about the recipient including relationship, and
+              notes etc.
+            type: string
+            default: ''
+          recipient_email:
+            description: The email address of the recipient
+            type: string
+            default: ''
+          sender_name:
+            description: The name of the sender
+            type: string
+            default: ''
+      outputs:
+      - description: Result of the email sending operation.
+        title: result
+        type: string
+      start_node:
+        $component_ref: c36a0752-dff8-4523-9a07-b5c7545f65c9
+      nodes:
+      - $component_ref: c36a0752-dff8-4523-9a07-b5c7545f65c9
+      - $component_ref: bd32a0d4-6ea2-4ab5-8ea9-ea52ec1711d1
+      - $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+      - $component_ref: 376c0960-312b-4fbd-95af-48f743e96826
+      - $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: bf835446-8aaf-4f65-88a0-63f3db8a96d6
+        name: start_node_message_generator_node_None
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: c36a0752-dff8-4523-9a07-b5c7545f65c9
+        from_branch: null
+        to_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+      - component_type: ControlFlowEdge
+        id: 5ef80693-088b-483a-ac01-9694d55edbd3
+        name: message_generator_node_generate_image_node_None
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+        from_branch: null
+        to_node:
+          $component_ref: 376c0960-312b-4fbd-95af-48f743e96826
+      - component_type: ControlFlowEdge
+        id: f050c918-4e6b-4d03-837e-0f6c6a927daa
+        name: generate_image_node_send_email_node_None
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 376c0960-312b-4fbd-95af-48f743e96826
+        from_branch: null
+        to_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+      - component_type: ControlFlowEdge
+        id: baa2687a-17aa-4447-89ea-558add8252e0
+        name: send_email_node_end_node_None
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        from_branch: null
+        to_node:
+          $component_ref: bd32a0d4-6ea2-4ab5-8ea9-ea52ec1711d1
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: 234df221-505e-4451-ae2d-4621b8a7ba78
+        name: start_node_message_generator_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: c36a0752-dff8-4523-9a07-b5c7545f65c9
+        source_output: email_data
+        destination_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+        destination_input: email_data
+      - component_type: DataFlowEdge
+        id: 38f6437a-4d82-47b7-ad92-71677e05ea78
+        name: message_generator_node_generate_image_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+        source_output: body
+        destination_node:
+          $component_ref: 376c0960-312b-4fbd-95af-48f743e96826
+        destination_input: body
+      - component_type: DataFlowEdge
+        id: 4360ac62-32c5-4ce3-beab-d6520e8333f3
+        name: message_generator_node_send_email_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+        source_output: subject
+        destination_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        destination_input: subject
+      - component_type: DataFlowEdge
+        id: 91249b22-0f9f-4cf8-b7ff-dacb0e6c1a87
+        name: message_generator_node_send_email_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 1aa02549-eecb-4d5a-8354-8468dcd25254
+        source_output: body
+        destination_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        destination_input: body
+      - component_type: DataFlowEdge
+        id: d0a13a58-b8e3-4292-b2b7-17428fcd2f2e
+        name: generate_image_node_send_email_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 376c0960-312b-4fbd-95af-48f743e96826
+        source_output: image
+        destination_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        destination_input: image
+      - component_type: DataFlowEdge
+        id: e9b92631-f70f-4926-897d-b3fff395b9b5
+        name: start_node_send_email_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: c36a0752-dff8-4523-9a07-b5c7545f65c9
+        source_output: email_data
+        destination_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        destination_input: email_data
+      - component_type: DataFlowEdge
+        id: 0ef15ddc-b51d-42da-9ec8-b6f620480728
+        name: send_email_node_end_node
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: be49d47f-c7ec-429d-99e1-d8b786c79323
+        source_output: result
+        destination_node:
+          $component_ref: bd32a0d4-6ea2-4ab5-8ea9-ea52ec1711d1
+        destination_input: result
+      $referenced_components:
+        c36a0752-dff8-4523-9a07-b5c7545f65c9:
+          component_type: StartNode
+          id: c36a0752-dff8-4523-9a07-b5c7545f65c9
+          name: start_node
+          description: null
+          metadata: {}
+          inputs:
+          - description: Consolidated data for email sending
+            title: email_data
+            type: object
+            properties:
+              recipient_name:
+                description: Name of the recipient
+                type: string
+                default: ''
+              recipient_info:
+                description: Information about the recipient including relationship,
+                  and notes etc.
+                type: string
+                default: ''
+              recipient_email:
+                description: The email address of the recipient
+                type: string
+                default: ''
+              sender_name:
+                description: The name of the sender
+                type: string
+                default: ''
+          outputs:
+          - description: Consolidated data for email sending
+            title: email_data
+            type: object
+            properties:
+              recipient_name:
+                description: Name of the recipient
+                type: string
+                default: ''
+              recipient_info:
+                description: Information about the recipient including relationship,
+                  and notes etc.
+                type: string
+                default: ''
+              recipient_email:
+                description: The email address of the recipient
+                type: string
+                default: ''
+              sender_name:
+                description: The name of the sender
+                type: string
+                default: ''
+          branches:
+          - next
+        bd32a0d4-6ea2-4ab5-8ea9-ea52ec1711d1:
+          component_type: EndNode
+          id: bd32a0d4-6ea2-4ab5-8ea9-ea52ec1711d1
+          name: end_node
+          description: null
+          metadata: {}
+          inputs:
+          - description: Result of the email sending operation.
+            title: result
+            type: string
+          outputs:
+          - description: Result of the email sending operation.
+            title: result
+            type: string
+          branches: []
+          branch_name: next
+        1aa02549-eecb-4d5a-8354-8468dcd25254:
+          component_type: LlmNode
+          id: 1aa02549-eecb-4d5a-8354-8468dcd25254
+          name: message_generator_node
+          description: null
+          metadata: {}
+          inputs:
+          - description: Consolidated data for email sending
+            title: email_data
+            type: object
+            properties:
+              recipient_name:
+                description: Name of the recipient
+                type: string
+                default: ''
+              recipient_info:
+                description: Information about the recipient including relationship,
+                  and notes etc.
+                type: string
+                default: ''
+              recipient_email:
+                description: The email address of the recipient
+                type: string
+                default: ''
+              sender_name:
+                description: The name of the sender
+                type: string
+                default: ''
+          outputs:
+          - description: The subject line of the email.
+            title: subject
+            type: string
+          - description: The body content of the email.
+            title: body
+            type: string
+          branches:
+          - next
+          llm_config:
+            component_type: OpenAiConfig
+            id: e7131317-fbd9-4c04-8068-c0d727cadf65
+            name: openai-llm
+            description: null
+            metadata: {}
+            default_generation_parameters: null
+            model_id: model-id
+            api_type: chat_completions
+            api_key: null
+          prompt_template: 'You are a friendly holiday greeter tasked with creating
+            personalized Christmas greetings to recipients. Your primary goal is to
+            craft thoughtful, customized messages based on recipient details.
+
+
+            **Workflow:**
+
+            - **1. Recipient Information:** Use the provided details about the recipient,
+            such as name, relationship (friend, family, colleague), and any specific
+            notes (e.g., recent achievements, shared memories).
+
+            - **2. Message Customization:** Create a unique, heartfelt Christmas message
+            tailored to the recipient.
+
+            - **3. Drafting:** Draft the message, ensuring it reflects a warm, festive
+            tone and includes personalized elements.
+
+
+            **Guidelines:**
+
+            - Use a warm, friendly tone in all messages. Reflect the spirit of the
+            holiday season.
+
+            - Use about 200 words for the message.
+
+            - Ensure messages are personalized, avoid generic content unless no details
+            are provided.
+
+
+            Your greetings should brighten the recipient''s day and strengthen connections
+            during the holiday season.
+
+
+            Please make sure the body is formatted with spacing and new lines like
+            a proper email.
+
+
+            Information about recipients and senders is in: {{email_data}}'
+        376c0960-312b-4fbd-95af-48f743e96826:
+          component_type: ToolNode
+          id: 376c0960-312b-4fbd-95af-48f743e96826
+          name: generate_image_node
+          description: null
+          metadata: {}
+          inputs:
+          - description: The body content of the email.
+            title: body
+            type: string
+          outputs:
+          - description: Image generation.
+            title: image
+            type: string
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: 05692f93-624c-4d12-9f36-3b6ca9ec941b
+            name: generate_image_tool
+            description: Generate image based on text.
+            metadata: {}
+            inputs:
+            - description: The body content of the email.
+              title: body
+              type: string
+            outputs:
+            - description: Image generation.
+              title: image
+              type: string
+            requires_confirmation: false
+        be49d47f-c7ec-429d-99e1-d8b786c79323:
+          component_type: ToolNode
+          id: be49d47f-c7ec-429d-99e1-d8b786c79323
+          name: send_email_node
+          description: null
+          metadata: {}
+          inputs:
+          - description: Consolidated data for email sending
+            title: email_data
+            type: object
+            properties:
+              recipient_name:
+                description: Name of the recipient
+                type: string
+                default: ''
+              recipient_info:
+                description: Information about the recipient including relationship,
+                  and notes etc.
+                type: string
+                default: ''
+              recipient_email:
+                description: The email address of the recipient
+                type: string
+                default: ''
+              sender_name:
+                description: The name of the sender
+                type: string
+                default: ''
+          - description: The subject line of the email.
+            title: subject
+            type: string
+          - description: The body content of the email.
+            title: body
+            type: string
+          - description: Image generation.
+            title: image
+            type: string
+          outputs:
+          - description: Result of the email sending operation.
+            title: result
+            type: string
+          branches:
+          - next
+          tool:
+            component_type: ServerTool
+            id: f830ba7a-922f-4d60-9d4f-32d727595f4b
+            name: send_email_tool
+            description: Send email.
+            metadata: {}
+            inputs:
+            - description: Consolidated data for email sending
+              title: email_data
+              type: object
+              properties:
+                recipient_name:
+                  description: Name of the recipient
+                  type: string
+                  default: ''
+                recipient_info:
+                  description: Information about the recipient including relationship,
+                    and notes etc.
+                  type: string
+                  default: ''
+                recipient_email:
+                  description: The email address of the recipient
+                  type: string
+                  default: ''
+                sender_name:
+                  description: The name of the sender
+                  type: string
+                  default: ''
+            - description: The subject line of the email.
+              title: subject
+              type: string
+            - description: The body content of the email.
+              title: body
+              type: string
+            - description: Image generation.
+              title: image
+              type: string
+            outputs:
+            - description: Result of the email sending operation.
+              title: result
+              type: string
+            requires_confirmation: false
+    reducers:
+      result: append
+agentspec_version: 25.4.2
