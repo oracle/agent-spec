@@ -5,12 +5,17 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import asyncio
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
-from autogen_core import CancellationToken
-
+from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
 from pyagentspec.tools.remotetool import RemoteTool
+
+if TYPE_CHECKING:
+    from autogen_core import CancellationToken
+else:
+    CancellationToken = LazyLoader("autogen_core").CancellationToken
 
 
 class DummyResponse:
