@@ -5,17 +5,10 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import asyncio
-from typing import TYPE_CHECKING
 from unittest.mock import patch
 
-from pyagentspec._lazy_loader import LazyLoader
-from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
+from pyagentspec.adapters.autogen import AgentSpecLoader
 from pyagentspec.tools.remotetool import RemoteTool
-
-if TYPE_CHECKING:
-    from autogen_core import CancellationToken
-else:
-    CancellationToken = LazyLoader("autogen_core").CancellationToken
 
 
 class DummyResponse:
@@ -59,8 +52,7 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
         )
 
         # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        converter = AgentSpecToAutogenConverter()
-        autogen_tool = converter.convert(remote_tool, tool_registry={})
+        autogen_tool = AgentSpecLoader().load_component(remote_tool)
 
         # Expected object passed as the `json` kwarg to httpx.request after rendering.
         expected_json = {
@@ -70,6 +62,8 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
         }
 
         # Patch httpx.request (used inside the converted autogen tool) to capture the call.
+        from autogen_core import CancellationToken
+
         with patch("httpx.request", side_effect=mock_request) as patched_request:
             # Call the underlying function of the FunctionTool directly with keyword args.
             cancellation_token = CancellationToken()
@@ -122,8 +116,7 @@ def test_remote_tool_post_json_array() -> None:
         )
 
         # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        converter = AgentSpecToAutogenConverter()
-        autogen_tool = converter.convert(remote_tool, tool_registry={})
+        autogen_tool = AgentSpecLoader().load_component(remote_tool)
 
         # Expected rendered data (list).
         expected_data = [
@@ -132,6 +125,8 @@ def test_remote_tool_post_json_array() -> None:
         ]
 
         # Patch httpx.request.
+        from autogen_core import CancellationToken
+
         with patch("httpx.request", side_effect=mock_request) as patched_request:
             cancellation_token = CancellationToken()
             result = await autogen_tool.run_json(
@@ -174,13 +169,14 @@ def test_remote_tool_post_raw_body() -> None:
         )
 
         # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        converter = AgentSpecToAutogenConverter()
-        autogen_tool = converter.convert(remote_tool, tool_registry={})
+        autogen_tool = AgentSpecLoader().load_component(remote_tool)
 
         # Expected rendered data (str).
         expected_data = "request body for city: Agadir with note: urgent"
 
         # Patch httpx.request.
+        from autogen_core import CancellationToken
+
         with patch("httpx.request", side_effect=mock_request) as patched_request:
             cancellation_token = CancellationToken()
             result = await autogen_tool.run_json(

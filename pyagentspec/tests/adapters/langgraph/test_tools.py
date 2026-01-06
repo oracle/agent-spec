@@ -6,7 +6,7 @@
 
 from unittest.mock import patch
 
-from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.tools.remotetool import RemoteTool
 
 
@@ -50,8 +50,7 @@ def test_remote_tool_having_nested_inputs_with_langgraph() -> None:
     )
 
     # Convert to a LangGraph StructuredTool using the LangGraph adapter converter.
-    converter = AgentSpecToLangGraphConverter()
-    lang_tool = converter.convert(remote_tool, tool_registry={})
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected object passed as the `json` kwarg to httpx.request after rendering.
     expected_json = {
@@ -102,8 +101,7 @@ def test_remote_tool_post_json_array_with_langgraph() -> None:
     )
 
     # Convert to a LangGraph StructuredTool using the LangGraph adapter converter.
-    converter = AgentSpecToLangGraphConverter()
-    lang_tool = converter.convert(remote_tool, tool_registry={})
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected rendered data (list).
     expected_data = [
@@ -148,8 +146,7 @@ def test_remote_tool_post_raw_body_with_langgraph() -> None:
     )
 
     # Convert to a LangGraph StructuredTool using the LangGraph adapter converter.
-    converter = AgentSpecToLangGraphConverter()
-    lang_tool = converter.convert(remote_tool, tool_registry={})
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected rendered data (str).
     expected_data = "request body for city: Agadir with note: urgent"
