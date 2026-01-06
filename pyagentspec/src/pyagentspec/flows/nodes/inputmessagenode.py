@@ -12,7 +12,7 @@ from typing_extensions import Self
 
 from pyagentspec.flows.node import Node
 from pyagentspec.property import Property, StringProperty
-from pyagentspec.templating import get_placeholder_properties_from_string
+from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 
 
@@ -88,7 +88,7 @@ class InputMessageNode(Node):
         message = getattr(self, "message", None)
         if message is None:
             return []
-        return get_placeholder_properties_from_string(message)
+        return get_placeholder_properties_from_json_object(message)
 
     def _get_inferred_outputs(self) -> List[Property]:
         output_title = self.outputs[0].title if self.outputs else self.DEFAULT_OUTPUT

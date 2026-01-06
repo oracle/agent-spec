@@ -8,11 +8,10 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union, cast
 from uuid import uuid4
 
-import httpx
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, create_model
 
 from pyagentspec import Component as AgentSpecComponent
-from pyagentspec.adapters._utils import render_template
+from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.langgraph._node_execution import NodeExecutor
 from pyagentspec.adapters.langgraph._types import (
     BaseCallbackHandler,
@@ -617,24 +616,7 @@ class AgentSpecToLangGraphConverter:
         remote_tool: AgentSpecRemoteTool,
         config: RunnableConfig,
     ) -> LangGraphTool:
-        def _remote_tool(**kwargs: Any) -> Any:
-            remote_tool_data = {k: render_template(v, kwargs) for k, v in remote_tool.data.items()}
-            remote_tool_headers = {
-                k: render_template(v, kwargs) for k, v in remote_tool.headers.items()
-            }
-            remote_tool_query_params = {
-                k: render_template(v, kwargs) for k, v in remote_tool.query_params.items()
-            }
-            remote_tool_url = render_template(remote_tool.url, kwargs)
-            response = httpx.request(
-                method=remote_tool.http_method,
-                url=remote_tool_url,
-                params=remote_tool_query_params,
-                json=remote_tool_data,
-                headers=remote_tool_headers,
-            )
-            return response.json()
-
+        _remote_tool = _create_remote_tool_func(remote_tool)
         # Use a Pydantic model for args_schema
         args_model = _create_pydantic_model_from_properties(
             f"{remote_tool.name}Args",

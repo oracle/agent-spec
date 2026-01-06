@@ -10,7 +10,7 @@ from typing import List
 
 from pyagentspec.flows.node import Node
 from pyagentspec.property import Property
-from pyagentspec.templating import get_placeholder_properties_from_string
+from pyagentspec.templating import get_placeholder_properties_from_json_object
 
 
 class OutputMessageNode(Node):
@@ -76,7 +76,7 @@ class OutputMessageNode(Node):
     """Content of the agent message to append. Allows placeholders, which can define inputs."""
 
     def _get_inferred_inputs(self) -> List[Property]:
-        return get_placeholder_properties_from_string(getattr(self, "message", ""))
+        return get_placeholder_properties_from_json_object(getattr(self, "message", ""))
 
     def _get_inferred_outputs(self) -> List[Property]:
         return []

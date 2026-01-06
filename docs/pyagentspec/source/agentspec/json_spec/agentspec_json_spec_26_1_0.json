@@ -1342,9 +1342,17 @@
           "title": "Api Spec Uri"
         },
         "data": {
-          "additionalProperties": true,
-          "title": "Data",
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "binary",
+              "type": "string"
+            },
+            {}
+          ],
+          "title": "Data"
         },
         "query_params": {
           "additionalProperties": true,
@@ -4091,9 +4099,17 @@
           "title": "Api Spec Uri"
         },
         "data": {
-          "additionalProperties": true,
-          "title": "Data",
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "binary",
+              "type": "string"
+            },
+            {}
+          ],
+          "title": "Data"
         },
         "query_params": {
           "additionalProperties": true,

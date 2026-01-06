@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import httpx
 
-from pyagentspec.adapters._utils import render_template
+from pyagentspec.adapters._utils import render_nested_object_template, render_template
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     BaseMessage,
@@ -243,7 +243,7 @@ class BranchingNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         if not isinstance(self.node, AgentSpecBranchingNode):
-            raise TypeError("BranchingNodeExecutor can only be initialized with BranchingNode")
+            raise TypeError("BranchingNodeExecutor can only be executed with BranchingNode")
         branching_node = self.node
         node_inputs = branching_node.inputs or []
         input_branch_prop_title = node_inputs[0].title
@@ -303,7 +303,7 @@ class AgentNodeExecutor(NodeExecutor):
     ) -> None:
         super().__init__(node)
         if not isinstance(self.node, AgentSpecAgentNode):
-            raise TypeError("AgentNode can only be initialized with AgentNode")
+            raise TypeError("AgentNodeExecutor can only be initialized with AgentNode")
         self.tool_registry = tool_registry
         self.checkpointer = checkpointer
         self.converted_components = converted_components
@@ -450,16 +450,20 @@ class ApiNodeExecutor(NodeExecutor):
     def __init__(self, node: AgentSpecApiNode) -> None:
         super().__init__(node)
         if not isinstance(self.node, AgentSpecApiNode):
-            raise TypeError("ApiNode can only be initialized with ApiNode")
+            raise TypeError("ApiNodeExecutor can only be initialized with ApiNode")
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         api_node = self.node
         if not isinstance(api_node, AgentSpecApiNode):
-            raise TypeError("ApiNode can only execute ApiNode")
-        remote_tool_data = {k: render_template(v, inputs) for k, v in api_node.data.items()}
-        remote_tool_headers = {k: render_template(v, inputs) for k, v in api_node.headers.items()}
+            raise TypeError("ApiNodeExecutor can only execute ApiNode")
+        remote_tool_data = render_nested_object_template(api_node.data, inputs)
+        remote_tool_headers = {
+            render_template(k, inputs): render_nested_object_template(v, inputs)
+            for k, v in api_node.headers.items()
+        }
         remote_tool_query_params = {
-            k: render_template(v, inputs) for k, v in api_node.query_params.items()
+            render_template(k, inputs): render_nested_object_template(v, inputs)
+            for k, v in api_node.query_params.items()
         }
         remote_tool_url = render_template(api_node.url, inputs)
         response = httpx.request(

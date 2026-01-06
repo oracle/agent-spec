@@ -13,7 +13,7 @@ from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
 from pyagentspec.component import ComponentWithIO
 from pyagentspec.property import Property, deduplicate_properties_by_title_and_type
-from pyagentspec.templating import get_placeholder_properties_from_string
+from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -36,7 +36,7 @@ class AgentSpecializationParameters(ComponentWithIO):
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
-        return get_placeholder_properties_from_string(
+        return get_placeholder_properties_from_json_object(
             getattr(self, "additional_instructions", "") or ""
         )
 

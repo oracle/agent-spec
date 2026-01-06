@@ -10,6 +10,59 @@ from typing import Any, Dict, List, Tuple
 from pyagentspec.templating import TEMPLATE_PLACEHOLDER_REGEXP
 
 
+def render_nested_object_template(
+    object: Any,
+    inputs: Dict[str, Any],
+) -> Any:
+    """Renders any found variables between curly braces from any string in an object which can be an arbitrarily nested
+    structure of dicts, lists, sets and tuples.
+
+    Parameters
+    ----------
+    object : Any
+        A potentially nested python object (str, bytes, dict, list, set, tuple)
+    inputs : Dict[str, Any]
+        The inputs to the variables
+
+    Returns
+    -------
+    Any
+        An object of the same type as the input object with all found template variables
+        replaced according to the given inputs.
+
+    """
+    if isinstance(object, str):
+        return render_template(object, inputs)
+    elif isinstance(object, bytes):
+        return render_nested_object_template(
+            object.decode("utf-8", errors="replace"),
+            inputs,
+        )
+    elif isinstance(object, dict):
+        return {
+            render_nested_object_template(
+                k,
+                inputs,
+            ): render_nested_object_template(
+                v,
+                inputs,
+            )
+            for k, v in object.items()
+        }
+    elif isinstance(object, list) or isinstance(object, set) or isinstance(object, tuple):
+        return object.__class__(
+            [
+                render_nested_object_template(
+                    item,
+                    inputs,
+                )
+                for item in object
+            ]
+        )
+    else:
+        return object
+
+
 def render_template(template: str, inputs: Dict[str, Any]) -> str:
     """Render a prompt template using inputs."""
     if not isinstance(template, str):

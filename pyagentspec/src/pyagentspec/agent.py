@@ -13,7 +13,7 @@ from pydantic import Field, SerializeAsAny
 from pyagentspec.agenticcomponent import AgenticComponent
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.property import Property
-from pyagentspec.templating import get_placeholder_properties_from_string
+from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -57,7 +57,7 @@ class Agent(AgenticComponent):
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
-        return get_placeholder_properties_from_string(getattr(self, "system_prompt", ""))
+        return get_placeholder_properties_from_json_object(getattr(self, "system_prompt", ""))
 
     def _get_inferred_outputs(self) -> List[Property]:
         return self.outputs or []
