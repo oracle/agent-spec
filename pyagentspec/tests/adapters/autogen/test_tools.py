@@ -4,10 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-import asyncio
 from unittest.mock import patch
 
-from pyagentspec.adapters.autogen import AgentSpecLoader
 from pyagentspec.tools.remotetool import RemoteTool
 
 
@@ -28,128 +26,119 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
     End-to-end: convert an AgentSpec RemoteTool to an AutoGen FunctionTool and run it.
     Patch httpx.request to capture the outgoing HTTP call and verify the rendered JSON payload.
     """
+    from pyagentspec.adapters.autogen import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         city = kwargs["data"]["location"]["city"]
         return DummyResponse({"weather": f"sunny in {city}"})
 
-    async def test_func():
-        # Build a RemoteTool with nested data containing multiple template placeholders.
-        remote_tool = RemoteTool(
-            name="forecast_weather",
-            description="Returns a forecast of the weather for the chosen city",
-            url="https://weatherforecast.example/api/forecast/{{city}}",
-            http_method="POST",
-            data={
-                "location": {
-                    "city": "{{city}}",
-                    "coordinates": {"lat": "{{lat}}", "lon": "{{lon}}"},
-                },
-                "meta": ["requested_by:{{user}}", {"note": "hello{{suffix}}"}],
-                "raw": "binary-{{bin_suffix}}",
+    # Build a RemoteTool with nested data containing multiple template placeholders.
+    remote_tool = RemoteTool(
+        name="forecast_weather",
+        description="Returns a forecast of the weather for the chosen city",
+        url="https://weatherforecast.example/api/forecast/{{city}}",
+        http_method="POST",
+        data={
+            "location": {
+                "city": "{{city}}",
+                "coordinates": {"lat": "{{lat}}", "lon": "{{lon}}"},
             },
-            headers={"X-Caller": "{{user}}"},
+            "meta": ["requested_by:{{user}}", {"note": "hello{{suffix}}"}],
+            "raw": "binary-{{bin_suffix}}",
+        },
+        headers={"X-Caller": "{{user}}"},
+    )
+
+    # Convert to an AutoGen FunctionTool using the autogen adapter converter.
+    autogen_tool = AgentSpecLoader().load_component(remote_tool)
+
+    # Expected object passed as the `data` kwarg to httpx.request after rendering.
+    expected_data = {
+        "location": {"city": "Agadir", "coordinates": {"lat": "30.4", "lon": "-9.6"}},
+        "meta": ["requested_by:alice", {"note": "helloworld"}],
+        "raw": "binary-blob",
+    }
+    expected_url = "https://weatherforecast.example/api/forecast/Agadir"
+    expected_headers = {"X-Caller": "alice"}
+
+    # Patch httpx.request (used inside the converted autogen tool) to capture the call.
+    with patch("httpx.request", side_effect=mock_request) as patched_request:
+        # Call the underlying function of the FunctionTool directly with keyword args.
+        result = autogen_tool._func(
+            city="Agadir",
+            lat="30.4",
+            lon="-9.6",
+            user="alice",
+            suffix="world",
+            bin_suffix="blob",
         )
-
-        # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        autogen_tool = AgentSpecLoader().load_component(remote_tool)
-
-        # Expected object passed as the `json` kwarg to httpx.request after rendering.
-        expected_json = {
-            "location": {"city": "Agadir", "coordinates": {"lat": "30.4", "lon": "-9.6"}},
-            "meta": ["requested_by:alice", {"note": "helloworld"}],
-            "raw": "binary-blob",
-        }
-
-        # Patch httpx.request (used inside the converted autogen tool) to capture the call.
-        from autogen_core import CancellationToken
-
-        with patch("httpx.request", side_effect=mock_request) as patched_request:
-            # Call the underlying function of the FunctionTool directly with keyword args.
-            cancellation_token = CancellationToken()
-            result = await autogen_tool.run_json(
-                {
-                    "city": "Agadir",
-                    "lat": "30.4",
-                    "lon": "-9.6",
-                    "user": "alice",
-                    "suffix": "world",
-                    "bin_suffix": "blob",
-                },
-                cancellation_token,
-            )
-            # Ensure httpx.request was invoked and inspect the kwargs it was called with.
-            patched_request.assert_called_once()
-            called_args, called_kwargs = patched_request.call_args
-            # The converter uses `data=remote_tool_data` when calling httpx.request for dict data
-            assert (
-                "data" in called_kwargs
-            ), f"Expected 'data' kwarg in request call since data is a dict, got {called_kwargs}"
-            assert called_kwargs["data"] == expected_json
-            assert result == {"weather": "sunny in Agadir"}
-
-    asyncio.run(test_func())
+        # Ensure httpx.request was invoked and inspect the kwargs it was called with.
+        patched_request.assert_called_once()
+        called_args, called_kwargs = patched_request.call_args
+        # The converter uses `data=remote_tool_data` when calling httpx.request for dict data
+        assert (
+            "data" in called_kwargs
+        ), f"Expected 'data' kwarg in request call since data is a dict, got {called_kwargs}"
+        assert called_kwargs["data"] == expected_data
+        assert called_kwargs["url"] == expected_url
+        assert called_kwargs["headers"] == expected_headers
+        assert result == {"weather": "sunny in Agadir"}
 
 
 def test_remote_tool_post_json_array() -> None:
     """
     Test RemoteTool with JSON array body (data as list).
     """
+    from pyagentspec.adapters.autogen import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         json_data = kwargs["json"]
         city = json_data[1]["location"]
         return DummyResponse({"processed_city": city})
 
-    async def test_func():
-        # Build a RemoteTool with data as a list containing placeholders.
-        remote_tool = RemoteTool(
-            name="process_array",
-            description="Processes a JSON array body",
-            url="https://example.com/api/process",
-            http_method="POST",
-            data=[
-                "forecast",
-                {"location": "{{city}}", "temp": "{{temp}}"},
-            ],
-            headers={"X-Caller": "{{user}}"},
-        )
-
-        # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        autogen_tool = AgentSpecLoader().load_component(remote_tool)
-
-        # Expected rendered data (list).
-        expected_data = [
+    # Build a RemoteTool with data as a list containing placeholders.
+    remote_tool = RemoteTool(
+        name="process_array",
+        description="Processes a JSON array body",
+        url="https://example.com/api/process",
+        http_method="POST",
+        data=[
             "forecast",
-            {"location": "Agadir", "temp": "25"},
-        ]
+            {"location": "{{city}}", "temp": "{{temp}}"},
+        ],
+        headers={"X-Caller": "{{user}}"},
+    )
 
-        # Patch httpx.request.
-        from autogen_core import CancellationToken
+    # Convert to an AutoGen FunctionTool using the autogen adapter converter.
+    autogen_tool = AgentSpecLoader().load_component(remote_tool)
 
-        with patch("httpx.request", side_effect=mock_request) as patched_request:
-            cancellation_token = CancellationToken()
-            result = await autogen_tool.run_json(
-                {
-                    "city": "Agadir",
-                    "temp": "25",
-                    "user": "alice",
-                },
-                cancellation_token,
-            )
-            patched_request.assert_called_once()
-            called_args, called_kwargs = patched_request.call_args
-            assert "json" in called_kwargs
-            assert called_kwargs["json"] == expected_data
-            assert result == {"processed_city": "Agadir"}
+    # Expected rendered data (list).
+    expected_data = [
+        "forecast",
+        {"location": "Agadir", "temp": "25"},
+    ]
+    expected_headers = {"X-Caller": "alice"}
 
-    asyncio.run(test_func())
+    # Patch httpx.request.
+    with patch("httpx.request", side_effect=mock_request) as patched_request:
+        result = autogen_tool._func(
+            city="Agadir",
+            temp="25",
+            user="alice",
+        )
+        patched_request.assert_called_once()
+        called_args, called_kwargs = patched_request.call_args
+        assert "json" in called_kwargs
+        assert called_kwargs["json"] == expected_data
+        assert called_kwargs["headers"] == expected_headers
+        assert result == {"processed_city": "Agadir"}
 
 
 def test_remote_tool_post_raw_body() -> None:
     """
     Test RemoteTool with raw string body (non-JSON, uses data=).
     """
+    from pyagentspec.adapters.autogen import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         raw_data = kwargs["content"]
@@ -157,40 +146,33 @@ def test_remote_tool_post_raw_body() -> None:
         city = raw_data.split("city: ")[1].split(" ")[0]
         return DummyResponse({"echoed_body": raw_data, "city": city})
 
-    async def test_func():
-        # Build a RemoteTool with data as a string containing placeholders.
-        remote_tool = RemoteTool(
-            name="send_raw",
-            description="Sends a raw string body",
-            url="https://example.com/api/raw",
-            http_method="POST",
-            data="request body for city: {{city}} with note: {{note}}",
-            headers={"X-Caller": "{{user}}"},
+    # Build a RemoteTool with data as a string containing placeholders.
+    remote_tool = RemoteTool(
+        name="send_raw",
+        description="Sends a raw string body",
+        url="https://example.com/api/raw",
+        http_method="POST",
+        data="request body for city: {{city}} with note: {{note}}",
+        headers={"X-Caller": "{{user}}"},
+    )
+
+    # Convert to an AutoGen FunctionTool using the autogen adapter converter.
+    autogen_tool = AgentSpecLoader().load_component(remote_tool)
+
+    # Expected rendered data (str).
+    expected_data = "request body for city: Agadir with note: urgent"
+    expected_headers = {"X-Caller": "alice"}
+
+    # Patch httpx.request.
+    with patch("httpx.request", side_effect=mock_request) as patched_request:
+        result = autogen_tool._func(
+            city="Agadir",
+            note="urgent",
+            user="alice",
         )
-
-        # Convert to an AutoGen FunctionTool using the autogen adapter converter.
-        autogen_tool = AgentSpecLoader().load_component(remote_tool)
-
-        # Expected rendered data (str).
-        expected_data = "request body for city: Agadir with note: urgent"
-
-        # Patch httpx.request.
-        from autogen_core import CancellationToken
-
-        with patch("httpx.request", side_effect=mock_request) as patched_request:
-            cancellation_token = CancellationToken()
-            result = await autogen_tool.run_json(
-                {
-                    "city": "Agadir",
-                    "note": "urgent",
-                    "user": "alice",
-                },
-                cancellation_token,
-            )
-            patched_request.assert_called_once()
-            called_args, called_kwargs = patched_request.call_args
-            assert "content" in called_kwargs
-            assert called_kwargs["content"] == expected_data
-            assert result["city"] == "Agadir"
-
-    asyncio.run(test_func())
+        patched_request.assert_called_once()
+        called_args, called_kwargs = patched_request.call_args
+        assert "content" in called_kwargs
+        assert called_kwargs["content"] == expected_data
+        assert called_kwargs["headers"] == expected_headers
+        assert result["city"] == "Agadir"

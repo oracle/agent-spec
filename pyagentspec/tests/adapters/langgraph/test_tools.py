@@ -6,7 +6,6 @@
 
 from unittest.mock import patch
 
-from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.tools.remotetool import RemoteTool
 
 
@@ -27,6 +26,7 @@ def test_remote_tool_having_nested_inputs_with_langgraph() -> None:
     End-to-end: convert an AgentSpec RemoteTool to a LangGraph StructuredTool and run it.
     Patch httpx.request to capture the outgoing HTTP call and verify the rendered JSON payload.
     """
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         city = kwargs["data"]["location"]["city"]
@@ -81,6 +81,7 @@ def test_remote_tool_post_json_array_with_langgraph() -> None:
     """
     Test RemoteTool with JSON array body (data as list).
     """
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         json_data = kwargs["json"]
@@ -128,6 +129,7 @@ def test_remote_tool_post_raw_body_with_langgraph() -> None:
     """
     Test RemoteTool with raw string body (non-JSON, uses data=).
     """
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         raw_data = kwargs["content"]
