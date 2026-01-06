@@ -7,7 +7,8 @@
 import ast
 import json
 import typing
-from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
+from contextvars import Context, copy_context
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict, TypeVar, Union
 from uuid import UUID
 
 from langchain_core.callbacks import BaseCallbackHandler as LangchainBaseCallbackHandler
@@ -49,6 +50,8 @@ LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
     "system": "system",
 }
 
+T = TypeVar("T")
+
 
 class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
 
@@ -62,17 +65,42 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         self.messages_in_process: MessagesInProgressRecord = {}
         # Track spans per run_id
         self.agentspec_spans_registry: Dict[str, AgentSpecSpan] = {}
+        # Track the ContextVars context captured right after span.start()
+        # so we can run subsequent callbacks in the same context
+        self._span_contexts: Dict[str, Context] = {}
         # configs for spans
         self.llm_config = llm_config
         self.tools_map: Dict[str, AgentSpecTool] = {t.name: t for t in (tools or [])}
 
-    def _get_or_start_llm_span(self, run_id_str: str) -> AgentSpecLlmGenerationSpan:
-        span = self.agentspec_spans_registry.get(run_id_str)
-        if not isinstance(span, AgentSpecLlmGenerationSpan):
-            span = AgentSpecLlmGenerationSpan(llm_config=self.llm_config)
-            self.agentspec_spans_registry[run_id_str] = span
-            span.start()
-        return span
+    # ---- internal helpers to keep callbacks DRY ----
+    def _run_in_ctx(self, run_id_str: str, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+        ctx = self._span_contexts.get(run_id_str)
+        if ctx is None:
+            raise RuntimeError(
+                f"[AgentSpecCallbackHandler] Missing Context for run_id={run_id_str}. "
+                "Span was not started (or context not captured) before this callback."
+            )
+        # LangGraph schedules callbacks via ``run_in_executor`` which wraps every submitted
+        # callable in ``copy_context().run`` (``https://github.com/langchain-ai/langgraph/blob/main/libs/langgraph/langgraph/_internal/_runnable.py#L522``). Each
+        # worker thread therefore executes in a fresh `ContextVar` snapshot. Calling
+        # `func` directly here would use that executor snapshot, so `_ACTIVE_SPAN_STACK`
+        # would not include the span we started earlier, leading to pops on an empty stack
+        # inside `pyagentspec.tracing.spans.span._pop_span_from_active_stack`. Running inside
+        # the stored context keeps the span stack in sync with the callbacks.
+        # Note that using async callback APIs (AsyncCallbackHandler) would not help since it uses the same executor wrapper code.
+        # Note that adding a dummy span in the main loop does not help, the issue still persists because the context was not copied.
+        return ctx.run(func, *args, **kwargs)
+
+    def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
+        self._run_in_ctx(run_id_str, span.add_event, event)
+
+    def _end_span(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        self._run_in_ctx(run_id_str, span.end)
+        self._span_contexts.pop(run_id_str)
+
+    def _start_and_copy_ctx(self, run_id_str: str, span: AgentSpecSpan) -> None:
+        span.start()
+        self._span_contexts[run_id_str] = copy_context()
 
     def on_chat_model_start(
         self,
@@ -84,8 +112,10 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         **kwargs: Any,
     ) -> Any:
         run_id_str = str(run_id)
-        # Start an LLM span and emit request with prompt and tools
-        span = self._get_or_start_llm_span(run_id_str)
+        # Create and start the LLM span for this run, capture Context
+        span = AgentSpecLlmGenerationSpan(llm_config=self.llm_config)
+        self.agentspec_spans_registry[run_id_str] = span
+        self._start_and_copy_ctx(run_id_str, span)
 
         # not sure why it is a list of lists, assert that the outer list is size 1
         if len(messages) != 1:
@@ -106,15 +136,14 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
 
         tools = list(self.tools_map.values()) if self.tools_map else []
 
-        span.add_event(
-            AgentSpecLlmGenerationRequest(
-                request_id=run_id_str,
-                llm_config=self.llm_config,
-                llm_generation_config=self.llm_config.default_generation_parameters,
-                prompt=prompt,
-                tools=tools,
-            )
+        event = AgentSpecLlmGenerationRequest(
+            request_id=run_id_str,
+            llm_config=self.llm_config,
+            llm_generation_config=self.llm_config.default_generation_parameters,
+            prompt=prompt,
+            tools=tools,
         )
+        self._add_event(run_id_str, span, event)
 
     def on_llm_new_token(
         self,
@@ -144,7 +173,9 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         if chunk is None:
             raise ValueError("[on_llm_new_token] Expected chunk to not be None")
         run_id_str = str(run_id)
-        span = self._get_or_start_llm_span(run_id_str)
+        span = self.agentspec_spans_registry.get(run_id_str)
+        if not isinstance(span, AgentSpecLlmGenerationSpan):
+            raise RuntimeError("LLM span not started; on_chat_model_start must run first")
         chunk_message = chunk.message  # type: ignore
 
         # Note that chunk_message.response_metadata.id is None during streaming, but it's populated when not streaming
@@ -185,15 +216,14 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
                 AgentSpecToolCall(call_id=call_id, tool_name=tool_name, arguments=tool_args or "")
             ]
 
-        span.add_event(
-            AgentSpecLlmGenerationChunkReceived(
-                request_id=run_id_str,
-                completion_id=message_id,
-                content=_ensure_string(chunk_message.content or ""),
-                llm_config=self.llm_config,
-                tool_calls=agentspec_tool_calls,
-            )
+        event = AgentSpecLlmGenerationChunkReceived(
+            request_id=run_id_str,
+            completion_id=message_id,
+            content=_ensure_string(chunk_message.content or ""),
+            llm_config=self.llm_config,
+            tool_calls=agentspec_tool_calls,
         )
+        self._add_event(run_id_str, span, event)
 
     @typing.no_type_check
     def on_llm_end(
@@ -204,21 +234,22 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-        run_id = str(run_id)
-        span = self._get_or_start_llm_span(run_id)
+        run_id_str = str(run_id)
+        span = self.agentspec_spans_registry.get(run_id_str)
+        if not isinstance(span, AgentSpecLlmGenerationSpan):
+            raise RuntimeError("LLM span not started; on_chat_model_start must run first")
         message_id, content, tool_calls = _extract_message_content_and_tool_calls(response)
-        span.add_event(
-            AgentSpecLlmGenerationResponse(
-                llm_config=self.llm_config,
-                request_id=run_id,
-                completion_id=message_id,
-                content=content,
-                tool_calls=tool_calls,
-            )
+        event = AgentSpecLlmGenerationResponse(
+            llm_config=self.llm_config,
+            request_id=run_id_str,
+            completion_id=message_id,
+            content=content,
+            tool_calls=tool_calls,
         )
-        span.end()
-        self.agentspec_spans_registry.pop(run_id, None)
-        self.messages_in_process.pop(run_id, None)
+        self._add_event(run_id_str, span, event)
+        self._end_span(run_id_str, span)
+        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.messages_in_process.pop(run_id_str, None)
 
     def on_tool_start(
         self,
@@ -243,19 +274,17 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         tool_obj = self.tools_map.get(tool_name)
         if tool_obj is None:
             raise ValueError(f"[on_tool_start] Unknown tool: {tool_name}")
-
+        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
+        request_event = AgentSpecToolExecutionRequest(
+            request_id=run_id_str,
+            tool=tool_obj,
+            inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
+        )
         # starting a tool span for this tool
         tool_span = AgentSpecToolExecutionSpan(tool=tool_obj)
         self.agentspec_spans_registry[run_id_str] = tool_span
-        tool_span.start()
-
-        inputs: Dict[str, Any] = (
-            ast.literal_eval(input_str) if isinstance(input_str, str) else input_str
-        )
-        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
-        tool_span.add_event(
-            AgentSpecToolExecutionRequest(request_id=run_id_str, tool=tool_span.tool, inputs=inputs)
-        )
+        self._start_and_copy_ctx(run_id_str, tool_span)
+        self._add_event(run_id_str, tool_span, request_event)
 
     def on_tool_end(
         self,
@@ -283,14 +312,13 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
                 f"Expected tool_span to be a ToolExecutionSpan but got {type(tool_span)}"
             )
 
-        tool_span.add_event(
-            AgentSpecToolExecutionResponse(
-                request_id=output.tool_call_id,
-                tool=tool_span.tool,
-                outputs=outputs,
-            )
+        response_event = AgentSpecToolExecutionResponse(
+            request_id=output.tool_call_id,
+            tool=tool_span.tool,
+            outputs=outputs,
         )
-        tool_span.end()
+        self._add_event(run_id_str, tool_span, response_event)
+        self._end_span(run_id_str, tool_span)
         self.agentspec_spans_registry.pop(run_id_str, None)
 
     def on_tool_error(

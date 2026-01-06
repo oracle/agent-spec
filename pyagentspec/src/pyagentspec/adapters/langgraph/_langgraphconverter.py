@@ -5,7 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union, cast
 from uuid import uuid4
 
 import httpx
@@ -17,6 +17,7 @@ from pyagentspec.adapters.langgraph._node_execution import NodeExecutor
 from pyagentspec.adapters.langgraph._types import (
     BaseCallbackHandler,
     BaseChatModel,
+    BaseTool,
     Checkpointer,
     CompiledStateGraph,
     ControlFlow,
@@ -32,6 +33,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
+from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import AgentSpecCallbackHandler
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
@@ -53,6 +55,19 @@ from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
+from pyagentspec.mcp.clienttransport import SSEmTLSTransport as AgentSpecSSEmTLSTransport
+from pyagentspec.mcp.clienttransport import SSETransport as AgentSpecSSETransport
+from pyagentspec.mcp.clienttransport import StdioTransport as AgentSpecStdioTransport
+from pyagentspec.mcp.clienttransport import (
+    StreamableHTTPmTLSTransport as AgentSpecStreamableHTTPmTLSTransport,
+)
+from pyagentspec.mcp.clienttransport import (
+    StreamableHTTPTransport as AgentSpecStreamableHTTPTransport,
+)
+from pyagentspec.mcp.tools import MCPTool as AgentSpecMCPTool
+from pyagentspec.mcp.tools import MCPToolBox as AgentSpecMCPToolBox
+from pyagentspec.mcp.tools import MCPToolSpec as AgentSpecMCPToolSpec
 from pyagentspec.property import DictProperty as AgentSpecDictProperty
 from pyagentspec.property import IntegerProperty as AgentSpecIntegerProperty
 from pyagentspec.property import ListProperty as AgentSpecListProperty
@@ -63,6 +78,28 @@ from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
+from pyagentspec.tools import ToolBox as AgentSpecToolBox
+
+if TYPE_CHECKING:
+    from langchain_mcp_adapters.sessions import (  # type: ignore
+        SSEConnection,
+        StdioConnection,
+        StreamableHttpConnection,
+    )
+
+
+def _mcp_available() -> bool:
+    import importlib.util
+
+    return importlib.util.find_spec("langchain_mcp_adapters") is not None
+
+
+def _ensure_mcp_dependency_installed() -> None:
+    if not _mcp_available():
+        raise RuntimeError(
+            "langchain-mcp-adapters is required to preload MCP tools. "
+            "Install it (e.g., pip install langchain-mcp-adapters) or remove MCP tools from the spec."
+        )
 
 
 class SchemaRegistry:
@@ -224,6 +261,22 @@ class AgentSpecToLangGraphConverter:
             )
         elif isinstance(agentspec_component, AgentSpecLlmConfig):
             return self._llm_convert_to_langgraph(agentspec_component, config=config)
+        elif isinstance(agentspec_component, AgentSpecClientTransport):
+            return self._client_transport_convert_to_langgraph(agentspec_component)
+        elif isinstance(agentspec_component, AgentSpecMCPTool):
+            _ensure_mcp_dependency_installed()
+            return self._mcp_tool_convert_to_langgraph(
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+            )
+        elif isinstance(agentspec_component, AgentSpecMCPToolBox):
+            _ensure_mcp_dependency_installed()
+            return self._mcp_toolbox_convert_to_langgraph(
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+            )
         elif isinstance(agentspec_component, AgentSpecServerTool):
             return self._server_tool_convert_to_langgraph(
                 agentspec_component, tool_registry, config=config
@@ -669,12 +722,77 @@ class AgentSpecToLangGraphConverter:
         )
         return structured_tool
 
+    def _mcp_tool_convert_to_langgraph(
+        self,
+        agentspec_mcp_tool: AgentSpecMCPTool,
+        tool_registry: Dict[str, LangGraphTool],
+        converted_components: Dict[str, Any],
+    ) -> BaseTool:
+        connection = self.convert(
+            agentspec_mcp_tool.client_transport,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+        )
+        exposed_tools = self._get_or_create_langgraph_mcp_tools(
+            langgraph_connection=connection,
+            connection_key=agentspec_mcp_tool.client_transport.id,
+            tool_registry=tool_registry,
+        )
+        return exposed_tools[agentspec_mcp_tool.name]
+
+    def _mcp_toolbox_convert_to_langgraph(
+        self,
+        agentspec_mcp_toolbox: AgentSpecMCPToolBox,
+        tool_registry: Dict[str, LangGraphTool],
+        converted_components: Dict[str, Any],
+    ) -> List[BaseTool]:
+        connection = self.convert(
+            agentspec_mcp_toolbox.client_transport,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+        )
+        remote_tools = self._get_or_create_langgraph_mcp_tools(
+            langgraph_connection=connection,
+            connection_key=agentspec_mcp_toolbox.client_transport.id,
+            tool_registry=tool_registry,
+        )
+        # Below is logic to filter tools based on the tool_filter attribute of the toolbox
+        # Normalize filter to {name: ToolSpec|None} (where None is when the filter is a string)
+        filter_map = {
+            (filter if isinstance(filter, str) else filter.name): (
+                None if isinstance(filter, str) else filter
+            )
+            for filter in (agentspec_mcp_toolbox.tool_filter or [])
+        }
+        # If no filter provided, return all tools
+        if not filter_map:
+            filtered_tools = list(remote_tools.values())
+        else:
+            # Find missing by name first
+            missing = sorted(name for name in filter_map if name not in remote_tools)
+            if missing:
+                raise ValueError("Missing tools: " + ", ".join(missing))
+            # Validate specs (when provided) and collect tools
+            for name, spec in filter_map.items():
+                tool = remote_tools[name]
+                if spec is not None and not _are_mcp_tool_spec_and_langchain_schemas_equal(
+                    spec, tool
+                ):
+                    raise ValueError(
+                        "Input descriptors mismatch for tool '%s'.\nLocal: %s\nRemote: %s"
+                        % (spec.name, spec, getattr(tool, "args_schema", None))
+                    )
+            filtered_tools = [remote_tools[name] for name in filter_map]
+        return filtered_tools
+
     def _create_react_agent_with_given_info(
         self,
+        *,
         name: str,
         system_prompt: str,
         llm_config: AgentSpecLlmConfig,
         tools: List[AgentSpecTool],
+        toolboxes: List[AgentSpecToolBox],
         inputs: List[AgentSpecProperty],
         outputs: List[AgentSpecProperty],
         tool_registry: Dict[str, LangGraphTool],
@@ -698,6 +816,16 @@ class AgentSpecToLangGraphConverter:
                 config=config,
             )
             for t in tools
+        ] + [
+            t
+            for tb in toolboxes
+            for t in self.convert(
+                tb,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
         ]
         prompt = SystemMessage(system_prompt)
         output_model: Optional[type[BaseModel]] = None
@@ -749,6 +877,7 @@ class AgentSpecToLangGraphConverter:
             system_prompt=agentspec_component.system_prompt,
             llm_config=agentspec_component.llm_config,
             tools=agentspec_component.tools,
+            toolboxes=agentspec_component.toolboxes,
             inputs=agentspec_component.inputs or [],
             outputs=agentspec_component.outputs or [],
             tool_registry=tool_registry,
@@ -822,6 +951,137 @@ class AgentSpecToLangGraphConverter:
                 f"Llm model of type {llm_config.__class__.__name__} is not yet supported."
             )
 
+    def _client_transport_convert_to_langgraph(
+        self, agentspec_component: AgentSpecClientTransport
+    ) -> "Union[StdioConnection, SSEConnection, StreamableHttpConnection]":
+        import datetime
+
+        from langchain_mcp_adapters.sessions import (
+            SSEConnection,
+            StdioConnection,
+            StreamableHttpConnection,
+        )
+
+        sesh = agentspec_component.session_parameters.model_dump()
+        sesh["read_timeout_seconds"] = datetime.timedelta(seconds=sesh["read_timeout_seconds"])
+        if isinstance(agentspec_component, AgentSpecStdioTransport):
+            return StdioConnection(
+                transport="stdio",
+                command=agentspec_component.command,
+                args=agentspec_component.args,
+                env=agentspec_component.env,
+                cwd=agentspec_component.cwd,
+                session_kwargs=sesh,
+            )
+        if isinstance(agentspec_component, AgentSpecSSEmTLSTransport):
+            return SSEConnection(
+                transport="sse",
+                url=agentspec_component.url,
+                headers=agentspec_component.headers,
+                httpx_client_factory=_HttpxClientFactory(
+                    key_file=agentspec_component.key_file,
+                    cert_file=agentspec_component.cert_file,
+                    ssl_ca_cert=agentspec_component.ca_file,
+                ),
+            )
+        if isinstance(agentspec_component, AgentSpecSSETransport):
+            return SSEConnection(
+                transport="sse",
+                url=agentspec_component.url,
+                headers=agentspec_component.headers,
+                httpx_client_factory=_HttpxClientFactory(verify=False),
+            )
+        if isinstance(agentspec_component, AgentSpecStreamableHTTPmTLSTransport):
+            return StreamableHttpConnection(
+                transport="streamable_http",
+                url=agentspec_component.url,
+                headers=agentspec_component.headers,
+                httpx_client_factory=_HttpxClientFactory(
+                    key_file=agentspec_component.key_file,
+                    cert_file=agentspec_component.cert_file,
+                    ssl_ca_cert=agentspec_component.ca_file,
+                ),
+            )
+        if isinstance(agentspec_component, AgentSpecStreamableHTTPTransport):
+            return StreamableHttpConnection(
+                transport="streamable_http",
+                url=agentspec_component.url,
+                headers=agentspec_component.headers,
+                httpx_client_factory=_HttpxClientFactory(verify=False),
+            )
+        raise ValueError(
+            f"Agent Spec ClientTransport '{agentspec_component.__class__.__name__}' is not supported yet."
+        )
+
+    def _get_or_create_langgraph_mcp_tools(
+        self,
+        langgraph_connection: Dict[str, Any],
+        connection_key: str,
+        tool_registry: Dict[str, LangGraphTool],
+    ) -> Dict[str, BaseTool]:
+        """
+        Synchronously load MCP tools and cache them into tool_registry keyed by:
+        f"{agentspec_client_transport.id}::{tool_name}"
+
+        Caching behavior:
+        - If any tools are already present in the registry for this connection, returns those
+        without reloading.
+        - Otherwise, loads tools and inserts them atomically into the registry.
+        """
+        from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore
+
+        conn_prefix = f"{connection_key}::"
+        existing = _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
+        if existing:
+            return existing
+
+        async def load_all_mcp_tools() -> List[BaseTool]:
+            # Note: langchain supports session-specific MCP tools but we don't support that
+            return await load_mcp_tools(session=None, connection=langgraph_connection)  # type: ignore
+
+        tools = run_async_in_sync(load_all_mcp_tools, method_name="load_mcp_tools")
+
+        _add_session_tools_to_registry(tool_registry, tools, conn_prefix)
+
+        return _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
+
+
+def _get_session_tools_from_tool_registry(
+    tool_registry: Dict[str, LangGraphTool], conn_prefix: str
+) -> Dict[str, BaseTool]:
+    return {
+        key.replace(conn_prefix, ""): cast(BaseTool, tool)
+        for key, tool in tool_registry.items()
+        if key.startswith(conn_prefix)
+    }
+
+
+def _add_session_tools_to_registry(
+    tool_registry: Dict[str, LangGraphTool], tools: List[BaseTool], conn_prefix: str
+) -> None:
+    # Prepare a staged mapping so we can insert all-or-nothing
+    staged: Dict[str, BaseTool] = {}
+    for tool in tools:
+        # Derive a name: prefer .name, fallback to __name__ for callables
+        tool_name = getattr(tool, "name", None)
+        if not tool_name and callable(tool):
+            tool_name = getattr(tool, "__name__", None)
+        if not tool_name:
+            raise ValueError("Loaded a tool without a name attribute or __name__.")
+
+        key = f"{conn_prefix}{tool_name}"
+        # Do not overwrite an existing entry if present
+        if key not in tool_registry:
+            staged[key] = tool
+        else:
+            raise ValueError(
+                "Trying to add the same tool twice; this might happen "
+                "when the tool is declared as both a standalone MCPTool and part of a MCPToolBox"
+            )
+
+    # Commit staged entries
+    tool_registry.update(staged)
+
 
 def _prepare_openai_compatible_url(url: str) -> str:
     """
@@ -862,3 +1122,28 @@ def _add_callback_to_runnable_config(
         existing_callbacks = existing_callbacks + callbacks
     config_with_callbacks = RunnableConfig({**config, "callbacks": existing_callbacks})
     return config_with_callbacks
+
+
+def _are_mcp_tool_spec_and_langchain_schemas_equal(
+    mcp_spec: AgentSpecMCPToolSpec, langchain_schema: BaseTool
+) -> bool:
+    if not isinstance(langchain_schema.args_schema, dict):
+        raise ValueError(
+            f"Expected Langchain StructuredTool.args_schema to be a dict but got {type(langchain_schema.args_schema)}"
+        )
+    agentspec_json_schemas = {
+        inp.json_schema["title"]: _normalize_title(inp.json_schema)
+        for inp in (mcp_spec.inputs or [])
+    }
+    langchain_json_schemas = {
+        k: _normalize_title(v) for k, v in langchain_schema.args_schema["properties"].items()
+    }
+    return json_schemas_have_same_type(agentspec_json_schemas, langchain_json_schemas)
+
+
+def _normalize_title(d: Dict[str, Any]) -> Dict[str, Any]:
+    """If `title`, then lowercase."""
+    out = dict(d)  # shallow copy
+    if isinstance(out.get("title"), str):
+        out["title"] = out["title"].lower()
+    return out

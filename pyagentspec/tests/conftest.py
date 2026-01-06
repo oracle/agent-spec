@@ -5,14 +5,16 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+import shutil
 import stat
+import sysconfig
 from contextlib import contextmanager
-from distutils.sysconfig import get_python_lib
 from pathlib import Path
 from typing import Any, Iterator, List, Union
 from unittest.mock import patch
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 
 from pyagentspec.llms import VllmConfig
 
@@ -132,16 +134,27 @@ def check_file_permissions(path: Any) -> None:
         assert not (st_mode & (stat.S_IRWXG | stat.S_IRWXO))
 
 
-def get_directory_allowlist_write(tmp_path: str) -> List[Union[str, Path]]:
+@pytest.fixture(scope="session")
+def session_tmp_path(tmp_path_factory):
+    """Session-scoped temp path"""
+    dirpath = tmp_path_factory.mktemp("tmp")
+    yield str(dirpath)
+    shutil.rmtree(dirpath)
+
+
+def get_directory_allowlist_write(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
+    std_paths = sysconfig.get_paths()
     return [
-        get_python_lib(),  # Allow packages to r/w their pycache
+        std_paths.get("purelib"),  # Allow packages to r/w their pycache
+        std_paths.get("platlib"),
         tmp_path,
+        session_tmp_path,
         "/dev/null",
     ]
 
 
-def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
-    return get_directory_allowlist_write(tmp_path) + [
+def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
+    return get_directory_allowlist_write(tmp_path, session_tmp_path) + [
         CONFIGS_DIR,
         # Docs path
         Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
@@ -154,33 +167,39 @@ def get_directory_allowlist_read(tmp_path: str) -> List[Union[str, Path]]:
     ]
 
 
-def check_allowed_filewrite(path: Union[str, Path], tmp_path: str, mode: str) -> None:
+def check_allowed_filewrite(
+    path: Union[str, Path], tmp_path: str, session_tmp_path: str, mode: str
+) -> None:
     path = os.path.abspath(path)
     if mode == "r" or mode == "rb":
         assert any(
             [
                 Path(dir) in Path(path).parents or Path(dir) == Path(path)
-                for dir in get_directory_allowlist_read(tmp_path=tmp_path)
+                for dir in get_directory_allowlist_read(
+                    tmp_path=tmp_path, session_tmp_path=session_tmp_path
+                )
             ]
         ), f"Reading outside of allowed directories! {path}"
     else:
         assert any(
             [
                 Path(dir) in Path(path).parents or Path(dir) == Path(path)
-                for dir in get_directory_allowlist_write(tmp_path=tmp_path)
+                for dir in get_directory_allowlist_write(
+                    tmp_path=tmp_path, session_tmp_path=session_tmp_path
+                )
             ]
         ), f"Writing outside of allowed directories! {path}"
 
 
 @contextmanager
 def limit_filewrites(
-    monkeypatch: Any, tmp_path: str, allowed_access_enabled: bool = True
+    monkeypatch: Any, tmp_path: str, session_tmp_path: str, allowed_access_enabled: bool = True
 ) -> Iterator[bool]:
     import builtins
 
     _open = builtins.open
 
-    def patched_open(name: Any, *args: Any, **kwargs: Any) -> Any:
+    def patched_open(name, *args, **kwargs):
         if not allowed_access_enabled:
             raise IOError("File is being accessed when it shouldn't have")
         # Sometimes, a process might write in a local path named with a number
@@ -194,7 +213,9 @@ def limit_filewrites(
             # Mode can be either in *args or **kwargs, if it's not, the default is "r"
             mode = "w" if "w" in args else "r"
             mode = kwargs.get("mode", mode)
-            check_allowed_filewrite(name, tmp_path=tmp_path, mode=mode)
+            check_allowed_filewrite(
+                name, tmp_path=tmp_path, session_tmp_path=session_tmp_path, mode=mode
+            )
         return _open(name, *args, **kwargs)
 
     with monkeypatch.context() as m:
@@ -203,18 +224,34 @@ def limit_filewrites(
 
 
 @pytest.fixture(scope="function", autouse=True)
-def guard_filewrites(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_filewrites(
+    request: FixtureRequest, monkeypatch: Any, tmp_path: str, session_tmp_path: str
+) -> Iterator[bool]:
     """Fixture which raises an exception if the filesystem is accessed
-    outside of a limited set of allowed directories
+    outside of a limited set of allowed directories (pycache, automlx
+    cache dir, ...)
     """
-    with limit_filewrites(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=True) as x:
-        yield x
+    if request.node.get_closest_marker("skip_guard_filewrites"):
+        yield True
+    else:
+        with limit_filewrites(
+            monkeypatch,
+            tmp_path=tmp_path,
+            session_tmp_path=session_tmp_path,
+            allowed_access_enabled=True,
+        ) as x:
+            yield x
 
 
 @pytest.fixture(scope="function")
-def guard_all_filewrites(monkeypatch: Any, tmp_path: str) -> Iterator[bool]:
+def guard_all_filewrites(monkeypatch: Any, tmp_path: str, session_tmp_path: str) -> Iterator[bool]:
     """Fixture which raises an exception if the filesystem is accessed."""
-    with limit_filewrites(monkeypatch, tmp_path=tmp_path, allowed_access_enabled=False) as x:
+    with limit_filewrites(
+        monkeypatch,
+        tmp_path=tmp_path,
+        session_tmp_path=session_tmp_path,
+        allowed_access_enabled=False,
+    ) as x:
         yield x
 
 

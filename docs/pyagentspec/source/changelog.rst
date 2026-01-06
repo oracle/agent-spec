@@ -7,6 +7,12 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **MCP tools support in LangGraph adapter:**
+
+  The LangGraph adapter now supports Model Context Protocol (MCP) tools.
+
+  To use this, install the optional extra ``pyagentspec[langgraph_mcp]`` and invoke the loaded graph/agent asynchronously via ``.ainvoke`` within an async context.
+
 * **Added LangGraph adapter to pyagentspec:**
 
   The LangGraph adapter is now available as part of ``pyagentspec``.
