@@ -80,6 +80,15 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
                 f"[AgentSpecCallbackHandler] Missing Context for run_id={run_id_str}. "
                 "Span was not started (or context not captured) before this callback."
             )
+        # LangGraph schedules callbacks via ``run_in_executor`` which wraps every submitted
+        # callable in ``copy_context().run`` (``https://github.com/langchain-ai/langgraph/blob/main/libs/langgraph/langgraph/_internal/_runnable.py#L522``). Each
+        # worker thread therefore executes in a fresh `ContextVar` snapshot. Calling
+        # `func` directly here would use that executor snapshot, so `_ACTIVE_SPAN_STACK`
+        # would not include the span we started earlier, leading to pops on an empty stack
+        # inside `pyagentspec.tracing.spans.span._pop_span_from_active_stack`. Running inside
+        # the stored context keeps the span stack in sync with the callbacks.
+        # Note that using async callback APIs (AsyncCallbackHandler) would not help since it uses the same executor wrapper code.
+        # Note that adding a dummy span in the main loop does not help, the issue still persists because the context was not copied.
         return ctx.run(func, *args, **kwargs)
 
     def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
@@ -87,10 +96,10 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
 
     def _end_span(self, run_id_str: str, span: AgentSpecSpan) -> None:
         self._run_in_ctx(run_id_str, span.end)
+        self._span_contexts.pop(run_id_str)
 
-    def _start_and_capture_ctx(self, run_id_str: str, span: AgentSpecSpan) -> None:
+    def _start_and_copy_ctx(self, run_id_str: str, span: AgentSpecSpan) -> None:
         span.start()
-        # Capture the current ContextVars context after pushing the span
         self._span_contexts[run_id_str] = copy_context()
 
     def on_chat_model_start(
@@ -106,7 +115,7 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         # Create and start the LLM span for this run, capture Context
         span = AgentSpecLlmGenerationSpan(llm_config=self.llm_config)
         self.agentspec_spans_registry[run_id_str] = span
-        self._start_and_capture_ctx(run_id_str, span)
+        self._start_and_copy_ctx(run_id_str, span)
 
         # not sure why it is a list of lists, assert that the outer list is size 1
         if len(messages) != 1:
@@ -240,7 +249,6 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         self._add_event(run_id_str, span, event)
         self._end_span(run_id_str, span)
         self.agentspec_spans_registry.pop(run_id_str, None)
-        self._span_contexts.pop(run_id_str, None)
         self.messages_in_process.pop(run_id_str, None)
 
     def on_tool_start(
@@ -266,19 +274,16 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         tool_obj = self.tools_map.get(tool_name)
         if tool_obj is None:
             raise ValueError(f"[on_tool_start] Unknown tool: {tool_name}")
-
+        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
+        request_event = AgentSpecToolExecutionRequest(
+            request_id=run_id_str,
+            tool=tool_obj,
+            inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
+        )
         # starting a tool span for this tool
         tool_span = AgentSpecToolExecutionSpan(tool=tool_obj)
         self.agentspec_spans_registry[run_id_str] = tool_span
-        self._start_and_capture_ctx(run_id_str, tool_span)
-
-        inputs: Dict[str, Any] = (
-            ast.literal_eval(input_str) if isinstance(input_str, str) else input_str
-        )
-        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
-        request_event = AgentSpecToolExecutionRequest(
-            request_id=run_id_str, tool=tool_span.tool, inputs=inputs
-        )
+        self._start_and_copy_ctx(run_id_str, tool_span)
         self._add_event(run_id_str, tool_span, request_event)
 
     def on_tool_end(
@@ -315,7 +320,6 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         self._add_event(run_id_str, tool_span, response_event)
         self._end_span(run_id_str, tool_span)
         self.agentspec_spans_registry.pop(run_id_str, None)
-        self._span_contexts.pop(run_id_str, None)
 
     def on_tool_error(
         self,
