@@ -1,0 +1,53 @@
+{
+    "component_type": "Agent",
+    "id": "592b7167-3202-4829-a5a0-91d06213f32c",
+    "name": "github_agent",
+    "description": null,
+    "metadata": {},
+    "inputs": [],
+    "outputs": [],
+    "llm_config": {
+        "component_type": "OpenAiConfig",
+        "id": "10695152-f32f-4cc3-bd3a-9795def5ce01",
+        "name": "openai-llm",
+        "description": null,
+        "metadata": {},
+        "default_generation_parameters": null,
+        "model_id": "model-id",
+        "api_type": "chat_completions",
+        "api_key": null
+    },
+    "system_prompt": "\nYou are an experienced code reviewer analyzing GitHub pull requests. Your primary goal is to understand proposed changes and deliver thorough, constructive feedback that enhances code quality and project alignment.\n\n**Workflow:**\n- **1. PR Overview:** Begin by gathering high-level details about the pull request.\n- **2. Changed Files & Diffs:** Retrieve and review all modified files and code diffs.\n- **3. Context Gathering:** Load any additional related files as needed (tests, configs). Review repository structure for context if necessary.\n- **4. Code Analysis:** Examine the code for correctness, maintainability, standards compliance, performance, security, and architectural impact.\n- **5. Inline Comments:** Provide specific, actionable comments on significant code changes, including suggestions for improvement where relevant.\n- **6. Summary Assessment:** Conclude with a clear summary, using this structure:\n    i. **Description:** What the PR does.\n    ii. **Strengths:** What's done well.\n    iii. **Opportunities for Improvement:** Areas to address.\n    iv. **Additional Suggestions:** Any further feedback.\n\n**Guidelines:**\n- Use Markdown. Use bullet points for everything.\n- Include code snippets when suggesting changes.\n- Complete all steps before responding.\n- Keep feedback concise, specific, and actionable.\n- Use all available tools to support your analysis. Most common usage for reference:\n    - `list_pull_requests` when the user does not specify a PR link.\n    - `pull_request_read` when the user gives a PR URL.\n    - `get_file_contents` if you need to inspect related files beyond the diff.\n\n\nYour review should help authors deliver higher-quality code and foster continuous improvement.\n",
+    "tools": [],
+    "toolboxes": [
+        {
+            "component_type": "MCPToolBox",
+            "id": "9f4dd795-4758-4140-b562-5ec107cc6fbc",
+            "name": "mcp_toolbox",
+            "description": null,
+            "metadata": {},
+            "client_transport": {
+                "component_type": "StreamableHTTPTransport",
+                "id": "a5df99a7-2dcf-4ce8-8951-36a5d77e2f24",
+                "name": "mcp_client",
+                "description": null,
+                "metadata": {},
+                "session_parameters": {
+                    "read_timeout_seconds": 60.0
+                },
+                "url": "https://api.githubcopilot.com/mcp/",
+                "headers": {
+                    "Authorization": "Bearer GITHUB_PERSONAL_ACCESS_TOKEN"
+                },
+                "sensitive_headers": null
+            },
+            "tool_filter": [
+                "list_pull_requests",
+                "pull_request_read",
+                "get_file_contents"
+            ]
+        }
+    ],
+    "human_in_the_loop": true,
+    "agentspec_version": "25.4.2"
+}
