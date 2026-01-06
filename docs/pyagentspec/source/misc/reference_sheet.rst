@@ -268,8 +268,8 @@ Example of a simple prompting flow:
                destination_node=end_node,
                destination_input="llm_output"
            ),
-       ],
-   )
+        ],
+    )
 
 
 Executing a sub-flow to an iterable with ``MapNode``
@@ -512,3 +512,72 @@ The serialization process:
    Every component is serialized with a ``component_type`` field that identifies the specific component class, ensuring proper deserialization.
 
 For more details on serialization, see the :ref:`Agent Spec Language Specification <agentspecspec>` and the PyAgentSpec serialization documentation.
+
+.. _flowbuilder_ref_sheet:
+
+Flow Builder quick snippets
+---------------------------
+
+Build a linear flow in one line:
+
+.. code-block:: python
+
+    from pyagentspec.flows.flowbuilder import FlowBuilder
+    from pyagentspec.flows.nodes import LlmNode
+    from pyagentspec.llms import VllmConfig
+
+    llm_config = VllmConfig(name="Llama 3.1 8B instruct", url="http://localhost:8000", model_id="meta-llama/Meta-Llama-3.1-8B-Instruct")
+    n1 = LlmNode(name="n1", llm_config=llm_config, prompt_template="Hello")
+    n2 = LlmNode(name="n2", llm_config=llm_config, prompt_template="World")
+    flow = FlowBuilder.build_linear_flow([n1, n2])
+
+API Reference: :ref:`FlowBuilder <flowbuilder>`
+
+Add a sequence, then entry/finish:
+
+.. code-block:: python
+
+    from pyagentspec.flows.flowbuilder import FlowBuilder
+    from pyagentspec.flows.nodes import LlmNode
+    from pyagentspec.llms import VllmConfig
+
+    llm_config = VllmConfig(name="Llama 3.1 8B instruct", url="http://localhost:8000", model_id="meta-llama/Meta-Llama-3.1-8B-Instruct")
+    n1 = LlmNode(name="n1", llm_config=llm_config, prompt_template="Hello")
+    n2 = LlmNode(name="n2", llm_config=llm_config, prompt_template="World")
+
+    flow = (
+        FlowBuilder()
+        .add_sequential([n1, n2])
+        .set_entry_point(n1)
+        .set_finish_points(n2)
+        .build()
+    )
+
+Add a conditional using a node output as key, with a default branch:
+
+.. code-block:: python
+
+    from pyagentspec.flows.flowbuilder import FlowBuilder
+    from pyagentspec.flows.nodes import LlmNode
+    from pyagentspec.llms import VllmConfig
+
+    llm_config = VllmConfig(name="Llama 3.1 8B instruct", url="http://localhost:8000", model_id="meta-llama/Meta-Llama-3.1-8B-Instruct")
+    src = LlmNode(name="src", llm_config=llm_config, prompt_template="...")
+    ok = LlmNode(name="ok", llm_config=llm_config, prompt_template="OK")
+    ko = LlmNode(name="ko", llm_config=llm_config, prompt_template="KO")
+
+    flow = (
+        FlowBuilder()
+        .add_sequential([src])
+        .add_node(ok)
+        .add_node(ko)
+        .set_conditional(
+            source_node=src,
+            source_value=LlmNode.DEFAULT_OUTPUT,
+            destination_map={"success": ok, "fail": ko},
+            default_destination=ko,
+        )
+        .set_entry_point(src)
+        .set_finish_points([ok, ko])
+        .build()
+    )
