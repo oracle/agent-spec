@@ -258,6 +258,41 @@ if __name__ == "__main__":
 
 # .. end-export-serialization:
 
+# .. start-##Build_the_flow_with_FlowBuilder
+from pyagentspec.flows.flowbuilder import FlowBuilder
+
+flowbuilder_flow = (
+    FlowBuilder()
+    # Linear backbone: generate -> review -> decide
+    .add_sequence([generate_code_node, review_code_node, is_code_ready_decision_node])
+    # Add the terminal success step
+    .add_node(end_node)
+    # Branch: yes -> finish_node; no -> back to generate_code_node
+    .add_conditional(
+        source_node=is_code_ready_decision_node,
+        source_value="is_code_ready",
+        destination_map={"yes": end_node, "no": generate_code_node},
+        default_destination=generate_code_node,
+    ).set_entry_point(generate_code_node, inputs=[user_request_property])
+    # the finish point is already added with the EndNode
+)
+
+# Minimal data propagation to mirror the manual example
+flowbuilder_flow.add_data_edge("StartNode", generate_code_node, "user_request")
+flowbuilder_flow.add_data_edge(generate_code_node, review_code_node, "code")
+flowbuilder_flow.add_data_edge(review_code_node, generate_code_node, "review")
+flowbuilder_flow.add_data_edge(review_code_node, is_code_ready_decision_node, "review")
+flowbuilder_flow.add_data_edge(generate_code_node, end_node, "code")
+
+# Build the Flow object
+flowbuilder_flow = flowbuilder_flow.build(name="Generate code and review flow")
+
+if __name__ == "__main__":
+    serialized_agent_fb = AgentSpecSerializer().to_json(flowbuilder_flow)
+    print(serialized_agent_fb)
+
+# .. end-##Build_the_flow_with_FlowBuilder
+
 
 # .. full-code:
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge

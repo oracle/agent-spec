@@ -7,6 +7,12 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
+
+  The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
+
+  For more information, see the :doc:`API Reference <api/flows>` and the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
+
 * **MCP tools support in LangGraph adapter:**
 
   The LangGraph adapter now supports Model Context Protocol (MCP) tools.
