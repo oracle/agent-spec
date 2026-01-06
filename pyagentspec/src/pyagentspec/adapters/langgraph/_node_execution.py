@@ -456,22 +456,35 @@ class ApiNodeExecutor(NodeExecutor):
         api_node = self.node
         if not isinstance(api_node, AgentSpecApiNode):
             raise TypeError("ApiNodeExecutor can only execute ApiNode")
-        remote_tool_data = render_nested_object_template(api_node.data, inputs)
-        remote_tool_headers = {
+        api_node_data = render_nested_object_template(api_node.data, inputs)
+        api_node_headers = {
             render_template(k, inputs): render_nested_object_template(v, inputs)
             for k, v in api_node.headers.items()
         }
-        remote_tool_query_params = {
+        api_node_query_params = {
             render_template(k, inputs): render_nested_object_template(v, inputs)
             for k, v in api_node.query_params.items()
         }
-        remote_tool_url = render_template(api_node.url, inputs)
+        api_node_url = render_template(api_node.url, inputs)
+
+        data = None
+        json_data = None
+        content = None
+        if isinstance(api_node_data, dict):
+            data = api_node_data
+        elif isinstance(api_node_data, (str, bytes)):
+            content = api_node_data
+        else:
+            json_data = api_node_data
+
         response = httpx.request(
             method=api_node.http_method,
-            url=remote_tool_url,
-            params=remote_tool_query_params,
-            json=remote_tool_data,
-            headers=remote_tool_headers,
+            url=api_node_url,
+            params=api_node_query_params,
+            json=json_data,
+            content=content,
+            data=data,
+            headers=api_node_headers,
         )
         return response.json(), NodeExecutionDetails()
 

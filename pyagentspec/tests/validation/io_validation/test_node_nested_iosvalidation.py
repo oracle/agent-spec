@@ -4,6 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from typing import Any, Dict
+
 import pytest
 
 from pyagentspec.flows.nodes import ApiNode
@@ -11,7 +13,9 @@ from pyagentspec.property import BooleanProperty
 from pyagentspec.tools.remotetool import RemoteTool
 
 
-def make_remote_tool_with_json_serializable_objects(data, query_params, headers):
+def make_remote_tool_with_json_serializable_objects(
+    data: Any, query_params: Dict[str, Any], headers: Dict[str, Any]
+):
     subscription_success_output = BooleanProperty(
         title="subscription_success",
     )
@@ -29,7 +33,9 @@ def make_remote_tool_with_json_serializable_objects(data, query_params, headers)
     )
 
 
-def make_api_node_with_templated_params(data, query_params, headers):
+def make_api_node_with_templated_params(
+    data: Any, query_params: Dict[str, Any], headers: Dict[str, Any]
+):
     return ApiNode(
         name="Orders api call node",
         url="https://example.com/orders/2",
@@ -41,8 +47,8 @@ def make_api_node_with_templated_params(data, query_params, headers):
 
 
 @pytest.mark.parametrize(
-    "func",
-    [(make_remote_tool_with_json_serializable_objects), (make_api_node_with_templated_params)],
+    "component_builder",
+    [make_remote_tool_with_json_serializable_objects, make_api_node_with_templated_params],
 )
 @pytest.mark.parametrize(
     "data, query_params, headers, expected_inputs",
@@ -102,7 +108,9 @@ def make_api_node_with_templated_params(data, query_params, headers):
         ({1: "{{query}}"}, {}, {}, ["query"]),  # Integer is ignored for templating
     ],
 )
-def test_node_infers_inputs_from_nested_objects(func, data, query_params, headers, expected_inputs):
-    node_with_nested_io = func(data, query_params, headers)
-    remote_tool_input_list = [param.title for param in node_with_nested_io.inputs or []]
-    assert set(remote_tool_input_list or []) == set(expected_inputs)
+def test_component_infers_inputs_from_nested_objects(
+    component_builder, data, query_params, headers, expected_inputs
+):
+    component_with_nested_io = component_builder(data, query_params, headers)
+    component_input_list = [param.title for param in component_with_nested_io.inputs or []]
+    assert sorted(component_input_list) == sorted(expected_inputs)

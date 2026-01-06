@@ -13,7 +13,7 @@ from pyagentspec.templating import get_placeholder_properties_from_json_object
 
 
 @pytest.mark.parametrize(
-    "object,expected_placeholder_names",
+    "templated_object,expected_placeholder_names",
     [
         ("", set()),
         ("{{ hello }}{{ ?  }}{{ }}{{ world }}", {"hello", "world"}),
@@ -64,9 +64,9 @@ from pyagentspec.templating import get_placeholder_properties_from_json_object
     ],
 )
 def test_get_placeholder_properties_from_json_object_works(
-    object: Any, expected_placeholder_names: Set[str]
+    templated_object: Any, expected_placeholder_names: Set[str]
 ) -> None:
-    placeholder_properties = get_placeholder_properties_from_json_object(object)
+    placeholder_properties = get_placeholder_properties_from_json_object(templated_object)
     assert len(placeholder_properties) == len(expected_placeholder_names)
     inferred_titles = []
     for placeholder_property in placeholder_properties:

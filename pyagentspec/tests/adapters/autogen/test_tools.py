@@ -119,7 +119,6 @@ def test_remote_tool_post_json_array() -> None:
     ]
     expected_headers = {"X-Caller": "alice"}
 
-    # Patch httpx.request.
     with patch("httpx.request", side_effect=mock_request) as patched_request:
         result = autogen_tool._func(
             city="Agadir",
@@ -163,7 +162,6 @@ def test_remote_tool_post_raw_body() -> None:
     expected_data = "request body for city: Agadir with note: urgent"
     expected_headers = {"X-Caller": "alice"}
 
-    # Patch httpx.request.
     with patch("httpx.request", side_effect=mock_request) as patched_request:
         result = autogen_tool._func(
             city="Agadir",

@@ -44,7 +44,7 @@ def get_placeholders_from_json_object(
     object: Any,
 ) -> List[str]:
     """Retrieve the used variable names from any python object.
-    Recursively traverses dicts, lists, sets, tuples, etc. and collects all jinja template variables in found strings and byte sequences.
+    Recursively traverses dicts, lists, sets, tuples, etc. and collects all templated variables in found strings and byte sequences.
 
     Parameters
     ----------
@@ -64,14 +64,14 @@ def get_placeholders_from_json_object(
     elif isinstance(object, dict):
         key_templates = get_placeholders_from_json_object(list(object.keys()))
         value_templates = get_placeholders_from_json_object(list(object.values()))
-        return key_templates + value_templates
+        return list(set(key_templates + value_templates))
     elif isinstance(object, list) or isinstance(object, set) or isinstance(object, tuple):
-        counted_keys = Counter(
-            nested_item
-            for item in object
-            for nested_item in get_placeholders_from_json_object(item)
+        placeholders = Counter(
+            nested_placeholder
+            for nested_item in object
+            for nested_placeholder in get_placeholders_from_json_object(nested_item)
         )
-        return list(counted_keys)
+        return list(placeholders)
     else:
         # unknown object reached, ignore
         return []
