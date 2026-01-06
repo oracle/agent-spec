@@ -7,6 +7,7 @@
 """Define the classes and utilities related to deserialization of Agent Spec configurations."""
 
 import inspect
+import types
 import warnings
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -30,6 +31,13 @@ from typing_extensions import TypeGuard
 
 from pyagentspec.component import Component
 from pyagentspec.property import Property
+from pyagentspec.serialization.types import (
+    BaseModelAsDictT,
+    ComponentAsDictT,
+    ComponentsRegistryT,
+    LoadedReferencesT,
+    _DeserializationInProgressMarker,
+)
 from pyagentspec.versioning import (
     _LEGACY_VERSION_FIELD_NAME,
     _PRERELEASE_AGENTSPEC_VERSIONS,
@@ -38,13 +46,6 @@ from pyagentspec.versioning import (
 )
 
 from ..validation_helpers import PyAgentSpecErrorDetails
-from .types import (
-    BaseModelAsDictT,
-    ComponentAsDictT,
-    ComponentsRegistryT,
-    LoadedReferencesT,
-    _DeserializationInProgressMarker,
-)
 
 if TYPE_CHECKING:
     from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
@@ -297,13 +298,22 @@ class _DeserializationContextImpl(DeserializationContext):
                 # if it is already a component instance, we just return it
                 if annotation and isinstance(content, annotation):
                     return content, []
+
                 # if it is a component, we might have refs
+                if not isinstance(content, dict):
+                    raise ValueError(
+                        "expected the content to be a dictionary, "
+                        f"but got {type(content).__name__}"
+                    )
                 return self._load_component_from_dict(content, annotation)
             elif (
                 annotation is not None
                 and inspect.isclass(annotation)
                 and issubclass(annotation, Property)
             ):
+                if isinstance(content, Property):
+                    # already an instantiated property (e.g. partial config)
+                    return content, []
                 return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
                 return self._load_pydantic_model_from_dict(content, annotation)
@@ -364,7 +374,7 @@ class _DeserializationContextImpl(DeserializationContext):
                     ]
                 )
             return origin_type(result_list), all_validation_errors
-        elif origin_type == Union:
+        elif origin_type == Union or origin_type == types.UnionType:
 
             # order-preserving deduplicated list
             inner_annotations = list(dict.fromkeys(get_args(annotation)))
@@ -386,7 +396,7 @@ class _DeserializationContextImpl(DeserializationContext):
             for inner_annotation in inner_annotations:
                 try:
                     return self._load_field(content, inner_annotation)
-                except Exception:  # nosec
+                except ValueError:
                     # Something went wrong in deserialization,
                     # it's not the right type, we try the next one
                     pass

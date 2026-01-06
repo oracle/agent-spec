@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 import json
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Type, Union, cast
 from unittest.mock import patch
 
 import pytest
@@ -20,6 +20,12 @@ from pyagentspec.flows.nodes.llmnode import LlmNode
 from pyagentspec.flows.nodes.startnode import StartNode
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
+from pyagentspec.serialization.pydanticdeserializationplugin import (
+    PydanticComponentDeserializationPlugin,
+)
+from pyagentspec.serialization.pydanticserializationplugin import (
+    PydanticComponentSerializationPlugin,
+)
 from pyagentspec.tools import ClientTool, ServerTool
 from pyagentspec.versioning import AGENTSPEC_VERSION_FIELD_NAME, AgentSpecVersionEnum
 
@@ -433,3 +439,67 @@ def test_partial_model_deserialization(
     assert deserialized_component.component_type == partial_component_dict["component_type"]
     validation_error_locs = {e.loc for e in validation_errors}
     assert validation_error_locs == set(expected_validation_error_locs)
+
+
+class UnionMemberComponent(Component):
+    pass
+
+
+class CUnionCompStr(Component):
+    value: Union[UnionMemberComponent, str]
+
+
+class CUnionListCompStr(Component):
+    value: Union[List[UnionMemberComponent], str]
+
+
+class CUnionDictCompStr(Component):
+    value: Union[Dict[str, UnionMemberComponent], str]
+
+
+class CUnionTupleCompStr(Component):
+    value: Union[Tuple[UnionMemberComponent, ...], str]
+
+
+class CUnionCompIntStr(Component):
+    value: Union[UnionMemberComponent, int, str]
+
+
+class CUnionPipeSyntax(Component):
+    value: UnionMemberComponent | int | str
+
+
+@pytest.mark.parametrize(
+    "component_cls",
+    [
+        CUnionCompStr,
+        CUnionListCompStr,
+        CUnionDictCompStr,
+        CUnionTupleCompStr,
+        CUnionCompIntStr,
+        CUnionPipeSyntax,
+    ],
+)
+def test_union_mismatch_paths_use_valueerror_and_resolution_succeeds(
+    component_cls: Type[Component],
+) -> None:
+    # This test ensures that when the first union branches mismatch, deserialization
+    # still proceeds to later branches (implying the mismatches raised ValueError, not other exceptions).
+    ser_plugin = PydanticComponentSerializationPlugin(
+        component_types_and_models={
+            component_cls.__name__: component_cls,
+            UnionMemberComponent.__name__: UnionMemberComponent,
+        }
+    )
+    deser_plugin = PydanticComponentDeserializationPlugin(
+        component_types_and_models={
+            component_cls.__name__: component_cls,
+            UnionMemberComponent.__name__: UnionMemberComponent,
+        }
+    )
+
+    # Choose a value that matches the last branch (str) so earlier branches must fail first
+    instance = component_cls(name="x", value="keep-this-string")  # type: ignore[arg-type]
+    s = AgentSpecSerializer(plugins=[ser_plugin]).to_json(instance)
+    out = cast(type(instance), AgentSpecDeserializer(plugins=[deser_plugin]).from_json(s))
+    assert out.value == "keep-this-string"
