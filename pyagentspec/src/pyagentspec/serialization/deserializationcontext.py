@@ -368,10 +368,6 @@ class _DeserializationContextImpl(DeserializationContext):
                     return None, []
                 inner_annotations.remove(type(None))
 
-                # This check is needed because `is_optional_type` accepts Union[T,G,None]
-                if len(inner_annotations) == 1:
-                    return self._load_field(content, inner_annotations[0])
-
             # Try to deserialize components/pydantic models according to any of the annotations
             # If any of them works, we will proceed with that. This is our best effort.
             accumulated_errors = []
