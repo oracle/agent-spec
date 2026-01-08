@@ -122,13 +122,13 @@ class FlowBuilder:
         source_node:
             Node/name which constitute the start/source of the data flow edge.
         dest_node:
-                Node/name that constitutes the end/destination of the data flow edge.
+            Node/name that constitutes the end/destination of the data flow edge.
         data_name:
-                Name of the data property to propagate between the two nodes, either
-                str when the name is shared, or tuple (source_output, destination_input)
-                when the names are different.
+            Name of the data property to propagate between the two nodes, either
+            str when the name is shared, or tuple (source_output, destination_input)
+            when the names are different.
         edge_name:
-                Name for the edge. Defaults to "data_flow_edge"
+            Name for the edge. Defaults to "data_flow_edge"
         """
 
         source_node_ = self._get_node(source_node, prefix_err_msg="Source node")
