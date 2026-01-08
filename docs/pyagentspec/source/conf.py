@@ -207,6 +207,13 @@ nitpick_ignore_regex = [
     ("py:class", r"BaseModel"),
     ("py:class", r"ConfigDict"),
     ("py:class", r"JsonSchemaValue"),
+    ("py:class", r"autogen_core\..*"),
+    ("py:class", r"autogen_agentchat\..*"),
+    # Purposely ignoring classes
+    ("py:class", r"ComponentT"),
+    ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
+    ("py:class", r"pyagentspec.serialization.serializationcontext.T"),
+    ("py:class", r"pyagentspec.property._empty_default"),
 ]
 
 # to remove the `View page source` link
