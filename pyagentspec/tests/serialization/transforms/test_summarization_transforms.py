@@ -7,11 +7,13 @@
 
 import pytest
 
+from pyagentspec.datastores.datastore import InMemoryCollectionDatastore
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
+from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
 
-from .conftest import parametrize_transform_and_datastore
+from .conftest import create_test_llm_config, parametrize_transform_and_datastore
 
 
 @parametrize_transform_and_datastore
@@ -63,3 +65,15 @@ def test_transform_deserialization_with_unsupported_version_raises(
         _ = AgentSpecDeserializer().from_yaml(
             yaml_content=serialized_transform, components_registry=sensitive_fields
         )
+
+
+@pytest.mark.parametrize(
+    "transform",
+    [
+        MessageSummarizationTransform(id="test", name="test", llm=create_test_llm_config()),
+        ConversationSummarizationTransform(id="test", name="test", llm=create_test_llm_config()),
+    ],
+)
+def test_default_inmemory_datastore_created_when_not_specified(transform):
+    assert transform.datastore is not None
+    assert isinstance(transform.datastore, InMemoryCollectionDatastore)
