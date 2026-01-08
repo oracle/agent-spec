@@ -6,19 +6,21 @@
 
 """This module defines the class for server tools."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeAlias, Union
 
 from pydantic import Field
 from typing_extensions import Self
 
 from pyagentspec.sensitive_field import SensitiveField
-from pyagentspec.templating import get_placeholder_properties_from_string
+from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 if TYPE_CHECKING:
     from pyagentspec import Property
+
+JSONSerializable: TypeAlias = Any
 
 
 class RemoteTool(Tool):
@@ -33,9 +35,15 @@ class RemoteTool(Tool):
     api_spec_uri: Optional[str] = None
     """The uri of the specification of the API that is going to be called.
        Allows placeholders, which can define inputs"""
-    data: Dict[str, Any] = Field(default_factory=dict)
+    data: Union[str, bytes, JSONSerializable] = Field(default_factory=lambda: {})
     """The data to send as part of the body of this API call.
-       Allows placeholders in dict values, which can define inputs"""
+       Allows placeholders in dict values, which can define inputs.
+
+       ``data`` as `bytes` and `strings` will be passed to the request body as-is,
+       whereas JSONSerializable objects are converted to string with json.dumps before being added into the request's body.
+
+       Note: For AgentSpec version 25.4.1, this field is strictly typed as Dict[str, Any].
+       For versions 25.4.2 and above, it is typed as Any."""
     query_params: Dict[str, Any] = Field(default_factory=dict)
     """Query parameters for the API call.
        Allows placeholders in dict values, which can define inputs"""
@@ -48,27 +56,14 @@ class RemoteTool(Tool):
        authentication tokens and will be excluded form exported JSON configs."""
 
     def _get_inferred_inputs(self) -> List["Property"]:
-        return (
-            get_placeholder_properties_from_string(getattr(self, "url", ""))
-            + get_placeholder_properties_from_string(getattr(self, "http_method", ""))
-            + get_placeholder_properties_from_string(getattr(self, "api_spec_uri", "") or "")
-            + [
-                placeholder
-                for data_value in getattr(self, "data", {}).values()
-                if isinstance(data_value, str)
-                for placeholder in get_placeholder_properties_from_string(data_value)
-            ]
-            + [
-                placeholder
-                for query_params_value in getattr(self, "query_params", {}).values()
-                if isinstance(query_params_value, str)
-                for placeholder in get_placeholder_properties_from_string(query_params_value)
-            ]
-            + [
-                placeholder
-                for headers_value in getattr(self, "headers", {}).values()
-                if isinstance(headers_value, str)
-                for placeholder in get_placeholder_properties_from_string(headers_value)
+        return get_placeholder_properties_from_json_object(
+            [
+                getattr(self, "url", ""),
+                getattr(self, "http_method", ""),
+                getattr(self, "api_spec_uri", ""),
+                getattr(self, "data", {}),
+                getattr(self, "query_params", {}),
+                getattr(self, "headers", {}),
             ]
         )
 
@@ -81,12 +76,12 @@ class RemoteTool(Tool):
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
-        parent_min_version = super()._infer_min_agentspec_version_from_configuration()
-        current_object_min_version = self.min_agentspec_version
+        min_version = super()._infer_min_agentspec_version_from_configuration()
+        if not (isinstance(self.data, dict) and all(isinstance(k, str) for k in self.data)):
+            min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
         if self.sensitive_headers:
-            # `sensitive_headers` was introduced in 25.4.2
-            current_object_min_version = AgentSpecVersionEnum.v25_4_2
-        return max(current_object_min_version, parent_min_version)
+            min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
+        return min_version
 
     @model_validator_with_error_accumulation
     def _validate_sensitive_headers_are_disjoint(self) -> Self:
