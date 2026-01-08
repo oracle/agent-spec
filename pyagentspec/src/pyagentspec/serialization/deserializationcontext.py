@@ -273,7 +273,10 @@ class _DeserializationContextImpl(DeserializationContext):
         if origin_type is None:
             # might be None when we have a primitive type, or the type of a component
             if self._is_component_type(annotation):
-                # if it is already a component instance, we just return it
+                # This condition should never be reached since content is typed as BaseModelAsDictT,
+                # which is a dict-like structure and should not contain deserialized components.
+                # However, it is being hit in tests (e.g., test_partialcomponentconstruction.py).
+                # We need to investigate why deserialized components are passed here.
                 if annotation and isinstance(content, annotation):
                     return content, []
 
@@ -289,6 +292,7 @@ class _DeserializationContextImpl(DeserializationContext):
                 and inspect.isclass(annotation)
                 and issubclass(annotation, Property)
             ):
+
                 if isinstance(content, annotation):
                     return content, []
                 return Property(json_schema=content), []
