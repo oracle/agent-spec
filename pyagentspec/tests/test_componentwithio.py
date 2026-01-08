@@ -58,6 +58,16 @@ def test_component_with_empty_input_raises() -> None:
         component_cls(name="my_component", inputs=[StringProperty(title="")])
 
 
+def test_component_with_empty_input_in_json_schema_raises() -> None:
+    with pytest.raises(ValueError, match=("cannot have an empty title")):
+        component_cls = create_mock_component_cls_with_defaults(
+            [Property(json_schema={"type": "string", "title": ""})], []
+        )
+        component_cls(
+            name="my_component", inputs=[Property(json_schema={"type": "string", "title": ""})]
+        )
+
+
 def test_component_with_inputs_raises_when_missing_inputs_are_not_passed() -> None:
     with pytest.raises(
         ValueError,
