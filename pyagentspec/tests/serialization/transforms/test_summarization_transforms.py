@@ -8,6 +8,7 @@
 import pytest
 
 from pyagentspec.datastores.datastore import InMemoryCollectionDatastore
+from pyagentspec.property import ObjectProperty, StringProperty
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
@@ -77,3 +78,18 @@ def test_transform_deserialization_with_unsupported_version_raises(
 def test_default_inmemory_datastore_created_when_not_specified(transform):
     assert transform.datastore is not None
     assert isinstance(transform.datastore, InMemoryCollectionDatastore)
+
+
+@pytest.mark.parametrize(
+    "transform_cls",
+    [MessageSummarizationTransform, ConversationSummarizationTransform],
+)
+def test_transforms_with_incorrect_schema_raises(transform_cls):
+    incorrect_schema = {
+        "summarized_messages_cache": ObjectProperty(properties={"cache_key": StringProperty()})
+    }
+    datastore = InMemoryCollectionDatastore(
+        name="incorrect_datastore", datastore_schema=incorrect_schema
+    )
+    with pytest.raises(ValueError):
+        transform_cls(id="test", name="test", llm=create_test_llm_config(), datastore=datastore)

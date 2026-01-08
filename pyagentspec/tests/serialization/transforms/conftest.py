@@ -38,7 +38,7 @@ def create_message_summarization_transform(datastore):
         datastore=datastore,
         max_cache_size=2_500,
         max_cache_lifetime=8 * 3600,
-        cache_collection_name="message_summaries_cache",
+        cache_collection_name="summarized_messages_cache",
     )
 
 
