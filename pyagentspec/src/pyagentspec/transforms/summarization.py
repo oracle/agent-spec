@@ -6,10 +6,32 @@
 """This file defines message transforms for message and conversation summarization."""
 from typing import Optional
 
+from pydantic import Field
+
 from pyagentspec.datastores import Datastore
+from pyagentspec.datastores.datastore import Entity, InMemoryCollectionDatastore
 from pyagentspec.llms import LlmConfig
+from pyagentspec.property import FloatProperty, IntegerProperty, ObjectProperty, StringProperty
 
 from .transforms import MessageTransform
+
+
+def _get_default_inmemory_datastore_conversations() -> InMemoryCollectionDatastore:
+    return InMemoryCollectionDatastore(
+        name="default-inmemory-datastore",
+        datastore_schema={
+            "summarized_conversations_cache": ConversationSummarizationTransform.get_entity_definition()
+        },
+    )
+
+
+def _get_default_inmemory_datastore_messages() -> InMemoryCollectionDatastore:
+    return InMemoryCollectionDatastore(
+        name="default-inmemory-datastore",
+        datastore_schema={
+            "summarized_messages_cache": MessageSummarizationTransform.get_entity_definition()
+        },
+    )
 
 
 class MessageSummarizationTransform(MessageTransform):
@@ -28,9 +50,9 @@ class MessageSummarizationTransform(MessageTransform):
     summarized_message_template: str = "Summarized message: {{summary}}"
     """Template for formatting the summarized message output."""
 
-    datastore: Optional[Datastore] = None
+    datastore: Optional[Datastore] = Field(default_factory=_get_default_inmemory_datastore_messages)
     """
-    Datastore on which to store the cache. If None, an in-memory Datastore will be created automatically.
+    Datastore on which to store the cache. By default, an in-memory datastore is created. If None, no caching will happen.
     """
 
     max_cache_size: Optional[int] = 10_000
@@ -41,6 +63,17 @@ class MessageSummarizationTransform(MessageTransform):
 
     cache_collection_name: str = "summarized_messages_cache"
     """Name of the collection in the datastore for caching summarized messages."""
+
+    @staticmethod
+    def get_entity_definition() -> Entity:
+        return ObjectProperty(
+            properties={
+                "cache_key": StringProperty(),
+                "cache_content": StringProperty(),
+                "created_at": FloatProperty(),
+                "last_used_at": FloatProperty(),
+            }
+        )
 
 
 class ConversationSummarizationTransform(MessageTransform):
@@ -62,9 +95,11 @@ class ConversationSummarizationTransform(MessageTransform):
     summarized_conversation_template: str = "Summarized conversation: {{summary}}"
     """Template for formatting the summarized conversation output."""
 
-    datastore: Optional[Datastore] = None
+    datastore: Optional[Datastore] = Field(
+        default_factory=_get_default_inmemory_datastore_conversations
+    )
     """
-    Datastore on which to store the cache. If None, an in-memory Datastore will be created automatically.
+    Datastore on which to store the cache. By default, an in-memory datastore is created. If None, no caching will happen.
     """
 
     max_cache_size: Optional[int] = 10_000
@@ -75,3 +110,15 @@ class ConversationSummarizationTransform(MessageTransform):
 
     cache_collection_name: str = "summarized_conversations_cache"
     """Name of the collection in the datastore for caching summarized conversations."""
+
+    @staticmethod
+    def get_entity_definition() -> Entity:
+        return ObjectProperty(
+            properties={
+                "cache_key": StringProperty(),
+                "cache_content": StringProperty(),
+                "prefix_size": IntegerProperty(),
+                "created_at": FloatProperty(),
+                "last_used_at": FloatProperty(),
+            }
+        )
