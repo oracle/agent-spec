@@ -16,13 +16,7 @@ from pyagentspec.datastores.postgres import (
     PostgresDatabaseDatastore,
     TlsPostgresDatabaseConnectionConfig,
 )
-from pyagentspec.property import (
-    FloatProperty,
-    IntegerProperty,
-    ObjectProperty,
-    Property,
-    StringProperty,
-)
+from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 
 FAKE_PASSWORD = "testpass"  # nosec B105
 FAKE_TESTUSER = "testuser"
@@ -52,15 +46,8 @@ POSTGRES_TLS_SENSITIVE_FIELDS = {
 IN_MEMORY_SENSITIVE_FIELDS = {}
 
 SCHEMA = {
-    "cache_collection": ObjectProperty(
-        properties={
-            "content": StringProperty(),
-            "ttl": IntegerProperty(),
-            "created_at": FloatProperty(),
-            "last_used_at": FloatProperty(),
-            "metadata": Property(json_schema={}),
-        }
-    )
+    "summarized_messages_cache": MessageSummarizationTransform.get_entity_definition(),
+    "conversation_summaries_cache": ConversationSummarizationTransform.get_entity_definition(),
 }
 
 
