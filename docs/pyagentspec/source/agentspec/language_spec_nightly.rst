@@ -456,7 +456,7 @@ registry for the Agent. In case of tool name collisions across different sources
   the exact behavior to the runtime. Runtimes MAY error on collisions.
 - Implementations SHOULD provide clear diagnostics when collisions occur.
 
-Transforms, when present, apply transformations to the messages before they are passed to the LLM,
+Transforms, when present, apply transformations to the messages before they are passed to the agent's LLM,
 allowing for message summarization, conversation summarization, or other modifications to optimize the agent's context.
 
 This Component will be expanded as more functionalities will be added to
@@ -2066,7 +2066,7 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
 Transforms
 ^^^^^^^^^^
 
-Transforms extend the base ``MessageTransform`` component can be used in agents. They apply a transformation to the messages before they are passed to the LLM.
+Transforms extend the base ``MessageTransform`` component can be used in agents. They apply a transformation to the messages before they are passed to the agent's LLM.
 
 .. code-block:: python
 
