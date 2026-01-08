@@ -25,6 +25,13 @@ def get_placeholders_from_string(string_with_placeholders: str) -> List[str]:
     )
 
 
+def get_placeholder_properties_from_string(
+    string_with_placeholders: str,
+) -> List[Property]:
+    """Get the property descriptions for the placeholder names extracted from a string (backwards compatible)."""
+    return get_placeholder_properties_from_json_object(string_with_placeholders)
+
+
 def get_placeholder_properties_from_json_object(
     object: Any,
 ) -> List[Property]:
