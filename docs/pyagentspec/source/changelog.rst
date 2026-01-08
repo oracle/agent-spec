@@ -101,7 +101,7 @@ Improvements
 * **Extended functionality for data parameter**
 
   Extended the data parameter in ``RemoteTool`` and ``ApiNode`` from only being a dictionary to any JSON serializable object (including nested objects).
-  Also improved template rendering in the ``RemoteTool`` and ``ApiNode`` for PyAgentSpec adapters
+  Also improved template rendering in the ``RemoteTool`` and ``ApiNode`` for PyAgentSpec adapters.
 
 * **Python 3.14 support**
 
