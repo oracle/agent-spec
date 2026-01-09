@@ -1470,9 +1470,17 @@
           "title": "Api Spec Uri"
         },
         "data": {
-          "additionalProperties": true,
-          "title": "Data",
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "binary",
+              "type": "string"
+            },
+            {}
+          ],
+          "title": "Data"
         },
         "query_params": {
           "additionalProperties": true,
@@ -2067,17 +2075,6 @@
           "title": "Summarized Conversation Template",
           "type": "string"
         },
-        "datastore": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/Datastore"
-            }
-          ],
-          "default": null
-        },
         "max_cache_size": {
           "anyOf": [
             {
@@ -2106,6 +2103,23 @@
           "default": "summarized_conversations_cache",
           "title": "Cache Collection Name",
           "type": "string"
+        },
+        "datastore": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/InMemoryCollectionDatastore"
+            },
+            {
+              "$ref": "#/$defs/OracleDatabaseDatastore"
+            },
+            {
+              "$ref": "#/$defs/PostgresDatabaseDatastore"
+            }
+          ],
+          "title": "Datastore"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -3372,17 +3386,6 @@
           "title": "Summarized Message Template",
           "type": "string"
         },
-        "datastore": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/Datastore"
-            }
-          ],
-          "default": null
-        },
         "max_cache_size": {
           "anyOf": [
             {
@@ -3411,6 +3414,23 @@
           "default": "summarized_messages_cache",
           "title": "Cache Collection Name",
           "type": "string"
+        },
+        "datastore": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/InMemoryCollectionDatastore"
+            },
+            {
+              "$ref": "#/$defs/OracleDatabaseDatastore"
+            },
+            {
+              "$ref": "#/$defs/PostgresDatabaseDatastore"
+            }
+          ],
+          "title": "Datastore"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -4762,9 +4782,17 @@
           "title": "Api Spec Uri"
         },
         "data": {
-          "additionalProperties": true,
-          "title": "Data",
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "binary",
+              "type": "string"
+            },
+            {}
+          ],
+          "title": "Data"
         },
         "query_params": {
           "additionalProperties": true,
