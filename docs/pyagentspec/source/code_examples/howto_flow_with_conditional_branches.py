@@ -264,7 +264,7 @@ from pyagentspec.flows.flowbuilder import FlowBuilder
 flowbuilder_flow = (
     FlowBuilder()
     # Linear backbone: generate -> review -> decide
-    .add_sequential([generate_code_node, review_code_node, is_code_ready_decision_node])
+    .add_sequence([generate_code_node, review_code_node, is_code_ready_decision_node])
     # Add the terminal success step
     .add_node(end_node)
     # Branch: yes -> finish_node; no -> back to generate_code_node

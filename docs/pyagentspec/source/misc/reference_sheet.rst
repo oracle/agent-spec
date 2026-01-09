@@ -547,7 +547,7 @@ Add a sequence, then entry/finish:
 
     flow = (
         FlowBuilder()
-        .add_sequential([n1, n2])
+        .add_sequence([n1, n2])
         .set_entry_point(n1)
         .set_finish_points(n2)
         .build()
@@ -568,7 +568,7 @@ Add a conditional using a node output as key, with a default branch:
 
     flow = (
         FlowBuilder()
-        .add_sequential([src])
+        .add_sequence([src])
         .add_node(ok)
         .add_node(ko)
         .set_conditional(
@@ -579,5 +579,29 @@ Add a conditional using a node output as key, with a default branch:
         )
         .set_entry_point(src)
         .set_finish_points([ok, ko])
+        .build()
+    )
+
+
+Go beyond linear flows using control and data edges:
+
+.. code-block:: python
+
+    producer = LlmNode(name="producer", llm_config=llm_config, prompt_template="Say Hello")
+    consumer1 = LlmNode(name="consumer1", llm_config=llm_config, prompt_template="{{generated_text}}")
+    consumer2 = LlmNode(name="consumer2", llm_config=llm_config, prompt_template="{{also_value}}")
+
+    flow_with_connections = (
+        FlowBuilder()
+        .add_node(producer)
+        .add_node(consumer1)
+        .add_node(consumer2)
+        .add_edge("producer", "consumer1")
+        .add_edge("producer", "consumer2")
+        # Using the default output name for LlmNode.DEFAULT_OUTPUT
+        .add_data_edge("producer", "consumer1", LlmNode.DEFAULT_OUTPUT)
+        .add_data_edge("producer", "consumer2", (LlmNode.DEFAULT_OUTPUT, "also_value"))
+        .set_entry_point("producer")
+        .set_finish_points(["consumer1", "consumer2"])
         .build()
     )

@@ -15,10 +15,12 @@ Overview
 
 The ``FlowBuilder`` provides a concise, readable way to assemble flows without manually wiring every edge. It supports:
 
-- ``add_sequential``: add nodes in order and wire control edges between consecutive nodes.
-- ``set_entry_point`` and ``set_finish_points``: declare the flow entry and terminal points.
-- ``set_conditional``: branch to different destinations based on a source node output.
-- ``build_linear_flow``: a convenience method to assemble a linear flow in one line.
+- You can quickly assemble a sequence of connected nodes with ``build_linear_flow``.
+- ``add_node`` and ``add_edge`` enable you to manually add individual nodes and wire control edges for custom flow topologies.
+- ``add_data_edge`` lets you specify data flow between nodes.
+- Use ``add_sequence`` to add multiple nodes in order and automatically connect them with control edges.
+- ``set_entry_point`` and ``set_finish_points`` declare where your flow begins and ends.
+- ``set_conditional`` allows you to branch execution to specific nodes based on outputs from a source node.
 
 See the full API in :doc:`API › Flows <../api/flows>` and quick snippets in the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
 
@@ -51,8 +53,25 @@ Notes:
 - ``set_conditional`` accepts the branch key as a string output name (e.g., ``"decision"``) or as a tuple ``(node_or_name, output_name)``.
 - ``set_finish_points`` declares which nodes connect to automatically created ``EndNode``(s).
 
+3. Manually connect nodes
+=========================
 
-3. Export the flow
+Add individual nodes and explicitly define both control and data edges for full control over your flow.
+
+.. literalinclude:: ../code_examples/howto_flowbuilder.py
+    :language: python
+    :start-after: .. start-##_Build_a_flow_with_manual_connections
+    :end-before: .. end-##_Build_a_flow_with_manual_connections
+
+Notes:
+- ``add_node`` lets you add each node individually.
+- ``add_edge`` specifies the order in which your nodes are going to be executed.
+- ``add_data_edge`` passes specific output data from a source node to a target node.
+
+This approach allows you to design custom topologies beyond simple sequences or branches.
+
+
+1. Export the flow
 ==================
 
 Serialize your flow to Agent Spec JSON for execution in a compatible runtime.

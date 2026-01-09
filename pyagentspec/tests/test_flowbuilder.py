@@ -354,7 +354,7 @@ def test_build_linear_flow_serialize_json_and_yaml(default_llm_config):
 
 def test_build_linear_flow_rejects_start_or_end_nodes(default_llm_config):
     # Start at position 0 not allowed
-    with pytest.raises(ValueError, match="Please don't add a StartNode"):
+    with pytest.raises(ValueError, match="It is not necessary to add a StartNode"):
         FlowBuilder.build_linear_flow(
             [
                 StartNode(name="s"),
@@ -362,7 +362,7 @@ def test_build_linear_flow_rejects_start_or_end_nodes(default_llm_config):
             ]
         )
     # End at last position not allowed
-    with pytest.raises(ValueError, match="Please don't add an EndNode"):
+    with pytest.raises(ValueError, match="It is not necessary to add an EndNode"):
         FlowBuilder.build_linear_flow(
             [
                 LlmNode(name="n", llm_config=default_llm_config, prompt_template="p"),

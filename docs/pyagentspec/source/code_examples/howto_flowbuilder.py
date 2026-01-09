@@ -38,7 +38,7 @@ on_fail = LlmNode(name="on_fail", llm_config=llm_config, prompt_template="KO")
 
 flow_with_branch = (
     FlowBuilder()
-    .add_sequential([decider])
+    .add_sequence([decider])
     .add_node(on_success)
     .add_node(on_fail)
     .add_conditional(
@@ -53,6 +53,26 @@ flow_with_branch = (
 )
 # .. end-##_Build_a_flow_with_a_conditional
 
+# .. start-##_Build_a_flow_with_manual_connections
+producer = LlmNode(name="producer", llm_config=llm_config, prompt_template="Say Hello")
+consumer1 = LlmNode(name="consumer1", llm_config=llm_config, prompt_template="{{generated_text}}")
+consumer2 = LlmNode(name="consumer2", llm_config=llm_config, prompt_template="{{also_value}}")
+
+flow_with_connections = (
+    FlowBuilder()
+    .add_node(producer)
+    .add_node(consumer1)
+    .add_node(consumer2)
+    .add_edge("producer", "consumer1")
+    .add_edge("producer", "consumer2")
+    # Using the default output name for LlmNode.DEFAULT_OUTPUT
+    .add_data_edge("producer", "consumer1", LlmNode.DEFAULT_OUTPUT)
+    .add_data_edge("producer", "consumer2", (LlmNode.DEFAULT_OUTPUT, "also_value"))
+    .set_entry_point("producer")
+    .set_finish_points(["consumer1", "consumer2"])
+    .build()
+)
+# .. end-##_Build_a_flow_with_manual_connections
 
 # .. start-##_Export_to_IR
 from pyagentspec.serialization import AgentSpecSerializer
@@ -86,7 +106,7 @@ on_success = LlmNode(name="on_success", llm_config=llm_config, prompt_template="
 on_fail = LlmNode(name="on_fail", llm_config=llm_config, prompt_template="KO")
 flow_with_branch = (
     FlowBuilder()
-    .add_sequential([decider])
+    .add_sequence([decider])
     .add_node(on_success)
     .add_node(on_fail)
     .add_conditional(

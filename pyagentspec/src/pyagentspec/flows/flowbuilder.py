@@ -169,10 +169,6 @@ class FlowBuilder:
 
         return self
 
-    # Convenience alias
-    def add_sequential(self, nodes: list[Node]) -> "FlowBuilder":
-        return self.add_sequence(nodes)
-
     def add_conditional(
         self,
         source_node: Node | str,
@@ -428,8 +424,9 @@ class FlowBuilder:
             Format for the returned object. If `None`, returns a pyagentspec `Flow`.
             Otherwise, returns its Agent Spec configuration as JSON/YAML.
         data_flow_edges:
-            Optional list of data flow edges. Either a `DataFlowEdge` object or
-            a string using the format `source_node.output_value:dest_node.input_value`.
+            Optional list of data flow edges. Either a `DataFlowEdge` object
+            or a (src_node, dst_node, var_name) tuple when the variable name is
+            shared, or (src_node, dst_node, src_in, dst_out) otherwise.
         inputs:
             Optional list of inputs for the flow. If `None`, auto-detects as the list of
             inputs that are not generated at some point in the execution of the flow.
@@ -440,9 +437,9 @@ class FlowBuilder:
             any node in any execution branch of the flow.
         """
         if isinstance(nodes[0], StartNode):
-            raise ValueError("Please don't add a StartNode to the list of nodes")
+            raise ValueError("It is not necessary to add a StartNode to the list of nodes")
         if isinstance(nodes[-1], EndNode):
-            raise ValueError("Please don't add an EndNode to the list of nodes")
+            raise ValueError("It is not necessary to add an EndNode to the list of nodes")
 
         flow_builder = cls().add_sequence(nodes)
 
