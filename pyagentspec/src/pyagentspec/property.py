@@ -89,6 +89,12 @@ class Property(BaseModel):
             self.type = self.json_schema["type"]
 
     @model_validator_with_error_accumulation
+    def _validate_no_empty_titles(self) -> Self:
+        if len(self.title) == 0:
+            raise ValueError(f"Property {self.json_schema} cannot have an empty title")
+        return self
+
+    @model_validator_with_error_accumulation
     def _validate_default(self) -> Self:
         if self.default is Property.empty_default:
             return self
