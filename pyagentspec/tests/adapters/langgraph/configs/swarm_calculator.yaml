@@ -1,0 +1,84 @@
+component_type: Swarm
+id: 1dea5fa8-c643-4e55-b029-62771e92ccd9
+name: swarm
+description: null
+metadata: {}
+inputs: []
+outputs: []
+first_agent:
+  $component_ref: bfba0bb1-08ea-40c3-b5a3-415465c3c95e
+relationships:
+- - $component_ref: bfba0bb1-08ea-40c3-b5a3-415465c3c95e
+  - $component_ref: de8f0d0e-57ca-4998-9520-766cdba6ab85
+- - $component_ref: de8f0d0e-57ca-4998-9520-766cdba6ab85
+  - $component_ref: bfba0bb1-08ea-40c3-b5a3-415465c3c95e
+handoff: optional
+$referenced_components:
+  bfba0bb1-08ea-40c3-b5a3-415465c3c95e:
+    component_type: Agent
+    id: bfba0bb1-08ea-40c3-b5a3-415465c3c95e
+    name: sum_agent
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
+    system_prompt: You are able to do sums. In case of multiplications, ask the `multiply_agent`.
+    tools:
+    - component_type: ServerTool
+      id: d089e4c2-21d2-41b8-ba59-95f415c66771
+      name: add
+      description: Sum two numbers
+      metadata: {}
+      inputs:
+      - title: a
+        type: integer
+      - title: b
+        type: integer
+      outputs:
+      - title: sum
+        type: integer
+      requires_confirmation: false
+    toolboxes: []
+    human_in_the_loop: true
+  8055058e-1c45-4d9d-9378-7a45e2ba10ee:
+    component_type: OpenAiCompatibleConfig
+    id: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
+    name: Llama-3.3-70B-Instruct
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: '[[LLAMA70BV33_API_URL]]'
+    model_id: /storage/models/Llama-3.3-70B-Instruct
+    api_type: chat_completions
+    api_key: null
+  de8f0d0e-57ca-4998-9520-766cdba6ab85:
+    component_type: Agent
+    id: de8f0d0e-57ca-4998-9520-766cdba6ab85
+    name: multiply_agent
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    llm_config:
+      $component_ref: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
+    system_prompt: You are able to do multiplications. In case of sums, ask the `sum_agent`.
+    tools:
+    - component_type: ServerTool
+      id: 0ebddedd-c4ac-4b1b-b8e5-f977b9499106
+      name: multiply
+      description: Multiply two numbers
+      metadata: {}
+      inputs:
+      - title: a
+        type: integer
+      - title: b
+        type: integer
+      outputs:
+      - title: product
+        type: integer
+      requires_confirmation: false
+    toolboxes: []
+    human_in_the_loop: true
+agentspec_version: 25.4.2

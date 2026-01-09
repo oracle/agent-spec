@@ -31,6 +31,7 @@ from pyagentspec.adapters.langgraph._types import (
     interrupt,
     langgraph_graph,
     langgraph_prebuilt,
+    langgraph_swarm,
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import AgentSpecCallbackHandler
@@ -73,6 +74,8 @@ from pyagentspec.property import ListProperty as AgentSpecListProperty
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.property import json_schemas_have_same_type
+from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
+from pyagentspec.swarm import Swarm as AgentSpecSwarm
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
@@ -257,6 +260,14 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
                 checkpointer=checkpointer,
                 config=config_with_callbacks,
+            )
+        elif isinstance(agentspec_component, AgentSpecSwarm):
+            return self._swarm_convert_to_langgraph(
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
             )
         elif isinstance(agentspec_component, AgentSpecLlmConfig):
             return self._llm_convert_to_langgraph(agentspec_component, config=config)
@@ -767,6 +778,71 @@ class AgentSpecToLangGraphConverter:
             filtered_tools = [remote_tools[name] for name in filter_map]
         return filtered_tools
 
+    def _swarm_convert_to_langgraph(
+        self,
+        agentspec_component: AgentSpecSwarm,
+        tool_registry: Dict[str, LangGraphTool],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+    ) -> CompiledStateGraph[Any, Any, Any]:
+        if agentspec_component.handoff is AgentSpecHandoffMode.NEVER:
+            raise ValueError(
+                "Handoff mode NEVER is not supported for conversion in LangGraph adapter"
+            )
+        agents: dict[str, AgentSpecAgent] = {
+            # LangGraph distinguishes agents by name, so we use names here.
+            # We also assume to get only agents in relationships.
+            agent.name: cast(AgentSpecAgent, agent)
+            # Relationships are tuples of (from_agent, to_agent)
+            for agent in [e for r in agentspec_component.relationships for e in r]
+        }
+        for agent in agents.values():
+            # Since handoff is performed with tools, we can only support agents in relationships for now
+            # Note that the fact that we called `cast` before does not change the actual type of the agent
+            if not isinstance(agent, AgentSpecAgent):
+                raise ValueError(
+                    f"Only Swarm of Agents is supported in LangGraph adapter, received {type(agent)} instead."
+                )
+            # We convert the agents event though we do not use them in langgraph, since we have to append
+            # the handoff tools, but at least this way the agents will be created and stored in the registry
+            # of converted components in case they are used in other places
+            self.convert(
+                agent,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
+        handoffs: dict[str, list[str]] = {agent_name: [] for agent_name in agents}
+        for from_agent, to_agent in agentspec_component.relationships:
+            handoffs[from_agent.name].append(to_agent.name)
+        # We re-create the agents with the additional handoff tools
+        langgraph_agents: list[CompiledStateGraph[Any, Any, Any]] = [
+            self._create_react_agent_with_given_info(
+                name=agent.name,
+                system_prompt=agent.system_prompt,
+                llm_config=agent.llm_config,
+                tools=agent.tools,
+                toolboxes=agent.toolboxes,
+                inputs=agent.inputs or [],
+                outputs=agent.outputs or [],
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+                additioanl_langgraph_tools=[
+                    langgraph_swarm.create_handoff_tool(agent_name=to_agent_name)
+                    for to_agent_name in handoffs.get(agent.name, [])
+                ],
+            )
+            for agent in agents.values()
+        ]
+        return langgraph_swarm.create_swarm(
+            agents=langgraph_agents,  # type: ignore
+            default_active_agent=agentspec_component.first_agent.name,
+        ).compile(checkpointer=checkpointer)
+
     def _create_react_agent_with_given_info(
         self,
         *,
@@ -781,6 +857,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        additioanl_langgraph_tools: Optional[List[LangGraphTool]] = None,
     ) -> CompiledStateGraph[Any, Any, Any]:
         model = self.convert(
             llm_config,
@@ -789,26 +866,30 @@ class AgentSpecToLangGraphConverter:
             checkpointer=checkpointer,
             config=config,
         )
-        langgraph_tools = [
-            self.convert(
-                t,
-                tool_registry=tool_registry,
-                converted_components=converted_components,
-                checkpointer=checkpointer,
-                config=config,
-            )
-            for t in tools
-        ] + [
-            t
-            for tb in toolboxes
-            for t in self.convert(
-                tb,
-                tool_registry=tool_registry,
-                converted_components=converted_components,
-                checkpointer=checkpointer,
-                config=config,
-            )
-        ]
+        langgraph_tools = (
+            (additioanl_langgraph_tools or [])
+            + [
+                self.convert(
+                    t,
+                    tool_registry=tool_registry,
+                    converted_components=converted_components,
+                    checkpointer=checkpointer,
+                    config=config,
+                )
+                for t in tools
+            ]
+            + [
+                t
+                for tb in toolboxes
+                for t in self.convert(
+                    tb,
+                    tool_registry=tool_registry,
+                    converted_components=converted_components,
+                    checkpointer=checkpointer,
+                    config=config,
+                )
+            ]
+        )
         prompt = SystemMessage(system_prompt)
         output_model: Optional[type[BaseModel]] = None
         input_model: Optional[type[BaseModel]] = None

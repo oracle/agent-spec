@@ -30,6 +30,7 @@ LANGGRAPH_DEPS = [
     "langchain-core>=0.3,<1.0.0",
     "langchain-openai>=0.3.7",
     "langchain-ollama>=0.3.3",
+    "langgraph-swarm>=0.0.15",
     "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
     "anyio>=4.10.0,<4.12.0",  # to avoid async issues in higher anyio versions
 ]
