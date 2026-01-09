@@ -78,3 +78,15 @@ Nodes
 .. _toolnode:
 .. autoclass:: pyagentspec.flows.nodes.toolnode.ToolNode
     :exclude-members: model_post_init, model_config
+
+
+Flow Builder
+------------
+
+The Flow Builder provides a concise, chainable API to assemble Agent Spec Flows programmatically.
+It helps wire control and data edges, set entry/finish points, and serialize flows to JSON/YAML.
+
+See some code examples in the :ref:`Reference Sheet <flowbuilder_ref_sheet>`
+
+.. _flowbuilder:
+.. autoclass:: pyagentspec.flows.flowbuilder.FlowBuilder

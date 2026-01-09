@@ -174,6 +174,15 @@ html_theme_options = {
         "image_light": "_static/agentspec-dark.svg",
         "image_dark": "_static/agentspec-white.svg",
     },
+    # Site-wide announcement banner (pydata-sphinx-theme)
+    "announcement": (
+        "<span>"
+        "<strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. "
+        "See API → Flows → Flow Builder and the Reference Sheet."
+        "</span>"
+        '<button id="close-announcement" aria-label="Close announcement" '
+        'style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button>'
+    ),
 }
 
 html_sidebars = {
@@ -212,6 +221,7 @@ def autodoc_skip_member(app: Sphinx, what, name, obj, skip, options):  # type: i
 def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.add_js_file("js/fix-navigation.js")
+    app.add_js_file("announcement.js")
 
     return {
         "version": "0.1",
