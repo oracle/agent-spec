@@ -5,6 +5,8 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
+import logging
+import sys
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -451,6 +453,25 @@ class AgentSpecToLangGraphConverter:
         self._add_conditional_edges_to_graph(control_flow, graph_builder)
         compiled_graph = graph_builder.compile(checkpointer=checkpointer)
 
+        # Warn users on Python < 3.11 about async interrupts potentially failing.
+        # We warn during graph loading/compilation time to avoid runtime surprises.
+        if sys.version_info < (3, 11):
+            uses_interrupt = False
+            try:
+                # Any InputMessageNode implies interrupt; client tools may interrupt too.
+                uses_interrupt = any(
+                    isinstance(n, AgentSpecInputMessageNode) or isinstance(n, AgentSpecToolNode)
+                    for n in flow.nodes
+                )
+            except Exception:
+                uses_interrupt = False
+            if uses_interrupt or checkpointer is not None:
+                logger = logging.getLogger("pyagentspec.adapters.langgraph")
+                logger.warning(
+                    "Async interrupts on Python < 3.11 may raise 'Called get_config outside of a runnable context'. "
+                    "Prefer invoke/stream or upgrade to Python 3.11+ for ainvoke/astream."
+                )
+
         # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
 
         original_stream = compiled_graph.stream
@@ -799,6 +820,13 @@ class AgentSpecToLangGraphConverter:
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
     ) -> LangGraphTool:
+        # Warn at load time for Python < 3.11 since client tools use interrupt under the hood.
+        if sys.version_info < (3, 11):
+            logging.getLogger("pyagentspec.adapters.langgraph").warning(
+                "Async interrupts on Python < 3.11 may raise 'Called get_config outside of a runnable context'. "
+                "Prefer invoke/stream or upgrade to Python 3.11+ for ainvoke/astream."
+            )
+
         def client_tool(*args: Any, **kwargs: Any) -> Any:
             tool_request = {
                 "type": "client_tool_request",

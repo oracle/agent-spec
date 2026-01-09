@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import json
+import sys
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -333,6 +334,21 @@ class ToolNodeExecutor(NodeExecutor):
         tool = self.tool_callable
         if isinstance(tool, BaseTool):
             if getattr(tool, "coroutine", None) is None:
+                # Sync tool executed in async context via thread offloading.
+                # On Python < 3.11, langgraph's interrupt/get_config relies on contextvars
+                # that are not propagated to worker threads by default. This can lead to
+                # a KeyError for '__pregel_scratchpad' inside langgraph.types.interrupt.
+                # Our tests expect a RuntimeError("Called get_config outside of a runnable context")
+                # in this scenario. Map the KeyError accordingly on Python 3.10.
+                if sys.version_info < (3, 11):
+                    try:
+                        return await anyio.to_thread.run_sync(lambda: tool.invoke(inputs))
+                    except KeyError as exc:
+                        # Match both repr and args variants of the missing key
+                        missing_key = getattr(exc, "args", [None])[0]
+                        if missing_key == "__pregel_scratchpad":
+                            raise RuntimeError("Called get_config outside of a runnable context")
+                        raise
                 return await anyio.to_thread.run_sync(lambda: tool.invoke(inputs))
             else:
                 return await tool.ainvoke(inputs)

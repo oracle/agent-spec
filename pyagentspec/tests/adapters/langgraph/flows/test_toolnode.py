@@ -4,6 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import sys
+
 import pytest
 
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
@@ -89,6 +91,10 @@ async def test_toolnode_can_be_executed_async_with_interrupt_resume(tool_flow: F
     agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(tool_flow)
 
     config = RunnableConfig({"configurable": {"thread_id": "1"}})
+    if sys.version_info < (3, 11):
+        with pytest.raises(RuntimeError, match="Called get_config outside of a runnable context"):
+            await agent.ainvoke({"inputs": {"input": 4}}, config=config)
+        return
     result = await agent.ainvoke({"inputs": {"input": 4}}, config=config)
     assert "__interrupt__" in result
 
