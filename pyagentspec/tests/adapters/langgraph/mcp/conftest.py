@@ -8,7 +8,7 @@ import os
 import signal
 import socket
 import ssl
-import subprocess  # nosec, test-only code, args are trusted
+import subprocess  # nosec B404
 import sys
 import threading
 import time
@@ -136,59 +136,65 @@ def _terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> 
     try:
         if process.poll() is not None:
             return  # already exited
-        # Prefer group termination on POSIX if we started a new session
+
         if os.name == "posix":
+            # Prefer group termination on POSIX if we started a new session
             try:
                 pgid = os.getpgid(process.pid)
-                # 1) Graceful: SIGTERM to the group
-                os.killpg(pgid, signal.SIGTERM)
-            except Exception:
-                # Fall back to terminating the single process
+                try:
+                    os.killpg(pgid, signal.SIGTERM)
+                except OSError:
+                    # Fall back to terminating the single process
+                    try:
+                        process.terminate()
+                    except OSError:
+                        pass
+            except OSError:
+                # If we can't get pgid, try terminating the single process
                 try:
                     process.terminate()
-                except Exception:  # nosec
+                except OSError:
                     pass
         else:
             # Windows or other: terminate the single process
             try:
                 process.terminate()
-            except Exception:  # nosec
+            except OSError:
                 pass
 
         # Give it a moment to exit cleanly
         try:
             process.wait(timeout=timeout)
             return
-        except Exception:  # nosec
+        except subprocess.TimeoutExpired:
             pass
 
-        # 2) Forceful: SIGKILL the group (POSIX), otherwise kill the process
+        # Forceful: SIGKILL the group (POSIX), otherwise kill the process
         if os.name == "posix":
             try:
                 os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-            except Exception:
-                # Fall back to killing the single process
+            except OSError:
                 try:
                     process.kill()
-                except Exception:  # nosec
+                except OSError:
                     pass
         else:
             try:
                 process.kill()
-            except Exception:  # nosec
+            except OSError:
                 pass
 
         # Ensure it is gone
         try:
             process.wait(timeout=timeout)
-        except Exception:  # nosec
+        except subprocess.TimeoutExpired:
             pass
     finally:
         # Close stdout to avoid ResourceWarning if we used a PIPE
         try:
             if getattr(process, "stdout", None) and not process.stdout.closed:
                 process.stdout.close()
-        except Exception:  # nosec
+        except (OSError, ValueError):
             pass
 
 
@@ -269,13 +275,14 @@ def _start_mcp_server(
     env.setdefault("PYTHONUNBUFFERED", "1")
 
     # Start process with pipes and its own process group so we can kill children
-    process = subprocess.Popen(  # nosec, test context and trusted env
+    process = subprocess.Popen(  # nosec B603: controlled args; shell=False;
         process_args,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,  # line-buffered
         env=env,
+        shell=False,
         start_new_session=True,
     )
 
