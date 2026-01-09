@@ -79,6 +79,22 @@ def _get_default_inmemory_datastore_messages() -> InMemoryCollectionDatastore:
 
 
 class MessageSummarizationTransform(MessageTransform):
+    """
+    Summarizes oversized messages using an LLM and optionally caches summaries.
+
+    This is useful for long conversations where the context can become too large for the LLM to handle.
+
+    Examples
+    --------
+    >>> from pyagentspec.transforms import MessageSummarizationTransform
+    >>> summarization_transform = MessageSummarizationTransform(
+    ...     name="message-summarizer",
+    ...     llm=llm_config,
+    ...     max_message_size=30_000
+    ... )
+
+    """
+
     llm: LlmConfig
     """LLM configuration for summarization."""
 
@@ -134,6 +150,23 @@ class MessageSummarizationTransform(MessageTransform):
 
 
 class ConversationSummarizationTransform(MessageTransform):
+    """
+    Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``.
+
+    This is useful to reduce long conversation history into a concise context for downstream LLM calls.
+
+    Examples
+    --------
+    >>> from pyagentspec.transforms import ConversationSummarizationTransform
+    >>> summarization_transform = ConversationSummarizationTransform(
+    ...     name="conversation-summarizer",
+    ...     llm=llm_config,
+    ...     max_num_messages=30,
+    ...     min_num_messages=10
+    ... )
+
+    """
+
     llm: LlmConfig
     """LLM configuration for conversation summarization."""
 
