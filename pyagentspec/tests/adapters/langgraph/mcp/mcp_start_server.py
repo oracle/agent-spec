@@ -82,9 +82,8 @@ def create_server(host: str, port: int):
 
     @server.tool(description="Tool to return a random string")
     def generate_random_string() -> str:
-        import random
 
-        return f"random_string_{random.randint(100, 999)}"  # nosec, not for security/crypto
+        return "random_string_1234"
 
     return server
 
