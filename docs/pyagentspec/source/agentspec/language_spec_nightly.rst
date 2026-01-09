@@ -2009,12 +2009,12 @@ The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``Ora
         user: SensitiveField[str]
         password: SensitiveField[str]
         dsn: SensitiveField[str]
-        protocol: Literal["tcp", "tcps"] = "tcps"
-        config_dir: Optional[str] = None
+        protocol: Literal["tcp", "tcps"]
+        config_dir: Optional[str]
 
 - ``user``: User used to connect to the database
 - ``password``: Password for the provided user
-- ``dsn``: Connection string for the database (e.g., created using `oracledb.make_dsn`)
+- ``dsn``: Connection string for the database
 - ``protocol``: 'tcp' or 'tcps' indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)
 - ``config_dir``: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.
 
@@ -2047,11 +2047,11 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
         user: SensitiveField[str]
         password: SensitiveField[str]
         url: str
-        sslmode: Literal["disable","allow", "prefer","require","verify-ca","verify-full"] = "require"
-        sslcert: Optional[str] = None
-        sslkey: Optional[SensitiveField[str]] = None
-        sslrootcert: Optional[str] = None
-        sslcrl: Optional[str] = None
+        sslmode: Literal["disable","allow", "prefer","require","verify-ca","verify-full"]
+        sslcert: Optional[str]
+        sslkey: Optional[SensitiveField[str]]
+        sslrootcert: Optional[str]
+        sslcrl: Optional[str]
 
 - ``user``: User of the postgres database
 - ``password``: Password of the postgres database
@@ -2066,7 +2066,7 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
 Transforms
 ^^^^^^^^^^
 
-Transforms extend the base ``MessageTransform`` component can be used in agents. They apply a transformation to the messages before they are passed to the agent's LLM.
+Transforms extend the base ``MessageTransform`` component that can be used in agents. They apply a transformation to the messages before they are passed to the agent's LLM.
 
 .. code-block:: python
 
