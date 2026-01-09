@@ -46,6 +46,8 @@ from pyagentspec.adapters.langgraph._types import (
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import (
+    AgentSpecAsyncLlmCallbackHandler,
+    AgentSpecAsyncToolCallbackHandler,
     AgentSpecLlmCallbackHandler,
     AgentSpecToolCallbackHandler,
 )
@@ -409,8 +411,17 @@ class AgentSpecToLangGraphConverter:
             elif isinstance(agentspec_node, AgentSpecEndNode):
                 node_executors[agentspec_node.id].set_flow_outputs(flow.outputs)
 
+        from pyagentspec.adapters.langgraph._types import RunnableLambda
+
         for node_id, node_executor in node_executors.items():
-            graph_builder.add_node(node_id, node_executor)
+            # Provide both sync and async entrypoints natively. LangGraph will use
+            # the appropriate one based on invoke/stream vs ainvoke/astream.
+            runnable = RunnableLambda(
+                func=lambda state, _exec=node_executor: _exec(state),
+                afunc=lambda state, _exec=node_executor: _exec.__acall__(state),
+                name=node_id,
+            )
+            graph_builder.add_node(node_id, runnable)
 
         data_flow_connections: List[AgentSpecDataFlowEdge] = []
         if flow.data_flow_connections is None:
@@ -479,8 +490,8 @@ class AgentSpecToLangGraphConverter:
             inputs = kwargs.get("input", {})
             if not isinstance(inputs, dict):
                 inputs = {}
-            with AgentSpecFlowExecutionSpan(name=span_name, flow=flow) as span:
-                span.add_event(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
+            async with AgentSpecFlowExecutionSpan(name=span_name, flow=flow) as span:
+                await span.add_event_async(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
                 original_result: dict[str, Any] | Any = {}
                 result: dict[str, Any]
                 # This is going to patch stream and astream, that return iterators and yield chunks
@@ -492,7 +503,7 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                span.add_event(
+                await span.add_event_async(
                     AgentSpecFlowExecutionEnd(
                         flow=flow,
                         outputs=result.get("outputs", {}),
@@ -733,7 +744,10 @@ class AgentSpecToLangGraphConverter:
             description=remote_tool.description or "",
             args_schema=args_model,
             func=_remote_tool,
-            callbacks=[AgentSpecToolCallbackHandler(tool=remote_tool)],
+            callbacks=[
+                AgentSpecToolCallbackHandler(tool=remote_tool),
+                AgentSpecAsyncToolCallbackHandler(tool=remote_tool),
+            ],
         )
         return structured_tool
 
@@ -769,7 +783,10 @@ class AgentSpecToLangGraphConverter:
                 description=description,
                 args_schema=args_model,  # model class, not a dict
                 func=tool_obj,
-                callbacks=[AgentSpecToolCallbackHandler(tool=agentspec_server_tool)],
+                callbacks=[
+                    AgentSpecToolCallbackHandler(tool=agentspec_server_tool),
+                    AgentSpecAsyncToolCallbackHandler(tool=agentspec_server_tool),
+                ],
             )
             return wrapped
 
@@ -987,8 +1004,8 @@ class AgentSpecToLangGraphConverter:
             inputs = kwargs.get("input", {})
             if not isinstance(inputs, dict):
                 inputs = {}
-            with AgentSpecAgentExecutionSpan(name=span_name, agent=agent) as span:
-                span.add_event(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
+            async with AgentSpecAgentExecutionSpan(name=span_name, agent=agent) as span:
+                await span.add_event_async(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
                 original_result: dict[str, Any] | Any = {}
                 result: dict[str, Any]
                 # This is going to patch stream and astream, that return iterators and yield chunks
@@ -1001,7 +1018,7 @@ class AgentSpecToLangGraphConverter:
                 else:
                     result = original_result
                 outputs = dict(result.get("structured_response", {}))
-                span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
+                await span.add_event_async(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
 
         # Monkey patch invocation functions to inject tracing
         # No need to patch `(a)invoke` as the internally use `(a)stream`
@@ -1048,7 +1065,10 @@ class AgentSpecToLangGraphConverter:
         if isinstance(llm_config, (OpenAiCompatibleConfig, OpenAiConfig)):
             use_responses_api = llm_config.api_type == OpenAIAPIType.RESPONSES
 
-        callbacks: List[BaseCallbackHandler] = [AgentSpecLlmCallbackHandler(llm_config=llm_config)]
+        callbacks: List[BaseCallbackHandler] = [
+            AgentSpecLlmCallbackHandler(llm_config=llm_config),
+            AgentSpecAsyncLlmCallbackHandler(llm_config=llm_config),
+        ]
 
         if isinstance(llm_config, VllmConfig):
             from langchain_openai import ChatOpenAI

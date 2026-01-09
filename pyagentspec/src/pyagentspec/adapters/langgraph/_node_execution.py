@@ -6,8 +6,9 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union
 
+import anyio
 import httpx
 
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
@@ -72,6 +73,23 @@ class NodeExecutor(ABC):
             )
         return updated_status
 
+    async def __acall__(self, state: FlowStateSchema) -> Any:
+        inputs = self._get_inputs(state)
+        span_name = f"{self.node.__class__.__name__}Execution[{self.node.name}]"
+        async with AgentSpecNodeExecutionSpan(name=span_name, node=self.node) as span:
+            await span.add_event_async(AgentSpecNodeExecutionStart(node=self.node, inputs=inputs))
+            # Prefer native async execution when available.
+            outputs, execution_details = await self._aexecute(inputs, state.get("messages", []))
+            updated_status = self._update_status(outputs, execution_details, state)
+            await span.add_event_async(
+                AgentSpecNodeExecutionEnd(
+                    node=self.node,
+                    outputs=updated_status["outputs"],
+                    branch_selected=updated_status["node_execution_details"]["branch"],
+                )
+            )
+            return updated_status
+
     def attach_edge(self, edge: DataFlowEdge) -> None:
         self.edges.append(edge)
 
@@ -125,6 +143,14 @@ class NodeExecutor(ABC):
                     f"for property `{property_.title}`, but none was found."
                 )
         return results_dict
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        """Default async implementation delegates to sync _execute in a worker thread.
+
+        Nodes that can perform true async work should override this to avoid
+        thread offloading.
+        """
+        return await anyio.to_thread.run_sync(lambda: self._execute(inputs, messages))
 
     def _get_inputs(self, state: FlowStateSchema) -> Dict[str, Any]:
         """Retrieve the inputs for this node, adding default values when missing, and casting to right type."""
@@ -279,29 +305,48 @@ class ToolNodeExecutor(NodeExecutor):
             raise TypeError("ToolNodeExecutor can only be initialized with ToolNode")
         self.tool_callable = tool
 
-    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+    def _format_tool_result(self, tool_output: Any) -> ExecuteOutput:
+        # If multiple outputs are defined and the tool returned a dict, use as-is.
+        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
+            return tool_output, NodeExecutionDetails()
+        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
+        return {output_name: tool_output}, NodeExecutionDetails()
+
+    def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]
         tool = self.tool_callable
 
         if isinstance(tool, BaseTool):
             if getattr(tool, "coroutine", None) is None:
-                tool_output = tool.invoke(inputs)
+                return tool.invoke(inputs)
             else:
-                # this is an async tool (most likely MCP tool), we need to await it but this _execute method needs to be sync
+                # Async tool (e.g., MCP tool) executed from sync context
                 async def arun():  # type: ignore
                     return await tool.ainvoke(inputs)
 
-                tool_output = _run_async_in_sync_simple(arun, method_name="arun")
+                return _run_async_in_sync_simple(arun, method_name="arun")
         else:
-            # Plain callable: we call it like a function
-            tool_output = tool(**inputs)
+            # Plain callable: call directly
+            return tool(**inputs)
 
-        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
-            # useful for multiple outputs, avoid nesting dictionaries
-            return tool_output, NodeExecutionDetails()
+    async def _invoke_tool_async(self, inputs: Dict[str, Any]) -> Any:
+        tool = self.tool_callable
+        if isinstance(tool, BaseTool):
+            if getattr(tool, "coroutine", None) is None:
+                return await anyio.to_thread.run_sync(lambda: tool.invoke(inputs))
+            else:
+                return await tool.ainvoke(inputs)
+        else:
+            return await anyio.to_thread.run_sync(lambda: tool(**inputs))
 
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        tool_output = self._invoke_tool_sync(inputs)
+        return self._format_tool_result(tool_output)
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        # Provide native async execution (await async tools, offload sync ones)
+        tool_output = await self._invoke_tool_async(inputs)
+        return self._format_tool_result(tool_output)
 
 
 class AgentNodeExecutor(NodeExecutor):
@@ -353,15 +398,18 @@ class AgentNodeExecutor(NodeExecutor):
             )
         return self._agents_cache[system_prompt]
 
-    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+    def _prepare_agent_and_inputs(
+        self, inputs: Dict[str, Any], messages: Messages
+    ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
         agent = self._create_react_agent_with_given_input_values(inputs)
-        agentspec_agent = cast(AgentSpecAgent, self.node.agent)
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,
             "structured_response": {},
         }
-        result = agent.invoke(inputs, self.config)
+        return agent, inputs
+
+    def _format_agent_result(self, result: Dict[str, Any]) -> ExecuteOutput:
         if not self.node.outputs:
             generated_message = result["messages"][-1]
             generated_messages: List[MessageLike] = [
@@ -370,6 +418,16 @@ class AgentNodeExecutor(NodeExecutor):
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
         outputs = dict(result.get("structured_response", {}))
         return outputs, NodeExecutionDetails()
+
+    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
+        result = agent.invoke(prepared_inputs, self.config)
+        return self._format_agent_result(result)
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
+        result = await agent.ainvoke(prepared_inputs, self.config)
+        return self._format_agent_result(result)
 
 
 class InputMessageNodeExecutor(NodeExecutor):
@@ -428,35 +486,64 @@ class LlmNodeExecutor(NodeExecutor):
             }
             self.structured_llm = self.llm.with_structured_output(json_schema)
 
-    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
-        node_outputs = self.node.outputs or []
+    def _build_invoke_inputs(self, inputs: Dict[str, Any]) -> List[Dict[str, Any]]:
         prompt_template = self.node.prompt_template
         rendered_prompt = render_template(prompt_template, inputs)
-        invoke_inputs = [{"role": "user", "content": rendered_prompt}]
+        return [{"role": "user", "content": rendered_prompt}]
 
+    def _format_structured_output(
+        self, node_outputs: List[AgentSpecProperty], generated_raw: Any
+    ) -> Dict[str, Any]:
+        if not isinstance(generated_raw, dict):
+            raise TypeError(
+                f"Expected structured LLM to return a dict, got {type(generated_raw)!r}"
+            )
+        generated_output: Dict[str, Any] = generated_raw
+        # LangGraph sometimes flattens a 1-property nested object; rebuild if needed
+        if len(node_outputs) == 1 and node_outputs[0].title != list(generated_output.keys())[0]:
+            generated_output = {node_outputs[0].title: generated_output}
+        return generated_output
+
+    def _format_unstructured_output(
+        self, node_outputs: List[AgentSpecProperty], generated_message: Any
+    ) -> Dict[str, Any]:
+        output_name = node_outputs[0].title if node_outputs else "generated_text"
+        if not hasattr(generated_message, "content"):
+            raise ValueError(
+                "generated_message should not be a dict when not doing structured generation"
+            )
+        return {output_name: generated_message.content}
+
+    def _invoke_llm_sync(self, invoke_inputs: List[Dict[str, Any]]) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
         if self.requires_structured_generation:
             if self.structured_llm is None:
                 raise RuntimeError("Structured LLM was not initialized")
-
             generated_raw = self.structured_llm.invoke(invoke_inputs)
-
-            if not isinstance(generated_raw, dict):
-                raise TypeError(
-                    f"Expected structured LLM to return a dict, got {type(generated_raw)!r}"
-                )
-
-            generated_output: Dict[str, Any] = generated_raw
-            # LangGraph sometimes flattens a 1-property nested object; rebuild if needed
-            if len(node_outputs) == 1 and node_outputs[0].title != list(generated_output.keys())[0]:
-                generated_output = {node_outputs[0].title: generated_output}
+            return self._format_structured_output(node_outputs, generated_raw)
         else:
             generated_message = self.llm.invoke(invoke_inputs)
-            output_name = node_outputs[0].title if node_outputs else "generated_text"
-            if not hasattr(generated_message, "content"):
-                raise ValueError(
-                    "generated_message should not be a dict when not doing structured generation"
-                )
-            generated_output = {output_name: generated_message.content}
+            return self._format_unstructured_output(node_outputs, generated_message)
+
+    async def _invoke_llm_async(self, invoke_inputs: List[Dict[str, Any]]) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        if self.requires_structured_generation:
+            if self.structured_llm is None:
+                raise RuntimeError("Structured LLM was not initialized")
+            generated_raw = await self.structured_llm.ainvoke(invoke_inputs)
+            return self._format_structured_output(node_outputs, generated_raw)
+        else:
+            generated_message = await self.llm.ainvoke(invoke_inputs)
+            return self._format_unstructured_output(node_outputs, generated_message)
+
+    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        invoke_inputs = self._build_invoke_inputs(inputs)
+        generated_output = self._invoke_llm_sync(invoke_inputs)
+        return generated_output, NodeExecutionDetails()
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        invoke_inputs = self._build_invoke_inputs(inputs)
+        generated_output = await self._invoke_llm_async(invoke_inputs)
         return generated_output, NodeExecutionDetails()
 
 
@@ -468,7 +555,7 @@ class ApiNodeExecutor(NodeExecutor):
         if not isinstance(self.node, AgentSpecApiNode):
             raise TypeError("ApiNodeExecutor can only be initialized with ApiNode")
 
-    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+    def _build_request_kwargs(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         api_node = self.node
         if not isinstance(api_node, AgentSpecApiNode):
             raise TypeError("ApiNodeExecutor can only execute ApiNode")
@@ -493,15 +580,25 @@ class ApiNodeExecutor(NodeExecutor):
         else:
             json_data = api_node_data
 
-        response = httpx.request(
-            method=api_node.http_method,
-            url=api_node_url,
-            params=api_node_query_params,
-            json=json_data,
-            content=content,
-            data=data,
-            headers=api_node_headers,
-        )
+        return {
+            "method": api_node.http_method,
+            "url": api_node_url,
+            "params": api_node_query_params,
+            "json": json_data,
+            "content": content,
+            "data": data,
+            "headers": api_node_headers,
+        }
+
+    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        kwargs = self._build_request_kwargs(inputs)
+        response = httpx.request(**kwargs)
+        return response.json(), NodeExecutionDetails()
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        kwargs = self._build_request_kwargs(inputs)
+        async with httpx.AsyncClient() as client:
+            response = await client.request(**kwargs)
         return response.json(), NodeExecutionDetails()
 
 
@@ -522,6 +619,14 @@ class FlowNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         flow_output = self.subflow.invoke({"messages": messages, "inputs": inputs}, self.config)
+        return flow_output["outputs"], NodeExecutionDetails(
+            branch=flow_output["node_execution_details"]["branch"]
+        )
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        flow_output = await self.subflow.ainvoke(
+            {"messages": messages, "inputs": inputs}, self.config
+        )
         return flow_output["outputs"], NodeExecutionDetails(
             branch=flow_output["node_execution_details"]["branch"]
         )
@@ -547,7 +652,27 @@ class MapNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         # TODO: handle different reducers
+        subflow_inputs_list, outputs = self._prepare_iterations(inputs)
+        for subflow_inputs in subflow_inputs_list:
+            subflow_result = self.subflow.invoke({"inputs": subflow_inputs, "messages": messages})
+            self._accumulate_outputs(outputs, subflow_result["outputs"])
+        return outputs, NodeExecutionDetails()
 
+    def set_inputs_to_iterate(self, inputs_to_iterate: list[str]) -> None:
+        self.inputs_to_iterate = inputs_to_iterate
+
+    async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        subflow_inputs_list, outputs = self._prepare_iterations(inputs)
+        for subflow_inputs in subflow_inputs_list:
+            subflow_result = await self.subflow.ainvoke(
+                {"inputs": subflow_inputs, "messages": messages}
+            )
+            self._accumulate_outputs(outputs, subflow_result["outputs"])
+        return outputs, NodeExecutionDetails()
+
+    def _prepare_iterations(
+        self, inputs: Dict[str, Any]
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, List[Any]]]:
         outputs: Dict[str, List[Any]] = {output.title: [] for output in self.node.outputs or []}
 
         if not self.inputs_to_iterate:
@@ -564,9 +689,9 @@ class MapNodeExecutor(NodeExecutor):
         if num_inputs_to_iterate is None:
             raise ValueError("MapNode inputs_to_iterate did not match any provided inputs")
 
+        subflow_inputs_list: List[Dict[str, Any]] = []
         for i in range(num_inputs_to_iterate):
-            # Need to initialize a new dictionary of inputs at every iteration as it will be modified by the subflow
-            subflow_inputs = {
+            sub_inputs = {
                 input_.title.replace("iterated_", ""): (
                     inputs[input_.title][i]
                     if input_.title in self.inputs_to_iterate
@@ -574,14 +699,14 @@ class MapNodeExecutor(NodeExecutor):
                 )
                 for input_ in (self.node.inputs or [])
             }
-            subflow_outputs = self.subflow.invoke({"inputs": subflow_inputs, "messages": messages})
-            for output_name, output_value in subflow_outputs["outputs"].items():
-                collected_output_name = "collected_" + output_name
-                # Not all outputs might be exposed, we filter those that are required by node's outputs
-                if collected_output_name in outputs:
-                    outputs[collected_output_name].append(output_value)
+            subflow_inputs_list.append(sub_inputs)
+        return subflow_inputs_list, outputs
 
-        return outputs, NodeExecutionDetails()
-
-    def set_inputs_to_iterate(self, inputs_to_iterate: list[str]) -> None:
-        self.inputs_to_iterate = inputs_to_iterate
+    def _accumulate_outputs(
+        self, outputs: Dict[str, List[Any]], subflow_outputs: Dict[str, Any]
+    ) -> None:
+        for output_name, output_value in subflow_outputs.items():
+            collected_output_name = "collected_" + output_name
+            # Not all outputs might be exposed, we filter those that are required by node's outputs
+            if collected_output_name in outputs:
+                outputs[collected_output_name].append(output_value)

@@ -6,6 +6,8 @@
 
 import os
 
+import pytest
+
 from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
@@ -14,8 +16,9 @@ from pyagentspec.llms import VllmConfig
 from pyagentspec.property import StringProperty
 
 
-def test_agentnode_can_be_imported_and_executed() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
+@pytest.fixture()
+def agent_flow() -> Flow:
+    pass
 
     nationality_property = StringProperty(title="nationality")
     car_property = StringProperty(title="car")
@@ -65,11 +68,31 @@ def test_agentnode_can_be_imported_and_executed() -> None:
         outputs=[car_property],
     )
 
-    agent = AgentSpecLoader().load_component(flow)
+    return flow
+
+
+def test_agentnode_can_be_imported_and_executed(agent_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(agent_flow)
     result = agent.invoke({"inputs": {"nationality": "italian"}})
 
     assert "outputs" in result
     assert "messages" in result
 
     outputs = result["outputs"]
-    assert car_property.title in outputs
+    assert "car" in outputs
+
+
+@pytest.mark.anyio
+async def test_agentnode_can_be_executed_async(agent_flow: Flow) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader().load_component(agent_flow)
+    result = await agent.ainvoke({"inputs": {"nationality": "italian"}})
+
+    assert "outputs" in result
+    assert "messages" in result
+
+    outputs = result["outputs"]
+    assert "car" in outputs
