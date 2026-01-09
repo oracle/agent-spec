@@ -123,7 +123,7 @@ class MessageSummarizationTransform(MessageTransform):
 
     @field_validator("datastore", mode="after")
     @classmethod
-    def validate_datastore(
+    def _validate_datastore(
         cls, value: Optional[SupportedDatastores], info: ValidationInfo
     ) -> Optional[SupportedDatastores]:
         if value is not None:
@@ -182,7 +182,7 @@ class ConversationSummarizationTransform(MessageTransform):
 
     @field_validator("datastore", mode="after")
     @classmethod
-    def validate_datastore(
+    def _validate_datastore(
         cls, value: Optional[SupportedDatastores], info: ValidationInfo
     ) -> Optional[SupportedDatastores]:
         if value is not None:
