@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from .datastore import Datastore, InMemoryCollectionDatastore, RelationalDatastore
+from .datastore import Datastore, Entity, InMemoryCollectionDatastore, RelationalDatastore
 from .oracle import (
     MTlsOracleDatabaseConnectionConfig,
     OracleDatabaseConnectionConfig,
@@ -18,6 +18,7 @@ from .postgres import (
 
 __all__ = [
     "Datastore",
+    "Entity",
     "RelationalDatastore",
     "InMemoryCollectionDatastore",
     "OracleDatabaseConnectionConfig",
