@@ -79,6 +79,14 @@ from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageN
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfig,
+    OciClientConfigWithApiKey,
+    OciClientConfigWithInstancePrincipal,
+    OciClientConfigWithResourcePrincipal,
+    OciClientConfigWithSecurityToken,
+)
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
@@ -1122,7 +1130,7 @@ class AgentSpecToLangGraphConverter:
 
         if generation_parameters is not None:
             generation_config["temperature"] = generation_parameters.temperature
-            generation_config["max_completion_tokens"] = generation_parameters.max_tokens
+            generation_config["max_tokens"] = generation_parameters.max_tokens
             generation_config["top_p"] = generation_parameters.top_p
 
         use_responses_api = False
@@ -1149,7 +1157,7 @@ class AgentSpecToLangGraphConverter:
 
             generation_config = {
                 "temperature": generation_config.get("temperature"),
-                "num_predict": generation_config.get("max_completion_tokens"),
+                "num_predict": generation_config.get("max_tokens"),
                 "top_p": generation_config.get("top_p"),
             }
             return ChatOllama(
@@ -1176,6 +1184,24 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 **generation_config,
+            )
+        elif isinstance(llm_config, OciGenAiConfig):
+            from langchain_oci import ChatOCIGenAI  # type: ignore
+
+            if use_responses_api:
+                raise NotImplementedError(
+                    "OCI GenAI models with OpenAI Responses API is not yet supported"
+                )
+
+            model_kwargs = {**generation_config}
+            if "openai" in llm_config.model_id and "max_tokens" in model_kwargs:
+                model_kwargs["max_completion_tokens"] = model_kwargs.pop("max_tokens")
+
+            return ChatOCIGenAI(  # type: ignore
+                model_id=llm_config.model_id,
+                compartment_id=llm_config.compartment_id,
+                model_kwargs=model_kwargs,
+                **self._oci_client_config_to_langgraph(llm_config.client_config),
             )
         else:
             raise NotImplementedError(
@@ -1295,6 +1321,36 @@ class AgentSpecToLangGraphConverter:
         _add_session_tools_to_registry(tool_registry, tools, conn_prefix)
 
         return _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
+
+    def _oci_client_config_to_langgraph(self, client_config: OciClientConfig) -> Dict[str, Any]:
+        if isinstance(client_config, OciClientConfigWithSecurityToken):
+            return dict(
+                auth_type=client_config.auth_type,
+                service_endpoint=client_config.service_endpoint,
+                auth_profile=client_config.auth_profile,
+                auth_file_location=client_config.auth_file_location,
+            )
+        elif isinstance(client_config, OciClientConfigWithInstancePrincipal):
+            return dict(
+                auth_type=client_config.auth_type,
+                service_endpoint=client_config.service_endpoint,
+            )
+        elif isinstance(client_config, OciClientConfigWithResourcePrincipal):
+            return dict(
+                auth_type=client_config.auth_type,
+                service_endpoint=client_config.service_endpoint,
+            )
+        elif isinstance(client_config, OciClientConfigWithApiKey):
+            return dict(
+                auth_type=client_config.auth_type,
+                service_endpoint=client_config.service_endpoint,
+                auth_profile=client_config.auth_profile,
+                auth_file_location=client_config.auth_file_location,
+            )
+        else:
+            raise ValueError(
+                f"Agent Spec OciClientConfig '{client_config.__class__.__name__}' is not supported yet."
+            )
 
 
 def _get_session_tools_from_tool_registry(
