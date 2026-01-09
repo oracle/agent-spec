@@ -253,7 +253,7 @@ class AgentSpecDeserializer:
     def from_dict(
         self,
         dict_content: ComponentAsDictT,
-        components_registry: Optional[ComponentsRegistryT],
+        components_registry: ComponentsRegistryT | None,
     ) -> Component: ...
 
     @overload
@@ -270,7 +270,7 @@ class AgentSpecDeserializer:
         dict_content: ComponentAsDictT,
         *,
         import_only_referenced_components: Literal[True],
-    ) -> Dict[str, Component]: ...
+    ) -> dict[str, Component]: ...
 
     @overload
     def from_dict(
@@ -278,13 +278,13 @@ class AgentSpecDeserializer:
         dict_content: ComponentAsDictT,
         *,
         import_only_referenced_components: bool,
-    ) -> Union[Component, Dict[str, Component]]: ...
+    ) -> Component | dict[str, Component]: ...
 
     @overload
     def from_dict(
         self,
         dict_content: ComponentAsDictT,
-        components_registry: Optional[ComponentsRegistryT],
+        components_registry: ComponentsRegistryT | None,
         import_only_referenced_components: Literal[False],
     ) -> Component: ...
 
@@ -292,9 +292,9 @@ class AgentSpecDeserializer:
     def from_dict(
         self,
         dict_content: ComponentAsDictT,
-        components_registry: Optional[ComponentsRegistryT],
+        components_registry: ComponentsRegistryT | None,
         import_only_referenced_components: Literal[True],
-    ) -> Dict[str, Component]: ...
+    ) -> dict[str, Component]: ...
 
     @overload
     def from_dict(
@@ -302,14 +302,14 @@ class AgentSpecDeserializer:
         dict_content: ComponentAsDictT,
         components_registry: Optional[ComponentsRegistryT],
         import_only_referenced_components: bool,
-    ) -> Union[Component, Dict[str, Component]]: ...
+    ) -> Component | dict[str, Component]: ...
 
     def from_dict(
         self,
         dict_content: ComponentAsDictT,
-        components_registry: Optional[ComponentsRegistryT] = None,
+        components_registry: ComponentsRegistryT | None = None,
         import_only_referenced_components: bool = False,
-    ) -> Union[Component, Dict[str, Component]]:
+    ) -> Component | dict[str, Component]:
         """
         Load a component and its sub-components from dictionary.
 
@@ -421,6 +421,67 @@ class AgentSpecDeserializer:
             )[0]
 
         return referenced_components
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+    ) -> tuple[Component, list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        components_registry: ComponentsRegistryT | None,
+    ) -> tuple[Component, list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        *,
+        import_only_referenced_components: Literal[False],
+    ) -> tuple[Component, list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        *,
+        import_only_referenced_components: Literal[True],
+    ) -> tuple[dict[str, Component], list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        *,
+        import_only_referenced_components: bool,
+    ) -> tuple[Component | dict[str, Component], list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        components_registry: ComponentsRegistryT | None,
+        import_only_referenced_components: Literal[False],
+    ) -> tuple[Component, list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        components_registry: ComponentsRegistryT | None,
+        import_only_referenced_components: Literal[True],
+    ) -> tuple[dict[str, Component], list[PyAgentSpecErrorDetails]]: ...
+
+    @overload
+    def from_partial_dict(
+        self,
+        dict_content: ComponentAsDictT,
+        components_registry: ComponentsRegistryT | None = None,
+        import_only_referenced_components: bool = False,
+    ) -> tuple[Component | dict[str, Component], list[PyAgentSpecErrorDetails]]: ...
 
     def from_partial_dict(
         self,
