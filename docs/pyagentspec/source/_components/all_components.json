@@ -308,5 +308,12 @@
             {"path": "pyagentspec.adapters.langgraph.AgentSpecExporter"},
             {"path": "pyagentspec.adapters.langgraph.AgentSpecLoader"}
         ]
+    },
+    {
+        "name": "Version",
+        "path": "version",
+        "classes": [
+            {"path": "pyagentspec.versioning.AgentSpecVersionEnum"}
+        ]
     }
 ]
