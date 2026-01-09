@@ -4,6 +4,10 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import sys
+
+import pytest
+
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
@@ -11,13 +15,8 @@ from pyagentspec.property import Property
 from pyagentspec.tools import ClientTool
 
 
-def test_toolnode_can_be_imported_and_executed() -> None:
-    from langchain_core.runnables import RunnableConfig
-    from langgraph.checkpoint.memory import MemorySaver
-    from langgraph.types import Command
-
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
+@pytest.fixture()
+def tool_flow() -> Flow:
     x_property = Property(json_schema={"title": "input", "type": "number"})
     x_square_property = Property(json_schema={"title": "input_square", "type": "number"})
 
@@ -58,13 +57,48 @@ def test_toolnode_can_be_imported_and_executed() -> None:
         ],
     )
 
-    agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(flow)
+    return flow
+
+
+def test_toolnode_can_be_imported_and_executed(tool_flow: Flow) -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(tool_flow)
 
     config = RunnableConfig({"configurable": {"thread_id": "1"}})
     result = agent.invoke({"inputs": {"input": 4}}, config=config)
     assert "__interrupt__" in result
 
     result = agent.invoke(Command(resume=16), config=config)
+
+    outputs = result["outputs"]
+    assert "input_square" in outputs
+    assert outputs["input_square"] == 16
+
+
+@pytest.mark.anyio
+async def test_toolnode_can_be_executed_async_with_interrupt_resume(tool_flow: Flow) -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(tool_flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "1"}})
+    if sys.version_info < (3, 11):
+        with pytest.raises(RuntimeError, match="Called get_config outside of a runnable context"):
+            await agent.ainvoke({"inputs": {"input": 4}}, config=config)
+        return
+    result = await agent.ainvoke({"inputs": {"input": 4}}, config=config)
+    assert "__interrupt__" in result
+
+    result = await agent.ainvoke(Command(resume=16), config=config)
 
     outputs = result["outputs"]
     assert "input_square" in outputs

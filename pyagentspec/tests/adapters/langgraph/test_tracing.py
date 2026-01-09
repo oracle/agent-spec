@@ -7,14 +7,27 @@ from pathlib import Path
 from typing import List, Tuple
 
 from pyagentspec.tracing.events import (
+    AgentExecutionEnd,
+    AgentExecutionStart,
     Event,
+    FlowExecutionEnd,
+    FlowExecutionStart,
     LlmGenerationRequest,
     LlmGenerationResponse,
+    NodeExecutionEnd,
+    NodeExecutionStart,
     ToolExecutionRequest,
     ToolExecutionResponse,
 )
 from pyagentspec.tracing.spanprocessor import SpanProcessor
-from pyagentspec.tracing.spans import LlmGenerationSpan, Span, ToolExecutionSpan
+from pyagentspec.tracing.spans import (
+    AgentExecutionSpan,
+    FlowExecutionSpan,
+    LlmGenerationSpan,
+    NodeExecutionSpan,
+    Span,
+    ToolExecutionSpan,
+)
 from pyagentspec.tracing.trace import Trace
 
 from ..conftest import _replace_config_placeholders
@@ -72,15 +85,72 @@ class DummySpanProcessor(SpanProcessor):
         self.shut_down_async = True
 
 
-def check_dummyspanprocessor_events_and_spans(span_processor: DummySpanProcessor) -> None:
+def check_dummyspanprocessor_agent_events_and_spans(span_processor: DummySpanProcessor) -> None:
     # Assertions on spans started/ended
     # We expect at least one of each span type during a normal run
     started_types = [type(s) for s in span_processor.starts]
     ended_types = [type(s) for s in span_processor.ends]
 
-    # Agent execution events are not emitted yet
-    # assert any(issubclass(t, AgentExecutionSpan) for t in started_types), "AgentExecutionSpan did not start"
-    # assert any(issubclass(t, AgentExecutionSpan) for t in ended_types), "AgentExecutionSpan did not end"
+    assert any(
+        issubclass(t, AgentExecutionSpan) for t in started_types
+    ), "AgentExecutionSpan did not start"
+    assert any(
+        issubclass(t, AgentExecutionSpan) for t in ended_types
+    ), "AgentExecutionSpan did not end"
+    assert any(
+        issubclass(t, LlmGenerationSpan) for t in started_types
+    ), "LlmGenerationSpan did not start"
+    assert any(
+        issubclass(t, LlmGenerationSpan) for t in ended_types
+    ), "LlmGenerationSpan did not end"
+
+    assert any(
+        issubclass(t, ToolExecutionSpan) for t in started_types
+    ), "ToolExecutionSpan did not start"
+    assert any(
+        issubclass(t, ToolExecutionSpan) for t in ended_types
+    ), "ToolExecutionSpan did not end"
+
+    # Assertions on key events observed
+    event_types = [type(e) for (e, _s) in span_processor.events]
+    assert any(
+        issubclass(t, AgentExecutionStart) for t in event_types
+    ), "AgentExecutionStart not emitted"
+    assert any(
+        issubclass(t, AgentExecutionEnd) for t in event_types
+    ), "AgentExecutionEnd not emitted"
+    assert any(
+        issubclass(t, LlmGenerationRequest) for t in event_types
+    ), "LlmGenerationRequest not emitted"
+    assert any(
+        issubclass(t, LlmGenerationResponse) for t in event_types
+    ), "LlmGenerationResponse not emitted"
+    assert any(
+        issubclass(t, ToolExecutionRequest) for t in event_types
+    ), "ToolExecutionRequest not emitted"
+    assert any(
+        issubclass(t, ToolExecutionResponse) for t in event_types
+    ), "ToolExecutionResponse not emitted"
+
+
+def check_dummyspanprocessor_flow_events_and_spans(span_processor: DummySpanProcessor) -> None:
+    # Assertions on spans started/ended
+    # We expect at least one of each span type during a normal run
+    started_types = [type(s) for s in span_processor.starts]
+    ended_types = [type(s) for s in span_processor.ends]
+
+    assert any(
+        issubclass(t, FlowExecutionSpan) for t in started_types
+    ), "FlowExecutionSpan did not start"
+    assert any(
+        issubclass(t, FlowExecutionSpan) for t in ended_types
+    ), "FlowExecutionSpan did not end"
+    assert any(
+        issubclass(t, NodeExecutionSpan) for t in started_types
+    ), "NodeExecutionSpan did not start"
+    assert any(
+        issubclass(t, NodeExecutionSpan) for t in ended_types
+    ), "NodeExecutionSpan did not end"
     assert any(
         issubclass(t, LlmGenerationSpan) for t in started_types
     ), "LlmGenerationSpan did not start"
@@ -98,8 +168,14 @@ def check_dummyspanprocessor_events_and_spans(span_processor: DummySpanProcessor
     # Assertions on key events observed
     event_types = [type(e) for (e, _s) in span_processor.events]
     # Agent execution events are not emitted yet
-    # assert any(issubclass(t, AgentExecutionStart) for t in event_types), "AgentExecutionStart not emitted"
-    # assert any(issubclass(t, AgentExecutionEnd) for t in event_types), "AgentExecutionEnd not emitted"
+    assert any(
+        issubclass(t, FlowExecutionStart) for t in event_types
+    ), "FlowExecutionStart not emitted"
+    assert any(issubclass(t, FlowExecutionEnd) for t in event_types), "FlowExecutionEnd not emitted"
+    assert any(
+        issubclass(t, NodeExecutionStart) for t in event_types
+    ), "NodeExecutionStart not emitted"
+    assert any(issubclass(t, NodeExecutionEnd) for t in event_types), "NodeExecutionEnd not emitted"
     assert any(
         issubclass(t, LlmGenerationRequest) for t in event_types
     ), "LlmGenerationRequest not emitted"
@@ -134,7 +210,7 @@ def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: s
         response = weather_agent.invoke(input=agent_input)
         assert "sunny" in str(response).lower()
 
-    check_dummyspanprocessor_events_and_spans(proc)
+    check_dummyspanprocessor_agent_events_and_spans(proc)
 
 
 def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
@@ -162,4 +238,52 @@ def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: s
                 response += message_chunk.content
         assert "sunny" in str(response).lower()
 
-    check_dummyspanprocessor_events_and_spans(proc)
+    check_dummyspanprocessor_agent_events_and_spans(proc)
+
+
+def test_langgraph_invoke_tracing_emits_flow_events(json_server: str) -> None:
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    # Prepare JSON config with placeholders replaced
+    json_content = (CONFIGS / "haiku_without_a_flow.json").read_text()
+    final_json = _replace_config_placeholders(json_content, json_server)
+
+    # Convert to LangGraph agent
+    flow = AgentSpecLoader(
+        tool_registry={"remove_a": lambda haiku: haiku.replace("a", "")}
+    ).load_json(final_json)
+
+    proc = DummySpanProcessor()
+    with Trace(name="langgraph_tracing_test", span_processors=[proc]):
+        response = flow.invoke(input={"inputs": {}, "messages": []})
+        assert "outputs" in response
+        assert "haiku_without_a" in response["outputs"]
+        assert "a" not in response["outputs"]["haiku_without_a"]
+
+    check_dummyspanprocessor_flow_events_and_spans(proc)
+
+
+def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    # Prepare JSON config with placeholders replaced
+    json_content = (CONFIGS / "haiku_without_a_flow.json").read_text()
+    final_json = _replace_config_placeholders(json_content, json_server)
+
+    # Convert to LangGraph agent
+    flow = AgentSpecLoader(
+        tool_registry={"remove_a": lambda haiku: haiku.replace("a", "")}
+    ).load_json(final_json)
+
+    proc = DummySpanProcessor()
+    with Trace(name="langgraph_tracing_test", span_processors=[proc]):
+        for chunk in flow.stream(input={"inputs": {}, "messages": []}, stream_mode="values"):
+            if chunk:
+                response = chunk
+        assert "outputs" in response
+        assert "haiku_without_a" in response["outputs"]
+        assert "a" not in response["outputs"]["haiku_without_a"]
+
+    check_dummyspanprocessor_flow_events_and_spans(proc)
