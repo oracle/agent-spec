@@ -80,7 +80,7 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "langgraph": LANGGRAPH_DEPS,
-        "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters"],
+        "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
         "wayflow": ["wayflowcore>=25.4.3; python_version < '3.14'"],
         "wayflow_oci": ["wayflowcore[oci]>=25.4.3; python_version < '3.14'"],
         "wayflow_a2a": ["wayflowcore[a2a]>=25.4.3; python_version < '3.14'"],
