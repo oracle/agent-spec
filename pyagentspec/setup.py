@@ -81,5 +81,6 @@ setup(
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
+        "langgraph_oci": LANGGRAPH_DEPS + ["langchain-oci==0.2.0"],
     },
 )
