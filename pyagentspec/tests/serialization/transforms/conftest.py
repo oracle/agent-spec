@@ -11,6 +11,7 @@ from pyagentspec.transforms import ConversationSummarizationTransform, MessageSu
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
+from ..datastores.conftest import TESTING_CONVERSATIONS_COLLECTION, TESTING_MESSAGES_COLLECTION
 
 
 def create_test_llm_config():
@@ -38,7 +39,7 @@ def create_message_summarization_transform(datastore):
         datastore=datastore,
         max_cache_size=2_500,
         max_cache_lifetime=8 * 3600,
-        cache_collection_name="summarized_messages_cache",
+        cache_collection_name=TESTING_MESSAGES_COLLECTION,
     )
 
 
@@ -57,7 +58,7 @@ def create_conversation_summarization_transform(datastore):
         datastore=datastore,
         max_cache_size=5_000,
         max_cache_lifetime=12 * 3600,
-        cache_collection_name="conversation_summaries_cache",
+        cache_collection_name=TESTING_CONVERSATIONS_COLLECTION,
     )
 
 
