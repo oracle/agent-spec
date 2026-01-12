@@ -45,9 +45,13 @@ POSTGRES_TLS_SENSITIVE_FIELDS = {
 
 IN_MEMORY_SENSITIVE_FIELDS = {}
 
+# Collection names (table names) for caching summarized messages and conversations.
+TESTING_MESSAGES_COLLECTION = "collection1"
+TESTING_CONVERSATIONS_COLLECTION = "collection2"
+
 SCHEMA = {
-    "summarized_messages_cache": MessageSummarizationTransform.get_entity_definition(),
-    "conversation_summaries_cache": ConversationSummarizationTransform.get_entity_definition(),
+    TESTING_MESSAGES_COLLECTION: MessageSummarizationTransform.get_entity_definition(),
+    TESTING_CONVERSATIONS_COLLECTION: ConversationSummarizationTransform.get_entity_definition(),
 }
 
 

@@ -14,6 +14,7 @@ from pyagentspec.serialization.serializer import AgentSpecSerializer
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
 
+from ..datastores.conftest import TESTING_MESSAGES_COLLECTION
 from .conftest import create_test_llm_config, parametrize_transform_and_datastore
 
 
@@ -86,7 +87,7 @@ def test_default_inmemory_datastore_created_when_not_specified(transform):
 )
 def test_transforms_with_incorrect_schema_raises(transform_cls):
     incorrect_schema = {
-        "summarized_messages_cache": ObjectProperty(properties={"cache_key": StringProperty()})
+        TESTING_MESSAGES_COLLECTION: ObjectProperty(properties={"cache_key": StringProperty()})
     }
     datastore = InMemoryCollectionDatastore(
         name="incorrect_datastore", datastore_schema=incorrect_schema
