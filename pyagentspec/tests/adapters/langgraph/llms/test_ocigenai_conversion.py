@@ -22,22 +22,32 @@ from pyagentspec.llms.ociclientconfig import (
 from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 
 OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL = os.getenv("INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL")
-if not OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL:
-    raise Exception("INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL is not set in the environment")
-
 OCI_COMPARTMENT_ID = os.getenv("COMPARTMENT_ID")
-if not OCI_COMPARTMENT_ID:
-    raise Exception("compartment_id is not set in the environment")
 
 OCI_SERVICE_ENDPOINT = "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"
 
 
-def should_skip_ocigenai_tests():
-    return not ("OCI_GENAI_API_KEY_CONFIG" in os.environ and "OCI_GENAI_API_KEY_PEM" in os.environ)
+def _has_oci_api_key_setup() -> bool:
+    return (
+        "OCI_GENAI_API_KEY_CONFIG" in os.environ
+        and "OCI_GENAI_API_KEY_PEM" in os.environ
+        and bool(OCI_COMPARTMENT_ID)
+    )
+
+
+def _has_instance_principal_setup() -> bool:
+    return bool(OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL) and bool(OCI_COMPARTMENT_ID)
 
 
 def _oci_user_config_path() -> str:
     return str(Path("~/.oci/config").expanduser())
+
+
+def _oci_user_config_exists() -> bool:
+    try:
+        return Path(_oci_user_config_path()).expanduser().exists()
+    except Exception:
+        return False
 
 
 def auth_profile_contains_security_token(client_config):
@@ -63,7 +73,10 @@ _SEC_TOKEN_PRESENT = auth_profile_contains_security_token(
 )
 
 
-@pytest.mark.skipif(should_skip_ocigenai_tests(), reason="OCI config not available")
+@pytest.mark.skipif(
+    not (_has_oci_api_key_setup() and _oci_user_config_exists()),
+    reason="Missing OCI API key env/config, COMPARTMENT_ID, or ~/.oci/config",
+)
 def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
     client_config = OciClientConfigWithApiKey(
         name="with_api_key",
@@ -94,8 +107,8 @@ def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
 
 
 @pytest.mark.skipif(
-    should_skip_ocigenai_tests() or not _SEC_TOKEN_PRESENT,
-    reason="OCI config not available or `DEFAULT` auth profile lacks security token; skipping.",
+    (not bool(OCI_COMPARTMENT_ID)) or (not _SEC_TOKEN_PRESENT),
+    reason="Missing COMPARTMENT_ID or security token profile; skipping.",
 )
 def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
     client_config = OciClientConfigWithSecurityToken(
@@ -128,6 +141,10 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
         )
 
 
+@pytest.mark.skipif(
+    not _has_instance_principal_setup(),
+    reason="Missing INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL or COMPARTMENT_ID",
+)
 def test_ocigenai_llm_conversion_instance_principal(default_generation_parameters, monkeypatch):
     # no type hints for monkeypatch https://github.com/pytest-dev/pytest/issues/2712
     model_id = "meta.llama-3.3-70b-instruct"
@@ -223,7 +240,10 @@ def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
     )
 
 
-@pytest.mark.skipif(should_skip_ocigenai_tests(), reason="OCI config not available")
+@pytest.mark.skipif(
+    not (_has_oci_api_key_setup() and _oci_user_config_exists()),
+    reason="Missing OCI API key env/config, COMPARTMENT_ID, or ~/.oci/config",
+)
 @pytest.mark.filterwarnings(
     "ignore:`config_type` is deprecated and will be removed:DeprecationWarning"
 )
