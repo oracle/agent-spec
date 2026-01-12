@@ -868,7 +868,7 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
                 checkpointer=checkpointer,
                 config=config,
-                additioanl_langgraph_tools=[
+                additional_langgraph_tools=[
                     langgraph_swarm.create_handoff_tool(agent_name=to_agent_name)
                     for to_agent_name in handoffs.get(agent.name, [])
                 ],
@@ -894,7 +894,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
-        additioanl_langgraph_tools: Optional[List[LangGraphTool]] = None,
+        additional_langgraph_tools: Optional[List[LangGraphTool]] = None,
     ) -> CompiledStateGraph[Any, Any, Any]:
         model = self.convert(
             llm_config,
@@ -904,7 +904,7 @@ class AgentSpecToLangGraphConverter:
             config=config,
         )
         langgraph_tools = (
-            (additioanl_langgraph_tools or [])
+            (additional_langgraph_tools or [])
             + [
                 self.convert(
                     t,
