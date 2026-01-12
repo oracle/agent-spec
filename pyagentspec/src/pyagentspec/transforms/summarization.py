@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 """This file defines message transforms for message and conversation summarization."""
-from typing import Optional, Union
+from typing import ClassVar, Optional, Union
 
 from pydantic import Field, ValidationInfo, field_validator
 
@@ -64,7 +64,7 @@ def _get_default_inmemory_datastore_conversations() -> InMemoryCollectionDatasto
     return InMemoryCollectionDatastore(
         name="default-inmemory-datastore",
         datastore_schema={
-            "summarized_conversations_cache": ConversationSummarizationTransform.get_entity_definition()
+            ConversationSummarizationTransform.DEFAULT_COLLECTION_NAME: ConversationSummarizationTransform.get_entity_definition()
         },
     )
 
@@ -73,7 +73,7 @@ def _get_default_inmemory_datastore_messages() -> InMemoryCollectionDatastore:
     return InMemoryCollectionDatastore(
         name="default-inmemory-datastore",
         datastore_schema={
-            "summarized_messages_cache": MessageSummarizationTransform.get_entity_definition()
+            MessageSummarizationTransform.DEFAULT_COLLECTION_NAME: MessageSummarizationTransform.get_entity_definition()
         },
     )
 
@@ -94,6 +94,8 @@ class MessageSummarizationTransform(MessageTransform):
     ... )
 
     """
+
+    DEFAULT_COLLECTION_NAME: ClassVar[str] = "summarized_messages_cache"
 
     llm: LlmConfig
     """LLM configuration for summarization."""
@@ -116,7 +118,7 @@ class MessageSummarizationTransform(MessageTransform):
     max_cache_lifetime: Optional[int] = 4 * 3600
     """Maximum lifetime of cache entries in seconds."""
 
-    cache_collection_name: str = "summarized_messages_cache"
+    cache_collection_name: str = DEFAULT_COLLECTION_NAME
     """Name of the collection in the datastore for caching summarized messages."""
 
     datastore: Optional[SupportedDatastores] = Field(
@@ -167,6 +169,8 @@ class ConversationSummarizationTransform(MessageTransform):
 
     """
 
+    DEFAULT_COLLECTION_NAME: ClassVar[str] = "summarized_conversations_cache"
+
     llm: LlmConfig
     """LLM configuration for conversation summarization."""
 
@@ -191,7 +195,7 @@ class ConversationSummarizationTransform(MessageTransform):
     max_cache_lifetime: Optional[int] = 4 * 3600
     """Maximum lifetime of cache entries in seconds."""
 
-    cache_collection_name: str = "summarized_conversations_cache"
+    cache_collection_name: str = DEFAULT_COLLECTION_NAME
     """Name of the collection in the datastore for caching summarized conversations."""
 
     datastore: Optional[SupportedDatastores] = Field(
