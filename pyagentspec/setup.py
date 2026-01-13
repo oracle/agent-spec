@@ -79,6 +79,10 @@ setup(
             "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
+        "crewai": [
+            "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            "litellm>=1.79.0; python_version < '3.14'",
+        ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
     },
