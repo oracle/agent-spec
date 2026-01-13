@@ -256,6 +256,16 @@ class BranchingNodeExecutor(NodeExecutor):
         return {}, NodeExecutionDetails(branch=selected_branch)
 
 
+from langchain_core.messages.content import (
+    FileContentBlock,
+    ImageContentBlock,
+    TextContentBlock,
+)
+
+# Type alias for LangChain content blocks used in ToolMessage
+ToolMessageContentBlock = TextContentBlock | ImageContentBlock | FileContentBlock
+
+
 class ToolNodeExecutor(NodeExecutor):
     node: AgentSpecToolNode
 
@@ -283,11 +293,55 @@ class ToolNodeExecutor(NodeExecutor):
             tool_output = tool(**inputs)
 
         if isinstance(tool_output, dict):
-            # useful for multiple outputs, avoid nesting dictionaries
             return tool_output, NodeExecutionDetails()
+        elif isinstance(tool_output, list):
+            extracted_values = self._extract_values_from_content_blocks(tool_output)
+            mapped = self._map_extracted_values_to_declared_outputs(extracted_values)
+            return mapped, NodeExecutionDetails()
+        else:
+            # Scalar or other types: map to the single declared output or a generic name
+            return self._map_scalar_to_output(tool_output), NodeExecutionDetails()
 
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+    def _extract_values_from_content_blocks(self, blocks: List[Any]) -> List[Any]:
+        extracted: List[Any] = []
+        for block in blocks:
+            if isinstance(block, dict):
+                btype = block.get("type")
+                if btype == "text" and "text" in block:
+                    extracted.append(block["text"])
+                    continue
+                if "base64" in block:
+                    extracted.append(block["base64"])
+                    continue
+                if "url" in block:
+                    extracted.append(block["url"])
+                    continue
+                if "file_id" in block:
+                    extracted.append(block["file_id"])
+                    continue
+            extracted.append(block)
+        return extracted
+
+    def _map_extracted_values_to_declared_outputs(self, values: List[Any]) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        if len(node_outputs) == 1:
+            value = values[0] if len(values) == 1 else values
+            return {node_outputs[0].title: value}
+        if len(node_outputs) > 1:
+            if len(values) != len(node_outputs):
+                raise ValueError(
+                    "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
+                    f"returned={len(values)}, declared={len(node_outputs)}"
+                )
+            return {prop.title: values[i] for i, prop in enumerate(node_outputs)}
+        # No declared outputs
+        return {"tool_output": values}
+
+    def _map_scalar_to_output(self, value: Any) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        if node_outputs:
+            return {node_outputs[0].title: value}
+        return {"tool_output": value}
 
 
 class AgentNodeExecutor(NodeExecutor):

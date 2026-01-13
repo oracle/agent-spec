@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     # Important: do not move this import out of the TYPE_CHECKING block so long as langgraph is an optional dependency.
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
+    import langchain.agents as langchain_agents
     import langchain_ollama
     import langchain_openai
     import langgraph
@@ -45,6 +46,7 @@ else:
     langgraph_types = LazyLoader("langgraph.types")
     langgraph_prebuilt = LazyLoader("langgraph.prebuilt")
     langgraph_graph_state = LazyLoader("langgraph.graph.state")
+    langchain_agents = LazyLoader("langchain.agents")
     # We need to import the classes this way because it's the only one accepted by the lazy loader
     BaseTool = LazyLoader("langchain_core.tools").BaseTool
     StructuredTool = LazyLoader("langchain_core.tools").StructuredTool
@@ -57,6 +59,7 @@ else:
     RunnableBinding = LazyLoader("langchain_core.runnables").RunnableBinding
     RunnableConfig = LazyLoader("langchain_core.runnables").RunnableConfig
     StateNodeSpec = LazyLoader("langgraph.graph._node").StateNodeSpec
+    StateNode = LazyLoader("langgraph.graph._node").StateNode
     BranchSpec = LazyLoader("langgraph.graph._branch").BranchSpec
     SystemMessage = LazyLoader("langchain_core.messages").SystemMessage
     BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
@@ -120,6 +123,7 @@ __all__ = [
     "langgraph_types",
     "langgraph_core",
     "langgraph_prebuilt",
+    "langchain_agents",
     "langchain_ollama",
     "langchain_openai",
     "LangGraphTool",

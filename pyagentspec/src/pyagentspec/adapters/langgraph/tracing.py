@@ -260,13 +260,6 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-        if kwargs.get("tool_call_id"):
-            # note that this run_id is different from the run_id in LLM events
-            # so we cannot use it to correlate with tool_call_id above
-            raise NotImplementedError(
-                "[on_tool_start] This is implemented starting from langchain 1.1.2, and we should support it"
-            )
-        # get run_id and tool config
         run_id_str = str(run_id)
         tool_name = serialized.get("name")
         if not tool_name:
@@ -274,13 +267,12 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
         tool_obj = self.tools_map.get(tool_name)
         if tool_obj is None:
             raise ValueError(f"[on_tool_start] Unknown tool: {tool_name}")
-        # instead of the real tool_call_id, we use the run_id to correlate between tool request and tool result
+        # use the tool_call_id as the request_id if available, otherwise fall back to run_id
         request_event = AgentSpecToolExecutionRequest(
-            request_id=run_id_str,
+            request_id=kwargs.get("tool_call_id", run_id_str),
             tool=tool_obj,
             inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
         )
-        # starting a tool span for this tool
         tool_span = AgentSpecToolExecutionSpan(tool=tool_obj)
         self.agentspec_spans_registry[run_id_str] = tool_span
         self._start_and_copy_ctx(run_id_str, tool_span)
@@ -313,7 +305,7 @@ class AgentSpecCallbackHandler(LangchainBaseCallbackHandler):
             )
 
         response_event = AgentSpecToolExecutionResponse(
-            request_id=output.tool_call_id,
+            request_id=getattr(output, "tool_call_id", run_id_str),
             tool=tool_span.tool,
             outputs=outputs,
         )
