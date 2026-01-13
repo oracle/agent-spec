@@ -290,9 +290,8 @@ class _DeserializationContextImpl(DeserializationContext):
                 and issubclass(annotation, Property)
             ):
                 if isinstance(content, annotation):
-                    # This condition should never be reached since content is typed as BaseModelAsDictT.
-                    # However, it is being hit in tests (e.g., test_partialcomponentconstruction.py).
-                    # We need to investigate why deserialized components are passed here.
+                    # This condition can be reached when building the component from a partial configuration
+                    # which contains Property objects that already built and not represented by only their schema.
                     return content, []
                 return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
