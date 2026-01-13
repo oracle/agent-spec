@@ -6,10 +6,9 @@
 
 from typing import Any, Dict, List, Optional
 
-import httpx
 from pydantic import BaseModel, Field, create_model
 
-from pyagentspec.adapters._utils import render_template
+from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.crewai._types import (
     CrewAIAgent,
     CrewAIBaseTool,
@@ -248,24 +247,7 @@ class AgentSpecToCrewAIConverter:
         )
 
     def _remote_tool_convert_to_crewai(self, remote_tool: AgentSpecRemoteTool) -> CrewAIBaseTool:
-        def _remote_tool(**kwargs: Any) -> Any:
-            remote_tool_data = {k: render_template(v, kwargs) for k, v in remote_tool.data.items()}
-            remote_tool_headers = {
-                k: render_template(v, kwargs) for k, v in remote_tool.headers.items()
-            }
-            remote_tool_query_params = {
-                k: render_template(v, kwargs) for k, v in remote_tool.query_params.items()
-            }
-            remote_tool_url = render_template(remote_tool.url, kwargs)
-            response = httpx.request(
-                method=remote_tool.http_method,
-                url=remote_tool_url,
-                params=remote_tool_query_params,
-                data=remote_tool_data,
-                headers=remote_tool_headers,
-            )
-            return response.json()
-
+        _remote_tool = _create_remote_tool_func(remote_tool)
         _remote_tool.__name__ = remote_tool.name
         _remote_tool.__doc__ = remote_tool.description
         return CrewAITool(
