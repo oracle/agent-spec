@@ -25,6 +25,7 @@ from pyagentspec.adapters.langgraph._types import (
     NodeOutputsType,
     RunnableConfig,
     interrupt,
+    langchain_core_messages_content,
     langgraph_graph,
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
@@ -256,16 +257,6 @@ class BranchingNodeExecutor(NodeExecutor):
         return {}, NodeExecutionDetails(branch=selected_branch)
 
 
-from langchain_core.messages.content import (
-    FileContentBlock,
-    ImageContentBlock,
-    TextContentBlock,
-)
-
-# Type alias for LangChain content blocks used in ToolMessage
-ToolMessageContentBlock = TextContentBlock | ImageContentBlock | FileContentBlock
-
-
 class ToolNodeExecutor(NodeExecutor):
     node: AgentSpecToolNode
 
@@ -294,7 +285,9 @@ class ToolNodeExecutor(NodeExecutor):
 
         if isinstance(tool_output, dict):
             return tool_output, NodeExecutionDetails()
-        elif isinstance(tool_output, list):
+        elif isinstance(
+            tool_output, list
+        ):  # this is the return type of the tool loaded by langchain_mcp_adapters.tools.load_mcp_tools
             extracted_values = self._extract_values_from_content_blocks(tool_output)
             mapped = self._map_extracted_values_to_declared_outputs(extracted_values)
             return mapped, NodeExecutionDetails()
@@ -302,14 +295,33 @@ class ToolNodeExecutor(NodeExecutor):
             # Scalar or other types: map to the single declared output or a generic name
             return self._map_scalar_to_output(tool_output), NodeExecutionDetails()
 
-    def _extract_values_from_content_blocks(self, blocks: List[Any]) -> List[Any]:
+    def _extract_values_from_content_blocks(
+        self,
+        blocks: List[
+            Union[
+                langchain_core_messages_content.FileContentBlock,
+                langchain_core_messages_content.TextContentBlock,
+                langchain_core_messages_content.ImageContentBlock,
+            ]
+        ],
+    ) -> List[Any]:
         extracted: List[Any] = []
         for block in blocks:
-            if isinstance(block, dict):
-                btype = block.get("type")
-                if btype == "text" and "text" in block:
-                    extracted.append(block["text"])
+            # Use direct checks on the discriminant to let mypy narrow the TypedDict union
+            if block["type"] == "text":
+                extracted.append(block["text"])
+                continue
+            if block["type"] == "image":
+                if "base64" in block:
+                    extracted.append(block["base64"])
                     continue
+                if "url" in block:
+                    extracted.append(block["url"])
+                    continue
+                if "file_id" in block:
+                    extracted.append(block["file_id"])
+                    continue
+            if block["type"] == "file":
                 if "base64" in block:
                     extracted.append(block["base64"])
                     continue
