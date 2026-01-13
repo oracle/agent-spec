@@ -66,9 +66,7 @@ def test_agentnode_can_be_imported_and_executed() -> None:
     )
 
     agent = AgentSpecLoader().load_component(flow)
-    result = agent.invoke(
-        {"inputs": {"nationality": "italian"}, "messages": [{"role": "user", "content": ""}]}
-    )
+    result = agent.invoke({"inputs": {"nationality": "italian"}})
 
     assert "outputs" in result
     assert "messages" in result

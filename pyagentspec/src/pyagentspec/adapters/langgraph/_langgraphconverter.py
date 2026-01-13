@@ -9,11 +9,13 @@ from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Uni
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, create_model
+from typing_extensions import NotRequired, Required
 
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.langgraph._node_execution import NodeExecutor
 from pyagentspec.adapters.langgraph._types import (
+    AgentState,
     BaseCallbackHandler,
     BaseChatModel,
     BaseTool,
@@ -209,6 +211,44 @@ def _create_pydantic_model_from_properties(
         fields[property_.title] = (annotation, default_field)
 
     return create_model(model_name, **fields)  # type: ignore
+
+
+def _create_agent_state_typed_dict(
+    model_name: str,
+    inputs: List[AgentSpecProperty],
+) -> "type[AgentState[BaseModel]]":
+    """Create a TypedDict subclass of LangChain's AgentState with custom inputs.
+
+    We extend the default AgentState (which already includes `messages` and
+    optional `structured_response`) by adding our input properties and a
+    required `remaining_steps` field. Required/optional inputs are expressed
+    using PEP 655 `Required`/`NotRequired`.
+    """
+    import types
+
+    registry = SchemaRegistry()
+
+    annotations: Dict[str, Any] = {
+        "remaining_steps": Required[int],
+    }
+
+    for property_ in inputs:
+        annotation = _build_type_from_schema(property_.title, property_.json_schema, registry)
+        if property_.default is not _agentspec_empty_default:
+            annotations[property_.title] = NotRequired[annotation]
+        else:
+            annotations[property_.title] = Required[annotation]
+
+    def _exec_body(ns: Dict[str, Any]) -> None:
+        ns["__annotations__"] = annotations
+
+    # total=False => unspecified fields are optional unless wrapped with Required
+    return types.new_class(
+        model_name,
+        (AgentState[BaseModel],),
+        {"total": False},
+        _exec_body,
+    )
 
 
 class AgentSpecToLangGraphConverter:
@@ -807,13 +847,17 @@ class AgentSpecToLangGraphConverter:
             )
         ]
         output_model: Optional[type[BaseModel]] = None
+        state_schema: Optional[Any] = None
 
-        # We no longer pass a custom `state_schema` to `create_agent`.
-        # LangChain's AgentState already contains required fields (messages, structured_response),
-        # and additional inputs are handled via runtime state without a strict schema.
-
+        # Build response (output) model (used for response_format)
         if outputs:
             output_model = _create_pydantic_model_from_properties("AgentOutputModel", outputs)
+
+        if inputs:
+            state_schema = _create_agent_state_typed_dict(
+                "AgentState",
+                inputs=inputs,
+            )
 
         return langchain_agents.create_agent(
             name=name,
@@ -822,8 +866,7 @@ class AgentSpecToLangGraphConverter:
             system_prompt=system_prompt,
             checkpointer=checkpointer,
             response_format=output_model,
-            # Use default AgentState from langchain; do not override with custom schema
-            state_schema=None,
+            state_schema=state_schema,
         )
 
     def _agent_convert_to_langgraph(

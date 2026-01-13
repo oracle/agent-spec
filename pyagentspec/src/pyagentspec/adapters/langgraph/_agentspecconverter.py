@@ -1,11 +1,10 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import datetime
-from pathlib import Path
 from types import FunctionType
 from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Union, cast
 
@@ -18,7 +17,6 @@ from pyagentspec.adapters.langgraph._types import (
     CompiledStateGraph,
     LangGraphComponent,
     LangGraphRuntimeComponent,
-    RunnableBinding,
     StateNodeSpec,
     StructuredTool,
     SystemMessage,
@@ -103,48 +101,26 @@ class LangGraphToAgentSpecConverter:
         node = langgraph_component.nodes.get("model")
         return node is not None and hasattr(node.runnable, "get_graph")
 
-    def _extract_basechatmodel_from_runnables_closures(
-        self, model_node: StateNodeSpec[Any, Any]
-    ) -> BaseChatModel:
-        # Extract variables that have been closed over in the `create_agent` function execution
-        # Because the data related to the model's configuration has been wrapped in a runnable,
-        # and isn't stored in a class's attributes for example
-        # Extract the instance of RunnableBinding which contains relevant information for the react agent
+    def _get_closure_cells(self, model_node: StateNodeSpec[Any, Any]) -> list[Any]:
+        """Extract and return the cell contents from the function's closure, or raise if invalid."""
         runnable = getattr(model_node, "runnable", None)
         func = getattr(runnable, "func", None)
         if not isinstance(func, FunctionType) or func.__closure__ is None:
-            raise ValueError("Unsupported runnable shape when extracting LLM config")
+            raise ValueError("Unsupported runnable shape when extracting from closure")
+        return [cl.cell_contents for cl in func.__closure__]
 
-        model = next(
-            cl.cell_contents
-            for cl in func.__closure__
-            if isinstance(cl.cell_contents, BaseChatModel)
-        )
+    def _extract_basechatmodel_from_model_node(
+        self, model_node: StateNodeSpec[Any, Any]
+    ) -> BaseChatModel:
+        cells = self._get_closure_cells(model_node)
+        return next(cl for cl in cells if isinstance(cl, BaseChatModel))
 
-        return model
-
-    def _extract_prompt_from_model_node(
-        self, langgraph_model_node: StateNodeSpec[Any, Any]
-    ) -> str:
-        # The agent_node's runnable corresponds to the `call_model` function, that contains the prompt somewhere
-        runnable = getattr(langgraph_model_node, "runnable", None)
-        call_model_function = getattr(runnable, "func", None)
-        if (
-            not isinstance(call_model_function, FunctionType)
-            or call_model_function.__closure__ is None
-        ):
-            return ""
-        # We get the cell contents of the last element of the `call_model` function closure,
-        # which should contain the sequence of actions performed by the runnable (it's a runnable sequence)
+    def _extract_prompt_from_model_node(self, model_node: StateNodeSpec[Any, Any]) -> str:
         try:
-            system_message = next(
-                cl.cell_contents
-                for cl in call_model_function.__closure__
-                if isinstance(cl.cell_contents, SystemMessage)
-            )
-            # This system message contains the prompt we need
+            cells = self._get_closure_cells(model_node)
+            system_message = next(cl for cl in cells if isinstance(cl, SystemMessage))
             return str(system_message.content)
-        except StopIteration:
+        except (ValueError, StopIteration):
             return ""
 
     def _langgraph_server_tool_to_agentspec_tool(self, tool: StructuredTool) -> AgentSpecTool:
@@ -198,7 +174,7 @@ class LangGraphToAgentSpecConverter:
         if isinstance(langgraph_component, CompiledStateGraph):
             langgraph_component = langgraph_component.builder
         model_node = langgraph_component.nodes["model"]
-        basechatmodel = self._extract_basechatmodel_from_runnables_closures(model_node)
+        basechatmodel = self._extract_basechatmodel_from_model_node(model_node)
         if "tools" in langgraph_component.nodes:
             tool_node = langgraph_component.nodes["tools"]
             tools = self._extract_tools_from_react_agent(tool_node)
@@ -285,58 +261,44 @@ class LangGraphToAgentSpecConverter:
                 "httpx_client_factory": _HttpxClientFactory(...)
             }
         """
-        from langchain_mcp_adapters.sessions import (
-            SSEConnection,
-            StdioConnection,
-            StreamableHttpConnection,
-        )
 
         if conn.get("httpx_client_factory"):
             raise NotImplementedError(
                 "Conversion from langchain MCP connections with arbitrary httpx client factory objects is not yet implemented"
             )
 
-        session_params = self._build_session_parameters(cast(Mapping[str, Any], conn))
-        transport = conn["transport"]
+        session_params = self._build_session_parameters(conn)
 
         # Below, we use `[]` for mandatory keys and `.get` for NotRequired keys, where c is a TypedDict
 
-        if transport == "stdio":
-            c_stdio = cast(StdioConnection, conn)
-            cwd_val = c_stdio.get("cwd")
-            cwd_str: Optional[str]
-            if isinstance(cwd_val, Path):
-                cwd_str = str(cwd_val)
-            else:
-                cwd_str = cwd_val
+        if conn["transport"] == "stdio":
+            cwd_str = str(conn.get("cwd"))
             return StdioTransport(
                 name="agentspec_stdio_transport",
-                command=c_stdio["command"],
-                args=c_stdio["args"],
-                env=c_stdio.get("env"),
+                command=conn["command"],
+                args=conn["args"],
+                env=conn.get("env"),
                 cwd=cwd_str,
                 session_parameters=session_params,
             )
 
-        if transport == "sse":
-            c_sse = cast(SSEConnection, conn)
+        if conn["transport"] == "sse":
             return SSETransport(
                 name="agentspec_sse_transport",
-                url=c_sse["url"],
-                headers=cast(Optional[Dict[str, str]], c_sse.get("headers")),
+                url=conn["url"],
+                headers=conn.get("headers"),
                 session_parameters=session_params,
             )
 
-        if transport == "streamable_http":
-            c_http = cast(StreamableHttpConnection, conn)
+        if conn["transport"] == "streamable_http":
             return StreamableHTTPTransport(
                 name="agentspec_streamablehttp_transport",
-                url=c_http["url"],
-                headers=cast(Optional[Dict[str, str]], c_http.get("headers")),
+                url=conn["url"],
+                headers=conn.get("headers"),
                 session_parameters=session_params,
             )
 
-        raise ValueError(f"Unsupported transport: {transport}")
+        raise ValueError(f'Unsupported transport: {conn["transport"]}')
 
     @staticmethod
     def _build_session_parameters(conn: Mapping[str, Any]) -> SessionParameters:
