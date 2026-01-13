@@ -5,7 +5,7 @@ Agent Spec Adapters - WayFlow
 =============================
 
 
-.. figure:: ../_static/icons/wayflow-adapter.jpg
+.. figure:: ../../_static/icons/wayflow-adapter.jpg
     :align: center
     :scale: 18%
     :alt: Agent Spec adapter for WayFlow
@@ -31,31 +31,13 @@ and then install the PyAgentSpec package as well as WayFlowCore.
     pip install pyagentspec wayflowcore
 
 
-You are now ready to use the adapter:
+Usage Examples
+==============
 
-- Run Agent Spec configurations with WayFlow (see more details :ref:`below <spectowayflow>`)
-- Convert WayFlow agents to Agent Spec (see more details :ref:`below <wayflowtospec>`)
+You are now ready to use the adapter to:
 
+.. toctree::
+   :maxdepth: 1
 
-
-.. _spectowayflow:
-
-Run Agent Spec configurations with WayFlow
-==========================================
-
-
-.. literalinclude:: ../code_examples/adapter_wayflow_quickstart.py
-    :language: python
-    :start-after: .. start-agentspec_to_runtime
-    :end-before: .. end-agentspec_to_runtime
-
-
-.. _wayflowtospec:
-
-Convert WayFlow agents to Agent Spec
-====================================
-
-.. literalinclude:: ../code_examples/adapter_wayflow_quickstart.py
-    :language: python
-    :start-after: .. start-runtime_to_agentspec
-    :end-before: .. end-runtime_to_agentspec
+   Run Agent Spec configurations with WayFlow <spec_to_wayflow>
+   Convert WayFlow agents to Agent Spec <wayflow_to_spec>

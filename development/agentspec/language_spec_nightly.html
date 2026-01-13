@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent Spec specification (nightly version 26.1.0.dev0) &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Agent Spec specification (nightly version 26.1.0.dev4) &#8212; PyAgentSpec 26.1.0.dev4 documentation</title>
   
   
   
@@ -137,8 +137,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev4 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev4 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +185,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +290,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -392,9 +392,21 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -455,7 +467,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec specification (nightly version 26.1.0.dev0)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec specification (nightly version 26.1.0.dev4)</span></li>
   </ul>
 </nav>
 </div>
@@ -473,7 +485,7 @@
                 <article class="bd-article">
                   
   <section id="agent-spec-specification-nightly-version-release">
-<span id="agentspecspec-nightly"></span><h1>Agent Spec specification (nightly version 26.1.0.dev0)<a class="headerlink" href="#agent-spec-specification-nightly-version-release" title="Permalink to this heading">#</a></h1>
+<span id="agentspecspec-nightly"></span><h1>Agent Spec specification (nightly version 26.1.0.dev4)<a class="headerlink" href="#agent-spec-specification-nightly-version-release" title="Permalink to this heading">#</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This is the nightly version of Agent Spec, and it is currently under development.
@@ -1229,7 +1241,7 @@ the correct built-in tool.</p>
   <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
   <span class="n">http_method</span><span class="p">:</span> <span class="nb">str</span>
   <span class="n">api_spec_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-  <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+  <span class="n">data</span><span class="p">:</span> <span class="n">Any</span>
   <span class="n">query_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
   <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
   <span class="n">sensitive_headers</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
@@ -1249,7 +1261,7 @@ code from the agent representation. The representation contains a complete descr
 of the tool—its attributes, inputs, outputs, and related metadata—but does
 not embed executable code.</p>
 <section id="remote-tools">
-<h5>Remote Tools<a class="headerlink" href="#remote-tools" title="Permalink to this heading">#</a></h5>
+<span id="remotetools"></span><h5>Remote Tools<a class="headerlink" href="#remote-tools" title="Permalink to this heading">#</a></h5>
 <p>One common way to make tools available to agents, is to make them
 available under the for of REST APIs that the agent can call when the
 tool has to be executed.</p>
@@ -1261,7 +1273,11 @@ in the right manner.</p>
 <p>Note that, similarly to the APINode, we allow users to use placeholders
 (as described in section 5.3.4) in all the string attributes of the
 RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
-of data, query_params, headers, and sensitive_headers).</p>
+of data, query_params, headers, and sensitive_headers). The <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in
+<code class="docutils literal notranslate"><span class="pre">RemoteTool</span></code> is what ends up in the body of the request.
+If <code class="docutils literal notranslate"><span class="pre">data</span></code> is specified as a string, the runtime must encode and pass it as the body of the HTTP request,
+otherwise the value of <code class="docutils literal notranslate"><span class="pre">data</span></code> should be JSON serializable and runtimes are
+expected to dump it when adding it in the body of the HTTP request.</p>
 </section>
 <section id="mcp-tools">
 <h5>MCP Tools<a class="headerlink" href="#mcp-tools" title="Permalink to this heading">#</a></h5>
@@ -1852,8 +1868,8 @@ applying a specified Flow to each element in the collection</p></li>
 <td><p>null</p></td>
 </tr>
 <tr class="row-odd"><td><p>data</p></td>
-<td><p>The data to send to this API call. Allows placeholders in dict values, which can define inputs</p></td>
-<td><p>object[str, any]</p></td>
+<td><p>The data to send to this API call. Behaves the same way as the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in <a class="reference internal" href="#remotetools"><span class="std std-ref">RemoteTool</span></a>.</p></td>
+<td><p>any</p></td>
 <td><p>No</p></td>
 <td><p>{}</p></td>
 </tr>
