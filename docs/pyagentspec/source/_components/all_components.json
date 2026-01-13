@@ -311,6 +311,8 @@
         "classes": [
             {"path": "pyagentspec.adapters.autogen.AgentSpecExporter"},
             {"path": "pyagentspec.adapters.autogen.AgentSpecLoader"},
+            {"path": "pyagentspec.adapters.crewai.AgentSpecExporter"},
+            {"path": "pyagentspec.adapters.crewai.AgentSpecLoader"},
             {"path": "pyagentspec.adapters.langgraph.AgentSpecExporter"},
             {"path": "pyagentspec.adapters.langgraph.AgentSpecLoader"},
             {"path": "pyagentspec.adapters.wayflow.AgentSpecExporter"},

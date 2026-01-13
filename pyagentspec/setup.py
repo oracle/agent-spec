@@ -83,6 +83,11 @@ setup(
             "openai-agents>=0.6.9",
             "libcst>=1.5,<2",
         ],
+        "crewai": [
+            "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            # litellm is included to fix CVEs
+            "litellm>=1.79.0; python_version < '3.14'",
+        ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters"],
         "wayflow": ["wayflowcore>=25.4.3; python_version < '3.14'"],

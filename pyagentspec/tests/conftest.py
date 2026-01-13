@@ -154,19 +154,32 @@ def get_directory_allowlist_write(tmp_path: str, session_tmp_path: str) -> List[
 
 
 def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
-    return get_directory_allowlist_write(tmp_path, session_tmp_path) + [
-        CONFIGS_DIR,
-        # Docs path
-        Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
-        # Accessed by pandas, dependency of wayflowcore
-        Path("/usr/share/zoneinfo/UTC"),
-        # Used in docstring tests
-        Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
-        Path("~/.pdbrc").expanduser(),
-        Path(os.path.dirname(__file__)).parent / ".pdbrc",
-        Path(os.path.dirname(__file__)) / ".pdbrc",
-        Path("/etc/os-release"),
-    ]
+    try:
+        # Crew AI sometimes attempts to read in some folders, we need to take that into account
+        from crewai.cli.shared.token_manager import TokenManager
+
+        crewai_read_dirs = [
+            TokenManager.get_secure_storage_path(),
+        ]
+    except ImportError:
+        crewai_read_dirs = []
+    return (
+        get_directory_allowlist_write(tmp_path, session_tmp_path)
+        + [
+            CONFIGS_DIR,
+            # Docs path
+            Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
+            # Accessed by pandas, dependency of wayflowcore
+            Path("/usr/share/zoneinfo/UTC"),
+            # Used in docstring tests
+            Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
+            Path("~/.pdbrc").expanduser(),
+            Path(os.path.dirname(__file__)).parent / ".pdbrc",
+            Path(os.path.dirname(__file__)) / ".pdbrc",
+            Path("/etc/os-release"),
+        ]
+        + crewai_read_dirs
+    )
 
 
 def check_allowed_filewrite(

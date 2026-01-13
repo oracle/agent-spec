@@ -94,6 +94,14 @@ Agent Spec 26.1.0
 New features
 ^^^^^^^^^^^^
 
+* **Added CrewAI adapter to pyagentspec:**
+
+  The CrewAI adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.crewai`` subpackage.
+  It requires the ``crewai`` extra dependency to be installed.
+
+  For more information read the :doc:`API Reference <api/adapters>`.
+
 * **MCP tools support in LangGraph adapter:**
 
   The LangGraph adapter now supports Model Context Protocol (MCP) tools.

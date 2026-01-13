@@ -100,6 +100,7 @@ You can find some examples of how to use these adapters in the `adapters_example
 
 - [LangGraph](https://github.com/oracle/agent-spec/tree/main/adapters_examples/langgraph)
 - [AutoGen](https://github.com/oracle/agent-spec/tree/main/adapters_examples/autogen)
+- [CrewAI](https://github.com/oracle/agent-spec/tree/main/adapters_examples/crewai)
 
 
 ## Positioning in the Agentic Ecosystem
