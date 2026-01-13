@@ -836,7 +836,7 @@ the correct built-in tool.
      url: str
      http_method: str
      api_spec_uri: Optional[str]
-     data: Dict[str, Any]
+     data: Any
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
      sensitive_headers: SensitiveField[Dict[str, Any]]
@@ -855,6 +855,7 @@ code from the agent representation. The representation contains a complete descr
 of the tool—its attributes, inputs, outputs, and related metadata—but does
 not embed executable code.
 
+.. _remotetools:
 
 Remote Tools
 ^^^^^^^^^^^^
@@ -873,8 +874,11 @@ in the right manner.
 Note that, similarly to the APINode, we allow users to use placeholders
 (as described in section 5.3.4) in all the string attributes of the
 RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
-of data, query_params, headers, and sensitive_headers).
-
+of data, query_params, headers, and sensitive_headers). The ``data`` parameter in
+``RemoteTool`` is what ends up in the body of the request.
+If ``data`` is specified as a string, the runtime must encode and pass it as the body of the HTTP request,
+otherwise the value of ``data`` should be JSON serializable and runtimes are
+expected to dump it when adding it in the body of the HTTP request.
 
 MCP Tools
 ^^^^^^^^^
@@ -1495,8 +1499,8 @@ A more detailed description of each node follows.
               - No
               - null
             * - data
-              - The data to send to this API call. Allows placeholders in dict values, which can define inputs
-              - object[str, any]
+              - The data to send to this API call. Behaves the same way as the ``data`` parameter in :ref:`RemoteTool <remotetools>`.
+              - any
               - No
               - {}
             * - query_params

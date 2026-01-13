@@ -72,6 +72,8 @@ docs/_build/
 .scrapy
 profile_default/
 ipython_config.py
+development/.buildinfo
+development/.doctrees/
 
 # OS generated files
 .DS_Store
