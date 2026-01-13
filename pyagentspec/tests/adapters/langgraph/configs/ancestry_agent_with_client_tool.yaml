@@ -22,10 +22,7 @@ llm_config:
 metadata:
   __metadata_info__: {}
 name: agent_7ced9454
-outputs:
-- default: 0
-  title: result
-  type: integer
+outputs: []
 system_prompt: You are an ancestry agent. Use tools to answer user questions. Make sure you generate an answer for the user, as the user cannot see the output of the tools. You must always mention the output of the tool to the user.
 tools:
 - component_type: ClientTool
