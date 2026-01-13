@@ -25,7 +25,6 @@ def test_can_serialize_and_deserialize_transform_with_all_datastores(
     transform = transform_factory(datastore)
 
     serialized_transform = AgentSpecSerializer().to_yaml(transform)
-    print(serialized_transform)
     assert len(serialized_transform.strip()) > 0
 
     deserialized_transform = AgentSpecDeserializer().from_yaml(

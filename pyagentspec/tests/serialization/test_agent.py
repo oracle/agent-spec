@@ -287,7 +287,6 @@ def test_deserializing_agent_with_builtin_tools_and_unsupported_version_raises(
 def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
     datastore, sensitive_fields, vllmconfig
 ):
-    print(f"Testing with datastore type: {type(datastore).__name__}")
     transforms = [
         create_message_summarization_transform(datastore),
         create_conversation_summarization_transform(datastore),
