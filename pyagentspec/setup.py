@@ -80,7 +80,7 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "langgraph": LANGGRAPH_DEPS,
-        "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
-        "langgraph_oci": LANGGRAPH_DEPS + ["langchain-oci==0.2.0"],
+        "langgraph-full": LANGGRAPH_DEPS
+        + ["langchain-mcp-adapters>=0.1.13,<0.2.0", "langchain-oci==0.2.0"],
     },
 )

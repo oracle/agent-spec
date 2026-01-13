@@ -13,9 +13,9 @@ from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
     _langgraph_graph_convert_to_agentspec,
 )
 from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
     CompiledStateGraph,
     LangGraphComponent,
-    LangGraphLlmConfig,
     RunnableBinding,
     StateNodeSpec,
     StructuredTool,
@@ -27,7 +27,6 @@ from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
-from pyagentspec.llms import VllmConfig as AgentSpecVllmConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfigWithApiKey as AgentSpecOciClientConfigWithApiKey,
 )
@@ -114,9 +113,9 @@ class LangGraphToAgentSpecConverter:
         node = langgraph_component.nodes.get("agent")
         return node is not None and hasattr(node.runnable, "get_graph")
 
-    def _extract_llm_config_from_runnables_closures(
+    def _extract_llm_model_from_runnables_closures(
         self, agent_node: StateNodeSpec[Any]
-    ) -> LangGraphLlmConfig:
+    ) -> BaseChatModel:
         nodes = cast(Any, agent_node.runnable).get_graph().nodes
 
         # The graph contains three nodes:
@@ -139,50 +138,10 @@ class LangGraphToAgentSpecConverter:
 
         if isinstance(model, RunnableBinding):
             model = model.bound
-        if isinstance(model, langchain_openai.ChatOpenAI):
-            model_type = "openaicompatible"
-            model_name = model.model_name
-            base_url = model.openai_api_base
-            api_type: AgentSpecOpenAIAPIType
-            if model.use_responses_api:
-                api_type = AgentSpecOpenAIAPIType.RESPONSES
-            else:
-                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-                api_type=api_type,
-            )
-
-        elif isinstance(model, langchain_ollama.ChatOllama):
-            model_type = "ollama"
-            model_name = model.model
-            base_url = model.base_url
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-            )
-
-        else:
+        if not isinstance(model, BaseChatModel):
             raise ValueError(
-                f"The LLM instance provided is of an unsupported type `{type(model)}`."
+                f"Expect to find a BaseChatModel in the agent_node, but found: {type(model)}"
             )
-
-    def _extract_llm_instance_from_runnables_closures(self, agent_node: StateNodeSpec[Any]) -> Any:
-        nodes = cast(Any, agent_node.runnable).get_graph().nodes
-        # We can get the data that we want from the call_model Runnable node
-        call_model_node = next(node for node in nodes.values() if node.name == "call_model")
-        # Get the Runnable from the node
-        runnable: Any = call_model_node.data
-        closure: tuple[CellType, ...] = runnable.func.__closure__
-        # Extract the instance of RunnableBinding which contains relevant information for the react agent
-        model = next(cl.cell_contents.last for cl in closure if hasattr(cl.cell_contents, "last"))
-        if isinstance(model, RunnableBinding):
-            model = model.bound
         return model
 
     def _extract_prompt_from_react_agent_node(
@@ -212,33 +171,6 @@ class LangGraphToAgentSpecConverter:
             ],
         )
 
-    def _build_agentspec_llm_from_config(
-        self, langgraph_llm_config: LangGraphLlmConfig
-    ) -> AgentSpecLlmConfig:
-        if langgraph_llm_config.model_type == "ollama":
-            return AgentSpecOllamaConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-            )
-        elif langgraph_llm_config.model_type == "vllm":
-            return AgentSpecVllmConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-                api_type=langgraph_llm_config.api_type,
-            )
-        elif langgraph_llm_config.model_type == "openaicompatible":
-            return AgentSpecOpenAiCompatibleConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-                api_type=langgraph_llm_config.api_type,
-            )
-        raise ValueError(
-            f"The LLM instance provided is of an unsupported type `{langgraph_llm_config.model_type}`."
-        )
-
     def _langgraph_agent_convert_to_agentspec(
         self,
         langgraph_component: LangGraphComponent,
@@ -251,12 +183,7 @@ class LangGraphToAgentSpecConverter:
         if isinstance(langgraph_component, CompiledStateGraph):
             langgraph_component = langgraph_component.builder
         agent_node = langgraph_component.nodes["agent"]
-        # Prefer extracting the concrete model instance for richer mapping (e.g., OCI)
-        try:
-            model_instance = self._extract_llm_instance_from_runnables_closures(agent_node)
-        except Exception:
-            # Fallback to the previous lightweight config extractor
-            model_instance = None
+        model_instance = self._extract_llm_model_from_runnables_closures(agent_node)
         if "tools" in langgraph_component.nodes:
             tool_node = langgraph_component.nodes["tools"]
             tools = self._extract_tools_from_react_agent(tool_node)
@@ -264,19 +191,12 @@ class LangGraphToAgentSpecConverter:
             tools = []
         return AgentSpecAgent(
             name=agent_name,
-            llm_config=(
-                self._build_agentspec_llm_from_langgraph_model(model_instance)
-                if model_instance is not None
-                else self._build_agentspec_llm_from_config(
-                    self._extract_llm_config_from_runnables_closures(agent_node)
-                )
-            ),
+            llm_config=self._build_agentspec_llm_from_langgraph_model(model_instance),
             system_prompt=self._extract_prompt_from_react_agent_node(agent_node),
             tools=tools,
         )
 
-    def _build_agentspec_llm_from_langgraph_model(self, model: Any) -> AgentSpecLlmConfig:
-        # langchain_oci remains optional; import defensively.
+    def _build_agentspec_llm_from_langgraph_model(self, model: BaseChatModel) -> AgentSpecLlmConfig:
         try:
             from langchain_oci import ChatOCIGenAI as _ChatOCIGenAI  # type: ignore
         except ImportError:
