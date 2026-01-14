@@ -386,7 +386,7 @@ following goals :
     * - Datastore
       - A component that provides storage capabilities for agentic systems, enabling them to store and access data.
       - * An in-memory datastore for testing
-        * An Oracle Database datastore for production use
+        * An Oracle Database datastore and a Postgres Database datastore for production use
 
 
 
