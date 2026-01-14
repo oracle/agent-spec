@@ -13,6 +13,12 @@ This guide demonstrates how to:
 The example illustrates an assistant which generates code, reviews the generated code, and either submits or regenerates it based on the review.
 This flow pattern can be applied to other use cases.
 
+.. seealso::
+
+    **💡 Using the Flow Builder:** See at the :ref:`end of this tutorial <howtoconditional_flowbuilder>` how you can leverage the
+    :ref:`Flow Builder <flowbuilder>` to write conditional transitions in Flows.
+
+
 Basic implementation
 =====================
 
@@ -140,8 +146,22 @@ Here is what the **Agent Spec representation will look like ↓**
 
       .. tab:: YAML
 
-         .. literalinclude:: ../agentspec_config_examples/howto_flow_with_conditional_branches.yaml
+        .. literalinclude:: ../agentspec_config_examples/howto_flow_with_conditional_branches.yaml
             :language: yaml
+
+
+.. _howtoconditional_flowbuilder:
+
+Flow Builder alternative
+========================
+
+You can express the same flow with the :ref:`FlowBuilder <flowbuilder>` to simplify
+control-edge wiring and make conditional transitions more declarative.
+
+.. literalinclude:: ../code_examples/howto_flow_with_conditional_branches.py
+    :language: python
+    :start-after: .. start-##Build_the_flow_with_FlowBuilder
+    :end-before: .. end-##Build_the_flow_with_FlowBuilder
 
 
 Recap

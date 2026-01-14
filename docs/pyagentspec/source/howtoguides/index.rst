@@ -32,6 +32,7 @@ These how-to guides demonstrate how to use the main Agent Spec features to creat
    Build a Manager-Worker Multi-Agent System <howto_managerworkers>
    Build Flows with Structured LLM Generation <howto_structured_generation>
    Run Multiple Flows in Parallel <howto_parallelflownode>
+   Build Flows with the Flow Builder <howto_flowbuilder>
 
 Additionally, we link the how-to guides offered by the `WayFlow documentation <https://github.com/oracle/wayflow/>`_.
 WayFlow is a reference runtime of Agent Spec, and among its how-to guides it proposes
