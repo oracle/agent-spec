@@ -1960,7 +1960,7 @@ The ManagerWorkers has two main parameters:
 Datastores
 ~~~~~~~~~~
 
-Datastores are the AgentSpec abstraction that enables agentic systems to store, and access data.
+Datastores are the AgentSpec abstraction that enables agentic systems to store and access data.
 
 .. code-block:: python
 
