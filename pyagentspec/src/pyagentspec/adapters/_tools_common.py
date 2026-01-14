@@ -25,10 +25,18 @@ def _create_remote_tool_func(remote_tool: AgentSpecRemoteTool) -> Callable[..., 
         }
         remote_tool_url = render_template(remote_tool.url, kwargs)
 
+        content_type_headers = remote_tool_headers.get("Content-Type") or remote_tool_headers.get(
+            "content-type"
+        )
+        expect_urlencoded_form_data = (
+            ("application/x-www-form-urlencoded" in content_type_headers)
+            if content_type_headers is not None
+            else False
+        )
         data = None
         json_data = None
         content = None
-        if isinstance(remote_tool_data, dict):
+        if isinstance(remote_tool_data, dict) and expect_urlencoded_form_data:
             data = remote_tool_data
         elif isinstance(remote_tool_data, (str, bytes)):
             content = remote_tool_data
