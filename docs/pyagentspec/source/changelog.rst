@@ -115,6 +115,11 @@ New features
 
   For more information read the :doc:`API Reference <api/adapters>`.
 
+* **ToolBox with User Confirmation**
+
+  ToolBoxes now have a new flag named `requires_confirmation`, which can be set to require user/operator approval before running any of the tools in the toolbox.
+  For more information read the :doc:`API Reference <api/tools>`.
+
 * **MCP tools support in LangGraph adapter:**
 
   The LangGraph adapter now supports Model Context Protocol (MCP) tools.
