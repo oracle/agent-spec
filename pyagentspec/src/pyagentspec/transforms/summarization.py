@@ -139,6 +139,27 @@ class MessageSummarizationTransform(MessageTransform):
             }
         )
 
+    @field_validator("max_message_size", mode="before")
+    @classmethod
+    def _validate_max_message_size(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("max_message_size must be greater than 0")
+        return value
+
+    @field_validator("max_cache_size", mode="before")
+    @classmethod
+    def _validate_max_cache_size(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value <= 0:
+            raise ValueError("max_cache_size must be greater than 0")
+        return value
+
+    @field_validator("max_cache_lifetime", mode="before")
+    @classmethod
+    def _validate_max_cache_lifetime(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value <= 0:
+            raise ValueError("max_cache_lifetime must be greater than 0")
+        return value
+
     @field_validator("datastore", mode="after")
     @classmethod
     def _validate_datastore(
@@ -216,6 +237,42 @@ class ConversationSummarizationTransform(MessageTransform):
                 "last_used_at": FloatProperty(),
             }
         )
+
+    @field_validator("max_num_messages", mode="before")
+    @classmethod
+    def _validate_max_num_messages(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("max_num_messages must be greater than 0")
+        return value
+
+    @field_validator("min_num_messages", mode="before")
+    @classmethod
+    def _validate_min_num_messages(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("min_num_messages must be greater than 0")
+        return value
+
+    @field_validator("max_cache_size", mode="before")
+    @classmethod
+    def _validate_max_cache_size(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value <= 0:
+            raise ValueError("max_cache_size must be greater than 0")
+        return value
+
+    @field_validator("max_cache_lifetime", mode="before")
+    @classmethod
+    def _validate_max_cache_lifetime(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value <= 0:
+            raise ValueError("max_cache_lifetime must be greater than 0")
+        return value
+
+    @field_validator("max_num_messages", mode="after")
+    @classmethod
+    def _validate_max_greater_than_min(cls, value: int, info: ValidationInfo) -> int:
+        min_num_messages = info.data.get("min_num_messages")
+        if min_num_messages is not None and value <= min_num_messages:
+            raise ValueError("max_num_messages must be greater than min_num_messages")
+        return value
 
     @field_validator("datastore", mode="after")
     @classmethod
