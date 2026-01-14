@@ -1114,7 +1114,6 @@
           "type": "boolean"
         },
         "transforms": {
-          "default": [],
           "items": {
             "$ref": "#/$defs/MessageTransform"
           },
