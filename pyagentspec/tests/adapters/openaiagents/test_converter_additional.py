@@ -53,8 +53,10 @@ def test_agentspec_client_tool_converts_and_prompts(monkeypatch) -> None:
     assert isinstance(tool, OAFunctionTool)
 
     # Invoke the tool's async on_invoke_tool with dummy context and input JSON
-    coro = tool.on_invoke_tool(None, json.dumps({"question": "Proceed?"}))  # type: ignore[arg-type]
-    result = asyncio.get_event_loop().run_until_complete(coro)
+    async def invoke_tool():
+        return await tool.on_invoke_tool(None, json.dumps({"question": "Proceed?"}))  # type: ignore[arg-type]
+
+    result = asyncio.run(invoke_tool())
     assert result == "approved"
 
 
@@ -123,9 +125,11 @@ def test_agentspec_remote_tool_converts_and_calls_httpx(monkeypatch) -> None:
     assert isinstance(tool, OAFunctionTool)
 
     # Invoke tool and assert that httpx.request was called with rendered inputs
-    args = {"city": "San Francisco", "auth": "token-123"}
-    coro = tool.on_invoke_tool(None, json.dumps(args))  # type: ignore[arg-type]
-    result = asyncio.get_event_loop().run_until_complete(coro)
+    async def invoke_tool():
+        args = {"city": "San Francisco", "auth": "token-123"}
+        return await tool.on_invoke_tool(None, json.dumps(args))  # type: ignore[arg-type]
+
+    result = asyncio.run(invoke_tool())
 
     assert captured["method"] == "GET"
     assert captured["url"] == "https://api.example.com/weather"

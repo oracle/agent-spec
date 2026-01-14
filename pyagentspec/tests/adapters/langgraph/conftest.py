@@ -22,7 +22,7 @@ def pytest_collection_modifyitems(config: Any, items: Any):
     )
 
 
-@pytest.fixture(scope="package", autouse=True)
+@pytest.fixture(autouse=True)
 def _disable_openai_api_key():
     """Disable the openai api key environment variable"""
     old_value = os.environ.get("OPENAI_API_KEY", None)

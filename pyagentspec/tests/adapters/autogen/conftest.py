@@ -99,7 +99,7 @@ def inspect_names_and_nodes_and_branching_mappings_of_generated_agentspec_flow(
         )
 
 
-@pytest.fixture(scope="package", autouse=True)
+@pytest.fixture(autouse=True)
 def _disable_openai_api_key():
     """Disable the openai api key environment variable"""
     old_value = os.environ.get("OPENAI_API_KEY", None)
