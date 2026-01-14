@@ -23,7 +23,7 @@ def test_can_serialize_and_deserialize_datastore(datastore, sensitive_fields) ->
     assert deserialized_ds == datastore
     serialized_ds = AgentSpecSerializer().to_json(datastore)
     assert len(serialized_ds.strip()) > 0
-    deserialized_ds = AgentSpecDeserializer().from_yaml(
+    deserialized_ds = AgentSpecDeserializer().from_json(
         yaml_content=serialized_ds, components_registry=sensitive_fields
     )
     assert deserialized_ds == datastore
