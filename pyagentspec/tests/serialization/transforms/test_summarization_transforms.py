@@ -30,14 +30,15 @@ def test_can_serialize_and_deserialize_transform_with_all_datastores(
     deserialized_transform = AgentSpecDeserializer().from_yaml(
         yaml_content=serialized_transform, components_registry=sensitive_fields
     )
-    assert deserialized_transform == transform
+    # Ignore min_agentspec_version differences due to config versioning during deserialization.
+    assert deserialized_transform._is_equal(transform, fields_to_exclude=["min_agentspec_version"])
 
     serialized_transform = AgentSpecSerializer().to_json(transform)
     assert len(serialized_transform.strip()) > 0
     deserialized_transform = AgentSpecDeserializer().from_json(
         json_content=serialized_transform, components_registry=sensitive_fields
     )
-    assert deserialized_transform == transform
+    assert deserialized_transform._is_equal(transform, fields_to_exclude=["min_agentspec_version"])
 
 
 @parametrize_transform_and_datastore

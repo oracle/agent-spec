@@ -8,7 +8,6 @@ import pytest
 
 from pyagentspec.llms import OpenAiConfig
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
-from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
 from ..datastores.conftest import TESTING_CONVERSATIONS_COLLECTION, TESTING_MESSAGES_COLLECTION
@@ -20,8 +19,6 @@ def create_test_llm_config():
         name="test_openai_config",
         model_id="gpt-3.5-turbo",
     )
-    # Set to v26_1_1 to match the serialized agentspec_version, ensuring deserialized == original
-    config.min_agentspec_version = AgentSpecVersionEnum.v26_1_1
     return config
 
 

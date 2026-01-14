@@ -291,12 +291,6 @@ def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
         create_message_summarization_transform(datastore),
         create_conversation_summarization_transform(datastore),
     ]
-    # The default min_agentspec_version for VllmConfig is v25_4_1. If we leave it unchanged,
-    # the agent with non-empty transforms would serialize to v26_1_1 (due to the transforms requiring that version).
-    # During deserialization, all fields including vllmconfig would be deserialized to v26_1_1,
-    # but vllmconfig's min_agentspec_version would still be v25_4_1, causing the test deserialized == original to fail.
-    # Therefore, we explicitly set the version to v26_1_1
-    vllmconfig.min_agentspec_version = AgentSpecVersionEnum.v26_1_1
 
     agent = Agent(
         id="agent1",
@@ -312,7 +306,11 @@ def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
     deserialized_agent = AgentSpecDeserializer().from_yaml(
         yaml_content=serialized_agent, components_registry=sensitive_fields
     )
-    assert deserialized_agent == agent
+    # The default min_agentspec_version for VllmConfig is v25_4_1. If we leave it unchanged,
+    # the agent with non-empty transforms would serialize to v26_1_1 (due to the transforms requiring that version).
+    # During deserialization, all fields including vllmconfig would be deserialized to v26_1_1,
+    # but vllmconfig's min_agentspec_version would still be v25_4_1, causing the test deserialized == original to fail.
+    assert deserialized_agent._is_equal(agent, fields_to_exclude=["min_agentspec_version"])
 
 
 @pytest.fixture
