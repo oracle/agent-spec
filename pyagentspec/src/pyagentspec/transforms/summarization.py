@@ -196,10 +196,19 @@ class ConversationSummarizationTransform(MessageTransform):
     """LLM configuration for conversation summarization."""
 
     max_num_messages: int = 50
-    """Maximum number of messages before triggering summarization."""
+    """Maximum number of messages before triggering summarization.
+
+    When the conversation exceeds this number of messages, the older messages will be summarized,
+    except the most recent ``min_num_messages`` ones who are kept unsummarized.
+    """
 
     min_num_messages: int = 10
-    """Minimum number of recent messages to keep unsummarized."""
+    """Minimum number of recent messages to keep unsummarized.
+
+    For example, if ``min_num_messages`` is 10 and ``max_num_messages`` is 50, then with a conversation
+    of 20 messages, the conversation will not be summarized, but if the conversation has 51 messages,
+    the last 10 won't be summarized, the 41 others will (in one or more summarization messages).
+    """
 
     summarization_instructions: str = (
         "Please make a summary of this conversation. Include relevant information and keep it short. "
