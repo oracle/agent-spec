@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     import langgraph.graph.state as langgraph_graph_state
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
+    from langchain.agents.middleware.types import AgentState
     from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
     from langchain_core.messages import BaseMessage, SystemMessage
@@ -66,6 +67,7 @@ else:
     BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
     BaseChatModel = LazyLoader("langchain_core.language_models").BaseChatModel
     BaseStore = LazyLoader("langgraph.store.base").BaseStore
+    AgentState = LazyLoader("langchain.agents.middleware.types").AgentState
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
@@ -149,6 +151,7 @@ __all__ = [
     "BaseMessage",
     "BaseChatModel",
     "BaseStore",
+    "AgentState",
     "Checkpointer",
     "interrupt",
     "RunnableConfig",
