@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -80,6 +80,7 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "langgraph": LANGGRAPH_DEPS,
-        "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
+        "langgraph-full": LANGGRAPH_DEPS
+        + ["langchain-mcp-adapters>=0.1.13,<0.2.0", "langchain-oci==0.2.0"],
     },
 )

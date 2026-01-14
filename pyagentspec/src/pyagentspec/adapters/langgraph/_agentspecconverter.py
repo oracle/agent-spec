@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -13,9 +13,9 @@ from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
     _langgraph_graph_convert_to_agentspec,
 )
 from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
     CompiledStateGraph,
     LangGraphComponent,
-    LangGraphLlmConfig,
     RunnableBinding,
     StateNodeSpec,
     StructuredTool,
@@ -27,7 +27,21 @@ from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
-from pyagentspec.llms import VllmConfig as AgentSpecVllmConfig
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithApiKey as AgentSpecOciClientConfigWithApiKey,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithInstancePrincipal as AgentSpecOciClientConfigWithInstancePrincipal,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithResourcePrincipal as AgentSpecOciClientConfigWithResourcePrincipal,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithSecurityToken as AgentSpecOciClientConfigWithSecurityToken,
+)
+from pyagentspec.llms.ocigenaiconfig import ModelProvider as AgentSpecModelProvider
+from pyagentspec.llms.ocigenaiconfig import OciAPIType as AgentSpecOciAPIType
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig as AgentSpecOciGenAiConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType as AgentSpecOpenAIAPIType
 from pyagentspec.mcp import MCPTool as AgentSpecMCPTool
 from pyagentspec.mcp.clienttransport import (
@@ -99,9 +113,9 @@ class LangGraphToAgentSpecConverter:
         node = langgraph_component.nodes.get("agent")
         return node is not None and hasattr(node.runnable, "get_graph")
 
-    def _extract_llm_config_from_runnables_closures(
+    def _extract_llm_model_from_runnables_closures(
         self, agent_node: StateNodeSpec[Any]
-    ) -> LangGraphLlmConfig:
+    ) -> BaseChatModel:
         nodes = cast(Any, agent_node.runnable).get_graph().nodes
 
         # The graph contains three nodes:
@@ -124,38 +138,11 @@ class LangGraphToAgentSpecConverter:
 
         if isinstance(model, RunnableBinding):
             model = model.bound
-        if isinstance(model, langchain_openai.ChatOpenAI):
-            model_type = "openaicompatible"
-            model_name = model.model_name
-            base_url = model.openai_api_base
-            api_type: AgentSpecOpenAIAPIType
-            if model.use_responses_api:
-                api_type = AgentSpecOpenAIAPIType.RESPONSES
-            else:
-                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-                api_type=api_type,
-            )
-
-        elif isinstance(model, langchain_ollama.ChatOllama):
-            model_type = "ollama"
-            model_name = model.model
-            base_url = model.base_url
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-            )
-
-        else:
+        if not isinstance(model, BaseChatModel):
             raise ValueError(
-                f"The LLM instance provided is of an unsupported type `{type(model)}`."
+                f"Expect to find a BaseChatModel in the agent_node, but found: {type(model)}"
             )
+        return model
 
     def _extract_prompt_from_react_agent_node(
         self, langgraph_agent_node: StateNodeSpec[Any]
@@ -184,33 +171,6 @@ class LangGraphToAgentSpecConverter:
             ],
         )
 
-    def _build_agentspec_llm_from_config(
-        self, langgraph_llm_config: LangGraphLlmConfig
-    ) -> AgentSpecLlmConfig:
-        if langgraph_llm_config.model_type == "ollama":
-            return AgentSpecOllamaConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-            )
-        elif langgraph_llm_config.model_type == "vllm":
-            return AgentSpecVllmConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-                api_type=langgraph_llm_config.api_type,
-            )
-        elif langgraph_llm_config.model_type == "openaicompatible":
-            return AgentSpecOpenAiCompatibleConfig(
-                name=langgraph_llm_config.model_name,
-                url=langgraph_llm_config.base_url,
-                model_id=langgraph_llm_config.model_name,
-                api_type=langgraph_llm_config.api_type,
-            )
-        raise ValueError(
-            f"The LLM instance provided is of an unsupported type `{langgraph_llm_config.model_type}`."
-        )
-
     def _langgraph_agent_convert_to_agentspec(
         self,
         langgraph_component: LangGraphComponent,
@@ -223,7 +183,7 @@ class LangGraphToAgentSpecConverter:
         if isinstance(langgraph_component, CompiledStateGraph):
             langgraph_component = langgraph_component.builder
         agent_node = langgraph_component.nodes["agent"]
-        llm_config = self._extract_llm_config_from_runnables_closures(agent_node)
+        model_instance = self._extract_llm_model_from_runnables_closures(agent_node)
         if "tools" in langgraph_component.nodes:
             tool_node = langgraph_component.nodes["tools"]
             tools = self._extract_tools_from_react_agent(tool_node)
@@ -231,10 +191,89 @@ class LangGraphToAgentSpecConverter:
             tools = []
         return AgentSpecAgent(
             name=agent_name,
-            llm_config=self._build_agentspec_llm_from_config(llm_config),
+            llm_config=self._build_agentspec_llm_from_langgraph_model(model_instance),
             system_prompt=self._extract_prompt_from_react_agent_node(agent_node),
             tools=tools,
         )
+
+    def _build_agentspec_llm_from_langgraph_model(self, model: BaseChatModel) -> AgentSpecLlmConfig:
+        try:
+            from langchain_oci import ChatOCIGenAI as _ChatOCIGenAI  # type: ignore
+        except ImportError:
+            _ChatOCIGenAI = None
+
+        # Detect OCI first to handle subclasses of ChatOpenAI used in tests
+        if _ChatOCIGenAI is not None and isinstance(model, _ChatOCIGenAI):
+            auth_type = model.auth_type
+            service_endpoint = model.service_endpoint
+            if auth_type == "INSTANCE_PRINCIPAL":
+                client_cfg: Any = AgentSpecOciClientConfigWithInstancePrincipal(
+                    name="oci_client", service_endpoint=service_endpoint
+                )
+            elif auth_type == "RESOURCE_PRINCIPAL":
+                client_cfg = AgentSpecOciClientConfigWithResourcePrincipal(
+                    name="oci_client", service_endpoint=service_endpoint
+                )
+            elif auth_type == "API_KEY":
+                client_cfg = AgentSpecOciClientConfigWithApiKey(
+                    name="oci_client",
+                    service_endpoint=service_endpoint,
+                    auth_profile=model.auth_profile,
+                    auth_file_location=model.auth_file_location,
+                )
+            elif auth_type == "SECURITY_TOKEN":
+                client_cfg = AgentSpecOciClientConfigWithSecurityToken(
+                    name="oci_client",
+                    service_endpoint=service_endpoint,
+                    auth_profile=model.auth_profile,
+                    auth_file_location=model.auth_file_location,
+                )
+            else:
+                raise ValueError(f"Unsupported OCI auth_type: {auth_type}")
+
+            provider_raw = getattr(model, "provider", None)
+            provider = None
+            if isinstance(provider_raw, str):
+                norm = provider_raw.strip().upper()
+                for m in AgentSpecModelProvider:
+                    if norm == m.name:
+                        provider = m
+                        break
+                if provider is None:
+                    raise NotImplementedError(
+                        f"Unsupported OCI provider '{provider_raw}'. Please add a mapping to AgentSpecModelProvider."
+                    )
+
+            return AgentSpecOciGenAiConfig(
+                name="oci",
+                model_id=model.model_id,
+                compartment_id=model.compartment_id,
+                client_config=client_cfg,
+                provider=provider,
+                api_type=AgentSpecOciAPIType.OCI,
+            )
+
+        if isinstance(model, langchain_openai.ChatOpenAI):
+            api_type: AgentSpecOpenAIAPIType
+            if getattr(model, "use_responses_api", False):
+                api_type = AgentSpecOpenAIAPIType.RESPONSES
+            else:
+                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
+            return AgentSpecOpenAiCompatibleConfig(
+                name=getattr(model, "model_name", "openai"),
+                url=getattr(model, "openai_api_base", "") or "",
+                model_id=getattr(model, "model_name", ""),
+                api_type=api_type,
+            )
+
+        if isinstance(model, langchain_ollama.ChatOllama):
+            return AgentSpecOllamaConfig(
+                name=getattr(model, "model", "ollama"),
+                url=getattr(model, "base_url", "") or "",
+                model_id=getattr(model, "model", ""),
+            )
+
+        raise ValueError(f"Unsupported LLM instance type: {type(model)}")
 
     def _extract_tools_from_react_agent(
         self, langgraph_component: StateNodeSpec[Any, None]
