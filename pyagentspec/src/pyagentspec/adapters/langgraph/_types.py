@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
     import langgraph_core  # type: ignore
+    import langgraph_swarm
     from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
     from langchain_core.messages import BaseMessage, SystemMessage
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
     from langgraph.types import Checkpointer, interrupt
 else:
     langgraph = LazyLoader("langgraph")
+    langgraph_swarm = LazyLoader("langgraph_swarm")
     langgraph_core = LazyLoader("langgraph_core")
     langchain_ollama = LazyLoader("langchain_ollama")
     langchain_openai = LazyLoader("langchain_openai")
@@ -150,4 +152,5 @@ __all__ = [
     "Messages",
     "BranchSpec",
     "BaseCallbackHandler",
+    "langgraph_swarm",
 ]
