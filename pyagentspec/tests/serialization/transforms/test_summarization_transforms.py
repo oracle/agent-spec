@@ -34,7 +34,7 @@ def test_can_serialize_and_deserialize_transform_with_all_datastores(
 
     serialized_transform = AgentSpecSerializer().to_json(transform)
     assert len(serialized_transform.strip()) > 0
-    deserialized_transform = AgentSpecDeserializer().from_yaml(
+    deserialized_transform = AgentSpecDeserializer().from_json(
         yaml_content=serialized_transform, components_registry=sensitive_fields
     )
     assert deserialized_transform == transform
