@@ -56,7 +56,7 @@ class Agent(AgenticComponent):
     human_in_the_loop: bool = True
     """Flag that determines if the Agent can request input from the user."""
     transforms: List[MessageTransform] = Field(default_factory=list)
-    """Additional message transforms that are applied to the messages before they are passed to the agent's LLM."""
+    """Additional message transforms that are applied to the messages before they are passed to the agent's LLM. For example, MessageSummarizationTransform and ConversationSummarizationTransform can be used when the context becomes long."""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
