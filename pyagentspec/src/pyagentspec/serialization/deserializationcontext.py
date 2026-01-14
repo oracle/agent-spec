@@ -376,7 +376,7 @@ class _DeserializationContextImpl(DeserializationContext):
             for inner_annotation in inner_annotations:
                 try:
                     return self._load_field(content, inner_annotation)
-                except Exception as e:  # nosec
+                except ValueError as e:
                     # Something went wrong in deserialization,
                     # accumulate the error and try the next one
                     accumulated_errors.append(f"{inner_annotation}: {str(e)}")
