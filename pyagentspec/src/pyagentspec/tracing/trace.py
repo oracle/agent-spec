@@ -60,6 +60,10 @@ class Trace:
         self.span_processors = span_processors or []
         self.shutdown_on_exit = shutdown_on_exit
         self._root_span = root_span or RootSpan()
+        self._is_async_mode_active: bool = False
+
+    def is_async_mode_active(self) -> bool:
+        return self._is_async_mode_active
 
     def __enter__(self) -> "Trace":
         self._start()
@@ -92,6 +96,7 @@ class Trace:
         for span_processor in self.span_processors:
             span_processor.startup()
         self._root_span.start()
+        self._is_async_mode_active = False
 
     async def _start_async(self) -> None:
         if _TRACE.get() is not None:
@@ -100,6 +105,7 @@ class Trace:
         for span_processor in self.span_processors:
             await span_processor.startup_async()
         await self._root_span.start_async()
+        self._is_async_mode_active = True
 
     def _end(self) -> None:
         self._root_span.end()
@@ -107,6 +113,7 @@ class Trace:
         if self.shutdown_on_exit:
             for span_processor in self.span_processors:
                 span_processor.shutdown()
+        self._is_async_mode_active = False
 
     async def _end_async(self) -> None:
         await self._root_span.end_async()
@@ -114,3 +121,4 @@ class Trace:
         if self.shutdown_on_exit:
             for span_processor in self.span_processors:
                 await span_processor.shutdown_async()
+        self._is_async_mode_active = False
