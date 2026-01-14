@@ -519,11 +519,11 @@ class Component(AbstractableModel, abstract=True):
         partial_component, validation_errors = deserializer.from_partial_dict(partial_config)
         # Deserialization ignores min and max agentspec versions (besides validation), so we set them manually
         if "min_agentspec_version" in partial_config:
-            partial_component.min_agentspec_version = AgentSpecVersionEnum(  # type: ignore
+            partial_component.min_agentspec_version = AgentSpecVersionEnum(
                 partial_config["min_agentspec_version"]
             )
         if "max_agentspec_version" in partial_config:
-            partial_component.max_agentspec_version = AgentSpecVersionEnum(  # type: ignore
+            partial_component.max_agentspec_version = AgentSpecVersionEnum(
                 partial_config["max_agentspec_version"]
             )
         return cast(ComponentT, partial_component)
