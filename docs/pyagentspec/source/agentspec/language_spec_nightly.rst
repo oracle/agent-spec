@@ -1974,7 +1974,8 @@ An ``Entity`` is a property that has a JSON schema equivalent to an object prope
 Relational datastores & In-Memory datastore
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Relational datastores (``OracleDatabaseDatastore``, ``PostgresDatabaseDatastore``) and their drop-in in-memory replacement (``InMemoryCollectionDatastore``) contain many collections (tables) where each collection is a set entities. They need to have a predefined fixed schema. A schema is a mapping from a collection name to an Entity object defining the entity(row).
+Relational datastores (``OracleDatabaseDatastore``, ``PostgresDatabaseDatastore``) should support SQL queries. For development use, we have a drop-in replacement for them  (``InMemoryCollectionDatastore``).
+Both of these contain many collections (tables) where each collection is a set entities. They need to have a predefined fixed schema. A schema is a mapping from a collection name to an Entity object defining the entity(row).
 
 .. code-block:: python
 
