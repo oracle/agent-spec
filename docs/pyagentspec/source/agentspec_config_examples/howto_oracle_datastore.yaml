@@ -1,0 +1,44 @@
+component_type: OracleDatabaseDatastore
+id: 8c754363-b388-40f6-b14b-66d854f732b7
+name: oracle_datastore
+description: null
+metadata: {}
+datastore_schema:
+  user_profiles:
+    title: UserProfile
+    properties:
+      name:
+        title: name
+        type: string
+      user_id:
+        title: user_id
+        type: string
+      email:
+        title: email
+        type: string
+      preferences:
+        title: preferences
+        properties:
+          theme:
+            title: theme
+            type: string
+          language:
+            title: language
+            type: string
+        type: object
+    type: object
+connection_config:
+  component_type: TlsOracleDatabaseConnectionConfig
+  id: oracle_tls_config_id
+  name: oracle_tls_config
+  description: null
+  metadata: {}
+  user:
+    $component_ref: oracle_tls_config_id.user
+  password:
+    $component_ref: oracle_tls_config_id.password
+  dsn:
+    $component_ref: oracle_tls_config_id.dsn
+  config_dir: /path/to/config/dir
+  protocol: tcps
+agentspec_version: 26.1.1

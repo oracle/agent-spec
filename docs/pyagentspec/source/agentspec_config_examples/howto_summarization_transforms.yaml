@@ -1,0 +1,94 @@
+component_type: Agent
+id: summarizing_agent
+name: summarizing_agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  $component_ref: summarization_llm
+system_prompt: You are a helpful assistant that can handle long conversations and
+  messages efficiently.
+tools: []
+toolboxes: []
+human_in_the_loop: true
+transforms:
+- component_type: MessageSummarizationTransform
+  id: message_summarizer
+  name: message_summarizer
+  description: null
+  metadata: {}
+  llm:
+    $component_ref: summarization_llm
+  max_message_size: 10000
+  summarization_instructions: Create a concise summary of this message focusing on
+    key points and actionable information.
+  summarized_message_template: 'Message summary: {{summary}}'
+  max_cache_size: 10000
+  max_cache_lifetime: 14400
+  cache_collection_name: summarized_messages_cache
+  datastore:
+    component_type: InMemoryCollectionDatastore
+    id: d9690cd3-7753-4629-b92e-9a1d5006038d
+    name: default-inmemory-datastore
+    description: null
+    metadata: {}
+    datastore_schema:
+      summarized_messages_cache:
+        properties:
+          cache_key:
+            type: string
+          cache_content:
+            type: string
+          created_at:
+            type: number
+          last_used_at:
+            type: number
+        type: object
+- component_type: ConversationSummarizationTransform
+  id: conversation_summarizer
+  name: conversation_summarizer
+  description: null
+  metadata: {}
+  llm:
+    $component_ref: summarization_llm
+  max_num_messages: 50
+  min_num_messages: 10
+  summarization_instructions: Summarize this conversation thread, highlighting key
+    decisions, action items, and important context.
+  summarized_conversation_template: 'Conversation summary: {{summary}}'
+  max_cache_size: 10000
+  max_cache_lifetime: 14400
+  cache_collection_name: summarized_conversations_cache
+  datastore:
+    component_type: InMemoryCollectionDatastore
+    id: a3a9fb9f-097e-4547-9762-e52ce2ad5eb7
+    name: default-inmemory-datastore
+    description: null
+    metadata: {}
+    datastore_schema:
+      summarized_conversations_cache:
+        properties:
+          cache_key:
+            type: string
+          cache_content:
+            type: string
+          prefix_size:
+            type: integer
+          created_at:
+            type: number
+          last_used_at:
+            type: number
+        type: object
+$referenced_components:
+  summarization_llm:
+    component_type: OpenAiConfig
+    id: summarization_llm
+    name: summarization_llm
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    model_id: gpt-4o-mini
+    api_type: chat_completions
+    api_key: null
+agentspec_version: 26.1.1
