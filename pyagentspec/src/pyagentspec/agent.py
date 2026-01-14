@@ -55,7 +55,7 @@ class Agent(AgenticComponent):
     """List of toolboxes that are passed to the agent."""
     human_in_the_loop: bool = True
     """Flag that determines if the Agent can request input from the user."""
-    transforms: List[MessageTransform] = []
+    transforms: List[MessageTransform] = Field(default_factory=list)
     """Additional message transforms that are applied to the messages before they are passed to the agent's LLM."""
 
     def _get_inferred_inputs(self) -> List[Property]:
