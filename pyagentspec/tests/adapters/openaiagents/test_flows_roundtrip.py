@@ -59,7 +59,13 @@ def _override_module_models(mod: types.ModuleType) -> None:
 
     from ..conftest import openai_oss_api_url
 
-    client = AsyncOpenAI(api_key="", base_url=f"{openai_oss_api_url}/v1")
+    base_url = openai_oss_api_url
+    if not base_url.startswith("http"):
+        base_url = "http://" + base_url
+    if not base_url.endswith("v1"):
+        base_url += "/v1"
+
+    client = AsyncOpenAI(api_key="", base_url=base_url)
     model = OpenAIChatCompletionsModel("openai/gpt-oss-120b", client)
     for v in list(mod.__dict__.values()):
         if isinstance(v, Agent):
