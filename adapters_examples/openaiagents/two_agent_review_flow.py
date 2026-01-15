@@ -20,7 +20,11 @@ writer = Agent(
         "Write a concise 3-bullet outline that addresses the user's request. "
         "Keep it under 60 words; only bullets."
     ),
-    model="gpt-5-mini",
+    model="gpt-5.2",
+    model_settings=ModelSettings(
+        reasoning=Reasoning(effort="low"),
+        verbosity="low",
+    ),
 )
 
 
@@ -30,7 +34,7 @@ reviewer = Agent(
         "Review the outline for: completeness, clarity, and actionability. "
         "If any gap, propose one short improvement. Reply in <=50 words."
     ),
-    model="gpt-4o-mini",
+    model="gpt-4.1",
 )
 
 
