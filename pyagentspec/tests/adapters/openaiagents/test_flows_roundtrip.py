@@ -54,14 +54,13 @@ def _run_flow_sync(mod: types.ModuleType, message: str, *, tools: dict | None = 
 def _override_module_models(mod: types.ModuleType) -> None:
     """Override Agent model in a compiled flow module to a target hosted model."""
     from agents.agent import Agent
-    from agents.models.openai_provider import OpenAIProvider
+    from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
     from openai import AsyncOpenAI
 
-    from ..conftest import llama70bv33_api_url
+    from ..conftest import openai_oss_api_url
 
-    client = AsyncOpenAI(api_key="", base_url=f"http://{llama70bv33_api_url}/v1")
-    provider = OpenAIProvider(openai_client=client)
-    model = provider.get_model("/storage/models/Llama-3.3-70B-Instruct")
+    client = AsyncOpenAI(api_key="", base_url=f"{openai_oss_api_url}/v1")
+    model = OpenAIChatCompletionsModel("openai/gpt-oss-120b", client)
     for v in list(mod.__dict__.values()):
         if isinstance(v, Agent):
             v.model = model
@@ -276,6 +275,9 @@ def test_flows_roundtrip_and_run_live(
     regenerated_mod = _exec_module_from_code(
         regenerated_code, module_name=f"regen_{flow_file.stem}"
     )
+
+    _override_module_models(regenerated_mod)
+    _override_module_models(reference_mod)
 
     # Optional tools registry for regenerated code
     tools_registry = None

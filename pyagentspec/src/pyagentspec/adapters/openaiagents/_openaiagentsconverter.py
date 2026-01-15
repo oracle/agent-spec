@@ -13,8 +13,8 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.openaiagents._types import (
     OAAgent,
+    OAChatCompletionsModel,
     OAFunctionTool,
-    OAOpenAIProvider,
     OAToolContext,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
@@ -90,9 +90,8 @@ class AgentSpecToOpenAIConverter:
                 base_url = "http://" + base_url
             if not base_url.endswith("v1"):
                 base_url += "/v1"
-            client = AsyncOpenAI(api_key="", base_url=base_url)
-            provider = OAOpenAIProvider(openai_client=client)
-            return provider.get_model(llm.model_id)
+            client = AsyncOpenAI(api_key=llm.api_key or "", base_url=base_url)
+            return OAChatCompletionsModel(llm.model_id, client)
         else:
             raise NotImplementedError(f"Unsupported LlmConfig: {type(llm)}")
 

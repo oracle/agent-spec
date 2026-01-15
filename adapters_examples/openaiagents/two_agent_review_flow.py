@@ -6,7 +6,8 @@
 
 # mypy: ignore-errors
 
-from agents import Agent, RunConfig, Runner, TResponseInputItem, trace
+from agents import Agent, ModelSettings, RunConfig, Runner, TResponseInputItem, trace
+from openai.types.shared import Reasoning
 from pydantic import BaseModel
 
 

@@ -98,7 +98,7 @@ async def run_workflow(workflow_input: WorkflowInput):
         conversation_history.extend([item.to_input_item() for item in router_result_temp.new_items])
 
         router_result = {
-            "output_text": router_result_temp.final_output.json(),
+            "output_text": router_result_temp.final_output.model_dump_json(),
             "output_parsed": router_result_temp.final_output.model_dump(),
         }
         if router_result["output_parsed"]["classification"] == "zwik":

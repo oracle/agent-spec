@@ -96,10 +96,19 @@ if not llama70bv33_api_url:
         raise Exception("LLAMA70BV33_API_URL is not set in the environment")
 
 
+openai_oss_api_url = os.environ.get("OSS_API_URL")
+if not openai_oss_api_url:
+    if should_skip_llm_test():
+        openai_oss_api_url = "http://dummy-llm-oss.local"
+    else:
+        raise Exception("OSS_API_URL is not set in the environment")
+
+
 def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:
     return (
         yaml_config.replace("[[LLAMA_API_URL]]", llama_api_url)
         .replace("[[LLAMA70BV33_API_URL]]", llama70bv33_api_url)
+        .replace("[[OSS_API_URL]]", openai_oss_api_url)
         .replace("[[remote_tools_server]]", json_server_url)
     )
 

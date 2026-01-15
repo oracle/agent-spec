@@ -512,7 +512,7 @@ def _emit_run_workflow(
         # Emit result materialization pattern
         if output_types.get(n.id):
             lines.append(f"    {base}_result = {{")
-            lines.append(f'      "output_text": {temp_name}.final_output.json(),')
+            lines.append(f'      "output_text": {temp_name}.final_output.model_dump_json(),')
             lines.append(f'      "output_parsed": {temp_name}.final_output.model_dump()')
             lines.append("    }")
         else:
@@ -627,7 +627,7 @@ def _emit_from_node(
         lines.append("")
         if output_types.get(node.id):
             lines.append(f"{indent}{base}_result = {{")
-            lines.append(f'{indent}  "output_text": {temp_name}.final_output.json(),')
+            lines.append(f'{indent}  "output_text": {temp_name}.final_output.model_dump_json(),')
             lines.append(f'{indent}  "output_parsed": {temp_name}.final_output.model_dump()')
             lines.append(f"{indent}}}")
         else:
@@ -842,7 +842,7 @@ def _emit_run_workflow_with_branch(
         lines.append("")
         if output_types.get(n.id):
             lines.append(f"    {base}_result = {{")
-            lines.append(f'      "output_text": {temp_name}.final_output.json(),')
+            lines.append(f'      "output_text": {temp_name}.final_output.model_dump_json(),')
             lines.append(f'      "output_parsed": {temp_name}.final_output.model_dump()')
             lines.append("    }")
         else:
@@ -902,7 +902,9 @@ def _emit_run_workflow_with_branch(
                 lines.append("")
                 if output_types.get(target.id):
                     lines.append(f"      {base}_result = {{")
-                    lines.append(f'        "output_text": {temp_name}.final_output.json(),')
+                    lines.append(
+                        f'        "output_text": {temp_name}.final_output.model_dump_json(),'
+                    )
                     lines.append(f'        "output_parsed": {temp_name}.final_output.model_dump()')
                     lines.append("      }")
                 else:
@@ -938,7 +940,7 @@ def _emit_run_workflow_with_branch(
             lines.append("")
             if output_types.get(default_target.id):
                 lines.append(f"      {base}_result = {{")
-                lines.append(f'        "output_text": {temp_name}.final_output.json(),')
+                lines.append(f'        "output_text": {temp_name}.final_output.model_dump_json(),')
                 lines.append(f'        "output_parsed": {temp_name}.final_output.model_dump()')
                 lines.append("      }")
             else:
