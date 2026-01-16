@@ -26,12 +26,11 @@ def read(file_name):
 
 
 LANGGRAPH_DEPS = [
-    "langgraph>=0.5.3,<1.0.0",
-    "langchain-core>=0.3,<1.0.0",
-    "langchain-openai>=0.3.7",
-    "langchain-ollama>=0.3.3",
-    "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
-    "anyio>=4.10.0,<4.12.0",  # to avoid async issues in higher anyio versions
+    "langgraph>=1.0.5",
+    "langchain>=1.2.0",
+    "langchain-openai>=1.1.7",
+    "langchain-ollama>=1.0.1",
+    "anyio>=4.10.0,<4.12.0",
 ]
 
 
@@ -80,6 +79,6 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "langgraph": LANGGRAPH_DEPS,
-        "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
+        "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters"],
     },
 )

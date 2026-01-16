@@ -6,7 +6,7 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import httpx
 
@@ -25,6 +25,7 @@ from pyagentspec.adapters.langgraph._types import (
     NodeOutputsType,
     RunnableConfig,
     interrupt,
+    langchain_core_messages_content,
     langgraph_graph,
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
@@ -283,11 +284,76 @@ class ToolNodeExecutor(NodeExecutor):
             tool_output = tool(**inputs)
 
         if isinstance(tool_output, dict):
-            # useful for multiple outputs, avoid nesting dictionaries
             return tool_output, NodeExecutionDetails()
+        elif isinstance(
+            tool_output, list
+        ):  # this is the return type of the tool loaded by langchain_mcp_adapters.tools.load_mcp_tools
+            extracted_values = self._extract_values_from_content_blocks(tool_output)
+            mapped = self._map_extracted_values_to_declared_outputs(extracted_values)
+            return mapped, NodeExecutionDetails()
+        else:
+            # Scalar or other types: map to the single declared output or a generic name
+            return self._map_scalar_to_output(tool_output), NodeExecutionDetails()
 
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+    def _extract_values_from_content_blocks(
+        self,
+        blocks: List[
+            Union[
+                langchain_core_messages_content.FileContentBlock,
+                langchain_core_messages_content.TextContentBlock,
+                langchain_core_messages_content.ImageContentBlock,
+            ]
+        ],
+    ) -> List[Any]:
+        extracted: List[Any] = []
+        for block in blocks:
+            # Use direct checks on the discriminant to let mypy narrow the TypedDict union
+            if block["type"] == "text":
+                extracted.append(block["text"])
+                continue
+            if block["type"] == "image":
+                if "base64" in block:
+                    extracted.append(block["base64"])
+                    continue
+                if "url" in block:
+                    extracted.append(block["url"])
+                    continue
+                if "file_id" in block:
+                    extracted.append(block["file_id"])
+                    continue
+            if block["type"] == "file":
+                if "base64" in block:
+                    extracted.append(block["base64"])
+                    continue
+                if "url" in block:
+                    extracted.append(block["url"])
+                    continue
+                if "file_id" in block:
+                    extracted.append(block["file_id"])
+                    continue
+            extracted.append(block)
+        return extracted
+
+    def _map_extracted_values_to_declared_outputs(self, values: List[Any]) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        if len(node_outputs) == 1:
+            value = values[0] if len(values) == 1 else values
+            return {node_outputs[0].title: value}
+        if len(node_outputs) > 1:
+            if len(values) != len(node_outputs):
+                raise ValueError(
+                    "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
+                    f"returned={len(values)}, declared={len(node_outputs)}"
+                )
+            return {prop.title: values[i] for i, prop in enumerate(node_outputs)}
+        # No declared outputs
+        return {"tool_output": values}
+
+    def _map_scalar_to_output(self, value: Any) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        if node_outputs:
+            return {node_outputs[0].title: value}
+        return {"tool_output": value}
 
 
 class AgentNodeExecutor(NodeExecutor):
@@ -340,6 +406,12 @@ class AgentNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent = self._create_react_agent_with_given_input_values(inputs)
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are provided
+        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
+        # user message when the message list is empty.
+        if not messages:
+            messages = cast(Messages, [{"role": "user", "content": ""}])
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,

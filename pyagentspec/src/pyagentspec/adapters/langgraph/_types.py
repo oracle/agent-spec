@@ -16,6 +16,8 @@ if TYPE_CHECKING:
     # Important: do not move this import out of the TYPE_CHECKING block so long as langgraph is an optional dependency.
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
+    import langchain.agents as langchain_agents
+    import langchain_core.messages.content as langchain_core_messages_content
     import langchain_ollama
     import langchain_openai
     import langgraph
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
     import langgraph.graph.state as langgraph_graph_state
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
-    import langgraph_core  # type: ignore
+    from langchain.agents.middleware.types import AgentState
     from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
     from langchain_core.messages import BaseMessage, SystemMessage
@@ -36,15 +38,17 @@ if TYPE_CHECKING:
     from langgraph.graph.state import CompiledStateGraph
     from langgraph.store.base import BaseStore
     from langgraph.types import Checkpointer, interrupt
+
 else:
     langgraph = LazyLoader("langgraph")
-    langgraph_core = LazyLoader("langgraph_core")
     langchain_ollama = LazyLoader("langchain_ollama")
     langchain_openai = LazyLoader("langchain_openai")
     langgraph_graph = LazyLoader("langgraph.graph")
     langgraph_types = LazyLoader("langgraph.types")
     langgraph_prebuilt = LazyLoader("langgraph.prebuilt")
     langgraph_graph_state = LazyLoader("langgraph.graph.state")
+    langchain_agents = LazyLoader("langchain.agents")
+    langchain_core_messages_content = LazyLoader("langchain_core.messages.content")
     # We need to import the classes this way because it's the only one accepted by the lazy loader
     BaseTool = LazyLoader("langchain_core.tools").BaseTool
     StructuredTool = LazyLoader("langchain_core.tools").StructuredTool
@@ -57,11 +61,13 @@ else:
     RunnableBinding = LazyLoader("langchain_core.runnables").RunnableBinding
     RunnableConfig = LazyLoader("langchain_core.runnables").RunnableConfig
     StateNodeSpec = LazyLoader("langgraph.graph._node").StateNodeSpec
+    StateNode = LazyLoader("langgraph.graph._node").StateNode
     BranchSpec = LazyLoader("langgraph.graph._branch").BranchSpec
     SystemMessage = LazyLoader("langchain_core.messages").SystemMessage
     BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
     BaseChatModel = LazyLoader("langchain_core.language_models").BaseChatModel
     BaseStore = LazyLoader("langgraph.store.base").BaseStore
+    AgentState = LazyLoader("langchain.agents.middleware.types").AgentState
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
@@ -116,8 +122,9 @@ __all__ = [
     "langgraph_graph",
     "langgraph_graph_state",
     "langgraph_types",
-    "langgraph_core",
+    "langchain_core_messages_content",
     "langgraph_prebuilt",
+    "langchain_agents",
     "langchain_ollama",
     "langchain_openai",
     "LangGraphTool",
@@ -144,6 +151,7 @@ __all__ = [
     "BaseMessage",
     "BaseChatModel",
     "BaseStore",
+    "AgentState",
     "Checkpointer",
     "interrupt",
     "RunnableConfig",
