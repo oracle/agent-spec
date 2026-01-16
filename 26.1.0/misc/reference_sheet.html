@@ -1,0 +1,1035 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Agent Spec Reference Sheet &#8212; PyAgentSpec 26.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'misc/reference_sheet';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Security Considerations" href="../security.html" />
+    <link rel="prev" title="Agent Spec Glossary" href="glossary.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec Reference Sheet</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="agent-spec-reference-sheet">
+<span id="core-ref-sheet"></span><h1>Agent Spec Reference Sheet<a class="headerlink" href="#agent-spec-reference-sheet" title="Permalink to this heading">#</a></h1>
+<p>This reference sheet provides a single-page overview of basic code snippets covering the core concepts used in Agent Spec.</p>
+<p>Each section includes links to additional guides for deeper learning.</p>
+<section id="llms">
+<h2>LLMs<a class="headerlink" href="#llms" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec uses LLMs in Agents, as well as fixed-flow nodes that require them.
+This section shows how to specify the configuration details needed for LLMs.</p>
+<section id="specifying-llm-configuration">
+<h3>Specifying LLM configuration<a class="headerlink" href="#specifying-llm-configuration" title="Permalink to this heading">#</a></h3>
+<p>To use an LLM in Agent Spec, you must provide configuration details that include connection information and generation parameters.</p>
+<p>Agent Spec defines a Component called <code class="docutils literal notranslate"><span class="pre">LlmConfig</span></code> that contains all necessary configuration details:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">LlmConfig</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+  <span class="n">default_generation_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>By default, you only need to specify the generation parameters that should be used when prompting the LLM.</p>
+<p>Specific extensions of <code class="docutils literal notranslate"><span class="pre">LlmConfig</span></code> are provided for common models. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VLlmConfig</span><span class="p">(</span><span class="n">LlmConfig</span><span class="p">):</span>
+  <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>For more details, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a>.</p>
+</section>
+</section>
+<section id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this heading">#</a></h2>
+<p>Tools are procedural functions or Flows that can be made available to an Agent to execute.
+This section shows how to specify different types of tools in Agent Spec.</p>
+<p>Agent Spec supports three types of tools based on where they are executed:</p>
+<ul class="simple">
+<li><p><strong>ServerTools</strong> - Executed in the same runtime environment as the Agent</p></li>
+<li><p><strong>ClientTools</strong> - Executed by the client, with results provided back to the executor</p></li>
+<li><p><strong>RemoteTools</strong> - Run in an external environment, triggered by RPC or REST calls</p></li>
+</ul>
+<section id="specifying-a-servertool">
+<h3>Specifying a ServerTool<a class="headerlink" href="#specifying-a-servertool" title="Permalink to this heading">#</a></h3>
+<p>ServerTools are executed in the same runtime environment as the Agent. The tool definitions must be available in the Agent’s environment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ServerTool</span><span class="p">(</span><span class="n">Tool</span><span class="p">):</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Tools can specify multiple outputs by returning a dictionary where each entry corresponds to an output property.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Agent Spec does not store arbitrary code in the agent’s configuration. Instead, it contains only the tool’s metadata—such as attributes, inputs, and outputs—without the actual function implementation.</p>
+</div>
+</section>
+<section id="specifying-a-clienttool">
+<h3>Specifying a ClientTool<a class="headerlink" href="#specifying-a-clienttool" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ClientTools</span></code> are not executed by the executor. The client must execute the tool and provide the results back to the executor, similar to OpenAI’s function calling model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ClientTool</span><span class="p">(</span><span class="n">Tool</span><span class="p">):</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="specifying-a-remotetool">
+<h3>Specifying a RemoteTool<a class="headerlink" href="#specifying-a-remotetool" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">RemoteTools</span></code> are executed in an external environment via RPC or REST calls, triggered by the agent executor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RemoteTool</span><span class="p">(</span><span class="n">Tool</span><span class="p">):</span>
+  <span class="c1"># Basic parameters needed for a remote API call</span>
+  <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">http_method</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">api_spec_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+  <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+  <span class="n">query_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+  <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+  <span class="n">sensitive_headers</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>For more details on tools, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a>.</p>
+</section>
+</section>
+<section id="agents">
+<h2>Agents<a class="headerlink" href="#agents" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec Agents are the top-level constructs that hold shared resources such as conversation memory and tools.
+They represent the entry point for interactions with the agentic system.</p>
+<section id="specifying-a-simple-agent">
+<h3>Specifying a simple Agent<a class="headerlink" href="#specifying-a-simple-agent" title="Permalink to this heading">#</a></h3>
+<p>Creating an Agent requires specifying an LLM configuration and a prompt template to guide the agent’s behavior.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Agent</span><span class="p">(</span><span class="n">ComponentWithIO</span><span class="p">):</span>
+  <span class="n">system_prompt</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">llm_config</span><span class="p">:</span> <span class="n">LlmConfig</span>
+  <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The Agent’s main goal is to fill the values for all properties defined in its <code class="docutils literal notranslate"><span class="pre">outputs</span></code> attribute, with or without user interaction.</p>
+<p>Example configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;expert_agent_id&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Adaptive expert agent&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;domain_of_expertise&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;llama_model_id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;default_generation_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url.of.my.llm.deployment:12345&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;model_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;meta-llama/Meta-Llama-3.1-8B-Instruct&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VllmConfig&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an expert in {{domain_of_expertise}}. Please help the users with their requests.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;human_in_the_loop&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Agents can be reused several times in a flow or as part of a more complex agent without replicating their definition.</p>
+</div>
+</section>
+<section id="specifying-an-agent-with-tools">
+<h3>Specifying an Agent with tools<a class="headerlink" href="#specifying-an-agent-with-tools" title="Permalink to this heading">#</a></h3>
+<p>You can equip Agents with tools by adding them to the <code class="docutils literal notranslate"><span class="pre">tools</span></code> attribute.</p>
+<p>Example with a ServerTool:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_weather_tool&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_weather&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gets the weather in specified city&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;city_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;forecast&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;requires_confirmation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ServerTool&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Flows and agents contained in an Agent are executed in isolation. Sub-agents and sub-flows use separate conversations, independent from the top-level Agent’s conversation.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">requires_confirmation=True</span></code> in the <a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">ServerTool</span></a> signals that execution environments should require user approval before running the tool.</p>
+</div>
+<p>For more details on Agents, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a>.</p>
+</section>
+</section>
+<section id="flows">
+<h2>Flows<a class="headerlink" href="#flows" title="Permalink to this heading">#</a></h2>
+<p>Flows are execution graphs with a fixed structure, which may include branches and loops.
+They can be thought of as “subroutines” that encapsulate consistently-repeatable processes.</p>
+<section id="specifying-a-simple-flow">
+<h3>Specifying a simple Flow<a class="headerlink" href="#specifying-a-simple-flow" title="Permalink to this heading">#</a></h3>
+<p>A Flow consists of nodes connected by control flow and data flow edges.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Flow</span><span class="p">(</span><span class="n">ComponentWithIO</span><span class="p">):</span>
+  <span class="n">start_node</span><span class="p">:</span> <span class="n">Node</span>
+  <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span>
+  <span class="n">control_flow_connections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ControlFlowEdge</span><span class="p">]</span>
+  <span class="n">data_flow_connections</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataFlowEdge</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Example of a simple prompting flow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">Property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.flow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.edges</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlFlowEdge</span><span class="p">,</span> <span class="n">DataFlowEdge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlmNode</span><span class="p">,</span> <span class="n">StartNode</span><span class="p">,</span> <span class="n">EndNode</span>
+
+<span class="n">prompt_property</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span>
+    <span class="n">json_schema</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;prompt&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">llm_output_property</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span>
+    <span class="n">json_schema</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;llm_output&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">start_node</span> <span class="o">=</span> <span class="n">StartNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">prompt_property</span><span class="p">])</span>
+<span class="n">end_node</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">llm_output_property</span><span class="p">])</span>
+<span class="n">llm_node</span> <span class="o">=</span> <span class="n">LlmNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;simple llm node&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;{{prompt}}&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">prompt_property</span><span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">llm_output_property</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Simple prompting flow&quot;</span><span class="p">,</span>
+    <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">llm_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">],</span>
+    <span class="n">control_flow_connections</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start_to_llm&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">),</span>
+        <span class="n">ControlFlowEdge</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm_to_end&quot;</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">,</span> <span class="n">to_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">data_flow_connections</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">DataFlowEdge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prompt_edge&quot;</span><span class="p">,</span>
+            <span class="n">source_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+            <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;prompt&quot;</span><span class="p">,</span>
+            <span class="n">destination_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">,</span>
+            <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;prompt&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">DataFlowEdge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm_output_edge&quot;</span><span class="p">,</span>
+            <span class="n">source_node</span><span class="o">=</span><span class="n">llm_node</span><span class="p">,</span>
+            <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;llm_output&quot;</span><span class="p">,</span>
+            <span class="n">destination_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span>
+            <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;llm_output&quot;</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="executing-a-sub-flow-to-an-iterable-with-mapnode">
+<h3>Executing a sub-flow to an iterable with <code class="docutils literal notranslate"><span class="pre">MapNode</span></code><a class="headerlink" href="#executing-a-sub-flow-to-an-iterable-with-mapnode" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">MapNode</span></code> is used to map a sequence of nodes to each value in a list, applying the same flow to all elements and collecting outputs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">square_numbers_map_node</span> <span class="o">=</span> <span class="n">MapNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;square number map node&quot;</span><span class="p">,</span>
+    <span class="n">subflow</span><span class="o">=</span><span class="n">square_number_flow</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>When using <code class="docutils literal notranslate"><span class="pre">MapNode</span></code>:</p>
+<ul class="simple">
+<li><p>Input names are prefixed with <code class="docutils literal notranslate"><span class="pre">iterated_</span></code></p></li>
+<li><p>Output names are prefixed with <code class="docutils literal notranslate"><span class="pre">collected_</span></code></p></li>
+<li><p>The node supports reducer methods: <code class="docutils literal notranslate"><span class="pre">append</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">average</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code></p></li>
+</ul>
+<p>Example data flow edge for <code class="docutils literal notranslate"><span class="pre">MapNode</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DataFlowEdge</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;list_of_x_edge&quot;</span><span class="p">,</span>
+    <span class="n">source_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+    <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;x_list&quot;</span><span class="p">,</span>
+    <span class="n">destination_node</span><span class="o">=</span><span class="n">square_numbers_map_node</span><span class="p">,</span>
+    <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;iterated_x&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-conditional-branching-to-flows-with-branchingnode">
+<h3>Adding conditional branching to Flows with <code class="docutils literal notranslate"><span class="pre">BranchingNode</span></code><a class="headerlink" href="#adding-conditional-branching-to-flows-with-branchingnode" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BranchingNode</span></code> allows conditional transitions based on input values through a key-value mapping.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BranchingNode</span>
+
+<span class="n">CORRECT_PASSWORD_BRANCH</span> <span class="o">=</span> <span class="s2">&quot;PASSWORD_OK&quot;</span>
+
+<span class="n">branching_node</span> <span class="o">=</span> <span class="n">BranchingNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;password check&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;123456&quot;</span><span class="p">:</span> <span class="n">CORRECT_PASSWORD_BRANCH</span><span class="p">},</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">password_property</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Control flow edges with branching:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Success branch</span>
+<span class="n">ControlFlowEdge</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;branching_to_access_granted&quot;</span><span class="p">,</span>
+    <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+    <span class="n">from_branch</span><span class="o">=</span><span class="n">CORRECT_PASSWORD_BRANCH</span><span class="p">,</span>
+    <span class="n">to_node</span><span class="o">=</span><span class="n">access_granted_end_node</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Default branch (when mapping fails)</span>
+<span class="n">ControlFlowEdge</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;branching_to_access_denied&quot;</span><span class="p">,</span>
+    <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+    <span class="n">from_branch</span><span class="o">=</span><span class="n">BranchingNode</span><span class="o">.</span><span class="n">DEFAULT_BRANCH</span><span class="p">,</span>
+    <span class="n">to_node</span><span class="o">=</span><span class="n">access_denied_end_node</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BranchingNode</span></code> includes a <code class="docutils literal notranslate"><span class="pre">default</span></code> branch that is taken when the input does not match any key in the mapping.</p>
+</div>
+</section>
+<section id="adding-tools-to-flows">
+<h3>Adding tools to Flows<a class="headerlink" href="#adding-tools-to-flows" title="Permalink to this heading">#</a></h3>
+<p>To use tools in Flows, use the <code class="docutils literal notranslate"><span class="pre">ToolNode</span></code> which executes a specified tool.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolNode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerTool</span>
+
+<span class="c1"># Define the tool</span>
+<span class="n">square_tool</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;compute_square_tool&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Computes the square of a number&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">x_property</span><span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">x_square_property</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Create a ToolNode</span>
+<span class="n">square_tool_node</span> <span class="o">=</span> <span class="n">ToolNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;square tool node&quot;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">square_tool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ToolNode</span></code> automatically infers its inputs and outputs from the tool definition.</p>
+<p>For more details on Flows and nodes, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a>.</p>
+</section>
+</section>
+<section id="agentic-composition-patterns">
+<h2>Agentic composition patterns<a class="headerlink" href="#agentic-composition-patterns" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec supports several composition patterns for building complex agentic systems by combining Agents and Flows.</p>
+<section id="using-an-agent-in-a-flow">
+<h3>Using an Agent in a Flow<a class="headerlink" href="#using-an-agent-in-a-flow" title="Permalink to this heading">#</a></h3>
+<p>To use Agents in Flows, use the <code class="docutils literal notranslate"><span class="pre">AgentNode</span></code> which runs a potentially multi-round conversation with an Agent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentNode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+<span class="c1"># Define an Agent</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;User input agent&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Your task is to ask the password to the user. &quot;</span>
+        <span class="s2">&quot;Once you get it, submit it and end.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">password_property</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the Agent in a Flow through AgentNode</span>
+<span class="n">agent_node</span> <span class="o">=</span> <span class="n">AgentNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;User input agent node&quot;</span><span class="p">,</span>
+    <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">AgentNode</span></code>:</p>
+<ul class="simple">
+<li><p>Runs a conversation with the specified Agent</p></li>
+<li><p>Takes the inputs defined by the Agent</p></li>
+<li><p>Provides the outputs defined by the Agent</p></li>
+<li><p>Allows the same Agent to be executed in several places of a flow</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By separating the Agent definition from the node executing it, you can reuse the same Agent in multiple locations without duplicating its definition.</p>
+</div>
+</section>
+<section id="using-sub-flows-within-flows">
+<h3>Using sub-flows within Flows<a class="headerlink" href="#using-sub-flows-within-flows" title="Permalink to this heading">#</a></h3>
+<p>To use sub-flows in Flows, use the FlowNode which executes another Flow as part of the current Flow.</p>
+<p>According to the Agent Spec specification:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># FlowNode configuration from Agent Spec spec</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlowNode</span><span class="p">:</span>
+    <span class="n">subflow</span><span class="p">:</span> <span class="n">Flow</span>  <span class="c1"># The flow to be executed</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">FlowNode</span></code>:</p>
+<ul class="simple">
+<li><p>Runs a Flow within another Flow</p></li>
+<li><p>Helps structure agents and easily reuse flows across them</p></li>
+<li><p>Takes inputs from the <code class="docutils literal notranslate"><span class="pre">StartNode</span></code> of the inner flow</p></li>
+<li><p>Provides outputs from the <code class="docutils literal notranslate"><span class="pre">EndNodes</span></code> of the inner flow</p></li>
+<li><p>Creates one outgoing branch per <code class="docutils literal notranslate"><span class="pre">EndNode</span></code> in the sub-flow</p></li>
+</ul>
+<p>Example usage pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowNode</span>
+
+<span class="c1"># Assuming you have a pre-defined Flow</span>
+<span class="n">my_subflow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Use it in another Flow</span>
+<span class="n">flow_node</span> <span class="o">=</span> <span class="n">FlowNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Execute subflow&quot;</span><span class="p">,</span>
+    <span class="n">subflow</span><span class="o">=</span><span class="n">my_subflow</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sub-flows and sub-agents contained in a Flow (i.e., as part of AgentNode and FlowNode,
+see the Node section for more information) share the same conversation of the Flow they belong to.</p>
+</div>
+<p>For more details on composition patterns, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a>.</p>
+</section>
+</section>
+<section id="saving-and-loading-agent-spec-assistants">
+<h2>Saving and loading Agent Spec assistants<a class="headerlink" href="#saving-and-loading-agent-spec-assistants" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec’s primary purpose is to enable portability of agent configurations across platforms and languages through serialization.</p>
+<section id="saving-and-loading-assistants">
+<h3>Saving and loading assistants<a class="headerlink" href="#saving-and-loading-assistants" title="Permalink to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">AgentSpecSerializer</span></code> and <code class="docutils literal notranslate"><span class="pre">AgentSpecDeserializer</span></code> to save and load Agent Spec components to and from JSON format.</p>
+<p>Saving an assistant:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+
+<span class="c1"># Create your Agent or Flow</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Assistant&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[]</span>
+<span class="p">)</span>
+
+<span class="c1"># Serialize to JSON</span>
+<span class="n">serializer</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span>
+<span class="n">json_content</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Loading an assistant:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecDeserializer</span>
+
+<span class="c1"># Load from JSON</span>
+<span class="n">deserializer</span> <span class="o">=</span> <span class="n">AgentSpecDeserializer</span><span class="p">()</span>
+<span class="n">loaded_agent</span> <span class="o">=</span> <span class="n">deserializer</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json_content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The serialization process:</p>
+<ul class="simple">
+<li><p>Converts all components and sub-components to JSON format</p></li>
+<li><p>Preserves the complete structure including tools, flows, and agents</p></li>
+<li><p>Uses component references to avoid duplication</p></li>
+<li><p>Maintains all configuration details for cross-platform compatibility</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Every component is serialized with a <code class="docutils literal notranslate"><span class="pre">component_type</span></code> field that identifies the specific component class, ensuring proper deserialization.</p>
+</div>
+<p>For more details on serialization, see the <a class="reference internal" href="../agentspec/language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec Language Specification</span></a> and the PyAgentSpec serialization documentation.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llms">LLMs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-llm-configuration">Specifying LLM configuration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools">Tools</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-servertool">Specifying a ServerTool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-clienttool">Specifying a ClientTool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-remotetool">Specifying a RemoteTool</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agents">Agents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-simple-agent">Specifying a simple Agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-an-agent-with-tools">Specifying an Agent with tools</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flows">Flows</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-simple-flow">Specifying a simple Flow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#executing-a-sub-flow-to-an-iterable-with-mapnode">Executing a sub-flow to an iterable with <code class="docutils literal notranslate"><span class="pre">MapNode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-conditional-branching-to-flows-with-branchingnode">Adding conditional branching to Flows with <code class="docutils literal notranslate"><span class="pre">BranchingNode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-tools-to-flows">Adding tools to Flows</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-composition-patterns">Agentic composition patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-an-agent-in-a-flow">Using an Agent in a Flow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-sub-flows-within-flows">Using sub-flows within Flows</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-agent-spec-assistants">Saving and loading Agent Spec assistants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-assistants">Saving and loading assistants</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

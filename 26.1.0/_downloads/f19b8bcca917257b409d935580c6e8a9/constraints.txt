@@ -1,0 +1,16 @@
+jsonschema==4.23.0
+pydantic==2.12.4
+pyyaml==6.0.3
+httpx==0.28.1
+urllib3==2.6.2
+
+# AutoGen adapter
+autogen-core==0.7.4
+autogen-ext==0.7.4
+autogen-agentchat==0.7.4
+
+# LangGraph adapter
+langgraph==0.6.11
+langchain-core==0.3.75
+langchain-openai==0.3.30
+langchain-ollama==0.3.6

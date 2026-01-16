@@ -1,0 +1,907 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Security Considerations &#8212; PyAgentSpec 26.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/js/fix-navigation.js"></script>
+    <script src="_static/js/fix-navigation.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'security';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="_static/announcement.js"></script>
+
+    <link rel="icon" href="_static/favicon.svg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frequently Asked Questions" href="faqs.html" />
+    <link rel="prev" title="Agent Spec Reference Sheet" href="misc/reference_sheet.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+    <img src="_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/tracing.html">Tracing</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Security Considerations</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="security-considerations">
+<span id="securityconsiderations"></span><h1>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this heading">#</a></h1>
+<p><strong>Scope</strong>: This document covers security considerations related to Agent Spec, a portable and platform-agnostic configuration language for agents, tools, and workflows.
+It applies to anyone authoring or consuming Agent Spec specifications, regardless of deployment type or execution engine used.</p>
+<p><strong>Why it matters</strong>: Agent Spec defines agents, tools, and workflows that are executed in environments integrating components like LLMs, Python, APIs, and external tools.
+While Agent Spec itself is purely declarative, its specifications influence runtime behavior.
+Risks can arise from configurations that include sensitive information, lack proper isolation, or rely on untrusted components.
+This document helps reduce misconfiguration risks and supports the secure execution of the resulting agent.</p>
+<section id="considerations-regarding-tools">
+<h2>Considerations regarding tools<a class="headerlink" href="#considerations-regarding-tools" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec lets you define tools that interact with the agent’s environment.
+The representation is only aware of the tool’s description, e.g. tool ID, attributes, inputs, outputs, and tool description (i.e. explaining what the tools does in natural language) and does not store any executable code.</p>
+<section id="key-principles-for-tool-security">
+<h3>Key Principles for Tool Security:<a class="headerlink" href="#key-principles-for-tool-security" title="Permalink to this heading">#</a></h3>
+<ul>
+<li><p><strong>Mandatory Input Validation</strong>: Always validate the tool inputs in your tool’s code. For all tools, use <code class="docutils literal notranslate"><span class="pre">inputs</span></code> to define/enforce schemas (types and descriptions) as a primary defense. Note that <code class="docutils literal notranslate"><span class="pre">inputs</span></code> do not support constraints like ranges or max lengths, so you must implement additional validation in your tool’s code. You should also validate the semantic correctness of inputs, especially when they may originate from untrusted sources like LLM completions or end-user input. For remote tools, which constructs HTTP requests, validation is critical for all parameters that can be templated (e.g., url, method, json_body, data, params, headers, cookies). While <code class="docutils literal notranslate"><span class="pre">inputs</span></code> can define the schema for arguments passed to the remote tool, the core security lies in controlling how these arguments are used to form the request.</p></li>
+<li><p><strong>Output Scrutiny</strong>: For all tools, you should define the expected type of a tool’s output using <code class="docutils literal notranslate"><span class="pre">outputs</span></code> in the representation. Currently, the representation does not support output constraints like maximum length or detailed validation logic. The output of well-contained tools which you fully control can often be trusted, but tool outputs should be treated with caution when they:</p>
+<ul class="simple">
+<li><p>are not under your direct control,</p></li>
+<li><p>use an LLM to generate output,</p></li>
+<li><p>are based on end-user input, or</p></li>
+<li><p>pull data from untrusted or dynamic sources (e.g. a remote API or a retrieval tool searching data in a database, where the contents may change over time).</p></li>
+</ul>
+<p>In these cases, an attacker could inject harmful content via tools and downstream components should treat tool outputs as untrusted input and perform appropriate validation and sanitization before use.</p>
+</li>
+<li><p><strong>Tool Reference Integrity</strong>: In Agent Spec, tools are referenced by their unique IDs, which are resolved by the execution environment. When the representation is exported and later imported in a different environment (or in the same environment under different conditions), the same tool ID may resolve to a different implementation than originally intended. This can lead to unexpected or insecure behavior. Always verify that referenced tool IDs map to the correct and trusted tool definitions in the target environment, especially when moving the representation between systems or teams.</p></li>
+</ul>
+</section>
+</section>
+<section id="considerations-regarding-network-communication">
+<h2>Considerations regarding network communication<a class="headerlink" href="#considerations-regarding-network-communication" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">RemoteTool</span></code>, <code class="docutils literal notranslate"><span class="pre">MCPTool</span></code> and the <code class="docutils literal notranslate"><span class="pre">ApiNode</span></code> define HTTP-based interactions with external services.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Never embed API keys, passwords, or other secrets directly in Agent Spec.</p>
+</div>
+<p>Always use secure injection mechanisms and follow the principle of least privilege for credential access.</p>
+<p>Following security considerations is important when working with remote/mcp tools or API nodes:</p>
+<ul class="simple">
+<li><p><strong>Templated Request Arguments</strong>: Since most request fields support templating, they can be influenced by dynamic inputs, such as LLM completions or user-provided values. As a result, these fields must be handled with extra caution in the specification to avoid misuse at runtime. Maliciously crafted inputs could lead to information leakage (e.g., exposing sensitive data in URLs or headers) or enable attacks like SSRF (Server-Side Request Forgery) or automated DDoS. Developers must validate all templated inputs, including URLs, headers, and request bodies before executing the request.</p></li>
+<li><p><strong>Secure Connections</strong>: Use HTTPS for all remote calls.</p></li>
+<li><p><strong>HTTP Method</strong>: When possible, use fixed and explicit HTTP methods for the <code class="docutils literal notranslate"><span class="pre">http_method</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">RemoteTool</span></code> or <code class="docutils literal notranslate"><span class="pre">ApiNode</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;GET&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;POST&quot;</span></code>) rather than dynamic templates.</p></li>
+<li><p><strong>Timeouts</strong>: Remote/MCP tools or API nodes may block indefinitely if the external service is unresponsive. Currently, Agent Spec does not support specifying request timeouts. Timeout behavior should be enforced by the execution environment or tool implementation to avoid resource exhaustion.</p></li>
+</ul>
+<p>While Agent Spec does not manage infrastructure, authors should still be aware of how their configurations interact with secure deployment environments.
+We recommend to make sure that the deployment enforces strict network communication rules to make sure that only the desired and required network services are allowed (communication with external public IPs).
+Consider the following security considerations:</p>
+<ul class="simple">
+<li><p><strong>Model Integrity</strong>: For third-party models; Download via HTTPS, pin SHA-256 digests and verify integrity before loading into the execution engine.</p></li>
+<li><p><strong>Egress Restrictions</strong>: Remote calls defined in representation (e.g., via RemoteTool or ApiNode) must align with outbound allow-lists and network policies.</p></li>
+<li><p><strong>Subnet Isolation</strong>: Isolate Agent Spec components to limit blast radius:</p>
+<ul>
+<li><p>LLM hosts (OCI Gen AI, vLLM) in dedicated subnets.</p></li>
+<li><p>Remote tools and ApiNodes targets in isolated subnets.</p></li>
+<li><p>Control-flow logic (e.g., Agents, Flows, BranchingSteps) separate from data processing (e.g., database mutations, data analytics)</p></li>
+</ul>
+</li>
+<li><p><strong>TLS</strong>: Use mTLS for service-to-service communications such as connecting to MCP servers, Monitoring/Telemetry services, File Storage Services, Databases, and so on.</p></li>
+<li><p><strong>Strict Egress Rules</strong>: Default-deny outbound traffic. Allow only Allow-Listed domains/IPs for Agent Spec components (such as when using remote tools or API Nodes).</p></li>
+<li><p><strong>Centralized Allow-Lists</strong>: Use a central allow-list to restrict access to LLM endpoints, logging/telemetry sinks, and external APIs called by components like remote tools or API Nodes. Set up alerts for policy violations.</p></li>
+</ul>
+</section>
+<section id="considerations-regarding-api-keys-and-secrets-management">
+<h2>Considerations regarding API keys and secrets management<a class="headerlink" href="#considerations-regarding-api-keys-and-secrets-management" title="Permalink to this heading">#</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Never embed API keys, passwords, or other secrets directly in Agent Spec.</p>
+</div>
+<p>Agent Spec is a declarative language for agents, tools, and flows.
+It may be stored, versioned, or inspected; it is <strong>not a secure medium for sensitive data</strong>.
+Hardcoding secrets in the representation increases the risk of accidental exposure and must be avoided.</p>
+<p>Instead of embedding secrets in the representation, ensure that secrets are injected securely at runtime via:</p>
+<ul class="simple">
+<li><p>Integration with a secrets manager (e.g., OCI Vault)</p></li>
+<li><p>Use instance principal when working on OCI Computes</p></li>
+<li><p>Use Kubernetes/Docker secrets if the deployments supports it</p></li>
+</ul>
+<p>Furthermore, follow these general best practices around credential management</p>
+<ul class="simple">
+<li><p>Rotate credentials regularly.</p></li>
+<li><p>Use organization-specific API keys with usage limits.</p></li>
+<li><p>Use dedicated credentials per environment or agent, rather than sharing keys across flows or services.</p></li>
+<li><p>Follow the principle of least privilege for credential access.</p></li>
+<li><p>Avoid exposing secrets to LLMs, logs, or error messages.</p></li>
+<li><p>Monitor credential usage for anomalies (e.g., unexpected volume or access patterns).</p></li>
+<li><p>Restrict network access and egress for components that hold credentials, especially tools calling external services.</p></li>
+</ul>
+</section>
+<section id="considerations-regarding-resource-exhaustion-vectors">
+<h2>Considerations regarding Resource-exhaustion vectors<a class="headerlink" href="#considerations-regarding-resource-exhaustion-vectors" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec allows for flexible flow and agent logic, however, certain configurations could result in infinite loops, repeated LLM calls, or unbounded parallelism which can lead to resource exhaustion.</p>
+<p>The following example shows how to avoid resource exhaustion from repeated tool executions in an infinite loop.
+The idea is to add a branching node that exits the loop once a counter hits the specified number of iterations.</p>
+<details class="summary-python-flow-example">
+<summary>Python Flow example</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">StartNode</span><span class="p">,</span> <span class="n">EndNode</span><span class="p">,</span> <span class="n">ToolNode</span><span class="p">,</span> <span class="n">BranchingNode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientTool</span><span class="p">,</span> <span class="n">ServerTool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.flow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.edges</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlFlowEdge</span><span class="p">,</span> <span class="n">DataFlowEdge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegerProperty</span><span class="p">,</span> <span class="n">StringProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecDeserializer</span><span class="p">,</span> <span class="n">AgentSpecSerializer</span>
+
+<span class="c1"># We run the tool_to_execute tool 5 times. After that, we exit</span>
+
+<span class="c1"># Start and end nodes of the flow</span>
+<span class="n">start_node</span> <span class="o">=</span> <span class="n">StartNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<span class="n">end_node</span> <span class="o">=</span> <span class="n">EndNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+<span class="c1"># We are using a helper tool to count the number tool executions</span>
+<span class="c1"># It will increment the value of counter by 1 in each iteration</span>
+<span class="n">tool_counter</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">IntegerProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">IntegerProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">tool_counter_node</span> <span class="o">=</span> <span class="n">ToolNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">tool_counter</span><span class="p">)</span>
+
+<span class="c1"># The tool node for the tool that we&#39;re interested in executing in a loop</span>
+<span class="c1"># (for the purpose of this example, the tool does nothing)</span>
+<span class="n">tool_to_execute</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;do nothing&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[],</span>
+<span class="p">)</span>
+<span class="n">tool_to_execute_node</span> <span class="o">=</span> <span class="n">ToolNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">tool_to_execute</span><span class="p">)</span>
+
+<span class="c1"># The branching node will be able to exit the loop after limit_reached iterations</span>
+<span class="c1"># It will compare the counter value - counting the number iterations in the loop - to</span>
+<span class="c1"># the constant limit_reached value</span>
+<span class="n">branching_node</span> <span class="o">=</span> <span class="n">BranchingNode</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;branching&quot;</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;5&quot;</span><span class="p">:</span> <span class="s2">&quot;limit_reached&quot;</span><span class="p">},</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="c1"># The control flow graph looks like this</span>
+<span class="c1"># start_node -&gt; tool_node -&gt; tool_counter_node -&gt; branching_node -&gt; end_node</span>
+<span class="c1">#                  ^                                  |</span>
+<span class="c1">#                  L _________________________________|</span>
+<span class="n">control_flow_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ControlFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cf1&quot;</span><span class="p">,</span>
+        <span class="n">from_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+        <span class="n">to_node</span><span class="o">=</span><span class="n">tool_to_execute_node</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">ControlFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cf2&quot;</span><span class="p">,</span>
+        <span class="n">from_node</span><span class="o">=</span><span class="n">tool_to_execute_node</span><span class="p">,</span>
+        <span class="n">to_node</span><span class="o">=</span><span class="n">tool_counter_node</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">ControlFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cf3&quot;</span><span class="p">,</span>
+        <span class="n">from_node</span><span class="o">=</span><span class="n">tool_counter_node</span><span class="p">,</span>
+        <span class="n">to_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">ControlFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cf4&quot;</span><span class="p">,</span>
+        <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+        <span class="n">from_branch</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">to_node</span><span class="o">=</span><span class="n">tool_to_execute_node</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">ControlFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cf5&quot;</span><span class="p">,</span>
+        <span class="n">from_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+        <span class="n">from_branch</span><span class="o">=</span><span class="s2">&quot;limit_reached&quot;</span><span class="p">,</span>
+        <span class="n">to_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c1"># df1 creates a self-loop on the counter node s.t. the value can be incremented in each iteration</span>
+<span class="c1"># df2 feeds the counter into the branching step s.t. it can decide whether to continue the</span>
+<span class="c1"># loop or move to the end_node</span>
+<span class="n">data_flow_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">DataFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;df1&quot;</span><span class="p">,</span>
+        <span class="n">source_node</span><span class="o">=</span><span class="n">tool_counter_node</span><span class="p">,</span>
+        <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+        <span class="n">destination_node</span><span class="o">=</span><span class="n">tool_counter_node</span><span class="p">,</span>
+        <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">DataFlowEdge</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;df2&quot;</span><span class="p">,</span>
+        <span class="n">source_node</span><span class="o">=</span><span class="n">tool_counter_node</span><span class="p">,</span>
+        <span class="n">source_output</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+        <span class="n">destination_node</span><span class="o">=</span><span class="n">branching_node</span><span class="p">,</span>
+        <span class="n">destination_input</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">flow_with_loop</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;flow_with_loop&quot;</span><span class="p">,</span>
+    <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">tool_counter_node</span><span class="p">,</span> <span class="n">tool_to_execute_node</span><span class="p">,</span> <span class="n">branching_node</span><span class="p">],</span>
+    <span class="n">data_flow_connections</span><span class="o">=</span><span class="n">data_flow_edges</span><span class="p">,</span>
+    <span class="n">control_flow_connections</span><span class="o">=</span><span class="n">control_flow_edges</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">serializer</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span>
+<span class="n">serialized_flow</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">flow_with_loop</span><span class="p">)</span>
+</pre></div>
+</div>
+</details><section id="gaps-in-coverage-what-is-not-provided">
+<h3>Gaps in coverage (what is not provided)<a class="headerlink" href="#gaps-in-coverage-what-is-not-provided" title="Permalink to this heading">#</a></h3>
+<p>The following controls are currently not configurable in the Agent Spec.
+Some of these concerns, particularly those related to infrastructure and deployment, are the responsibility of the execution engine.
+However, it’s important to be aware of these gaps when designing or deploying agents.</p>
+<ul class="simple">
+<li><p>Memory limits – no built-in interrupt for resident-set or GPU VRAM.</p></li>
+<li><p>CPU / thread quotas – Python loops can still hog a core until the Step returns.</p></li>
+<li><p><strong>Soft timeouts and token limits</strong> – the spec does not support soft timeouts or soft token limits. These controls - available in some execution engines - can stop long-running agents or limit LLM token usage, but only between steps. </p></li>
+<li><p>Hard timeouts inside a Tool – a Tool that calls a REST API may block indefinitely.</p></li>
+<li><p>Concurrent-request ceilings – there is no built-in limit on how many tool calls or sub-flows can run in parallel. Without external throttling, excessive fan-out may exhaust system resources.</p></li>
+<li><p>LLM generation cancellation – once a prompt is sent, the agent will block until the generation is done.</p></li>
+<li><p>Conversation isolation – the Agent Spec does not support isolation between sub-flows or sub-agents; conversations are shared and may be forwarded externally if an external endpoint is involved.</p></li>
+</ul>
+</section>
+</section>
+<section id="considerations-regarding-assistant-and-flow-serialization">
+<h2>Considerations regarding assistant and flow serialization<a class="headerlink" href="#considerations-regarding-assistant-and-flow-serialization" title="Permalink to this heading">#</a></h2>
+<p>Deserializing data from untrusted sources is inherently risky.
+Always treat Agent Spec configuration files from external or unverified origins as potentially malicious.</p>
+<p><strong>Verify Data Integrity and Authenticity</strong>:
+Before attempting to import an Agent Spec configuration file to instantiate an agent or flow, ensure:</p>
+<ul class="simple">
+<li><p>The data comes from a trusted source and has not been tampered with. Implement mechanisms such as digital signatures to verify the origin and integrity of the serialized data.</p></li>
+<li><p>Its contents align with your expectations; do not assume the representation defines what you think it does. Review the structure, tool references, and key behaviors to ensure the deserialized agent behaves as intended.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Use secure built-in serialization and deserialization utilities whenever possible.
+For example, to deserialize YAML files, use <code class="docutils literal notranslate"><span class="pre">yaml.safe_load()</span></code> from the PyYAML package (do not use <code class="docutils literal notranslate"><span class="pre">yaml.load()</span></code>).</p>
+</div>
+<p>When working with Agent Spec SDKs like PyAgentSpec, always use the provided serialization and deserialization
+utilities to avoid unsafe behavior.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecDeserializer</span>
+
+<span class="c1"># Assume verify_signature_and_integrity is a custom function you&#39;ve implemented</span>
+<span class="c1"># to check the signature and integrity of the raw_yaml_string against a trusted key.</span>
+<span class="c1"># This step is conceptual and depends on your specific trust model.</span>
+
+<span class="n">raw_yaml_string</span> <span class="o">=</span> <span class="n">get_potentially_untrusted_yaml_data</span><span class="p">()</span>
+<span class="n">is_trusted_source</span> <span class="o">=</span> <span class="n">verify_signature_and_integrity</span><span class="p">(</span><span class="n">raw_yaml_string</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">is_trusted_source</span><span class="p">:</span>
+  <span class="c1"># from_yaml will use safe_load under the hood</span>
+  <span class="n">assistant_or_flow</span> <span class="o">=</span> <span class="n">AgentSpecDeserializer</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">raw_yaml_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When deploying serialized representation to an execution engine, use the engine’s secure loading mechanism for the import.</p>
+</section>
+<section id="considerations-regarding-parallelization">
+<h2>Considerations regarding Parallelization<a class="headerlink" href="#considerations-regarding-parallelization" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec supports the configuration of flows that contain parallel nodes, enabling concurrent execution of sub-flows.
+While parallelization offers potential performance or latency benefits, it introduces its own set of security and
+operational risks that must be carefully managed.</p>
+<section id="execution-semantics-and-safety-guidelines">
+<h3>Execution Semantics and Safety Guidelines<a class="headerlink" href="#execution-semantics-and-safety-guidelines" title="Permalink to this heading">#</a></h3>
+<p>Agent Spec outlines the expected behavior for parallel execution, but it does not specify implementation details,
+since those are determined by each runtime.</p>
+<ul class="simple">
+<li><p><strong>For runtime developers</strong>: Always provide clear documentation on how parallelism is implemented and describe secure usage patterns.</p></li>
+<li><p><strong>For users</strong>: Always review the runtime’s documentation and follow its recommendations to use parallelism safely.</p></li>
+</ul>
+<p>A list of typical potential issues when dealing with parallelism follows.</p>
+<ul class="simple">
+<li><p><strong>Non-Deterministic, Nonatomic Execution Order</strong>: In Agent Spec, parallel nodes are explicitly declared with
+the understanding that the order and the atomicity of the execution of their sub-flows is <strong>not guaranteed</strong>.
+The system may schedule, start, or complete individual flows in any order, and the timing may vary across runs.
+<strong>Do not assume any deterministic ordering or synchronization between parallel tasks.</strong></p></li>
+<li><p><strong>Concurrent State Mutation Hazards</strong>: Parallel execution can lead to <strong>race conditions</strong> and <strong>state inconsistencies</strong>
+if multiple branches attempt to mutate shared resources or stateful entities (such as conversation history,
+external databases, or files) simultaneously.</p>
+<ul>
+<li><p><strong>Avoid write operations</strong> on shared or stateful objects within parallel branches where synchronization is not
+explicitly managed by the execution environment.</p></li>
+<li><p>For operations requiring state changes (e.g., sending messages, updating databases, modifying files),
+consider serializing those steps after parallel execution has completed, or use database transactions/locking
+mechanisms where supported.</p></li>
+</ul>
+</li>
+<li><p><strong>Interrupt Handling Limitations</strong>: Execution interrupts, such as tool confirmation steps, requesting additional input,
+or other interactive requirements, are <strong>not guaranteed to be coordinated or honored in a well-defined order</strong>
+within parallel branches.</p>
+<ul>
+<li><p>Avoid placing user input prompts, message outputs, or tool confirmation steps inside parallel blocks,
+as this can result in unpredictable, inconsistent, or undesirable user experiences.</p></li>
+<li><p>Design flows such that interactive or interrupt-driven logic occurs <strong>before</strong> or <strong>after</strong> parallel execution blocks.</p></li>
+</ul>
+</li>
+<li><p><strong>Error Propagation and Fault Isolation</strong>: Failure in one parallel branch might <strong>not automatically propagate</strong>
+to other branches. Carefully plan how errors are handled and consider using explicit error-handling logic to aggregate,
+report, or respond to errors from each concurrent path.</p>
+<ul>
+<li><p>Ensure that sensitive operations are performed atomically or idempotently to prevent security vulnerabilities due
+to partial updates or inconsistent state.</p></li>
+</ul>
+</li>
+<li><p><strong>Resource-Exhaustion Risks</strong>: Creating excessive parallelism (e.g., spawning large numbers of concurrent tool
+calls or sub-flows) may result in resource exhaustion—such as CPU, memory, API rate limits, or network bandwidth starvation.</p>
+<ul>
+<li><p>Limit the number of parallel branches to a reasonable level for your deployment environment.</p></li>
+<li><p>Monitor usage and apply throttling or limits as appropriate at the infrastructure or execution engine layer.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="summary-recommendations">
+<h3>Summary Recommendations<a class="headerlink" href="#summary-recommendations" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Design parallel blocks to perform <strong>independent, stateless tasks</strong> wherever possible.</p></li>
+<li><p>Avoid interactive steps (like user input requests, client tools, confirmations) and uncontrolled state modifications in parallel branches.</p></li>
+<li><p>Always validate that downstream infrastructure can handle the degree of parallelism configured.</p></li>
+<li><p>Perform security and correctness reviews of all flows containing parallel nodes to identify unintended side effects or race conditions.</p></li>
+</ul>
+</section>
+</section>
+<section id="other-security-concerns">
+<h2>Other Security Concerns<a class="headerlink" href="#other-security-concerns" title="Permalink to this heading">#</a></h2>
+<p>For any other security concerns, please submit a <a class="reference external" href="https://github.com/oracle/agent-spec/issues">GitHub issue</a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-tools">Considerations regarding tools</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-principles-for-tool-security">Key Principles for Tool Security:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-network-communication">Considerations regarding network communication</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-api-keys-and-secrets-management">Considerations regarding API keys and secrets management</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-resource-exhaustion-vectors">Considerations regarding Resource-exhaustion vectors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaps-in-coverage-what-is-not-provided">Gaps in coverage (what is not provided)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-assistant-and-flow-serialization">Considerations regarding assistant and flow serialization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-parallelization">Considerations regarding Parallelization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-semantics-and-safety-guidelines">Execution Semantics and Safety Guidelines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-recommendations">Summary Recommendations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-security-concerns">Other Security Concerns</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

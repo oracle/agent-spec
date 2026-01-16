@@ -1,0 +1,2291 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Open Agent Specification Tracing (Agent Spec Tracing) &#8212; PyAgentSpec 26.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'agentspec/tracing';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agent Spec specification (nightly version 26.1.0)" href="language_spec_nightly.html" />
+    <link rel="prev" title="Positioning of Agent Spec in the agentic ecosystem" href="positioning.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agent Spec Specification</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_26_1_0.html">Language specification (v26.1.0 latest)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tracing</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Open Agent Specification Tracing (Agent Spec Tracing)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="open-agent-specification-tracing-agent-spec-tracing">
+<span id="agentspec-tracing"></span><h1>Open Agent Specification Tracing (Agent Spec Tracing)<a class="headerlink" href="#open-agent-specification-tracing-agent-spec-tracing" title="Permalink to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>Open Agent Specification Tracing (short: Agent Spec Tracing) is an extension of
+Agent Spec that standardizes how agent and flow executions emit traces.
+It defines a unified, implementation-agnostic semantic for:</p>
+<ul class="simple">
+<li><p>Events: structured, point-in-time facts.</p></li>
+<li><p>Spans: time-bounded execution contexts that group events.</p></li>
+<li><p>Traces: trees of spans that represent an end-to-end execution.</p></li>
+<li><p>SpanProcessors: pluggable hooks to consume spans and events (e.g., export to UIs, tracing backends, or logs).</p></li>
+</ul>
+<p>Agent Spec Tracing enables:</p>
+<ul class="simple">
+<li><p>Runtime adapters to emit consistent traces across different frameworks.</p></li>
+<li><p>Consumers (observability backends, UIs, developer tooling) to ingest one standardized format regardless of the producer.</p></li>
+</ul>
+<p>Agent Spec Tracing aligns with widely used observability concepts (e.g.,
+OpenTelemetry), while grounding definitions in Agent Spec components and
+semantics. It specifies what spans and events to emit, when to emit them, and
+which attributes to include, including which attributes are sensitive.</p>
+<section id="scope-and-goals">
+<h3>Scope and goals<a class="headerlink" href="#scope-and-goals" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Provide a canonical list of span and event types for Agent Spec runtimes.</p></li>
+<li><p>Define lifecycle and attribute schema for each span/event.</p></li>
+<li><p>Identify sensitive fields and how they should be handled.</p></li>
+<li><p>Provide a minimal API surface for producers and consumers.</p></li>
+<li><p>Remain neutral to storage/transport (Telemetry, UIs, files, etc.).</p></li>
+</ul>
+</section>
+</section>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this heading">#</a></h2>
+<section id="event">
+<h3>Event<a class="headerlink" href="#event" title="Permalink to this heading">#</a></h3>
+<p>An Event is an atomic episode that occurs at a specific time instant. It always belongs to exactly one Span.</p>
+<p>Events have a definition similar to the Agent Spec Components, and they have the same descriptive fields:
+<code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code>, and <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.
+Additionally, they require a <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> that defines when the event occurred, and extensions of this class can
+add more attributes based on the event they represent, aimed at preserving all the relevant information
+related to the event being recorded.
+Events can also have Sensitive fields, that are declared and must be handled per Agent Spec guidelines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Event</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Unique identifier for the event. Typically generated from component type plus a unique token.</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Concrete type specifier for this event</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Name of the event, if applicable</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Description of the event, if applicable</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Dictionary</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>  <span class="c1"># Additional metadata that could be used for extra information</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># nanoseconds since epoch</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>timestamp: time of occurrence (ns). Producers should use monotonic clocks
+where possible and/or convert to wall-clock ns as configured by the runtime.</p></li>
+</ul>
+<p>Agent Spec Tracing defines a set of Event types with specific attributes, that you can find in the following sections.</p>
+</section>
+<section id="span">
+<h3>Span<a class="headerlink" href="#span" title="Permalink to this heading">#</a></h3>
+<p>A Span defines a time-bounded execution context. Each Span:</p>
+<ul class="simple">
+<li><p>starts at start_time (ns), ends at end_time (ns), end_time can be null if not closed.</p></li>
+<li><p>can contain zero or more Events.</p></li>
+<li><p>can be nested (child span has a parent span).</p></li>
+</ul>
+<p>Also Spans have a definition similar to the Agent Spec Components, and they share the same descriptive fields:
+<code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code>, and <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.
+Extensions of this Span can add more attributes based on the Span they represent.
+Attributes on a Span typically reflect configuration that applies to the whole
+duration of the Span (e.g., the Agent being executed, the LLM config, etc.).
+Spans can also have Sensitive fields, that are declared and must be handled per Agent Spec guidelines.</p>
+<p>Besides these attributes, Spans MUST also implement the following interface:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Span</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Unique identifier for the span. Typically generated from component type plus a unique token.</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Concrete type specifier for this span.</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Name of the span, if applicable</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Description of the span, if applicable</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Dictionary</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>  <span class="c1"># Additional metadata that could be used for extra information</span>
+    <span class="n">start_time</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">end_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Event</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: called when the span starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shutdown</span></code>: called when the span ends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_event</span></code>: called when an event has to be added to this Span. It MUST append the event in the <code class="docutils literal notranslate"><span class="pre">events</span></code> attribute.</p></li>
+</ul>
+<p>Lifecycle rules:</p>
+<ul class="simple">
+<li><p>Spans MUST have start_time when started, while end_time is set on end.</p></li>
+<li><p>Events added to a Span MUST have timestamps within [start_time, end_time], whenever end_time is known.</p></li>
+<li><p>Spans MAY contain child spans. Implementations SHOULD propagate correlation context so consumers can rebuild the tree.</p></li>
+</ul>
+<p>Agent Spec Tracing defines a set of Span types with specific attributes, that you can find in the following sections.</p>
+</section>
+<section id="spanprocessor">
+<h3>SpanProcessor<a class="headerlink" href="#spanprocessor" title="Permalink to this heading">#</a></h3>
+<p>A SpanProcessor receives callbacks when Spans start/end and when Events are added.
+Processors are meant to consume the Agent Spec traces (spans, events) emitted by the runtime adapter
+during the execution. They can be used to export traces to third parties consumers (e.g., to OpenTelemetry, files, UIs).</p>
+<p>A SpanProcessor MUST implement the following interface.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SpanProcessor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="n">Span</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="n">Span</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">startup</span></code>: called when an Agent Spec Tracing session starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shutdown</span></code>: called when an Agent Spec Tracing session ends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_start</span></code>: called when a Span starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_end</span></code>: called when a Span ends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_event</span></code>: called when an Event is added to a Span.</p></li>
+</ul>
+</section>
+<section id="trace">
+<h3>Trace<a class="headerlink" href="#trace" title="Permalink to this heading">#</a></h3>
+<p>A Trace groups all spans and events that belong to the same top-level assistant execution.
+It is the root where all the SpanProcessors that must be active during the assistant execution are declared.</p>
+<ul class="simple">
+<li><p>Opening a Trace SHOULD call <code class="docutils literal notranslate"><span class="pre">SpanProcessor.startup()</span></code> on all configured processors.</p></li>
+<li><p>Closing a Trace SHOULD call <code class="docutils literal notranslate"><span class="pre">SpanProcessor.shutdown()</span></code> on all configured processors.</p></li>
+</ul>
+</section>
+</section>
+<section id="standard-span-types">
+<h2>Standard Span Types<a class="headerlink" href="#standard-span-types" title="Permalink to this heading">#</a></h2>
+<p>This first version defines the following span types.
+All spans inherit the attributes of the base <code class="docutils literal notranslate"><span class="pre">Span</span></code> class.
+The attributes listed here are additional and span-specific.
+Fields marked sensitive MUST be handled as described in Security Considerations.</p>
+<section id="llmgenerationspan">
+<h3>LlmGenerationSpan<a class="headerlink" href="#llmgenerationspan" title="Permalink to this heading">#</a></h3>
+<p>Covers the whole LLM generation process.</p>
+<ul class="simple">
+<li><p>Starts: when the LLM generation request is received and the LLM call is
+performed.</p></li>
+<li><p>Ends: when the LLM output has been generated and is ready to be processed.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>llm_config</p></td>
+<td><p>The LlmConfig performing the generation</p></td>
+<td><p>LlmConfig</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="toolexecutionspan">
+<h3>ToolExecutionSpan<a class="headerlink" href="#toolexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Covers a tool execution (excluding client-side tools executed by the UI/client).</p>
+<ul class="simple">
+<li><p>Starts: when tool execution starts.</p></li>
+<li><p>Ends: when the tool execution completes and the result is ready to be processed.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="agentexecutionspan">
+<h3>AgentExecutionSpan<a class="headerlink" href="#agentexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Represents the execution of an Agent. May be nested for sub-agents.</p>
+<ul class="simple">
+<li><p>Starts: when the agent execution starts.</p></li>
+<li><p>Ends: when the agent execution completes and outputs are ready to process.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>agent</p></td>
+<td><p>The Agent being executed</p></td>
+<td><p>Agent</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="swarmexecutionspan">
+<h3>SwarmExecutionSpan<a class="headerlink" href="#swarmexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Specialization of AgentExecutionSpan for a Swarm Component.</p>
+<ul class="simple">
+<li><p>Starts: when swarm execution starts.</p></li>
+<li><p>Ends: when swarm execution completes and outputs are ready.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>swarm</p></td>
+<td><p>The Swarm being executed</p></td>
+<td><p>Swarm</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="managerworkersexecutionspan">
+<h3>ManagerWorkersExecutionSpan<a class="headerlink" href="#managerworkersexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Specialization of AgentExecutionSpan for a Manager-Workers pattern.</p>
+<ul class="simple">
+<li><p>Starts: when Manager-Workers execution starts.</p></li>
+<li><p>Ends: when the execution completes and outputs are ready.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>managerworkers</p></td>
+<td><p>The ManagerWorkers being executed</p></td>
+<td><p>ManagerWorkers</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="flowexecutionspan">
+<h3>FlowExecutionSpan<a class="headerlink" href="#flowexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Covers the execution of a Flow.</p>
+<ul class="simple">
+<li><p>Starts: when the Flow’s StartNode execution starts.</p></li>
+<li><p>Ends: when one of the Flow’s EndNode executions finishes.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>flow</p></td>
+<td><p>The Flow being executed</p></td>
+<td><p>Flow</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nodeexecutionspan">
+<h3>NodeExecutionSpan<a class="headerlink" href="#nodeexecutionspan" title="Permalink to this heading">#</a></h3>
+<p>Covers the execution of a single Node within a Flow.</p>
+<ul class="simple">
+<li><p>Starts: when the Node execution starts on the given inputs.</p></li>
+<li><p>Ends: when the Node execution ends and outputs are ready.</p></li>
+</ul>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 12.0%" />
+<col style="width: 8.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>node</p></td>
+<td><p>The Node being executed</p></td>
+<td><p>Node</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="standard-event-types">
+<h2>Standard Event Types<a class="headerlink" href="#standard-event-types" title="Permalink to this heading">#</a></h2>
+<p>All events are inherit the attributes defined in the base <code class="docutils literal notranslate"><span class="pre">Event</span></code> class.
+The following events define the default set for Agent Spec Tracing.
+For each, we specify when it is emitted and which attributes it carries.
+Fields marked sensitive MUST be handled as described in Security Considerations.</p>
+<section id="llm-events">
+<h3>LLM events<a class="headerlink" href="#llm-events" title="Permalink to this heading">#</a></h3>
+<section id="llmgenerationrequest">
+<h4>LlmGenerationRequest<a class="headerlink" href="#llmgenerationrequest" title="Permalink to this heading">#</a></h4>
+<p>An LLM generation request was received. Emitted when an LlmGenerationSpan starts.</p>
+<p>Attributes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>llm_config</p></td>
+<td><p>The LlmConfig performing the generation</p></td>
+<td><p>LlmConfig</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the generation request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>llm_generation_config</p></td>
+<td><p>The LLM generation parameters used for this call</p></td>
+<td><p>Optional[LlmGenerationConfig]</p></td>
+<td><p>null</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>prompt</p></td>
+<td><p>Prompt that will be sent to the LLM; a list of Message with at least content and role, optionally sender</p></td>
+<td><p>List[Message]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>tools</p></td>
+<td><p>Tools sent as part of the generation request</p></td>
+<td><p>Optional[List[Tool]]</p></td>
+<td><p>null</p></td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Message</span></code> model should be implemented as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Message</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model used to specify LLM message details in events and spans&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="s2">&quot;Identifier of the message&quot;</span>
+
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="s2">&quot;Content of the message&quot;</span>
+
+    <span class="n">sender</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="s2">&quot;Sender of the message&quot;</span>
+
+    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="s2">&quot;Role of the sender of the message. Typically &#39;user&#39;, &#39;assistant&#39;, or &#39;system&#39;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="llmgenerationresponse">
+<h4>LlmGenerationResponse<a class="headerlink" href="#llmgenerationresponse" title="Permalink to this heading">#</a></h4>
+<p>An LLM response was received. Emitted when an LlmGenerationSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>llm_config</p></td>
+<td><p>The LlmConfig performing the generation</p></td>
+<td><p>LlmConfig</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the generation request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>tool_calls</p></td>
+<td><p>Tool calls returned by the LLM. Each tool call should contain a <code class="docutils literal notranslate"><span class="pre">call_id</span></code> identifier, the <code class="docutils literal notranslate"><span class="pre">tool_name</span></code>,
+and the <code class="docutils literal notranslate"><span class="pre">arguments</span></code> with which the tool is being called as a string in JSON format.</p></td>
+<td><p>List[ToolCall]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>completion_id</p></td>
+<td><p>Identifier of the completion related to this response</p></td>
+<td><p>Optional[str]</p></td>
+<td><p>null</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>content</p></td>
+<td><p>The content of the response (assistant message text)</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ToolCall</span></code> model should be implemented as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ToolCall</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an LLM tool call.&quot;&quot;&quot;</span>
+
+    <span class="n">call_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="s2">&quot;Identifier of the tool call&quot;</span>
+
+    <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="s2">&quot;The name of the tool that should be called&quot;</span>
+
+    <span class="n">arguments</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="s2">&quot;The values of the arguments that should be passed to the tool, in JSON format&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="llmgenerationstreamingchunkreceived">
+<h4>LlmGenerationStreamingChunkReceived<a class="headerlink" href="#llmgenerationstreamingchunkreceived" title="Permalink to this heading">#</a></h4>
+<p>A streamed chunk was received during LLM generation.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>llm_config</p></td>
+<td><p>The LlmConfig performing the generation</p></td>
+<td><p>LlmConfig</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the generation request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>tool_calls</p></td>
+<td><p>Tool calls chunked by the LLM. Each tool call should contain a <code class="docutils literal notranslate"><span class="pre">call_id</span></code> identifier, the <code class="docutils literal notranslate"><span class="pre">tool_name</span></code>,
+and the <code class="docutils literal notranslate"><span class="pre">arguments</span></code> with which the tool is being called as a string in JSON format. The content of arguments
+should be considered as the delta compared to the last chunk received.</p></td>
+<td><p>List[ToolCall]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>completion_id</p></td>
+<td><p>Identifier of the parent completion (message or tool call) this chunk belongs to</p></td>
+<td><p>Optional[str]</p></td>
+<td><p>null</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>content</p></td>
+<td><p>The chunk content. This is the delta compared to the last chunk received.</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="tool-events">
+<h3>Tool events<a class="headerlink" href="#tool-events" title="Permalink to this heading">#</a></h3>
+<section id="toolexecutionrequest">
+<h4>ToolExecutionRequest<a class="headerlink" href="#toolexecutionrequest" title="Permalink to this heading">#</a></h4>
+<p>A tool execution request is received. Emitted when a ToolExecutionSpan starts (or a client tool is requested).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the tool execution request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>inputs</p></td>
+<td><p>Input values for the tool (one per input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="toolexecutionresponse">
+<h4>ToolExecutionResponse<a class="headerlink" href="#toolexecutionresponse" title="Permalink to this heading">#</a></h4>
+<p>A tool execution finishes and a result is received. Emitted when a ToolExecutionSpan ends (or a client tool result is received).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the tool execution request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>output</p></td>
+<td><p>Return value produced by the tool (one per output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="toolconfirmationrequest">
+<h4>ToolConfirmationRequest<a class="headerlink" href="#toolconfirmationrequest" title="Permalink to this heading">#</a></h4>
+<p>A tool confirmation is requested (e.g., human-in-the-loop approval before execution).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>tool_execution_request_id</p></td>
+<td><p>Identifier of the related tool execution request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>request_id</p></td>
+<td><p>Identifier of this confirmation request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="toolconfirmationresponse">
+<h4>ToolConfirmationResponse<a class="headerlink" href="#toolconfirmationresponse" title="Permalink to this heading">#</a></h4>
+<p>A tool confirmation response is received.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>tool_execution_request_id</p></td>
+<td><p>Identifier of the related tool execution request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>request_id</p></td>
+<td><p>Identifier of the confirmation request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>execution_confirmed</p></td>
+<td><p>Whether execution was confirmed</p></td>
+<td><p>bool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="agenticcomponent-events">
+<h3>AgenticComponent events<a class="headerlink" href="#agenticcomponent-events" title="Permalink to this heading">#</a></h3>
+<section id="agentexecutionstart">
+<h4>AgentExecutionStart<a class="headerlink" href="#agentexecutionstart" title="Permalink to this heading">#</a></h4>
+<p>Emitted when an AgentExecutionSpan starts.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>agent</p></td>
+<td><p>The Agent being executed</p></td>
+<td><p>Agent</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>inputs</p></td>
+<td><p>Inputs used for the agent execution (one per input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="agentexecutionend">
+<h4>AgentExecutionEnd<a class="headerlink" href="#agentexecutionend" title="Permalink to this heading">#</a></h4>
+<p>Emitted when an AgentExecutionSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>agent</p></td>
+<td><p>The Agent being executed</p></td>
+<td><p>Agent</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>outputs</p></td>
+<td><p>Outputs produced by the agent (one per output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="managerworkersexecutionstart">
+<h4>ManagerWorkersExecutionStart<a class="headerlink" href="#managerworkersexecutionstart" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a ManagerWorkersExecutionSpan starts.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>managerworkers</p></td>
+<td><p>The ManagerWorkers being executed</p></td>
+<td><p>ManagerWorkers</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>inputs</p></td>
+<td><p>Inputs used for execution (one per input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="managerworkersexecutionend">
+<h4>ManagerWorkersExecutionEnd<a class="headerlink" href="#managerworkersexecutionend" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a ManagerWorkersExecutionSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>managerworkers</p></td>
+<td><p>The ManagerWorkers being executed</p></td>
+<td><p>ManagerWorkers</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>outputs</p></td>
+<td><p>Outputs produced (one per output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="swarmexecutionstart">
+<h4>SwarmExecutionStart<a class="headerlink" href="#swarmexecutionstart" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a SwarmExecutionSpan starts.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>swarm</p></td>
+<td><p>The Swarm being executed</p></td>
+<td><p>Swarm</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>inputs</p></td>
+<td><p>Inputs used for the swarm execution (one per input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="swarmexecutionend">
+<h4>SwarmExecutionEnd<a class="headerlink" href="#swarmexecutionend" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a SwarmExecutionSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>swarm</p></td>
+<td><p>The Swarm being executed</p></td>
+<td><p>Swarm</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>outputs</p></td>
+<td><p>Outputs produced (one per output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="flow-events">
+<h3>Flow events<a class="headerlink" href="#flow-events" title="Permalink to this heading">#</a></h3>
+<section id="flowexecutionstart">
+<h4>FlowExecutionStart<a class="headerlink" href="#flowexecutionstart" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a FlowExecutionSpan starts.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>flow</p></td>
+<td><p>The Flow being executed</p></td>
+<td><p>Flow</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>inputs</p></td>
+<td><p>Inputs used by the flow (one per StartNode input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="flowexecutionend">
+<h4>FlowExecutionEnd<a class="headerlink" href="#flowexecutionend" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a FlowExecutionSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 21.6%" />
+<col style="width: 37.3%" />
+<col style="width: 19.6%" />
+<col style="width: 11.8%" />
+<col style="width: 9.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>flow</p></td>
+<td><p>The Flow being executed</p></td>
+<td><p>Flow</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>outputs</p></td>
+<td><p>Outputs produced by the flow (one per flow output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>branch_selected</p></td>
+<td><p>Exit branch selected at the end of the Flow</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nodeexecutionstart">
+<h4>NodeExecutionStart<a class="headerlink" href="#nodeexecutionstart" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a NodeExecutionSpan starts.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>node</p></td>
+<td><p>The Node being executed</p></td>
+<td><p>Node</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>inputs</p></td>
+<td><p>Inputs used by the node (one per node input property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nodeexecutionend">
+<h4>NodeExecutionEnd<a class="headerlink" href="#nodeexecutionend" title="Permalink to this heading">#</a></h4>
+<p>Emitted when a NodeExecutionSpan ends.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 21.6%" />
+<col style="width: 37.3%" />
+<col style="width: 19.6%" />
+<col style="width: 11.8%" />
+<col style="width: 9.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>node</p></td>
+<td><p>The Node being executed</p></td>
+<td><p>Node</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>outputs</p></td>
+<td><p>Outputs produced by the node (one per node output property)</p></td>
+<td><p>dict[str, any]</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>branch_selected</p></td>
+<td><p>Exit branch selected at the end of the Node</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="conversation-and-control-events">
+<h3>Conversation and control events<a class="headerlink" href="#conversation-and-control-events" title="Permalink to this heading">#</a></h3>
+<section id="conversationmessageadded">
+<h4>ConversationMessageAdded<a class="headerlink" href="#conversationmessageadded" title="Permalink to this heading">#</a></h4>
+<p>A message was added to the conversation.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>message</p></td>
+<td><p>The message added; must contain at least content and role, optionally sender</p></td>
+<td><p>Message</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="exceptionraised">
+<h4>ExceptionRaised<a class="headerlink" href="#exceptionraised" title="Permalink to this heading">#</a></h4>
+<p>An exception occurred during execution.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 21.8%" />
+<col style="width: 45.5%" />
+<col style="width: 14.5%" />
+<col style="width: 9.1%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>exception_type</p></td>
+<td><p>Type of the exception</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>exception_message</p></td>
+<td><p>Exception message</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>exception_stacktrace</p></td>
+<td><p>Stacktrace of the exception, if available</p></td>
+<td><p>Optional[str]</p></td>
+<td><p>null</p></td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="humaninthelooprequest">
+<h4>HumanInTheLoopRequest<a class="headerlink" href="#humaninthelooprequest" title="Permalink to this heading">#</a></h4>
+<p>A human-in-the-loop intervention is required; execution is interrupted until a response.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>request_id</p></td>
+<td><p>Identifier of the human-in-the-loop request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>content</p></td>
+<td><p>Request content forwarded to the user</p></td>
+<td><p>dict[str, any]</p></td>
+<td><p>{} (empty object)</p></td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="humanintheloopresponse">
+<h4>HumanInTheLoopResponse<a class="headerlink" href="#humanintheloopresponse" title="Permalink to this heading">#</a></h4>
+<p>A HITL response is received; execution resumes.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>request_id</p></td>
+<td><p>Identifier of the HITL request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>content</p></td>
+<td><p>Response content received from the user</p></td>
+<td><p>dict[str, any]</p></td>
+<td><p>{} (empty object)</p></td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="deterministic-identifiers-and-correlation">
+<h3>Deterministic identifiers and correlation<a class="headerlink" href="#deterministic-identifiers-and-correlation" title="Permalink to this heading">#</a></h3>
+<p>Some events define correlation identifiers to allow consumers to link request/response and other events.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p>request_id: unique identifier of a single LLM or Tool execution request within a Span.</p></li>
+<li><p>completion_id: identifier of a completion (LLM message or tool-call) which may receive streaming chunks.</p></li>
+<li><p>tool_execution_request_id: identifier of a tool execution for confirmation.</p></li>
+</ul>
+<p>Runtimes SHOULD ensure uniqueness within a Span and consistency across all related events.</p>
+</section>
+</section>
+<section id="pyagentspectracing-python-materialization">
+<h2>PyAgentSpecTracing (Python materialization)<a class="headerlink" href="#pyagentspectracing-python-materialization" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">pyagentspec.tracing</span></code> subpackage of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code> provides convenient Pydantic-based models and interfaces so that:</p>
+<ul class="simple">
+<li><p>Producers (adapters, runtimes) can emit spans/events according to Agent Spec Tracing standards.</p></li>
+<li><p>Consumers (exporters, UIs) can receive and consume them via SpanProcessors.</p></li>
+</ul>
+<section id="emitting-traces-producer-example">
+<h3>Emitting traces (producer example)<a class="headerlink" href="#emitting-traces-producer-example" title="Permalink to this heading">#</a></h3>
+<p>Here’s an example of how adapters can emit traces (i.e., start and close Spans, emit Events)
+extracted from the AgentNode implementation of the LangGraph’s adapter in <code class="docutils literal notranslate"><span class="pre">pyagentspec==26.1.0</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">AgentExecutionSpan</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AgentExecution - </span><span class="si">{</span><span class="n">agentspec_agent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agentspec_agent</span><span class="p">)</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
+    <span class="n">span</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">AgentExecutionStart</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="n">span</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">AgentExecutionEnd</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="consuming-traces-consumer-example">
+<h3>Consuming traces (consumer example)<a class="headerlink" href="#consuming-traces-consumer-example" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">OpenTelemetrySpanProcessor</span><span class="p">(</span><span class="n">SpanProcessor</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdk_processor</span><span class="p">:</span> <span class="n">OtelSdkSpanProcessor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sdk_processor</span> <span class="o">=</span> <span class="n">sdk_processor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">otel_span</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_otel_span</span><span class="p">(</span><span class="n">span</span><span class="p">)</span>
+        <span class="n">otel_span</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="n">span</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sdk_processor</span><span class="o">.</span><span class="n">on_start</span><span class="p">(</span><span class="n">span</span><span class="o">=</span><span class="n">otel_span</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">otel_span</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_otel_span</span><span class="p">(</span><span class="n">span</span><span class="p">)</span>
+        <span class="n">otel_span</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="n">end_time</span><span class="o">=</span><span class="n">span</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sdk_processor</span><span class="o">.</span><span class="n">on_end</span><span class="p">(</span><span class="n">span</span><span class="o">=</span><span class="n">otel_span</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="n">Span</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Other processors may use this hook to stream events</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">startup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sdk_processor</span><span class="o">.</span><span class="n">shutdown</span>
+</pre></div>
+</div>
+</section>
+<section id="interoperability-examples">
+<h3>Interoperability examples<a class="headerlink" href="#interoperability-examples" title="Permalink to this heading">#</a></h3>
+<p>Tracing with LangGraph</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.langgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openinference_spanprocessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArizePhoenixSpanProcessor</span>
+<span class="c1"># Assuming this package implements a SpanProcessor that takes the Agent Spec Traces and sends them to a Phoenix Arize server</span>
+
+<span class="n">agent_json</span> <span class="o">=</span> <span class="n">read_json_file</span><span class="p">(</span><span class="s2">&quot;my/agentspec/agent.json&quot;</span><span class="p">)</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="n">ArizePhoenixSpanProcessor</span><span class="p">(</span><span class="n">mask_sensitive_information</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;agentspec-tracing-test&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">Trace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;agentspec_langgraph_demo&quot;</span><span class="p">,</span> <span class="n">span_processors</span><span class="o">=</span><span class="p">[</span><span class="n">processor</span><span class="p">])</span> <span class="k">as</span> <span class="n">trace</span><span class="p">:</span>
+    <span class="n">agent</span> <span class="o">=</span> <span class="n">AgentSpecLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">agent_json</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[]})</span>
+</pre></div>
+</div>
+<p>Tracing with WayFlow</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.agentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.agentspec.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecTracingEventListener</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wayflowcore.events.eventlistener</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_event_listeners</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openinference_spanprocessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArizePhoenixSpanProcessor</span>
+
+<span class="n">agent_json</span> <span class="o">=</span> <span class="n">read_json_file</span><span class="p">(</span><span class="s2">&quot;my/agentspec/agent.json&quot;</span><span class="p">)</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="n">ArizePhoenixSpanProcessor</span><span class="p">(</span><span class="n">mask_sensitive_information</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;agentspec-tracing-test&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">register_event_listeners</span><span class="p">([</span><span class="n">AgentSpecTracingEventListener</span><span class="p">()]):</span>
+    <span class="k">with</span> <span class="n">Trace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;agentspec_wayflow_demo&quot;</span><span class="p">,</span> <span class="n">span_processors</span><span class="o">=</span><span class="p">[</span><span class="n">processor</span><span class="p">])</span> <span class="k">as</span> <span class="n">trace</span><span class="p">:</span>
+        <span class="n">agent</span> <span class="o">=</span> <span class="n">AgentSpecLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">agent_json</span><span class="p">)</span>
+        <span class="n">conversation</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">start_conversation</span><span class="p">()</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">conversation</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec Tracing inherits all security requirements from Agent Spec (see <a class="reference internal" href="../security.html"><span class="doc">Security Considerations</span></a>).
+Additionally, tracing frequently includes potentially sensitive information (PII), including, but not limited to:</p>
+<ul class="simple">
+<li><p>LLM prompts and generated content</p></li>
+<li><p>Tool inputs/outputs</p></li>
+<li><p>Exception messages and stacktraces</p></li>
+<li><p>Conversation messages</p></li>
+</ul>
+<section id="implementing-a-spanprocessor">
+<h3>Implementing a SpanProcessor<a class="headerlink" href="#implementing-a-spanprocessor" title="Permalink to this heading">#</a></h3>
+<p>Key points:</p>
+<ul class="simple">
+<li><p><strong>Async / non-blocking</strong> - keep the span processor off the critical path to avoid impacting agent’s performance.</p></li>
+<li><p><strong>Robust error handling</strong> - never raise from span processor methods; drop or queue on failure.</p></li>
+<li><p><strong>Back-pressure</strong> - apply rate limits, size limits, or batch Spans and Events to avoid DoS on the collector.</p></li>
+</ul>
+</section>
+<section id="sensitive-fields">
+<h3>Sensitive fields<a class="headerlink" href="#sensitive-fields" title="Permalink to this heading">#</a></h3>
+<p>Each event table above flags attributes that are considered sensitive.
+Producers SHOULD mark and/or emit them using Agent Spec’s Sensitive Field mechanism where
+applicable; consumers (SpanProcessors) SHOULD:</p>
+<ul class="simple">
+<li><p>Mask or omit sensitive fields by default when exporting traces.</p></li>
+<li><p>Provide an explicit configuration to unmask for trusted environments.</p></li>
+<li><p>Avoid logging or exporting sensitive data inadvertently.</p></li>
+</ul>
+<p>Guidelines:</p>
+<ul class="simple">
+<li><p>Attribute-level masking: redact entire values or apply strongly irreversible
+masking (e.g., replace content with fixed placeholders or hashes as policy dictates).</p></li>
+<li><p>Downstream mappers (e.g., OpenTelemetry exporters) MUST NOT downgrade masking guarantees.</p></li>
+<li><p>When masking affects correlation (e.g., truncating request_id), preserve minimal
+non-sensitive identifiers for linkage.</p></li>
+</ul>
+</section>
+</section>
+<section id="design-notes-and-best-practices">
+<h2>Design Notes and Best Practices<a class="headerlink" href="#design-notes-and-best-practices" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Event emission ordering: Within a span, events SHOULD be in timestamp order.</p></li>
+<li><p>Time units: Use nanoseconds since epoch for timestamps and start/end times
+for consistency with common tracing systems.</p></li>
+<li><p>Nesting: Prefer nesting spans to represent sub-operations (e.g., NodeExecutionSpan
+under FlowExecutionSpan, ToolExecutionSpan under AgentExecutionSpan).</p></li>
+<li><p>Exceptions: Emit ExceptionRaised with type/message/stacktrace and consider adding
+it before ending the current span or on a dedicated error span, depending on runtime design.</p></li>
+</ul>
+</section>
+<section id="faq-and-open-questions">
+<h2>FAQ and Open Questions<a class="headerlink" href="#faq-and-open-questions" title="Permalink to this heading">#</a></h2>
+<section id="naming-alignment-with-observability">
+<h3>Naming alignment with observability<a class="headerlink" href="#naming-alignment-with-observability" title="Permalink to this heading">#</a></h3>
+<p>This specification uses tracing terminology common in OpenTelemetry (Trace,
+Span, Event, SpanProcessor) to leverage community familiarity.</p>
+</section>
+<section id="environment-context">
+<h3>Environment context<a class="headerlink" href="#environment-context" title="Permalink to this heading">#</a></h3>
+<p>This version focuses on agentic execution tracing. Future versions may add
+execution-environment spans or include environment metadata on Trace.</p>
+</section>
+</section>
+<section id="references-and-cross-links">
+<h2>References and Cross-links<a class="headerlink" href="#references-and-cross-links" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Agent Spec language specification: <a class="reference internal" href="language_spec_nightly.html"><span class="doc">Agent Spec specification (nightly version 26.1.0)</span></a></p></li>
+<li><p>Security guidelines: <a class="reference internal" href="../security.html"><span class="doc">Security Considerations</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-and-goals">Scope and goals</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-concepts">Core Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#event">Event</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#span">Span</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spanprocessor">SpanProcessor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trace">Trace</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-span-types">Standard Span Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llmgenerationspan">LlmGenerationSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionspan">ToolExecutionSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agentexecutionspan">AgentExecutionSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#swarmexecutionspan">SwarmExecutionSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managerworkersexecutionspan">ManagerWorkersExecutionSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flowexecutionspan">FlowExecutionSpan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nodeexecutionspan">NodeExecutionSpan</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-event-types">Standard Event Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-events">LLM events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#llmgenerationrequest">LlmGenerationRequest</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#llmgenerationresponse">LlmGenerationResponse</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#llmgenerationstreamingchunkreceived">LlmGenerationStreamingChunkReceived</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-events">Tool events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionrequest">ToolExecutionRequest</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionresponse">ToolExecutionResponse</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolconfirmationrequest">ToolConfirmationRequest</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolconfirmationresponse">ToolConfirmationResponse</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agenticcomponent-events">AgenticComponent events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#agentexecutionstart">AgentExecutionStart</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#agentexecutionend">AgentExecutionEnd</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#managerworkersexecutionstart">ManagerWorkersExecutionStart</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#managerworkersexecutionend">ManagerWorkersExecutionEnd</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#swarmexecutionstart">SwarmExecutionStart</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#swarmexecutionend">SwarmExecutionEnd</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-events">Flow events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#flowexecutionstart">FlowExecutionStart</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#flowexecutionend">FlowExecutionEnd</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nodeexecutionstart">NodeExecutionStart</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nodeexecutionend">NodeExecutionEnd</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conversation-and-control-events">Conversation and control events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conversationmessageadded">ConversationMessageAdded</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptionraised">ExceptionRaised</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#humaninthelooprequest">HumanInTheLoopRequest</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#humanintheloopresponse">HumanInTheLoopResponse</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deterministic-identifiers-and-correlation">Deterministic identifiers and correlation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspectracing-python-materialization">PyAgentSpecTracing (Python materialization)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emitting-traces-producer-example">Emitting traces (producer example)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consuming-traces-consumer-example">Consuming traces (consumer example)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interoperability-examples">Interoperability examples</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#security-considerations">Security Considerations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-a-spanprocessor">Implementing a SpanProcessor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitive-fields">Sensitive fields</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-notes-and-best-practices">Design Notes and Best Practices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#faq-and-open-questions">FAQ and Open Questions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naming-alignment-with-observability">Naming alignment with observability</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-context">Environment context</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references-and-cross-links">References and Cross-links</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1409 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>How to Build a Swarm of Agents &#8212; PyAgentSpec 26.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_swarm';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '26.1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to Build a Manager-Worker Multi-Agent System" href="howto_managerworkers.html" />
+    <link rel="prev" title="How to Use A2A Agents" href="howto_a2aagent.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">How-to guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-to Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Build a Swarm of Agents</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="how-to-build-a-swarm-of-agents">
+<h1>How to Build a Swarm of Agents<a class="headerlink" href="#how-to-build-a-swarm-of-agents" title="Permalink to this heading">#</a></h1>
+<p>The Swarm pattern is a type of agentic pattern that takes inspiration from <a class="reference external" href="https://en.wikipedia.org/wiki/Swarm_intelligence">Swarm intelligence</a>,
+a phenomenon commonly seen in ant colonies, bee hives, and bird flocks, where coordinated behavior emerges from many simple actors rather than a central controller.
+In this agentic pattern, each agent is assigned a specific responsibility and can delegate tasks to other specialized agents to improve overall performance.</p>
+<p><strong>When to use the Swarm pattern?</strong></p>
+<p>Compared to the <strong>hierarchical pattern</strong>, the communication in <a class="reference internal" href="../api/agenticpatterns.html#swarm"><span class="std std-ref">Swarm</span></a> pattern reduces the number of LLM calls
+as showcased in the diagram below.</p>
+<a class="reference internal image-reference" href="../_images/hierarchical_vs_swarm.svg"><img alt="How the Swarm pattern compares to hierarchical multi-agent pattern" class="align-center" height="357" src="../_images/hierarchical_vs_swarm.svg" width="656" /></a>
+<p>In the <strong>hierarchical pattern</strong>, a route User → Agent K → User will require:</p>
+<ol class="arabic simple">
+<li><p>All intermediate agents to call the correct sub-agent to go down to the Agent K.</p></li>
+<li><p>The Agent K to generate its answer.</p></li>
+<li><p>All intermediate agents to relay the answer back to the user.</p></li>
+</ol>
+<p>In the <strong>swarm pattern</strong>, a route User → Agent K → User will require:</p>
+<ol class="arabic simple">
+<li><p>The first agent to call or handoff the conversation the Agent K (provided that the developer allows the connection between the two agents).</p></li>
+<li><p>The Agent K to generate its answer.</p></li>
+<li><p>The first agent to relay the answer (only when NOT using handoff; with handoff the Agent K <strong>replaces</strong> the first agent and is thus directly communicating with the human user)</p></li>
+</ol>
+<hr class="docutils" />
+<p>This guide presents an example of a simple Swarm of agents applied to a medical use case.</p>
+<a class="reference internal image-reference" href="../_images/swarm_example.svg"><img alt="Example of a Swarm agent pattern for medical application" class="align-center" height="323" src="../_images/swarm_example.svg" width="584" /></a>
+<p>This guide will walk you through the following steps:</p>
+<ol class="arabic simple">
+<li><p>Define the configuration for an LLM model</p></li>
+<li><p>Define tools for the agents</p></li>
+<li><p>Define agents equipped with tools</p></li>
+<li><p>Define a Swarm using the defined agents</p></li>
+</ol>
+<p>It also covers how to enable <code class="docutils literal notranslate"><span class="pre">handoff</span></code> when building the <code class="docutils literal notranslate"><span class="pre">Swarm</span></code>.</p>
+<section id="basic-implementation">
+<h2>Basic implementation<a class="headerlink" href="#basic-implementation" title="Permalink to this heading">#</a></h2>
+<section id="define-the-llm-model">
+<h3>1. Define the LLM model<a class="headerlink" href="#define-the-llm-model" title="Permalink to this heading">#</a></h3>
+<p>The decision mechanism of Agents is powered by a Large Language Model.
+Defining the agent with Agent Spec requires to pass the configuration for the LLM.
+There are several options such as using OCI GenAI Service or self hosting a model with vLLM.</p>
+<p>Start by defining the LLM configuration to be shared across all agents.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">OpenAI Compatible Model</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">OCI GenAI</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">vLLM</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Ollama</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;VLLM_URL&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciGenAiConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
+
+<span class="n">client_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci Client Config&quot;</span><span class="p">,</span>
+    <span class="n">service_endpoint</span><span class="o">=</span><span class="s2">&quot;https://url-to-service-endpoint.com&quot;</span><span class="p">,</span>
+    <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
+    <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span>
+<span class="p">)</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OciGenAiConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Oci GenAI Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;provider.model-id&quot;</span><span class="p">,</span>
+    <span class="n">compartment_id</span><span class="o">=</span><span class="s2">&quot;compartment-id&quot;</span><span class="p">,</span>
+    <span class="n">client_config</span><span class="o">=</span><span class="n">client_config</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Llama 3.1 8B instruct&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;VLLM_URL&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaConfig</span>
+
+<span class="n">llm_config</span> <span class="o">=</span> <span class="n">OllamaConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ollama Config&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model-id&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="define-tools">
+<h3>2. Define tools<a class="headerlink" href="#define-tools" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListProperty</span><span class="p">,</span> <span class="n">StringProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerTool</span>
+
+<span class="n">symptoms_checker</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Symptoms checker&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Checks symptoms against the medical knowledge base.&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">ListProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;symptoms&quot;</span><span class="p">,</span> <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">())],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">ListProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;possible_conditions&quot;</span><span class="p">,</span> <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">())],</span>
+<span class="p">)</span>
+
+<span class="n">get_medication_info</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Get medication info&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Provides availability and information about a medication.&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;drug_name&quot;</span><span class="p">)],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;medication_info&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="n">knowledge_tool</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Knowledge tool&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot; Provides diagnosis and treatment information for skin conditions.&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">)],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;treatment_info&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/tools.html#servertool"><span class="std std-ref">ServerTool</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To require user confirmation for a tool, set <code class="docutils literal notranslate"><span class="pre">requires_confirmation=True</span></code> (see <a class="reference internal" href="../api/tools.html#tool"><span class="std std-ref">Tool</span></a>).
+This signals that execution environments should require user approval before running the tool, which is useful
+for tools performing sensitive actions.</p>
+</div>
+</section>
+<section id="define-agents-equipped-with-tools">
+<h3>3. Define agents equipped with tools<a class="headerlink" href="#define-agents-equipped-with-tools" title="Permalink to this heading">#</a></h3>
+<section id="general-practitioner-agent">
+<h4>General Practitioner Agent<a class="headerlink" href="#general-practitioner-agent" title="Permalink to this heading">#</a></h4>
+<p>The first agent the user interacts with is the General Practitioner Agent.</p>
+<p>This agent is equipped with the symptoms checker tool, and can interact with the <strong>Pharmacist Agent</strong>
+as well as the <strong>Dermatologist Agent</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+<span class="n">general_practitioner_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an helpful general practitioner LLM doctor responsible for handling patient consultations.</span>
+<span class="s2">Your goal is to assess patients&#39; symptoms, provide initial diagnoses, pescribe medication for</span>
+<span class="s2">mild conditions or refer to other specialists as needed.</span>
+
+<span class="s2">## When to Use Each Tool</span>
+<span class="s2">- symptoms_checker: Use this to look up possible conditions based on symptoms reported by the patient.</span>
+
+<span class="s2">## When to query other Agents</span>
+<span class="s2">- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.</span>
+<span class="s2">- Dermatologist: If the patient has a skin condition, ask expert advice/diagnosis to the Dermatologist after the initial exchange.</span>
+
+<span class="s2"># Specific instructions</span>
+<span class="s2">## Initial exchange</span>
+<span class="s2">When a patient first shares symptoms ask about for exactly 1 round of questions, consisting of asking about medical history and</span>
+<span class="s2">simple questions (e.g. do they have known allergies, when did the symptoms started, did they already tried some treatment/medication, etc)).</span>
+<span class="s2">Always ask for this one round of information to the user before prescribing medication / referring to other agents.</span>
+
+<span class="s2">## Identifying condition</span>
+<span class="s2">Use the symptoms checker to confirm the condition (for mild conditions only. For other conditions, refer to specialists).</span>
+
+<span class="s2">## Mild conditions</span>
+<span class="s2">* If the patient has a mild cold, prescribe medicationA.</span>
+<span class="s2">    - Give the condition description and prescription to the Pharmacist.</span>
+
+<span class="s2">## Skin conditions</span>
+<span class="s2">* If the patient has a skin condition, ask for expert advice/diagnosis from the Dermatologist.</span>
+<span class="s2">Here, you don&#39;t need to ask for the user confirmation. Directly call the Dermatologist</span>
+<span class="s2">    - Provide the patient&#39;s symptoms/initial hypothesis to the Dermatologist and ask for a diagnosis.</span>
+<span class="s2">    - The Dermatologist may query the Pharmacist to confirm the availability of the prescribed medication.</span>
+<span class="s2">    - Once the treatment is confirmed, pass on the prescription to the patient and ask them to follow the instructions.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">general_practitioner</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GeneralPractitioner&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;General Practitioner. Primary point of contact for patients, handles general medical inquiries, provides initial diagnoses, and manages referrals.&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">symptoms_checker</span><span class="p">],</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="n">general_practitioner_system_prompt</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/agent.html#agent"><span class="std std-ref">Agent</span></a></p>
+</section>
+<section id="pharmacist-agent">
+<h4>Pharmacist Agent<a class="headerlink" href="#pharmacist-agent" title="Permalink to this heading">#</a></h4>
+<p>The Pharmacist Agent is equipped with the tool to obtain medication information.
+This agent cannot initiate a discussion with the other agents in the Swarm.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pharmacist_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an helpful Pharmacist LLM Agent responsible for giving information about medication.</span>
+<span class="s2">Your goal is to answer queries from the General Practitioner Doctor about medication information</span>
+<span class="s2">and availabilities.</span>
+
+<span class="s2">## When to Use Each Tool</span>
+<span class="s2">- get_medication_info: Use this to look up availability and information about a specific medication.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">pharmacist</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pharmacist&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Pharmacist. Gives availability and information about specific medication.&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_medication_info</span><span class="p">],</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="n">pharmacist_system_prompt</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="dermatologist-agent">
+<h4>Dermatologist Agent<a class="headerlink" href="#dermatologist-agent" title="Permalink to this heading">#</a></h4>
+<p>The final agent in the Swarm is the Dermatologist agent which is equipped with a tool to query a skin condition knowledge base.
+This agent can initiate a discussion with the <strong>Pharmacist Agent</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dermatologist_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an helpful Dermatologist LLM Agent responsible for diagnosing and treating skin conditions.</span>
+<span class="s2">Your goal is to assess patients&#39; symptoms, provide accurate diagnoses, and prescribe effective treatments.</span>
+
+<span class="s2">## When to Use Each Tool</span>
+<span class="s2">- knowledge_tool: Use this to look up diagnosis and treatment information for specific skin conditions.</span>
+
+<span class="s2">## When to query other Agents</span>
+<span class="s2">- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.</span>
+
+<span class="s2"># Specific instructions</span>
+<span class="s2">## Initial exchange</span>
+<span class="s2">When a patient&#39;s symptoms are referred to you by the General Practitioner, review the symptoms and use the knowledge tool to confirm the diagnosis.</span>
+<span class="s2">## Prescription</span>
+<span class="s2">Prescribe the recommended treatment for the diagnosed condition and query the Pharmacist to confirm the availability of the prescribed medication.</span>
+
+<span class="s2">When answering back to the General Practitioner, describe your diagnosis and the prescription.</span>
+<span class="s2">Tell the General Practitioner that you already checked with the pharmacist for availability.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">dermatologist</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dermatologist&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dermatologist. Diagnoses and treats skin conditions.&quot;</span><span class="p">,</span>
+    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">knowledge_tool</span><span class="p">],</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="n">dermatologist_system_prompt</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="define-a-swarm">
+<h3>4. Define a Swarm<a class="headerlink" href="#define-a-swarm" title="Permalink to this heading">#</a></h3>
+<p>The Swarm has two main parameters:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> — the initial agent the user interacts with (in this example, the General Practitioner Agent).</p></li>
+<li><p>A list of relationships between agents.</p></li>
+</ul>
+<p>Additionally, the list of “relationships” between the agents must be defined.</p>
+<p>Each relationship is defined as a tuple of Caller Agent and Recipient Agent.</p>
+<p>In this example, the General Practitioner Doctor Agent can initiate discussions with both the Pharmacist and the Dermatologist.
+The Dermatologist can also initiate discussions with the Pharmacist.</p>
+<p>When invoked, each agent can either respond to its caller (a human user or another agent) or choose to initiate a discussion with
+another agent if they are given the capability to do so.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.swarm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Swarm</span>
+
+<span class="n">assistant</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
+    <span class="n">first_agent</span><span class="o">=</span><span class="n">general_practitioner</span><span class="p">,</span>
+    <span class="n">relationships</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">dermatologist</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">dermatologist</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/agenticpatterns.html#swarm"><span class="std std-ref">Swarm</span></a></p>
+</section>
+<section id="export-the-agent-spec-configuration">
+<h3>5. Export the Agent Spec configuration<a class="headerlink" href="#export-the-agent-spec-configuration" title="Permalink to this heading">#</a></h3>
+<p>The Agent Spec configuration is generated in JSON format.
+These configurations can be loaded and executed in Agent Spec-compatible systems such as the WayFlow runtime.
+See, for example, <a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">How to Execute Agent Spec Configurations with WayFlow</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+
+<span class="n">serialized_assistant</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">assistant</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>API Reference: <a class="reference internal" href="../api/serialization.html#serialize"><span class="std std-ref">AgentSpecSerializer</span></a></p>
+<p>Here is what the <strong>Agent Spec representation will look like ↓</strong></p>
+<details class="summary-click-here-to-see-the-assistant-configuration">
+<summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0625ef9d-e1a7-4f8c-852f-1077b3b9383a&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;first_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;55f143da-4dff-466e-bc5c-f8da5bf8c22a&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;relationships&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;55f143da-4dff-466e-bc5c-f8da5bf8c22a&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;13265e9c-f26e-437d-8f4f-02bbf9e33463&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;55f143da-4dff-466e-bc5c-f8da5bf8c22a&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5c88130e-24f9-4ec0-8009-93a91c4ccd6e&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5c88130e-24f9-4ec0-8009-93a91c4ccd6e&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;13265e9c-f26e-437d-8f4f-02bbf9e33463&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;handoff&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;$referenced_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;55f143da-4dff-466e-bc5c-f8da5bf8c22a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;55f143da-4dff-466e-bc5c-f8da5bf8c22a&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GeneralPractitioner&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;General Practitioner. Primary point of contact for patients, handles general medical inquiries, provides initial diagnoses, and manages referrals.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5fd42c44-d0e7-484c-bf6b-1e9649d42576&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an helpful general practitioner LLM doctor responsible for handling patient consultations.\nYour goal is to assess patients&#39; symptoms, provide initial diagnoses, pescribe medication for\nmild conditions or refer to other specialists as needed.\n\n## When to Use Each Tool\n- symptoms_checker: Use this to look up possible conditions based on symptoms reported by the patient.\n\n## When to query other Agents\n- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.\n- Dermatologist: If the patient has a skin condition, ask expert advice/diagnosis to the Dermatologist after the initial exchange.\n\n# Specific instructions\n## Initial exchange\nWhen a patient first shares symptoms ask about for exactly 1 round of questions, consisting of asking about medical history and\nsimple questions (e.g. do they have known allergies, when did the symptoms started, did they already tried some treatment/medication, etc)).\nAlways ask for this one round of information to the user before prescribing medication / referring to other agents.\n\n## Identifying condition\nUse the symptoms checker to confirm the condition (for mild conditions only. For other conditions, refer to specialists).\n\n## Mild conditions\n* If the patient has a mild cold, prescribe medicationA.\n    - Give the condition description and prescription to the Pharmacist.\n\n## Skin conditions\n* If the patient has a skin condition, ask for expert advice/diagnosis from the Dermatologist.\nHere, you don&#39;t need to ask for the user confirmation. Directly call the Dermatologist\n    - Provide the patient&#39;s symptoms/initial hypothesis to the Dermatologist and ask for a diagnosis.\n    - The Dermatologist may query the Pharmacist to confirm the availability of the prescribed medication.\n    - Once the treatment is confirmed, pass on the prescription to the patient and ask them to follow the instructions.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ServerTool&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;825e06ad-512c-4052-8757-1448e462dc30&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Symptoms checker&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Checks symptoms against the medical knowledge base.&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;symptoms&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                            </span><span class="p">},</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;possible_conditions&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                            </span><span class="p">},</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">]</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;5fd42c44-d0e7-484c-bf6b-1e9649d42576&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VllmConfig&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5fd42c44-d0e7-484c-bf6b-1e9649d42576&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;meta.llama-3.3-70b-instruct&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;default_generation_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LLAMA_PLACEHOLDER_LINK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;model_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model_id&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;13265e9c-f26e-437d-8f4f-02bbf9e33463&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;13265e9c-f26e-437d-8f4f-02bbf9e33463&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pharmacist&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pharmacist. Gives availability and information about specific medication.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5fd42c44-d0e7-484c-bf6b-1e9649d42576&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an helpful Pharmacist LLM Agent responsible for giving information about medication.\nYour goal is to answer queries from the General Practitioner Doctor about medication information\nand availabilities.\n\n## When to Use Each Tool\n- get_medication_info: Use this to look up availability and information about a specific medication.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ServerTool&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;7a81189d-e3ed-4fa5-a1ec-546b86b98cc6&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Get medication info&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provides availability and information about a medication.&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drug_name&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;medication_info&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">]</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;5c88130e-24f9-4ec0-8009-93a91c4ccd6e&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5c88130e-24f9-4ec0-8009-93a91c4ccd6e&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dermatologist&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dermatologist. Diagnoses and treats skin conditions.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">            </span><span class="nt">&quot;llm_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;$component_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5fd42c44-d0e7-484c-bf6b-1e9649d42576&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an helpful Dermatologist LLM Agent responsible for diagnosing and treating skin conditions.\nYour goal is to assess patients&#39; symptoms, provide accurate diagnoses, and prescribe effective treatments.\n\n## When to Use Each Tool\n- knowledge_tool: Use this to look up diagnosis and treatment information for specific skin conditions.\n\n## When to query other Agents\n- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.\n\n# Specific instructions\n## Initial exchange\nWhen a patient&#39;s symptoms are referred to you by the General Practitioner, review the symptoms and use the knowledge tool to confirm the diagnosis.\n## Prescription\nPrescribe the recommended treatment for the diagnosed condition and query the Pharmacist to confirm the availability of the prescribed medication.\n\nWhen answering back to the General Practitioner, describe your diagnosis and the prescription.\nTell the General Practitioner that you already checked with the pharmacist for availability.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ServerTool&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e4f83d40-be72-48d8-8f90-61d0b7416ca7&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Knowledge tool&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot; Provides diagnosis and treatment information for skin conditions.&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;treatment_info&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">]</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright © 2025 Oracle and/or its affiliates.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is under the Apache License 2.0</span>
+<span class="c1"># (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License</span>
+<span class="c1"># (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.</span>
+
+<span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Swarm</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23ba0146-c92c-418f-bde1-fc00542d6977</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Swarm</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">first_agent</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8e1822a0-645b-4003-a015-63b522c4a623</span>
+<span class="nt">relationships</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8e1822a0-645b-4003-a015-63b522c4a623</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">de3c64d9-b267-41a9-b228-f351d1400c27</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8e1822a0-645b-4003-a015-63b522c4a623</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">736b005d-67ee-4578-9382-eadb53c99267</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">736b005d-67ee-4578-9382-eadb53c99267</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">de3c64d9-b267-41a9-b228-f351d1400c27</span>
+<span class="nt">handoff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">$referenced_components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">8e1822a0-645b-4003-a015-63b522c4a623</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8e1822a0-645b-4003-a015-63b522c4a623</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GeneralPractitioner</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">General Practitioner. Primary point of contact for patients, handles</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">general medical inquiries, provides initial diagnoses, and manages referrals.</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">llm_config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d15e3ccc-245d-4d7b-84d8-fef645cac07c</span>
+<span class="w">    </span><span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;You</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">helpful</span><span class="nv"> </span><span class="s">general</span><span class="nv"> </span><span class="s">practitioner</span><span class="nv"> </span><span class="s">LLM</span><span class="nv"> </span><span class="s">doctor</span><span class="nv"> </span><span class="s">responsible\</span>
+<span class="w">      </span><span class="s">\ for</span><span class="nv"> </span><span class="s">handling</span><span class="nv"> </span><span class="s">patient</span><span class="nv"> </span><span class="s">consultations.\nYour</span><span class="nv"> </span><span class="s">goal</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">assess</span><span class="nv"> </span><span class="s">patients&#39;</span><span class="nv"> </span><span class="s">symptoms,\</span>
+<span class="w">      </span><span class="s">\ provide</span><span class="nv"> </span><span class="s">initial</span><span class="nv"> </span><span class="s">diagnoses,</span><span class="nv"> </span><span class="s">pescribe</span><span class="nv"> </span><span class="s">medication</span><span class="nv"> </span><span class="s">for\nmild</span><span class="nv"> </span><span class="s">conditions</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">refer\</span>
+<span class="w">      </span><span class="s">\ to</span><span class="nv"> </span><span class="s">other</span><span class="nv"> </span><span class="s">specialists</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">needed.\n\n##</span><span class="nv"> </span><span class="s">When</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">Each</span><span class="nv"> </span><span class="s">Tool\n-</span><span class="nv"> </span><span class="s">symptoms_checker:\</span>
+<span class="w">      </span><span class="s">\ Use</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">look</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">possible</span><span class="nv"> </span><span class="s">conditions</span><span class="nv"> </span><span class="s">based</span><span class="nv"> </span><span class="s">on</span><span class="nv"> </span><span class="s">symptoms</span><span class="nv"> </span><span class="s">reported</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">the\</span>
+<span class="w">      </span><span class="s">\ patient.\n\n##</span><span class="nv"> </span><span class="s">When</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">query</span><span class="nv"> </span><span class="s">other</span><span class="nv"> </span><span class="s">Agents\n-</span><span class="nv"> </span><span class="s">Pharmacist:</span><span class="nv"> </span><span class="s">Every</span><span class="nv"> </span><span class="s">time</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">need\</span>
+<span class="w">      </span><span class="s">\ to</span><span class="nv"> </span><span class="s">prescribe</span><span class="nv"> </span><span class="s">some</span><span class="nv"> </span><span class="s">medication,</span><span class="nv"> </span><span class="s">give</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">condition</span><span class="nv"> </span><span class="s">description</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">prescription\</span>
+<span class="w">      </span><span class="s">\ to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Pharmacist.\n-</span><span class="nv"> </span><span class="s">Dermatologist:</span><span class="nv"> </span><span class="s">If</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">patient</span><span class="nv"> </span><span class="s">has</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">skin</span><span class="nv"> </span><span class="s">condition,\</span>
+<span class="w">      </span><span class="s">\ ask</span><span class="nv"> </span><span class="s">expert</span><span class="nv"> </span><span class="s">advice/diagnosis</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Dermatologist</span><span class="nv"> </span><span class="s">after</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">initial</span><span class="nv"> </span><span class="s">exchange.\n\</span>
+<span class="w">      </span><span class="s">\n#</span><span class="nv"> </span><span class="s">Specific</span><span class="nv"> </span><span class="s">instructions\n##</span><span class="nv"> </span><span class="s">Initial</span><span class="nv"> </span><span class="s">exchange\nWhen</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">patient</span><span class="nv"> </span><span class="s">first</span><span class="nv"> </span><span class="s">shares\</span>
+<span class="w">      </span><span class="s">\ symptoms</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">about</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">exactly</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">round</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">questions,</span><span class="nv"> </span><span class="s">consisting</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">asking\</span>
+<span class="w">      </span><span class="s">\ about</span><span class="nv"> </span><span class="s">medical</span><span class="nv"> </span><span class="s">history</span><span class="nv"> </span><span class="s">and\nsimple</span><span class="nv"> </span><span class="s">questions</span><span class="nv"> </span><span class="s">(e.g.</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">they</span><span class="nv"> </span><span class="s">have</span><span class="nv"> </span><span class="s">known</span><span class="nv"> </span><span class="s">allergies,\</span>
+<span class="w">      </span><span class="s">\ when</span><span class="nv"> </span><span class="s">did</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">symptoms</span><span class="nv"> </span><span class="s">started,</span><span class="nv"> </span><span class="s">did</span><span class="nv"> </span><span class="s">they</span><span class="nv"> </span><span class="s">already</span><span class="nv"> </span><span class="s">tried</span><span class="nv"> </span><span class="s">some</span><span class="nv"> </span><span class="s">treatment/medication,\</span>
+<span class="w">      </span><span class="s">\ etc)).\nAlways</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">one</span><span class="nv"> </span><span class="s">round</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">before</span><span class="nv"> </span><span class="s">prescribing\</span>
+<span class="w">      </span><span class="s">\ medication</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">referring</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">other</span><span class="nv"> </span><span class="s">agents.\n\n##</span><span class="nv"> </span><span class="s">Identifying</span><span class="nv"> </span><span class="s">condition\nUse</span><span class="nv"> </span><span class="s">the\</span>
+<span class="w">      </span><span class="s">\ symptoms</span><span class="nv"> </span><span class="s">checker</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">confirm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">condition</span><span class="nv"> </span><span class="s">(for</span><span class="nv"> </span><span class="s">mild</span><span class="nv"> </span><span class="s">conditions</span><span class="nv"> </span><span class="s">only.</span><span class="nv"> </span><span class="s">For</span><span class="nv"> </span><span class="s">other\</span>
+<span class="w">      </span><span class="s">\ conditions,</span><span class="nv"> </span><span class="s">refer</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">specialists).\n\n##</span><span class="nv"> </span><span class="s">Mild</span><span class="nv"> </span><span class="s">conditions\n*</span><span class="nv"> </span><span class="s">If</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">patient\</span>
+<span class="w">      </span><span class="s">\ has</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">mild</span><span class="nv"> </span><span class="s">cold,</span><span class="nv"> </span><span class="s">prescribe</span><span class="nv"> </span><span class="s">medicationA.\n</span><span class="nv">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Give</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">condition</span><span class="nv"> </span><span class="s">description\</span>
+<span class="w">      </span><span class="s">\ and</span><span class="nv"> </span><span class="s">prescription</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Pharmacist.\n\n##</span><span class="nv"> </span><span class="s">Skin</span><span class="nv"> </span><span class="s">conditions\n*</span><span class="nv"> </span><span class="s">If</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">patient\</span>
+<span class="w">      </span><span class="s">\ has</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">skin</span><span class="nv"> </span><span class="s">condition,</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">expert</span><span class="nv"> </span><span class="s">advice/diagnosis</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Dermatologist.\n\</span>
+<span class="w">      </span><span class="s">Here,</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">don&#39;t</span><span class="nv"> </span><span class="s">need</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">confirmation.</span><span class="nv"> </span><span class="s">Directly</span><span class="nv"> </span><span class="s">call</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Dermatologist\n\</span>
+<span class="w">      </span><span class="s">\ </span><span class="nv">   </span><span class="s">-</span><span class="nv"> </span><span class="s">Provide</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">patient&#39;s</span><span class="nv"> </span><span class="s">symptoms/initial</span><span class="nv"> </span><span class="s">hypothesis</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Dermatologist\</span>
+<span class="w">      </span><span class="s">\ and</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">diagnosis.\n</span><span class="nv">    </span><span class="s">-</span><span class="nv"> </span><span class="s">The</span><span class="nv"> </span><span class="s">Dermatologist</span><span class="nv"> </span><span class="s">may</span><span class="nv"> </span><span class="s">query</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Pharmacist\</span>
+<span class="w">      </span><span class="s">\ to</span><span class="nv"> </span><span class="s">confirm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">availability</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">prescribed</span><span class="nv"> </span><span class="s">medication.\n</span><span class="nv">    </span><span class="s">-</span><span class="nv"> </span><span class="s">Once</span><span class="nv"> </span><span class="s">the\</span>
+<span class="w">      </span><span class="s">\ treatment</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">confirmed,</span><span class="nv"> </span><span class="s">pass</span><span class="nv"> </span><span class="s">on</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">prescription</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">patient</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">ask</span><span class="nv"> </span><span class="s">them\</span>
+<span class="w">      </span><span class="s">\ to</span><span class="nv"> </span><span class="s">follow</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">instructions.&quot;</span>
+<span class="w">    </span><span class="nt">tools</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServerTool</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2d0545fd-6a08-48fc-8769-5f52b900d6a5</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Symptoms checker</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Checks symptoms against the medical knowledge base.</span>
+<span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symptoms</span>
+<span class="w">        </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">array</span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">possible_conditions</span>
+<span class="w">        </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">array</span>
+<span class="w">  </span><span class="nt">d15e3ccc-245d-4d7b-84d8-fef645cac07c</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VllmConfig</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d15e3ccc-245d-4d7b-84d8-fef645cac07c</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meta.llama-3.3-70b-instruct</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">default_generation_parameters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LLAMA_PLACEHOLDER_LINK</span>
+<span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_id</span>
+<span class="w">  </span><span class="nt">de3c64d9-b267-41a9-b228-f351d1400c27</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">de3c64d9-b267-41a9-b228-f351d1400c27</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pharmacist</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pharmacist. Gives availability and information about specific medication.</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">llm_config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d15e3ccc-245d-4d7b-84d8-fef645cac07c</span>
+<span class="w">    </span><span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;You</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">helpful</span><span class="nv"> </span><span class="s">Pharmacist</span><span class="nv"> </span><span class="s">LLM</span><span class="nv"> </span><span class="s">Agent</span><span class="nv"> </span><span class="s">responsible</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">giving</span>
+<span class="w">      </span><span class="s">information</span><span class="nv"> </span><span class="s">about</span><span class="nv"> </span><span class="s">medication.</span>
+
+<span class="w">      </span><span class="s">Your</span><span class="nv"> </span><span class="s">goal</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">answer</span><span class="nv"> </span><span class="s">queries</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">General</span><span class="nv"> </span><span class="s">Practitioner</span><span class="nv"> </span><span class="s">Doctor</span><span class="nv"> </span><span class="s">about</span><span class="nv"> </span><span class="s">medication</span>
+<span class="w">      </span><span class="s">information</span>
+
+<span class="w">      </span><span class="s">and</span><span class="nv"> </span><span class="s">availabilities.</span>
+
+
+<span class="w">      </span><span class="s">##</span><span class="nv"> </span><span class="s">When</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">Each</span><span class="nv"> </span><span class="s">Tool</span>
+
+<span class="w">      </span><span class="s">-</span><span class="nv"> </span><span class="s">get_medication_info:</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">look</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">availability</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">about</span>
+<span class="w">      </span><span class="s">a</span><span class="nv"> </span><span class="s">specific</span><span class="nv"> </span><span class="s">medication.&#39;</span>
+<span class="w">    </span><span class="nt">tools</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServerTool</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f280e806-7608-41f8-8588-495aa5996974</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Get medication info</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Provides availability and information about a medication.</span>
+<span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">drug_name</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">medication_info</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">736b005d-67ee-4578-9382-eadb53c99267</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">736b005d-67ee-4578-9382-eadb53c99267</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dermatologist</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dermatologist. Diagnoses and treats skin conditions.</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">    </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">llm_config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">$component_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d15e3ccc-245d-4d7b-84d8-fef645cac07c</span>
+<span class="w">    </span><span class="nt">system_prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;You</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">helpful</span><span class="nv"> </span><span class="s">Dermatologist</span><span class="nv"> </span><span class="s">LLM</span><span class="nv"> </span><span class="s">Agent</span><span class="nv"> </span><span class="s">responsible</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">diagnosing</span>
+<span class="w">      </span><span class="s">and</span><span class="nv"> </span><span class="s">treating</span><span class="nv"> </span><span class="s">skin</span><span class="nv"> </span><span class="s">conditions.</span>
+
+<span class="w">      </span><span class="s">Your</span><span class="nv"> </span><span class="s">goal</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">assess</span><span class="nv"> </span><span class="s">patients</span><span class="se">&#39;&#39;</span><span class="nv"> </span><span class="s">symptoms,</span><span class="nv"> </span><span class="s">provide</span><span class="nv"> </span><span class="s">accurate</span><span class="nv"> </span><span class="s">diagnoses,</span><span class="nv"> </span><span class="s">and</span>
+<span class="w">      </span><span class="s">prescribe</span><span class="nv"> </span><span class="s">effective</span><span class="nv"> </span><span class="s">treatments.</span>
+
+
+<span class="w">      </span><span class="s">##</span><span class="nv"> </span><span class="s">When</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">Each</span><span class="nv"> </span><span class="s">Tool</span>
+
+<span class="w">      </span><span class="s">-</span><span class="nv"> </span><span class="s">knowledge_tool:</span><span class="nv"> </span><span class="s">Use</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">look</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">diagnosis</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">treatment</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">for</span>
+<span class="w">      </span><span class="s">specific</span><span class="nv"> </span><span class="s">skin</span><span class="nv"> </span><span class="s">conditions.</span>
+
+
+<span class="w">      </span><span class="s">##</span><span class="nv"> </span><span class="s">When</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">query</span><span class="nv"> </span><span class="s">other</span><span class="nv"> </span><span class="s">Agents</span>
+
+<span class="w">      </span><span class="s">-</span><span class="nv"> </span><span class="s">Pharmacist:</span><span class="nv"> </span><span class="s">Every</span><span class="nv"> </span><span class="s">time</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">need</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">prescribe</span><span class="nv"> </span><span class="s">some</span><span class="nv"> </span><span class="s">medication,</span><span class="nv"> </span><span class="s">give</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">condition</span>
+<span class="w">      </span><span class="s">description</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">prescription</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Pharmacist.</span>
+
+
+<span class="w">      </span><span class="s">#</span><span class="nv"> </span><span class="s">Specific</span><span class="nv"> </span><span class="s">instructions</span>
+
+<span class="w">      </span><span class="s">##</span><span class="nv"> </span><span class="s">Initial</span><span class="nv"> </span><span class="s">exchange</span>
+
+<span class="w">      </span><span class="s">When</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">patient</span><span class="se">&#39;&#39;</span><span class="s">s</span><span class="nv"> </span><span class="s">symptoms</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">referred</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">General</span><span class="nv"> </span><span class="s">Practitioner,</span>
+<span class="w">      </span><span class="s">review</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">symptoms</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">use</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">knowledge</span><span class="nv"> </span><span class="s">tool</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">confirm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">diagnosis.</span>
+
+<span class="w">      </span><span class="s">##</span><span class="nv"> </span><span class="s">Prescription</span>
+
+<span class="w">      </span><span class="s">Prescribe</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">recommended</span><span class="nv"> </span><span class="s">treatment</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">diagnosed</span><span class="nv"> </span><span class="s">condition</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">query</span><span class="nv"> </span><span class="s">the</span>
+<span class="w">      </span><span class="s">Pharmacist</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">confirm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">availability</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">prescribed</span><span class="nv"> </span><span class="s">medication.</span>
+
+
+<span class="w">      </span><span class="s">When</span><span class="nv"> </span><span class="s">answering</span><span class="nv"> </span><span class="s">back</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">General</span><span class="nv"> </span><span class="s">Practitioner,</span><span class="nv"> </span><span class="s">describe</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">diagnosis</span><span class="nv"> </span><span class="s">and</span>
+<span class="w">      </span><span class="s">the</span><span class="nv"> </span><span class="s">prescription.</span>
+
+<span class="w">      </span><span class="s">Tell</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">General</span><span class="nv"> </span><span class="s">Practitioner</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">already</span><span class="nv"> </span><span class="s">checked</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">pharmacist</span><span class="nv"> </span><span class="s">for</span>
+<span class="w">      </span><span class="s">availability.&#39;</span>
+<span class="w">    </span><span class="nt">tools</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServerTool</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23f121c5-e43b-46b9-ad71-34c081d55d05</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Knowledge tool</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="nv"> </span><span class="s">Provides</span><span class="nv"> </span><span class="s">diagnosis</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">treatment</span><span class="nv"> </span><span class="s">information</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">skin</span><span class="nv"> </span><span class="s">conditions.&#39;</span>
+<span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">condition</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">treatment_info</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">26.1.0</span>
+</pre></div>
+</div>
+</div></div>
+</details></section>
+</section>
+<section id="different-handoff-modes-in-swarm">
+<h2>Different handoff modes in Swarm<a class="headerlink" href="#different-handoff-modes-in-swarm" title="Permalink to this heading">#</a></h2>
+<p>One of the key benefits of Swarm is its handoff mechanism. When enabled, an agent can hand off its conversation — that is, transfer the entire message history between it and the human user — to another agent within the Swarm.</p>
+<p>The handoff mechanism helps reduce response latency.
+Normally, when agents talk to each other, the “distance” between the human user and the final answering agent increases, because messages must travel through multiple agents.
+Handoff avoids this by directly transferring the conversation to another agent: while the agent changes, the user’s distance to the active agent stays the same.</p>
+<p>Swarm provides three handoff modes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.NEVER</span></code>
+Disables the handoff mechanism. Agents can still communicate with each other, but cannot transfer the entire user conversation to another agent.
+In this mode, the  <code class="docutils literal notranslate"><span class="pre">first_agent</span></code> is the only agent that can directly interact with the human user.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.OPTIONAL</span></code> (default)
+Agents may perform a handoff when it is beneficial.
+A handoff is performed only when the receiving agent is able to take over and independently address the user’s request.
+This strikes a balance between multi-agent collaboration and minimizing overhead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HandoffMode.ALWAYS</span></code>
+Agents must use the handoff mechanism whenever delegating work to another agent. Direct <em>send-message</em> tools between agents are disabled in this mode.
+This mode is useful when most user requests are best handled by a single expert agent rather than through multi-agent collaboration.</p></li>
+</ul>
+<p>To set the handoff mode, simply use <a class="reference internal" href="../api/agenticpatterns.html#handoffmode"><span class="std std-ref">HandoffMode</span></a> and select the desired mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.swarm</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandoffMode</span>
+
+<span class="n">assistant</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
+    <span class="n">first_agent</span><span class="o">=</span><span class="n">general_practitioner</span><span class="p">,</span>
+    <span class="n">relationships</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">dermatologist</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">dermatologist</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">handoff</span><span class="o">=</span><span class="n">HandoffMode</span><span class="o">.</span><span class="n">ALWAYS</span><span class="p">,</span>  <span class="c1"># &lt;-- Specify the mode of your choice</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
+<p>This guide covered how to define a swarm of agents with and without handoff in Agent Spec.</p>
+<details class="summary-below-is-the-complete-code-from-this-guide">
+<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VllmConfig</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="n">llm_config</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+<span class="linenos">  4</span>    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;model_id&quot;</span><span class="p">,</span>
+<span class="linenos">  5</span>    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;LLAMA_PLACEHOLDER_LINK&quot;</span><span class="p">,</span>
+<span class="linenos">  6</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;meta.llama-3.3-70b-instruct&quot;</span><span class="p">,</span>
+<span class="linenos">  7</span><span class="p">)</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="c1"># .. start-tools</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListProperty</span><span class="p">,</span> <span class="n">StringProperty</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerTool</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="n">symptoms_checker</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+<span class="linenos"> 14</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Symptoms checker&quot;</span><span class="p">,</span>
+<span class="linenos"> 15</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Checks symptoms against the medical knowledge base.&quot;</span><span class="p">,</span>
+<span class="linenos"> 16</span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">ListProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;symptoms&quot;</span><span class="p">,</span> <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">())],</span>
+<span class="linenos"> 17</span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">ListProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;possible_conditions&quot;</span><span class="p">,</span> <span class="n">item_type</span><span class="o">=</span><span class="n">StringProperty</span><span class="p">())],</span>
+<span class="linenos"> 18</span><span class="p">)</span>
+<span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="n">get_medication_info</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+<span class="linenos"> 21</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Get medication info&quot;</span><span class="p">,</span>
+<span class="linenos"> 22</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Provides availability and information about a medication.&quot;</span><span class="p">,</span>
+<span class="linenos"> 23</span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;drug_name&quot;</span><span class="p">)],</span>
+<span class="linenos"> 24</span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;medication_info&quot;</span><span class="p">)],</span>
+<span class="linenos"> 25</span><span class="p">)</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span><span class="n">knowledge_tool</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
+<span class="linenos"> 28</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Knowledge tool&quot;</span><span class="p">,</span>
+<span class="linenos"> 29</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot; Provides diagnosis and treatment information for skin conditions.&quot;</span><span class="p">,</span>
+<span class="linenos"> 30</span>    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">)],</span>
+<span class="linenos"> 31</span>    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">StringProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;treatment_info&quot;</span><span class="p">)],</span>
+<span class="linenos"> 32</span><span class="p">)</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="c1"># .. end-tools</span>
+<span class="linenos"> 35</span>
+<span class="linenos"> 36</span><span class="c1"># .. start-first-agent</span>
+<span class="linenos"> 37</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="n">general_practitioner_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 40</span><span class="s2">You are an helpful general practitioner LLM doctor responsible for handling patient consultations.</span>
+<span class="linenos"> 41</span><span class="s2">Your goal is to assess patients&#39; symptoms, provide initial diagnoses, pescribe medication for</span>
+<span class="linenos"> 42</span><span class="s2">mild conditions or refer to other specialists as needed.</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span><span class="s2">## When to Use Each Tool</span>
+<span class="linenos"> 45</span><span class="s2">- symptoms_checker: Use this to look up possible conditions based on symptoms reported by the patient.</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span><span class="s2">## When to query other Agents</span>
+<span class="linenos"> 48</span><span class="s2">- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.</span>
+<span class="linenos"> 49</span><span class="s2">- Dermatologist: If the patient has a skin condition, ask expert advice/diagnosis to the Dermatologist after the initial exchange.</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span><span class="s2"># Specific instructions</span>
+<span class="linenos"> 52</span><span class="s2">## Initial exchange</span>
+<span class="linenos"> 53</span><span class="s2">When a patient first shares symptoms ask about for exactly 1 round of questions, consisting of asking about medical history and</span>
+<span class="linenos"> 54</span><span class="s2">simple questions (e.g. do they have known allergies, when did the symptoms started, did they already tried some treatment/medication, etc)).</span>
+<span class="linenos"> 55</span><span class="s2">Always ask for this one round of information to the user before prescribing medication / referring to other agents.</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="s2">## Identifying condition</span>
+<span class="linenos"> 58</span><span class="s2">Use the symptoms checker to confirm the condition (for mild conditions only. For other conditions, refer to specialists).</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="s2">## Mild conditions</span>
+<span class="linenos"> 61</span><span class="s2">* If the patient has a mild cold, prescribe medicationA.</span>
+<span class="linenos"> 62</span><span class="s2">    - Give the condition description and prescription to the Pharmacist.</span>
+<span class="linenos"> 63</span>
+<span class="linenos"> 64</span><span class="s2">## Skin conditions</span>
+<span class="linenos"> 65</span><span class="s2">* If the patient has a skin condition, ask for expert advice/diagnosis from the Dermatologist.</span>
+<span class="linenos"> 66</span><span class="s2">Here, you don&#39;t need to ask for the user confirmation. Directly call the Dermatologist</span>
+<span class="linenos"> 67</span><span class="s2">    - Provide the patient&#39;s symptoms/initial hypothesis to the Dermatologist and ask for a diagnosis.</span>
+<span class="linenos"> 68</span><span class="s2">    - The Dermatologist may query the Pharmacist to confirm the availability of the prescribed medication.</span>
+<span class="linenos"> 69</span><span class="s2">    - Once the treatment is confirmed, pass on the prescription to the patient and ask them to follow the instructions.</span>
+<span class="linenos"> 70</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span><span class="n">general_practitioner</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<span class="linenos"> 73</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GeneralPractitioner&quot;</span><span class="p">,</span>
+<span class="linenos"> 74</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;General Practitioner. Primary point of contact for patients, handles general medical inquiries, provides initial diagnoses, and manages referrals.&quot;</span><span class="p">,</span>
+<span class="linenos"> 75</span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="linenos"> 76</span>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">symptoms_checker</span><span class="p">],</span>
+<span class="linenos"> 77</span>    <span class="n">system_prompt</span><span class="o">=</span><span class="n">general_practitioner_system_prompt</span><span class="p">,</span>
+<span class="linenos"> 78</span><span class="p">)</span>
+<span class="linenos"> 79</span><span class="c1"># .. end-first-agent</span>
+<span class="linenos"> 80</span>
+<span class="linenos"> 81</span>
+<span class="linenos"> 82</span><span class="c1"># .. start-second-agent</span>
+<span class="linenos"> 83</span><span class="n">pharmacist_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 84</span><span class="s2">You are an helpful Pharmacist LLM Agent responsible for giving information about medication.</span>
+<span class="linenos"> 85</span><span class="s2">Your goal is to answer queries from the General Practitioner Doctor about medication information</span>
+<span class="linenos"> 86</span><span class="s2">and availabilities.</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="s2">## When to Use Each Tool</span>
+<span class="linenos"> 89</span><span class="s2">- get_medication_info: Use this to look up availability and information about a specific medication.</span>
+<span class="linenos"> 90</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span><span class="n">pharmacist</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<span class="linenos"> 93</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pharmacist&quot;</span><span class="p">,</span>
+<span class="linenos"> 94</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Pharmacist. Gives availability and information about specific medication.&quot;</span><span class="p">,</span>
+<span class="linenos"> 95</span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="linenos"> 96</span>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_medication_info</span><span class="p">],</span>
+<span class="linenos"> 97</span>    <span class="n">system_prompt</span><span class="o">=</span><span class="n">pharmacist_system_prompt</span><span class="p">,</span>
+<span class="linenos"> 98</span><span class="p">)</span>
+<span class="linenos"> 99</span><span class="c1"># .. end-second-agent</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span><span class="c1"># .. start-third-agent</span>
+<span class="linenos">102</span><span class="n">dermatologist_system_prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos">103</span><span class="s2">You are an helpful Dermatologist LLM Agent responsible for diagnosing and treating skin conditions.</span>
+<span class="linenos">104</span><span class="s2">Your goal is to assess patients&#39; symptoms, provide accurate diagnoses, and prescribe effective treatments.</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span><span class="s2">## When to Use Each Tool</span>
+<span class="linenos">107</span><span class="s2">- knowledge_tool: Use this to look up diagnosis and treatment information for specific skin conditions.</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span><span class="s2">## When to query other Agents</span>
+<span class="linenos">110</span><span class="s2">- Pharmacist: Every time you need to prescribe some medication, give the condition description and prescription to the Pharmacist.</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="s2"># Specific instructions</span>
+<span class="linenos">113</span><span class="s2">## Initial exchange</span>
+<span class="linenos">114</span><span class="s2">When a patient&#39;s symptoms are referred to you by the General Practitioner, review the symptoms and use the knowledge tool to confirm the diagnosis.</span>
+<span class="linenos">115</span><span class="s2">## Prescription</span>
+<span class="linenos">116</span><span class="s2">Prescribe the recommended treatment for the diagnosed condition and query the Pharmacist to confirm the availability of the prescribed medication.</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="s2">When answering back to the General Practitioner, describe your diagnosis and the prescription.</span>
+<span class="linenos">119</span><span class="s2">Tell the General Practitioner that you already checked with the pharmacist for availability.</span>
+<span class="linenos">120</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span><span class="n">dermatologist</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<span class="linenos">123</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dermatologist&quot;</span><span class="p">,</span>
+<span class="linenos">124</span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dermatologist. Diagnoses and treats skin conditions.&quot;</span><span class="p">,</span>
+<span class="linenos">125</span>    <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span>
+<span class="linenos">126</span>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">knowledge_tool</span><span class="p">],</span>
+<span class="linenos">127</span>    <span class="n">system_prompt</span><span class="o">=</span><span class="n">dermatologist_system_prompt</span><span class="p">,</span>
+<span class="linenos">128</span><span class="p">)</span>
+<span class="linenos">129</span><span class="c1"># .. end-third-agent</span>
+<span class="linenos">130</span>
+<span class="linenos">131</span><span class="c1"># .. start-swarm</span>
+<span class="linenos">132</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.swarm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Swarm</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span><span class="n">assistant</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
+<span class="linenos">135</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Swarm&quot;</span><span class="p">,</span>
+<span class="linenos">136</span>    <span class="n">first_agent</span><span class="o">=</span><span class="n">general_practitioner</span><span class="p">,</span>
+<span class="linenos">137</span>    <span class="n">relationships</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">138</span>        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+<span class="linenos">139</span>        <span class="p">(</span><span class="n">general_practitioner</span><span class="p">,</span> <span class="n">dermatologist</span><span class="p">),</span>
+<span class="linenos">140</span>        <span class="p">(</span><span class="n">dermatologist</span><span class="p">,</span> <span class="n">pharmacist</span><span class="p">),</span>
+<span class="linenos">141</span>    <span class="p">],</span>
+<span class="linenos">142</span><span class="p">)</span>
+<span class="linenos">143</span><span class="c1"># .. end-swarm</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span><span class="c1"># .. start-serialization</span>
+<span class="linenos">146</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+<span class="linenos">147</span>
+<span class="linenos">148</span><span class="n">serialized_assistant</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">assistant</span><span class="p">)</span>
+</pre></div>
+</div>
+</details></section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
+<p>Having learned how to define a swarm, you may now proceed to
+<a class="reference internal" href="howto_execute_agentspec_with_wayflow.html"><span class="doc">how to use the WayFlow runtime to execute it</span></a>
+and <a class="reference internal" href="howto_execute_agentspec_across_frameworks.html"><span class="doc">How to Execute Agent Spec Across Frameworks</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-implementation">Basic implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-llm-model">1. Define the LLM model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-tools">2. Define tools</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-agents-equipped-with-tools">3. Define agents equipped with tools</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#general-practitioner-agent">General Practitioner Agent</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pharmacist-agent">Pharmacist Agent</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dermatologist-agent">Dermatologist Agent</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-a-swarm">4. Define a Swarm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export-the-agent-spec-configuration">5. Export the Agent Spec configuration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#different-handoff-modes-in-swarm">Different handoff modes in Swarm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
