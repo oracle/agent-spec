@@ -80,7 +80,7 @@ setup(
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
         "openai-agents": [
-            "openai-agents>=0.3.3",
+            "openai-agents>=0.6.6",
             "libcst>=1.5,<2",
         ],
         "langgraph": LANGGRAPH_DEPS,

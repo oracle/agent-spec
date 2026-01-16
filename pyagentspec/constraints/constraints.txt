@@ -16,5 +16,5 @@ langchain-openai==0.3.30
 langchain-ollama==0.3.6
 
 # OpenAI Agents adapter
-openai-agents==0.3.3
+openai-agents==0.6.6
 libcst==1.8.5
