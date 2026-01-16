@@ -2058,8 +2058,8 @@ The ``PostgresDatabaseDatastore`` is a relational datastore intended to store en
 - ``password``: Password of the postgres database
 - ``url``: URL to access the postgres database
 - ``sslmode``: SSL mode for the PostgreSQL connection.
-- ``sslcert``: Path of the client SSL certificate, replacing the default `~/.postgresql/postgresql.crt`. Ignored if an SSL connection is not made.
-- ``sslkey``: Path of the file containing the secret key used for the client certificate, replacing the default `~/.postgresql/postgresql.key`. Ignored if an SSL connection is not made.
+- ``sslcert``: Path of the client SSL certificate, replacing the default ``~/.postgresql/postgresql.crt``. Ignored if an SSL connection is not made.
+- ``sslkey``: Path of the file containing the secret key used for the client certificate, replacing the default ``~/.postgresql/postgresql.key``. Ignored if an SSL connection is not made.
 - ``sslrootcert``: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.
 - ``sslcrl``: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
 
@@ -2103,7 +2103,7 @@ Summarizes conversations exceeding a given number of messages using an LLM and c
         max_num_messages: int  # Number of message after which we trigger summarization.
         min_num_messages: int  # Number of recent messages to keep from summarizing.
         summarization_instructions: str  # Instruction for the LLM on how to summarize the conversation.
-        summarized_conversation_template: str  # Jinja2 template on how to present the summary (with variable `summary`) to the agent using the transform.
+        summarized_conversation_template: str  # Jinja2 template on how to present the summary (with variable ``summary``) to the agent using the transform.
         datastore: Optional[Datastore]  # Datastore on which to store the cache. If None, no caching happens.
         max_cache_size: Optional[int]  # The maximum number of entries kept in the cache
         max_cache_lifetime: Optional[int]  # max lifetime of an element in the cache in seconds
