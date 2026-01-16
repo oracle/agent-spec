@@ -51,7 +51,7 @@ Add a branching step where a node output (for example ``decision``) determines w
 Notes:
 
 - ``add_conditional`` accepts the branch key as a string output name (e.g., ``"decision"``) or as a tuple ``(node_or_name, output_name)``.
-- ``set_finish_points`` declares which nodes connect to automatically created ``EndNode``(s).
+- ``set_finish_points`` declares which nodes connect to automatically created ``EndNode`` (s).
 
 3. Manually connect nodes
 =========================
