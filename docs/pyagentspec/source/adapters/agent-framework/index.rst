@@ -5,7 +5,7 @@ Agent Spec Adapters - Agent Framework
 =====================================
 
 
-.. figure:: ../../_static/icons/langgraph-adapter.jpg
+.. figure:: ../../_static/icons/agent-framework-adapter.jpg
     :align: center
     :scale: 18%
     :alt: Agent Spec adapter for Agent Framework
