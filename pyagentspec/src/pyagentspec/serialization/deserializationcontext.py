@@ -162,27 +162,6 @@ class _DeserializationContextImpl(DeserializationContext):
             return False
         return issubclass(annotation, (bool, int, float, str))
 
-    def _is_python_type(self, annotation: Optional[type]) -> bool:
-        origin_type = get_origin(annotation)
-
-        if origin_type is None:
-            return True
-        if origin_type == dict:
-            dict_key_annotation, dict_value_annotation = get_args(annotation)
-            return self._is_python_type(dict_key_annotation) and self._is_python_type(
-                dict_value_annotation
-            )
-        elif origin_type == list or origin_type == set:
-            (list_value_annotation,) = get_args(annotation)
-            return self._is_python_type(list_value_annotation)
-        elif origin_type == set:
-            (set_value_annotation,) = get_args(annotation)
-            return self._is_python_type(set_value_annotation)
-        elif origin_type == Union:
-            return all(self._is_python_type(t) for t in get_args(annotation))
-        else:
-            return self._is_python_primitive_type(annotation)
-
     def _is_pydantic_type(self, annotation: Optional[type]) -> TypeGuard[Type[BaseModel]]:
         try:
             return issubclass(annotation, BaseModel) if annotation is not None else False
@@ -287,7 +266,6 @@ class _DeserializationContextImpl(DeserializationContext):
             return self._load_reference(content["$component_ref"], annotation=annotation)
 
         origin_type = get_origin(annotation)
-
         if origin_type is Annotated:
             inner_annotation, _ = get_args(annotation)
             return self._load_field(content, inner_annotation)
@@ -311,8 +289,9 @@ class _DeserializationContextImpl(DeserializationContext):
                 and inspect.isclass(annotation)
                 and issubclass(annotation, Property)
             ):
-                if isinstance(content, Property):
-                    # already an instantiated property (e.g. partial config)
+                if isinstance(content, annotation):
+                    # This condition can be reached when building the component from a partial configuration
+                    # which contains Property objects that already built and not represented by only their schema.
                     return content, []
                 return Property(json_schema=content), []
             elif self._is_pydantic_type(annotation):
@@ -393,25 +372,20 @@ class _DeserializationContextImpl(DeserializationContext):
 
             # Try to deserialize components/pydantic models according to any of the annotations
             # If any of them works, we will proceed with that. This is our best effort.
+            accumulated_errors = []
             for inner_annotation in inner_annotations:
                 try:
                     return self._load_field(content, inner_annotation)
-                except ValueError:
+                except ValueError as e:
                     # Something went wrong in deserialization,
-                    # it's not the right type, we try the next one
-                    pass
+                    # accumulate the error and try the next one
+                    accumulated_errors.append(f"{inner_annotation}: {str(e)}")
 
-            # We tried all the components and pydantic models, and it did not work out,
-            # only python type is left. If it is only normal python types, just return the content
-            if self._is_python_type(annotation):
-                return content, []
-            else:
-                # If even python type fails, then we do not support this,
-                # or there's an error in the representation
-                raise ValueError(
-                    f"It looks like the annotation {annotation} is a mix of"
-                    f" python and Agent Spec types which is not supported."
-                )
+            # If all attempts failed, raise ValueError with all accumulated errors
+            formatted_errors = "\n".join(f"  - {error}" for error in accumulated_errors)
+            raise ValueError(
+                f"Failed to deserialize Union type {annotation} with content {content}.\nErrors:\n{formatted_errors}"
+            )
         elif origin_type == Literal:
             return content, []
 

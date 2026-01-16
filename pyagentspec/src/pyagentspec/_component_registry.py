@@ -12,6 +12,16 @@ from pyagentspec.a2aagent import A2AAgent, A2AConnectionConfig
 from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
 from pyagentspec.component import Component, ComponentWithIO
+from pyagentspec.datastores.datastore import Datastore, InMemoryCollectionDatastore
+from pyagentspec.datastores.oracle import (
+    MTlsOracleDatabaseConnectionConfig,
+    OracleDatabaseDatastore,
+    TlsOracleDatabaseConnectionConfig,
+)
+from pyagentspec.datastores.postgres import (
+    PostgresDatabaseDatastore,
+    TlsPostgresDatabaseConnectionConfig,
+)
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.edges.dataflowedge import DataFlowEdge
 from pyagentspec.flows.flow import Flow
@@ -67,6 +77,7 @@ from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 
 BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "A2AAgent": A2AAgent,
@@ -84,9 +95,11 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "BuiltinTool": BuiltinTool,
     "ControlFlowEdge": ControlFlowEdge,
     "DataFlowEdge": DataFlowEdge,
+    "Datastore": Datastore,
     "EndNode": EndNode,
     "Flow": Flow,
     "FlowNode": FlowNode,
+    "InMemoryCollectionDatastore": InMemoryCollectionDatastore,
     "InputMessageNode": InputMessageNode,
     "LlmConfig": LlmConfig,
     "LlmNode": LlmNode,
@@ -105,6 +118,8 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "OllamaConfig": OllamaConfig,
     "OpenAiCompatibleConfig": OpenAiCompatibleConfig,
     "OpenAiConfig": OpenAiConfig,
+    "OracleDatabaseDatastore": OracleDatabaseDatastore,
+    "PostgresDatabaseDatastore": PostgresDatabaseDatastore,
     "OutputMessageNode": OutputMessageNode,
     "RemoteTool": RemoteTool,
     "RemoteTransport": RemoteTransport,
@@ -120,6 +135,11 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Tool": Tool,
     "ToolBox": ToolBox,
     "ToolNode": ToolNode,
+    "TlsOracleDatabaseConnectionConfig": TlsOracleDatabaseConnectionConfig,
+    "MTlsOracleDatabaseConnectionConfig": MTlsOracleDatabaseConnectionConfig,
+    "TlsPostgresDatabaseConnectionConfig": TlsPostgresDatabaseConnectionConfig,
+    "MessageSummarizationTransform": MessageSummarizationTransform,
+    "ConversationSummarizationTransform": ConversationSummarizationTransform,
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,
     "ManagerWorkers": ManagerWorkers,

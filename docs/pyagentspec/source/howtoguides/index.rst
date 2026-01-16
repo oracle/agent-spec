@@ -61,6 +61,8 @@ These guides demonstrate how to configure components in Agent Spec.
    Use LLM from Different LLM Sources and Providers <howto_llm_from_different_providers>
    Specify the Generation Configuration when Using LLMs <howto_generation_config>
    How to Use Disaggregated Config <howto_disaggregated_config>
+   How to Use Datastores <howto_datastores>
+   How to Use Summarization Transforms <howto_summarization_transforms>
 
 
 Ecosystem
