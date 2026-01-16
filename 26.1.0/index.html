@@ -78,7 +78,19 @@
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
   </head>
-  
+  <p>Redirecting to the latest stable documentation…</p>
+
+  <script>
+    fetch("switcher.json")
+      .then(response => response.json())
+      .then(versions => {
+        const stable = versions.find(v => v.version !== "dev");
+        window.location.replace(stable ? stable.url : "26.1.0/");
+      })
+      .catch(() => {
+        window.location.replace("26.1.0/");
+      });
+  </script>
   
   <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
