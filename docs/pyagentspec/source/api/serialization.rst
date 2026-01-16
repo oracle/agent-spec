@@ -43,3 +43,6 @@ Deserialization plugins
 
 .. _pydanticcomponentdeserializationplugin:
 .. autoclass:: pyagentspec.serialization.pydanticdeserializationplugin.PydanticComponentDeserializationPlugin
+
+
+.. autoclass:: pyagentspec.validation_helpers.PyAgentSpecErrorDetails

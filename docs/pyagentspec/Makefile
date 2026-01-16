@@ -1,6 +1,6 @@
 # Simplified Makefile for Sphinx documentation (single source with external tag)
 
-SPHINXOPTS    ?=
+SPHINXOPTS    ?= -W --keep-going
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build/html
