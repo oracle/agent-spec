@@ -129,3 +129,6 @@ cython_debug/
 dmypy.json
 .pyre/
 .pytype/
+
+# uv
+uv.lock
