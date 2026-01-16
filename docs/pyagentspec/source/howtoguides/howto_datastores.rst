@@ -127,8 +127,8 @@ Here is what the **Oracle Datastore configuration will look like ↓**
 
 .. collapse:: Click here to see the Oracle datastore configuration.
 
-   .. literalinclude:: ../agentspec_config_examples/howto_oracle_datastore.yaml
-      :language: yaml
+   .. literalinclude:: ../agentspec_config_examples/howto_oracle_datastore.json
+      :language: json
 
 .. note::
     Notice that sensitive fields such as ``user``, ``password``, and ``dsn`` are not present in the serialized config because they are replaced with component references (e.g., ``$component_ref: oracle_tls_config_id.user``) for security reasons.

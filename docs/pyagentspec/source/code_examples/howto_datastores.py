@@ -111,9 +111,9 @@ in_memory_datastore = InMemoryCollectionDatastore(
 from pyagentspec.serialization import AgentSpecSerializer
 
 # Serialize any of the datastores
-serialized_oracle = AgentSpecSerializer().to_yaml(oracle_datastore)
-serialized_postgres = AgentSpecSerializer().to_yaml(postgres_datastore)
-serialized_in_memory = AgentSpecSerializer().to_yaml(in_memory_datastore)
+serialized_oracle = AgentSpecSerializer().to_json(oracle_datastore)
+serialized_postgres = AgentSpecSerializer().to_json(postgres_datastore)
+serialized_in_memory = AgentSpecSerializer().to_json(in_memory_datastore)
 
 print("Oracle Datastore:")
 print(serialized_oracle)
@@ -140,10 +140,10 @@ components_registry = {
 # Deserialize the configurations
 deserializer = AgentSpecDeserializer()
 
-deserialized_oracle = deserializer.from_yaml(
-    yaml_content=serialized_oracle, components_registry=components_registry
+deserialized_oracle = deserializer.from_json(
+    json_content=serialized_oracle, components_registry=components_registry
 )
-deserialized_postgres = deserializer.from_yaml(
-    yaml_content=serialized_postgres, components_registry=components_registry
+deserialized_postgres = deserializer.from_json(
+    json_content=serialized_postgres, components_registry=components_registry
 )
 # .. end-deserialization
