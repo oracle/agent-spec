@@ -6,7 +6,7 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import httpx
 
@@ -406,6 +406,12 @@ class AgentNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent = self._create_react_agent_with_given_input_values(inputs)
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are provided
+        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
+        # user message when the message list is empty.
+        if not messages:
+            messages = cast(Messages, [{"role": "user", "content": ""}])
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,
