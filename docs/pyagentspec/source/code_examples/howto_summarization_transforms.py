@@ -56,7 +56,7 @@ agent_with_summarization = Agent(
 from pyagentspec.serialization import AgentSpecSerializer
 
 # Serialize the agent with transforms
-serialized_agent = AgentSpecSerializer().to_yaml(agent_with_summarization)
+serialized_agent = AgentSpecSerializer().to_json(agent_with_summarization)
 
 print("\nSerialized Agent with Transforms:")
 print(serialized_agent)

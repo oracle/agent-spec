@@ -87,8 +87,8 @@ Here is what the **serialized agent with transforms will look like ↓**
 
 .. collapse:: Click here to see the agent configuration.
 
-   .. literalinclude:: ../agentspec_config_examples/howto_summarization_transforms.yaml
-      :language: yaml
+   .. literalinclude:: ../agentspec_config_examples/howto_summarization_transforms.json
+      :language: json
 
 
 Recap
