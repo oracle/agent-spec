@@ -85,10 +85,10 @@
       .then(response => response.json())
       .then(versions => {
         const stable = versions.find(v => v.version !== "dev");
-        window.location.replace(stable ? stable.url : "26.1.0/");
+        window.location.replace(stable ? stable.url : "development/");
       })
       .catch(() => {
-        window.location.replace("26.1.0/");
+        window.location.replace("development/");
       });
   </script>
   
