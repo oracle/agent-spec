@@ -85,5 +85,9 @@ setup(
         "wayflow_oci": ["wayflowcore[oci]>=25.4.3; python_version < '3.14'"],
         "wayflow_a2a": ["wayflowcore[a2a]>=25.4.3; python_version < '3.14'"],
         "wayflow_datastore": ["wayflowcore[datastore]>=25.4.3; python_version < '3.14'"],
+        "agent_framework": [
+            "agent-framework==1.0.0b251028",
+            "agent-framework-core==1.0.0b251028",
+        ],
     },
 )

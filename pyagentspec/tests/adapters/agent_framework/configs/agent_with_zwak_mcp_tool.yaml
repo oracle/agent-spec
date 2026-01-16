@@ -1,0 +1,36 @@
+component_type: Agent
+id: 41c57a89-1da5-4c86-aa91-db9406d9b6ea
+name: agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: 99be50d9-872b-41ad-8538-17a854a3114c
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  model_id: openai/gpt-oss-120b
+  name: gpt-oss-120b
+  url: [[OSS_API_URL]]
+system_prompt: You're a zwak tool agent
+tools:
+- component_type: MCPTool
+  id: 84d2283a-9e11-489a-8bc2-8a3da9a41854
+  name: zwak_tool
+  description: null
+  metadata: {}
+  inputs: []
+  outputs: []
+  client_transport:
+    component_type: StreamableHTTPTransport
+    id: 4a4b66f3-c35c-44e7-afda-d9789475e865
+    name: zwak_tool_mcp_server
+    description: null
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60.0
+    url: http://127.0.0.1:[[MCP_SERVER_PORT]]/mcp
+    headers: null
+agentspec_version: 25.4.1
