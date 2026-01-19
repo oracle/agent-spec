@@ -284,16 +284,78 @@ class ToolNodeExecutor(NodeExecutor):
             tool_output = tool(**inputs)
 
         if isinstance(tool_output, dict):
-            return tool_output, NodeExecutionDetails()
-        elif isinstance(
-            tool_output, list
-        ):  # this is the return type of the tool loaded by langchain_mcp_adapters.tools.load_mcp_tools
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="dict"
+            )
+        elif isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
             extracted_values = self._extract_values_from_content_blocks(tool_output)
-            mapped = self._map_extracted_values_to_declared_outputs(extracted_values)
-            return mapped, NodeExecutionDetails()
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=extracted_values, output_type="list_extracted"
+            )
+        elif isinstance(tool_output, tuple):
+            # Map tuples positionally to declared outputs
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=list(tool_output), output_type="list_tuple"
+            )
         else:
-            # Scalar or other types: map to the single declared output or a generic name
-            return self._map_scalar_to_output(tool_output), NodeExecutionDetails()
+            # Scalar or other types, including a list type: map to the single declared output or a generic name
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="scalar"
+            )
+
+        return mapped, NodeExecutionDetails()
+
+    def _is_mcp_content_blocks_list(self, items: List[Any]) -> bool:
+        # Empty lists are ambiguous; treat them as non-MCP to avoid false positives
+        if not items:
+            return False
+        for el in items:
+            if not isinstance(el, dict):
+                return False
+            t = el.get("type")
+            if t not in {"text", "image", "file"}:
+                return False
+            if t == "text":
+                if "text" not in el or not isinstance(el["text"], str):
+                    return False
+            elif t in {"image", "file"}:
+                # Accept any supported payload reference
+                if not any(k in el for k in ["base64", "url", "file_id"]):
+                    return False
+        return True
+
+    def _extract_value_from_block(
+        self,
+        block: Union[
+            langchain_core_messages_content.FileContentBlock,
+            langchain_core_messages_content.TextContentBlock,
+            langchain_core_messages_content.ImageContentBlock,
+        ],
+    ) -> Any:
+        t = block["type"]
+        if t == "text":
+            text_block = cast(langchain_core_messages_content.TextContentBlock, block)
+            return text_block["text"]
+        if t == "image":
+            image_block = cast(langchain_core_messages_content.ImageContentBlock, block)
+            if "base64" in image_block:
+                return image_block["base64"]
+            if "url" in image_block:
+                return image_block["url"]
+            if "file_id" in image_block:
+                return image_block["file_id"]
+            raise ValueError(f"No payload found in image block: {image_block}")
+        if t == "file":
+            file_block = cast(langchain_core_messages_content.FileContentBlock, block)
+            if "base64" in file_block:
+                return file_block["base64"]
+            if "url" in file_block:
+                return file_block["url"]
+            if "file_id" in file_block:
+                return file_block["file_id"]
+            raise ValueError(f"No payload found in file block: {file_block}")
+        else:
+            raise NotImplementedError(f"Unsupported message content block type: {t}")
 
     def _extract_values_from_content_blocks(
         self,
@@ -305,55 +367,63 @@ class ToolNodeExecutor(NodeExecutor):
             ]
         ],
     ) -> List[Any]:
-        extracted: List[Any] = []
-        for block in blocks:
-            # Use direct checks on the discriminant to let mypy narrow the TypedDict union
-            if block["type"] == "text":
-                extracted.append(block["text"])
-                continue
-            if block["type"] == "image":
-                if "base64" in block:
-                    extracted.append(block["base64"])
-                    continue
-                if "url" in block:
-                    extracted.append(block["url"])
-                    continue
-                if "file_id" in block:
-                    extracted.append(block["file_id"])
-                    continue
-            if block["type"] == "file":
-                if "base64" in block:
-                    extracted.append(block["base64"])
-                    continue
-                if "url" in block:
-                    extracted.append(block["url"])
-                    continue
-                if "file_id" in block:
-                    extracted.append(block["file_id"])
-                    continue
-            extracted.append(block)
-        return extracted
+        return [self._extract_value_from_block(block) for block in blocks]
 
-    def _map_extracted_values_to_declared_outputs(self, values: List[Any]) -> Dict[str, Any]:
+    def _map_tool_outputs_to_output_properties(
+        self, raw_output: Any, output_type: str
+    ) -> Dict[str, Any]:
         node_outputs = self.node.outputs or []
+        list_types = {"list_extracted", "list_tuple"}
+
+        # 0 declared outputs, meaning the node does not emit any output
+        if not node_outputs:
+            return {}
+
+        # 1 declared output
         if len(node_outputs) == 1:
-            value = values[0] if len(values) == 1 else values
-            return {node_outputs[0].title: value}
-        if len(node_outputs) > 1:
-            if len(values) != len(node_outputs):
-                raise ValueError(
-                    "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
-                    f"returned={len(values)}, declared={len(node_outputs)}"
-                )
-            return {prop.title: values[i] for i, prop in enumerate(node_outputs)}
-        # No declared outputs
-        return {"tool_output": values}
+            out_name = node_outputs[0].title
 
-    def _map_scalar_to_output(self, value: Any) -> Dict[str, Any]:
-        node_outputs = self.node.outputs or []
-        if node_outputs:
-            return {node_outputs[0].title: value}
-        return {"tool_output": value}
+            if output_type == "dict":
+                # If raw_output is exactly {out_name: <value>}, keep as-is; otherwise wrap the whole dict
+                if isinstance(raw_output, dict) and out_name in raw_output and len(raw_output) == 1:
+                    return {out_name: raw_output[out_name]}
+                return {out_name: raw_output}
+
+            if output_type in list_types:
+                # Use first value if exactly one, else the whole list/tuple
+                value = (
+                    raw_output[0]
+                    if hasattr(raw_output, "__len__") and len(raw_output) == 1
+                    else raw_output
+                )
+                return {out_name: value}
+
+            # Scalar to single output
+            return {out_name: raw_output}
+
+        # Multiple declared outputs
+        if output_type == "dict":
+            declared_titles = {prop.title for prop in node_outputs}
+            return {
+                k: raw_output[k]
+                for k in declared_titles
+                if isinstance(raw_output, dict) and k in raw_output
+            }
+
+        if output_type in list_types:
+            expected = len(node_outputs)
+            actual = len(raw_output) if hasattr(raw_output, "__len__") else -1
+            if actual != expected:
+                msg = (
+                    "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
+                    if output_type == "list_extracted"
+                    else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs: "
+                )
+                raise ValueError(f"{msg}returned={actual}, declared={expected}")
+            return {prop.title: raw_output[i] for i, prop in enumerate(node_outputs)}
+
+        # Scalar with multiple outputs: assign to first (preserve original behavior)
+        return {node_outputs[0].title: raw_output}
 
 
 class AgentNodeExecutor(NodeExecutor):
