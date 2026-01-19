@@ -5,7 +5,6 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import datetime
-from pathlib import Path
 from types import FunctionType
 from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Union, cast
 
@@ -311,58 +310,44 @@ class LangGraphToAgentSpecConverter:
                 "httpx_client_factory": _HttpxClientFactory(...)
             }
         """
-        from langchain_mcp_adapters.sessions import (
-            SSEConnection,
-            StdioConnection,
-            StreamableHttpConnection,
-        )
 
         if conn.get("httpx_client_factory"):
             raise NotImplementedError(
                 "Conversion from langchain MCP connections with arbitrary httpx client factory objects is not yet implemented"
             )
 
-        session_params = self._build_session_parameters(cast(Mapping[str, Any], conn))
-        transport = conn["transport"]
+        session_params = self._build_session_parameters(conn)
 
         # Below, we use `[]` for mandatory keys and `.get` for NotRequired keys, where c is a TypedDict
 
-        if transport == "stdio":
-            c_stdio = cast(StdioConnection, conn)
-            cwd_val = c_stdio.get("cwd")
-            cwd_str: Optional[str]
-            if isinstance(cwd_val, Path):
-                cwd_str = str(cwd_val)
-            else:
-                cwd_str = cwd_val
+        if conn["transport"] == "stdio":
+            cwd_str = str(conn.get("cwd"))
             return StdioTransport(
                 name="agentspec_stdio_transport",
-                command=c_stdio["command"],
-                args=c_stdio["args"],
-                env=c_stdio.get("env"),
+                command=conn["command"],
+                args=conn["args"],
+                env=conn.get("env"),
                 cwd=cwd_str,
                 session_parameters=session_params,
             )
 
-        if transport == "sse":
-            c_sse = cast(SSEConnection, conn)
+        if conn["transport"] == "sse":
             return SSETransport(
                 name="agentspec_sse_transport",
-                url=c_sse["url"],
-                headers=cast(Optional[Dict[str, str]], c_sse.get("headers")),
+                url=conn["url"],
+                headers=conn.get("headers"),
                 session_parameters=session_params,
             )
 
-        if transport == "streamable_http":
-            c_http = cast(StreamableHttpConnection, conn)
+        if conn["transport"] == "streamable_http":
             return StreamableHTTPTransport(
                 name="agentspec_streamablehttp_transport",
-                url=c_http["url"],
-                headers=cast(Optional[Dict[str, str]], c_http.get("headers")),
+                url=conn["url"],
+                headers=conn.get("headers"),
                 session_parameters=session_params,
             )
 
-        raise ValueError(f"Unsupported transport: {transport}")
+        raise ValueError(f'Unsupported transport: {conn["transport"]}')
 
     @staticmethod
     def _build_session_parameters(conn: Mapping[str, Any]) -> SessionParameters:

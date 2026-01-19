@@ -290,7 +290,7 @@ class ToolNodeExecutor(NodeExecutor):
         elif isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
             extracted_values = self._extract_values_from_content_blocks(tool_output)
             mapped = self._map_tool_outputs_to_output_properties(
-                raw_output=extracted_values, output_type="list_extracted"
+                raw_output=extracted_values, output_type="mcp_list_extracted"
             )
         elif isinstance(tool_output, tuple):
             # Map tuples positionally to declared outputs
@@ -373,7 +373,7 @@ class ToolNodeExecutor(NodeExecutor):
         self, raw_output: Any, output_type: str
     ) -> Dict[str, Any]:
         node_outputs = self.node.outputs or []
-        list_types = {"list_extracted", "list_tuple"}
+        list_types = {"mcp_list_extracted", "list_tuple"}
 
         # 0 declared outputs, meaning the node does not emit any output
         if not node_outputs:
@@ -386,29 +386,22 @@ class ToolNodeExecutor(NodeExecutor):
             if output_type == "dict":
                 # If raw_output is exactly {out_name: <value>}, keep as-is; otherwise wrap the whole dict
                 if isinstance(raw_output, dict) and out_name in raw_output and len(raw_output) == 1:
-                    return {out_name: raw_output[out_name]}
+                    return raw_output
                 return {out_name: raw_output}
 
-            if output_type in list_types:
+            if output_type == "mcp_list_extracted" and node_outputs[0].type != "array":
                 # Use first value if exactly one, else the whole list/tuple
-                value = (
-                    raw_output[0]
-                    if hasattr(raw_output, "__len__") and len(raw_output) == 1
-                    else raw_output
-                )
+                value = raw_output[0] if len(raw_output) == 1 else raw_output
                 return {out_name: value}
 
-            # Scalar to single output
+            # Scalar (e.g., number, string) to single output
             return {out_name: raw_output}
 
         # Multiple declared outputs
         if output_type == "dict":
+            # raw_output is a dict as checked above
             declared_titles = {prop.title for prop in node_outputs}
-            return {
-                k: raw_output[k]
-                for k in declared_titles
-                if isinstance(raw_output, dict) and k in raw_output
-            }
+            return {k: raw_output[k] for k in declared_titles if k in raw_output}
 
         if output_type in list_types:
             expected = len(node_outputs)
@@ -416,7 +409,7 @@ class ToolNodeExecutor(NodeExecutor):
             if actual != expected:
                 msg = (
                     "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
-                    if output_type == "list_extracted"
+                    if output_type == "mcp_list_extracted"
                     else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs: "
                 )
                 raise ValueError(f"{msg}returned={actual}, declared={expected}")
