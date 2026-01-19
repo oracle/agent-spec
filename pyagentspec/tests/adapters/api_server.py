@@ -18,7 +18,13 @@ async def root(city):
     return {"weather": "sunny"}
 
 
-async def _create_content(request: Request):
+async def _make_echo_payload(request: Request):
+    """Create a simple echo response from the incoming request.
+
+    - Reads headers, query params, and the request body (JSON, form, or plain text).
+    - Combines them into one dict.
+    - Adds the request URL, path, and whether JSON was received.
+    """
     # Collect query params and headers
     query = dict(request.query_params)
     body_values = {}
@@ -95,12 +101,12 @@ async def _create_content(request: Request):
 
 @app.get("/api/echo/{u1}")
 async def echo_get(u1: str, request: Request):
-    return await _create_content(request)
+    return await _make_echo_payload(request)
 
 
 @app.post("/api/echo/{u1}")
 async def echo_post(u1: str, request: Request):
-    return await _create_content(request)
+    return await _make_echo_payload(request)
 
 
 if __name__ == "__main__":

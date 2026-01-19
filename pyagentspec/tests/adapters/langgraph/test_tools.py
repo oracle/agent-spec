@@ -224,10 +224,10 @@ def test_remote_tool_actual_endpoint_with_langgraph(
     # Core assertions from the echo server
     assert result["test"] == "test"
     assert result["__parsed_path"] == "/api/echo/u_seg"
-    assert result.get("param") == "test3"
-    assert result.get("header1") == "test4"
+    assert result["param"] == "test3"
+    assert result["header1"] == "test4"
     assert result["json_body_received"] == expected_msg
 
     # Body-derived assertions (work for JSON, form-encoded, and parsed text formats)
-    assert result.get("value") == "test1"
-    assert result.get("listofvalues") == ["a", "test2", "c"]
+    assert result["value"] == "test1"
+    assert result["listofvalues"] == ["a", "test2", "c"]
