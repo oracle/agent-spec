@@ -185,7 +185,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +290,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -392,9 +392,21 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -897,8 +909,14 @@ Allows placeholders, which can define inputs</p></li>
 Allows placeholders, which can define inputs</p></li>
 <li><p><strong>api_spec_uri</strong> (<em>str</em><em> | </em><em>None</em>) – The uri of the specification of the API that is going to be called.
 Allows placeholders, which can define inputs</p></li>
-<li><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The data to send as part of the body of this API call.
-Allows placeholders in dict values, which can define inputs</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> | </em><em>bytes</em><em> | </em><em>Any</em>) – The data to send as part of the body of this API call.
+Allows placeholders in dict values, which can define inputs.
+
+<code class="docutils literal notranslate"><span class="pre">data</span></code> as <cite>bytes</cite> and <cite>strings</cite> will be passed to the request body as-is,
+whereas JSONSerializable objects are converted to string with json.dumps before being added into the request’s body.
+
+Note: For AgentSpec version 25.4.1, this field is strictly typed as Dict[str, Any].
+For versions 25.4.2 and above, it is typed as Any.</p></li>
 <li><p><strong>query_params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Query parameters for the API call.
 Allows placeholders in dict values, which can define inputs</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Additional headers for the API call.
@@ -924,9 +942,13 @@ Allows placeholders, which can define inputs</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.apinode.ApiNode.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.data" title="Permalink to this definition">#</a></dt>
 <dd><p>The data to send as part of the body of this API call.
-Allows placeholders in dict values, which can define inputs</p>
+Allows placeholders in dict values, which can define inputs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">data</span></code> as <cite>bytes</cite> and <cite>strings</cite> will be passed to the request body as-is,
+whereas JSONSerializable objects are converted to string with json.dumps before being added into the request’s body.</p>
+<p>Note: For AgentSpec version 25.4.1, this field is strictly typed as Dict[str, Any].
+For versions 25.4.2 and above, it is typed as Any.</p>
 </dd></dl>
 
 <dl class="py attribute">
