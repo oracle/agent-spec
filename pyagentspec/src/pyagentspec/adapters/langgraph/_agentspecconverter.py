@@ -13,10 +13,12 @@ from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
     _langgraph_graph_convert_to_agentspec,
 )
 from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
     CompiledStateGraph,
     LangGraphComponent,
     LangGraphLlmConfig,
     RunnableBinding,
+    StateGraph,
     StateNodeSpec,
     StructuredTool,
     langchain_ollama,
@@ -89,6 +91,25 @@ class LangGraphToAgentSpecConverter:
 
         return agentspec_component
 
+    def convert_runtime_value(self, value: Any) -> Optional[AgentSpecComponent]:
+        """
+        Convert a LangGraph runtime value (graph/model/tool) into an Agent Spec component,
+        when supported. Returns None when the value type is not supported.
+        """
+        # Graphs
+        if isinstance(value, (StateGraph, CompiledStateGraph)):
+            return self.convert(cast(LangGraphComponent, value))
+
+        # Tools
+        if isinstance(value, StructuredTool):
+            return self._langgraph_server_tool_to_agentspec_tool(value)
+
+        # LLMs
+        if isinstance(value, BaseChatModel):
+            return self.build_agentspec_llm_from_basechatmodel(value)
+
+        return None
+
     def _is_react_agent(
         self,
         langgraph_component: LangGraphComponent,
@@ -124,38 +145,7 @@ class LangGraphToAgentSpecConverter:
 
         if isinstance(model, RunnableBinding):
             model = model.bound
-        if isinstance(model, langchain_openai.ChatOpenAI):
-            model_type = "openaicompatible"
-            model_name = model.model_name
-            base_url = model.openai_api_base
-            api_type: AgentSpecOpenAIAPIType
-            if model.use_responses_api:
-                api_type = AgentSpecOpenAIAPIType.RESPONSES
-            else:
-                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-                api_type=api_type,
-            )
-
-        elif isinstance(model, langchain_ollama.ChatOllama):
-            model_type = "ollama"
-            model_name = model.model
-            base_url = model.base_url
-
-            return LangGraphLlmConfig(
-                model_type=model_type,
-                model_name=model_name,
-                base_url=base_url or "",
-            )
-
-        else:
-            raise ValueError(
-                f"The LLM instance provided is of an unsupported type `{type(model)}`."
-            )
+        return self._llm_config_from_basechatmodel(model)
 
     def _extract_prompt_from_react_agent_node(
         self, langgraph_agent_node: StateNodeSpec[Any]
@@ -210,6 +200,39 @@ class LangGraphToAgentSpecConverter:
         raise ValueError(
             f"The LLM instance provided is of an unsupported type `{langgraph_llm_config.model_type}`."
         )
+
+    def _llm_config_from_basechatmodel(self, model: BaseChatModel) -> LangGraphLlmConfig:
+        """Create a LangGraphLlmConfig from a BaseChatModel (ChatOpenAI/ChatOllama)."""
+        if isinstance(model, langchain_openai.ChatOpenAI):
+            api_type: AgentSpecOpenAIAPIType
+            if model.use_responses_api:
+                api_type = AgentSpecOpenAIAPIType.RESPONSES
+            else:
+                api_type = AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
+
+            return LangGraphLlmConfig(
+                model_type="openaicompatible",
+                model_name=model.model_name,
+                base_url=model.openai_api_base or "",
+                api_type=api_type,
+            )
+        elif isinstance(model, langchain_ollama.ChatOllama):
+            return LangGraphLlmConfig(
+                model_type="ollama",
+                model_name=model.model,
+                base_url=model.base_url or "",
+            )
+        else:
+            raise ValueError(
+                f"The LLM instance provided is of an unsupported type `{type(model)}`."
+            )
+
+    def build_agentspec_llm_from_basechatmodel(self, model: BaseChatModel) -> AgentSpecLlmConfig:
+        """
+        Convert a LangChain/LangGraph BaseChatModel into the closest Agent Spec LLM config.
+        """
+        cfg = self._llm_config_from_basechatmodel(model)
+        return self._build_agentspec_llm_from_config(cfg)
 
     def _langgraph_agent_convert_to_agentspec(
         self,

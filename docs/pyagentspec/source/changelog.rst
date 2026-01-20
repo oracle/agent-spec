@@ -4,6 +4,20 @@ Changelog
 Agent Spec |release|
 --------------------
 
+Improvements
+^^^^^^^^^^^^
+
+* **Disaggregated configurations in LangGraph adapter**
+
+  The LangGraph adapter now supports loading disaggregated components during deserialization.
+  Use `AgentSpecLoader.load_yaml/json(..., import_only_referenced_components=True)` to import
+  referenced components (e.g., LLM configs, tools), optionally modify them, and then pass them back
+  via `components_registry` when loading the main configuration. This enables keeping sensitive
+  fields (like API keys) out of the main spec while still resolving them at load time.
+
+Agent Spec 26.1.0
+--------------------
+
 New features
 ^^^^^^^^^^^^
 
@@ -112,14 +126,6 @@ Improvements
 * **Python 3.14 support**
 
   Introduced support for Python version 3.14.
-
-* **Disaggregated configurations in LangGraph adapter**
-
-  The LangGraph adapter now supports loading disaggregated components during deserialization.
-  Use `AgentSpecLoader.load_yaml/json(..., import_only_referenced_components=True)` to import
-  referenced components (e.g., LLM configs, tools), optionally modify them, and then pass them back
-  via `components_registry` when loading the main configuration. This enables keeping sensitive
-  fields (like API keys) out of the main spec while still resolving them at load time.
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

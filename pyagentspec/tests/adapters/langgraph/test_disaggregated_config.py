@@ -35,13 +35,13 @@ def test_disaggregated_loading_yaml_roundtrip() -> None:
     loader = LangGraphLoader()
     referenced_components = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
 
-    # Registry should include our custom id mapped to an Agent Spec component
+    # Registry should include our custom id mapped to a LangGraph component (BaseChatModel)
     assert "llm_config" in referenced_components
-    from pyagentspec.llms.llmconfig import LlmConfig
+    from pyagentspec.adapters.langgraph._types import BaseChatModel
 
-    assert isinstance(referenced_components["llm_config"], LlmConfig)
+    assert isinstance(referenced_components["llm_config"], BaseChatModel)
 
-    # Optionally, swap the LLM dynamically before loading main
+    # Optionally, swap the LLM dynamically before loading main (Agent Spec component is accepted)
     new_llm = VllmConfig(name="llm-prod", model_id="llama3.1-70b-instruct", url="http://prod.llm")
     referenced_components["llm_config"] = new_llm
 
@@ -76,9 +76,9 @@ def test_disaggregated_loading_json_roundtrip() -> None:
     referenced_components = loader.load_json(disag_json, import_only_referenced_components=True)
 
     assert "llm_config" in referenced_components
-    from pyagentspec.llms.llmconfig import LlmConfig
+    from pyagentspec.adapters.langgraph._types import BaseChatModel
 
-    assert isinstance(referenced_components["llm_config"], LlmConfig)
+    assert isinstance(referenced_components["llm_config"], BaseChatModel)
 
     compiled = loader.load_json(main_json, components_registry=referenced_components)
     from pyagentspec.adapters.langgraph._types import CompiledStateGraph
@@ -123,13 +123,12 @@ def test_disaggregated_tool_and_llm_can_load_with_registry() -> None:
     loader = LangGraphLoader(tool_registry={"get_weather": _get_weather_impl})
     registry = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
 
-    # Ensure both IDs are present and are Agent Spec components
+    # Ensure both IDs are present and converted to LangGraph components
     assert set(registry) == {"llm_config", "server_weather_tool"}
-    from pyagentspec.llms.llmconfig import LlmConfig
-    from pyagentspec.tools import ServerTool as AgentSpecServerTool
+    from pyagentspec.adapters.langgraph._types import BaseChatModel, StructuredTool
 
-    assert isinstance(registry["llm_config"], LlmConfig)
-    assert isinstance(registry["server_weather_tool"], AgentSpecServerTool)
+    assert isinstance(registry["llm_config"], BaseChatModel)
+    assert isinstance(registry["server_weather_tool"], StructuredTool)
 
     compiled = loader.load_yaml(main_yaml, components_registry=registry)
     from pyagentspec.adapters.langgraph._types import CompiledStateGraph

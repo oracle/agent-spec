@@ -8,14 +8,40 @@
 from typing import Any, Dict, List, Optional, Union, cast, overload
 
 from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
-from pyagentspec.adapters.langgraph._types import Checkpointer, CompiledStateGraph, RunnableConfig
+from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
+    Checkpointer,
+    CompiledStateGraph,
+    LangGraphComponentsRegistryT,
+    LangGraphRuntimeComponent,
+    RunnableConfig,
+    StateGraph,
+    StructuredTool,
+)
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 from pyagentspec.serialization.types import ComponentsRegistryT as AgentSpecComponentsRegistryT
 
 
 class AgentSpecLoader:
-    """Helper class to convert Agent Spec configuration into LangGraph objects."""
+    """Helper class to convert Agent Spec configuration into LangGraph objects.
+
+    Parameters
+    ----------
+    tool_registry:
+        Optional dictionary to enable converting/loading assistant configurations involving
+        the use of tools. Keys must be the tool names as specified in the serialized
+        configuration, and values are either LangGraph/LCEL tools (e.g., ``StructuredTool``)
+        or plain callables that will be wrapped.
+    plugins:
+        Optional list of Agent Spec deserialization plugins. If omitted, the builtin
+        plugins compatible with the latest supported Agent Spec version are used.
+    checkpointer:
+        Optional LangGraph checkpointer. If provided, it is wired into created graphs and
+        enables features that require a checkpointer (e.g., client tools).
+    config:
+        Optional ``RunnableConfig`` to pass to created runnables/graphs.
+    """
 
     def __init__(
         self,
@@ -36,7 +62,7 @@ class AgentSpecLoader:
     def load_yaml(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT],
+        components_registry: Optional[LangGraphComponentsRegistryT],
     ) -> CompiledStateGraph[Any, Any, Any]: ...
 
     @overload
@@ -45,22 +71,22 @@ class AgentSpecLoader:
         serialized_assistant: str,
         *,
         import_only_referenced_components: bool,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]: ...
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]: ...
 
     @overload
     def load_yaml(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT],
+        components_registry: Optional[LangGraphComponentsRegistryT],
         import_only_referenced_components: bool,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]: ...
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]: ...
 
     def load_yaml(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT] = None,
+        components_registry: Optional[LangGraphComponentsRegistryT] = None,
         import_only_referenced_components: bool = False,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]:
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]:
         """
         Transform the given Agent Spec YAML into LangGraph components, with support for
         disaggregated configurations.
@@ -70,31 +96,72 @@ class AgentSpecLoader:
         serialized_assistant:
             Serialized Agent Spec configuration.
         components_registry:
-            Optional registry of Agent Spec components/values to resolve references while
-            deserializing the main component or referenced components.
+            Optional registry mapping ids to LangGraph components/values. The loader will
+            convert these back to Agent Spec components/values internally to resolve
+            references during deserialization.
         import_only_referenced_components:
-            When True, load only the referenced/disaggregated components and return a
-            dictionary mapping component id to Agent Spec components. These components can
-            be used as the ``components_registry`` when loading the main configuration.
-            When False, load the main component and return the compiled LangGraph graph.
+            When ``True``, loads only the referenced/disaggregated components and returns a
+            dictionary mapping component id to LangGraph components/values. These can be
+            used as the ``components_registry`` when loading the main configuration. When
+            ``False``, loads the main component and returns the compiled LangGraph graph.
+
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``
+
+        CompiledStateGraph
+            The compiled LangGraph component.
+
+        If ``import_only_referenced_components`` is ``True``
+
+        Dict[str, LangGraphRuntimeComponent]
+            A dictionary containing the converted referenced components.
+
+        Examples
+        --------
+        Basic two-phase loading with disaggregation:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> main_yaml, disag_yaml = AgentSpecSerializer().to_yaml(
+        ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
+        ... )
+        >>> from pyagentspec.adapters.langgraph import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> registry = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
+        >>> compiled = loader.load_yaml(main_yaml, components_registry=registry)
+
         """
         deserializer = AgentSpecDeserializer(plugins=self.plugins)
+        converted_registry: Optional[AgentSpecComponentsRegistryT] = (
+            self._convert_component_registry(components_registry) if components_registry else None
+        )
         if import_only_referenced_components:
             # Load and return the disaggregated Agent Spec components
             agentspec_referenced_components = deserializer.from_yaml(
                 serialized_assistant,
-                components_registry=components_registry,
+                components_registry=converted_registry,
                 import_only_referenced_components=True,
             )
-            return agentspec_referenced_components
+            # Convert each referenced Agent Spec component to its LangGraph counterpart
+            converted: Dict[str, LangGraphRuntimeComponent] = {}
+            for component_id, agentspec_component_ in agentspec_referenced_components.items():
+                converted_value = cast(
+                    LangGraphRuntimeComponent, self.load_component(agentspec_component_)
+                )
+                converted[component_id] = converted_value
+            return converted
 
         # Else, load the main component
-        agentspec_assistant = deserializer.from_yaml(
+        agentspec_assistant: AgentSpecComponent = deserializer.from_yaml(
             serialized_assistant,
-            components_registry=components_registry,
+            components_registry=converted_registry,
             import_only_referenced_components=False,
         )
-        return self.load_component(agentspec_assistant)
+        loaded = self.load_component(agentspec_assistant)
+        return cast(CompiledStateGraph[Any, Any, Any], loaded)
 
     @overload
     def load_json(self, serialized_assistant: str) -> CompiledStateGraph[Any, Any, Any]: ...
@@ -103,7 +170,7 @@ class AgentSpecLoader:
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT],
+        components_registry: Optional[LangGraphComponentsRegistryT],
     ) -> CompiledStateGraph[Any, Any, Any]: ...
 
     @overload
@@ -112,22 +179,22 @@ class AgentSpecLoader:
         serialized_assistant: str,
         *,
         import_only_referenced_components: bool,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]: ...
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]: ...
 
     @overload
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT],
+        components_registry: Optional[LangGraphComponentsRegistryT],
         import_only_referenced_components: bool,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]: ...
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]: ...
 
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Optional[AgentSpecComponentsRegistryT] = None,
+        components_registry: Optional[LangGraphComponentsRegistryT] = None,
         import_only_referenced_components: bool = False,
-    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, AgentSpecComponent]]:
+    ) -> Union[CompiledStateGraph[Any, Any, Any], Dict[str, LangGraphRuntimeComponent]]:
         """
         Transform the given Agent Spec JSON into LangGraph components, with support for
         disaggregated configurations.
@@ -137,50 +204,127 @@ class AgentSpecLoader:
         serialized_assistant:
             Serialized Agent Spec configuration.
         components_registry:
-            Optional registry of Agent Spec components/values to resolve references while
-            deserializing the main component or referenced components.
+            Optional registry mapping ids to LangGraph components/values. The loader will
+            convert these back to Agent Spec components/values internally to resolve
+            references during deserialization.
         import_only_referenced_components:
-            When True, load only the referenced/disaggregated components and return a
-            dictionary mapping component id to Agent Spec components. These components can
-            be used as the ``components_registry`` when loading the main configuration.
-            When False, load the main component and return the compiled LangGraph graph.
+            When ``True``, loads only the referenced/disaggregated components and returns a
+            dictionary mapping component id to LangGraph components/values. These can be
+            used as the ``components_registry`` when loading the main configuration. When
+            ``False``, loads the main component and returns the compiled LangGraph graph.
+
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``
+
+        CompiledStateGraph
+            The compiled LangGraph component.
+
+        If ``import_only_referenced_components`` is ``True``
+
+        Dict[str, LangGraphRuntimeComponent]
+            A dictionary containing the converted referenced components.
+
+        Examples
+        --------
+        Basic two-phase loading with disaggregation:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> main_json, disag_json = AgentSpecSerializer().to_json(
+        ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
+        ... )
+        >>> from pyagentspec.adapters.langgraph import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> registry = loader.load_json(disag_json, import_only_referenced_components=True)
+        >>> compiled = loader.load_json(main_json, components_registry=registry)
+
         """
         deserializer = AgentSpecDeserializer(plugins=self.plugins)
+        converted_registry: Optional[AgentSpecComponentsRegistryT] = (
+            self._convert_component_registry(components_registry) if components_registry else None
+        )
         if import_only_referenced_components:
             # Load and return the disaggregated Agent Spec components
             agentspec_referenced_components = deserializer.from_json(
                 serialized_assistant,
-                components_registry=components_registry,
+                components_registry=converted_registry,
                 import_only_referenced_components=True,
             )
-            return agentspec_referenced_components
+            converted: Dict[str, LangGraphRuntimeComponent] = {}
+            for component_id, agentspec_component_ in agentspec_referenced_components.items():
+                converted_value = cast(
+                    LangGraphRuntimeComponent, self.load_component(agentspec_component_)
+                )
+                converted[component_id] = converted_value
+            return converted
 
         # Else, load the main component
-        agentspec_assistant = deserializer.from_json(
+        agentspec_assistant: AgentSpecComponent = deserializer.from_json(
             serialized_assistant,
-            components_registry=components_registry,
+            components_registry=converted_registry,
             import_only_referenced_components=False,
         )
-        return self.load_component(agentspec_assistant)
+        loaded = self.load_component(agentspec_assistant)
+        return cast(CompiledStateGraph[Any, Any, Any], loaded)
 
-    def load_component(
-        self, agentspec_component: AgentSpecComponent
-    ) -> CompiledStateGraph[Any, Any, Any]:
+    def load_component(self, agentspec_component: AgentSpecComponent) -> Any:
         """
-        Transform the given PyAgentSpec Component into the respective LangGraph Component
+        Transform the given PyAgentSpec Component into the respective LangGraph component
 
         Parameters
         ----------
 
         agentspec_component:
-            PyAgentSpec Component to be converted to a LangGraph Component.
+            PyAgentSpec Component to be converted to a LangGraph runtime component
+            (e.g., compiled graph, model, tool).
         """
-        return cast(
-            CompiledStateGraph[Any, Any, Any],
-            AgentSpecToLangGraphConverter().convert(
-                agentspec_component=agentspec_component,
-                tool_registry=self.tool_registry,
-                checkpointer=self.checkpointer,
-                config=self.config,
-            ),
+        return AgentSpecToLangGraphConverter().convert(
+            agentspec_component=agentspec_component,
+            tool_registry=self.tool_registry,
+            checkpointer=self.checkpointer,
+            config=self.config,
         )
+
+    def _convert_component_registry(
+        self, registry: LangGraphComponentsRegistryT
+    ) -> AgentSpecComponentsRegistryT:
+        """
+        Convert a registry of LangGraph components/values back to Agent Spec components/values
+        so it can be used by the AgentSpec deserializer to resolve references.
+        """
+        from pyagentspec.adapters.langgraph._agentspecconverter import (
+            LangGraphToAgentSpecConverter,
+        )
+        from pyagentspec.adapters.langgraph.agentspecexporter import AgentSpecExporter
+
+        exporter = AgentSpecExporter()
+        converter = LangGraphToAgentSpecConverter()
+
+        converted: Dict[str, Any] = {}
+        for custom_id, value in registry.items():
+            # If it's already an Agent Spec component/value, or not a known LangGraph runtime type,
+            # pass through unchanged so users can mix registries.
+            if isinstance(value, AgentSpecComponent) or not (
+                isinstance(value, (StateGraph, CompiledStateGraph, BaseChatModel, StructuredTool))
+            ):
+                converted[custom_id] = value
+                continue
+
+            # Prefer centralized converter for supported runtime values
+            converted_value = converter.convert_runtime_value(value)
+            if converted_value is not None:
+                converted[custom_id] = converted_value
+                continue
+
+            # Fallbacks for graph values created via builder/compiled graph
+            if isinstance(value, (StateGraph, CompiledStateGraph)):
+                converted[custom_id] = exporter.to_component(value)
+                continue
+
+            # Otherwise pass through as-is (FieldValue or unsupported type)
+            converted[custom_id] = value
+
+        return converted
