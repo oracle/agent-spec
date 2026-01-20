@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -6,7 +6,7 @@
 
 
 from dataclasses import is_dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
 from pydantic import BaseModel, TypeAdapter, create_model
 
@@ -19,11 +19,12 @@ from pyagentspec.adapters.langgraph._types import (
     StateNodeSpec,
     langgraph_graph,
 )
+from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.node import Node as AgentSpecNode
-from pyagentspec.flows.nodes import BranchingNode, EndNode, FlowNode, StartNode
+from pyagentspec.flows.nodes import AgentNode, BranchingNode, EndNode, FlowNode, StartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import StringProperty, UnionProperty
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
@@ -59,19 +60,34 @@ def _langgraph_graph_convert_to_agentspec(
         if node_name in (START, END):
             continue
         if isinstance(node.runnable, (StateGraph, CompiledStateGraph)):
-            subgraph_node = cast(AgentSpecFlow, converter.convert(node.runnable, {}))
-            flow_node = FlowNode(
-                name=node_name,
-                subflow=subgraph_node,
-            )
-            referenced_objects[node_name] = flow_node
-            nodes.append(flow_node)
+            converted = converter.convert(node.runnable, {})
+            if isinstance(converted, AgentSpecFlow):
+                flow_node = FlowNode(
+                    name=node_name,
+                    subflow=converted,
+                )
+                referenced_objects[node_name] = flow_node
+                nodes.append(flow_node)
+            elif isinstance(converted, AgentSpecAgent):
+                # Wrap as AgentNode. Do not force inputs/outputs; let Agent infer.
+                agent_node = AgentNode(
+                    name=node_name,
+                    agent=converted,
+                )
+                referenced_objects[node_name] = agent_node
+                nodes.append(agent_node)
+            else:
+                raise TypeError(
+                    f"Unsupported subgraph conversion result for node '{node_name}': {type(converted)}"
+                )
         else:
             nodes.append(
-                _langgraph_node_convert_to_agentspec(graph, node_name, node, referenced_objects)
+                _langgraph_node_convert_to_agentspec(
+                    converter, graph, node_name, node, referenced_objects
+                )
             )
 
-    start_node, end_node = _get_start_end_nodes(graph, referenced_objects)
+    start_node, end_node = _get_start_end_nodes(converter, graph, referenced_objects)
     nodes.append(start_node)
     nodes.append(end_node)
 
@@ -81,9 +97,9 @@ def _langgraph_graph_convert_to_agentspec(
         control_flow_edges.append(
             _langgraph_edges_convert_to_agentspec_ctrl_flow(edge, referenced_objects)
         )
-        data_flow_edges.append(
-            _langgraph_edges_convert_to_agentspec_data_flow(graph, edge, referenced_objects)
-        )
+        data_edge = _langgraph_edge_convert_to_agentspec_data_flow(graph, edge, referenced_objects)
+        if data_edge is not None:
+            data_flow_edges.append(data_edge)
 
     for branch in graph.branches.items():
         source_node, branch_specs = branch
@@ -107,9 +123,11 @@ def _langgraph_graph_convert_to_agentspec(
             control_flow_edges.append(
                 _langgraph_edges_convert_to_agentspec_ctrl_flow(edge, referenced_objects)
             )
-            data_flow_edges.append(
-                _langgraph_edges_convert_to_agentspec_data_flow(graph, edge, referenced_objects)
+            data_edge = _langgraph_edge_convert_to_agentspec_data_flow(
+                graph, edge, referenced_objects
             )
+            if data_edge is not None:
+                data_flow_edges.append(data_edge)
 
     return AgentSpecFlow(
         name=flow_name,
@@ -234,6 +252,7 @@ def _langgraph_branch_convert_to_agentspec(
 
 
 def _get_start_end_nodes(
+    converter: "LangGraphToAgentSpecConverter",
     graph: StateGraph[Any, Any, Any],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> Tuple[AgentSpecNode, AgentSpecNode]:
@@ -246,6 +265,7 @@ def _get_start_end_nodes(
             )
         else:
             referenced_objects[START] = _langgraph_node_convert_to_agentspec(
+                converter,
                 graph,
                 START,
                 graph.nodes[START],
@@ -261,6 +281,7 @@ def _get_start_end_nodes(
             )
         else:
             referenced_objects[END] = _langgraph_node_convert_to_agentspec(
+                converter,
                 graph,
                 END,
                 graph.nodes[END],
@@ -324,6 +345,7 @@ def _resolve_output_properties(
 
 
 def _langgraph_node_convert_to_agentspec(
+    converter: "LangGraphToAgentSpecConverter",
     graph: StateGraph[Any, Any, Any],
     node_name: str,
     node: "StateNodeSpec[Any]",
@@ -336,6 +358,16 @@ def _langgraph_node_convert_to_agentspec(
                 f"expected node {converted_node} to be of type {AgentSpecNode}, got: {converted_node.__class__}"
             )
         return converted_node
+
+    # Special-case: ReAct agent node should become an AgentNode
+    # Delegate the construction of the Agent to the shared converter method.
+    if node_name == "agent" and hasattr(node.runnable, "get_graph"):
+        agentspec_agent = converter._langgraph_agent_convert_to_agentspec(graph, referenced_objects)
+        referenced_objects[node_name] = AgentNode(
+            name=node_name,
+            agent=agentspec_agent,
+        )
+        return cast(AgentSpecNode, referenced_objects[node_name])
 
     input_property = _get_property_from_schema(node.input_schema)
 
@@ -373,11 +405,11 @@ def _langgraph_edges_convert_to_agentspec_ctrl_flow(
     )
 
 
-def _langgraph_edges_convert_to_agentspec_data_flow(
+def _langgraph_edge_convert_to_agentspec_data_flow(
     graph: StateGraph[Any, Any, Any],
     edge: Tuple[str, str],
     referenced_objects: Dict[str, AgentSpecComponent],
-) -> DataFlowEdge:
+) -> Optional[DataFlowEdge]:
     from_, to = edge
     name = f"{from_}_to_{to}_data_edge"
 
@@ -390,6 +422,18 @@ def _langgraph_edges_convert_to_agentspec_data_flow(
 
     source_node = cast(AgentSpecNode, referenced_objects[from_])
     destination_node = cast(AgentSpecNode, referenced_objects[to])
+
+    # Validate that source and destination nodes expose the required properties.
+    source_has_output = any(
+        p.title == internal_state_property.title for p in (source_node.outputs or [])
+    )
+    dest_has_input = any(
+        p.title == destination_input_property.title for p in (destination_node.inputs or [])
+    )
+    if not (source_has_output and dest_has_input):
+        # Some nodes (e.g., AgentNode without explicit IO) may have no matching properties.
+        # In that case, skip creating a data flow edge and rely on control flow only.
+        return None
 
     data_flow_edge = DataFlowEdge(
         name=name,
