@@ -27,14 +27,11 @@ dependencies = [
 	"pyyaml>=6,<7",
 	"httpx>0.28.0",
 	"urllib3>=2.5.0",  # needed to avoid a CVE present on earlier versions
+	"anyio>=4.10.0,<4.12.0",  # to avoid async issues in higher anyio versions
 ]
 
 [project.optional-dependencies]
-full = ["pyagentspec[crewai, autogen, langgraph]"]
-crewai = [
-	"crewai[litellm]>=1.6.1; python_version < '3.14'",
-	"litellm>=1.79.0; python_version < '3.14'",
-]
+full = ["pyagentspec[autogen, langgraph_mcp]"]
 autogen = [
 	"autogen-core>=0.5.6; python_version < '3.13'",
 	"autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
