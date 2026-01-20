@@ -282,7 +282,7 @@ class ToolNodeExecutor(NodeExecutor):
             # Plain callable: we call it like a function
             tool_output = tool(**inputs)
 
-        if isinstance(tool_output, dict):
+        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
             # useful for multiple outputs, avoid nesting dictionaries
             return tool_output, NodeExecutionDetails()
 

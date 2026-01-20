@@ -5,7 +5,19 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, create_model
@@ -193,21 +205,29 @@ def _build_type_from_schema(
 def _create_pydantic_model_from_properties(
     model_name: str, properties: List[AgentSpecProperty]
 ) -> type[BaseModel]:
+    from langchain_core.messages import BaseMessage
+    from langgraph.graph.message import add_messages
+
     registry = SchemaRegistry()
     fields: Dict[str, Tuple[Any, Any]] = {}
 
     for property_ in properties:
-        # Build the annotation from the json_schema (handles enum/array/object/etc.)
-        annotation = _build_type_from_schema(property_.title, property_.json_schema, registry)
-
         field_params: Dict[str, Any] = {}
         if property_.description:
             field_params["description"] = property_.description
 
-        if property_.default is not _agentspec_empty_default:
-            default_field = Field(property_.default, **field_params)
+        if property_.title == "messages":
+            # Special-case: LangGraph messages state
+            annotation = Annotated[list[BaseMessage], add_messages]
+            default_field = Field(..., **field_params)  # required
         else:
-            default_field = Field(..., **field_params)
+            # Otherwise: build the annotation from the json_schema
+            # (handles enum/array/object/etc.)
+            annotation = _build_type_from_schema(property_.title, property_.json_schema, registry)
+            if property_.default is not _agentspec_empty_default:
+                default_field = Field(property_.default, **field_params)
+            else:
+                default_field = Field(..., **field_params)
 
         fields[property_.title] = (annotation, default_field)
 
@@ -264,6 +284,7 @@ class AgentSpecToLangGraphConverter:
             return self._client_transport_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecMCPTool):
             _ensure_mcp_dependency_installed()
+            _ensure_checkpointer_and_valid_tool_config(agentspec_component, checkpointer)
             return self._mcp_tool_convert_to_langgraph(
                 agentspec_component,
                 tool_registry=tool_registry,
@@ -277,16 +298,15 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
             )
         elif isinstance(agentspec_component, AgentSpecServerTool):
+            _ensure_checkpointer_and_valid_tool_config(agentspec_component, checkpointer)
             return self._server_tool_convert_to_langgraph(
                 agentspec_component, tool_registry, config=config
             )
         elif isinstance(agentspec_component, AgentSpecClientTool):
-            if checkpointer is None:
-                raise ValueError(
-                    "A Checkpointer must be provided when the Agent Spec configuration contains client tools"
-                )
+            _ensure_checkpointer_and_valid_tool_config(agentspec_component, checkpointer)
             return self._client_tool_convert_to_langgraph(agentspec_component)
         elif isinstance(agentspec_component, AgentSpecRemoteTool):
+            _ensure_checkpointer_and_valid_tool_config(agentspec_component, checkpointer)
             return self._remote_tool_convert_to_langgraph(agentspec_component, config=config)
         elif isinstance(agentspec_component, AgentSpecFlow):
             return self._flow_convert_to_langgraph(
@@ -616,16 +636,23 @@ class AgentSpecToLangGraphConverter:
         remote_tool: AgentSpecRemoteTool,
         config: RunnableConfig,
     ) -> LangGraphTool:
-        _remote_tool = _create_remote_tool_func(remote_tool)
+        tool_name = remote_tool.name
+        tool_description = remote_tool.description or ""
+        _remote_tool = _confirm_then(
+            func=_create_remote_tool_func(remote_tool),
+            tool_name=tool_name,
+            requires_confirmation=remote_tool.requires_confirmation,
+        )
+
         # Use a Pydantic model for args_schema
         args_model = _create_pydantic_model_from_properties(
-            f"{remote_tool.name}Args",
+            f"{tool_name}Args",
             remote_tool.inputs or [],
         )
 
         structured_tool = StructuredTool(
-            name=remote_tool.name,
-            description=remote_tool.description or "",
+            name=tool_name,
+            description=tool_description,
             args_schema=args_model,
             func=_remote_tool,
             callbacks=config.get("callbacks"),
@@ -646,42 +673,63 @@ class AgentSpecToLangGraphConverter:
             )
 
         tool_obj = tool_registry[agentspec_server_tool.name]
+        tool_name = agentspec_server_tool.name
+        tool_description = agentspec_server_tool.description or ""
+        requires_confirmation = agentspec_server_tool.requires_confirmation
+        is_structured_tool = isinstance(tool_obj, StructuredTool)
+        if not ((is_structured_tool and tool_obj.func is not None) or callable(tool_obj)):
+            raise TypeError(
+                f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
+                "Expected a callable or a StructuredTool with a non-empty function."
+            )
 
-        # If it’s already a LangChain tool (StructuredTool or compatible), return as-is
-        if isinstance(tool_obj, StructuredTool):
-            return tool_obj
-
-        # If it's a plain callable, wrap it with a Pydantic args schema
-        if callable(tool_obj):
-            # Use a Pydantic model (not a dict) for args_schema
+        base_func = tool_obj.func if is_structured_tool else tool_obj
+        wrapped_tool_func = _confirm_then(
+            func=base_func,
+            tool_name=tool_name,
+            requires_confirmation=requires_confirmation,
+        )
+        if is_structured_tool:
+            return StructuredTool(
+                name=tool_obj.name,
+                description=tool_obj.description,
+                args_schema=tool_obj.args_schema,
+                func=wrapped_tool_func,
+            )
+        else:
+            # If it's a plain callable, wrap it with a Pydantic args schema
             args_model = _create_pydantic_model_from_properties(
-                f"{agentspec_server_tool.name}Args",
+                f"{tool_name}Args",
                 agentspec_server_tool.inputs or [],
             )
-            description = agentspec_server_tool.description or ""
-            wrapped = StructuredTool(
-                name=agentspec_server_tool.name,
-                description=description,
+            return StructuredTool(
+                name=tool_name,
+                description=tool_description,
                 args_schema=args_model,  # model class, not a dict
-                func=tool_obj,
+                func=wrapped_tool_func,
                 callbacks=config.get("callbacks"),
             )
-            return wrapped
-
-        # Otherwise unsupported tool type
-        raise TypeError(
-            f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
-            "Expected a callable or a StructuredTool."
-        )
 
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
     ) -> LangGraphTool:
+        tool_name = agentspec_client_tool.name
+        tool_description = agentspec_client_tool.description or ""
+        requires_confirmation = agentspec_client_tool.requires_confirmation
+
         def client_tool(*args: Any, **kwargs: Any) -> Any:
+            if requires_confirmation:
+                if args:
+                    raise ValueError("Args are not supported, please only use kwargs")
+                confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
+
+                if not confirmed:
+                    return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
+
             tool_request = {
                 "type": "client_tool_request",
-                "name": agentspec_client_tool.name,
-                "description": agentspec_client_tool.description,
+                "name": tool_name,
+                "description": tool_description,
                 "inputs": {
                     "args": args,
                     "kwargs": kwargs,
@@ -692,13 +740,13 @@ class AgentSpecToLangGraphConverter:
 
         # Use a Pydantic model for args_schema
         args_model = _create_pydantic_model_from_properties(
-            f"{agentspec_client_tool.name}Args",
+            f"{tool_name}Args",
             agentspec_client_tool.inputs or [],
         )
 
         structured_tool = StructuredTool(
-            name=agentspec_client_tool.name,
-            description=agentspec_client_tool.description or "",
+            name=tool_name,
+            description=tool_description,
             args_schema=args_model,
             func=client_tool,
         )
@@ -1129,3 +1177,89 @@ def _normalize_title(d: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(out.get("title"), str):
         out["title"] = out["title"].lower()
     return out
+
+
+def _confirm_tool_use(tool_name: str, **tool_arguments: Any) -> Tuple[bool, str]:
+    # aligned with https://docs.langchain.com/oss/python/langchain/human-in-the-loop#responding-to-interrupts
+    ALLOWED_DECISIONS = ["approve", "reject"]
+    confirmation_payload = {
+        "action_requests": [
+            {
+                "name": tool_name,
+                "arguments": tool_arguments,
+                "description": f"Tool execution pending approval\n\nTool: {tool_name}\nArgs: {tool_arguments}",
+            }
+        ],
+        "review_configs": [
+            {
+                "action_name": tool_name,
+                "allowed_decisions": ALLOWED_DECISIONS,
+                "description": (
+                    'Please resume with {"decisions": [{"type": "approve"}]}  # or "reject" '
+                    'with an optional "reason" for rejected tool calls.'
+                ),
+            }
+        ],
+    }
+    response = interrupt(confirmation_payload)
+    if not isinstance(response, dict) or "decisions" not in response:
+        raise ValueError(
+            "Tool confirmation result for is not valid, should be a dict with "
+            f"a 'decisions' key, was {response!r} of type {type(response)}."
+        )
+    decision_list = response["decisions"]
+    if len(decision_list) != 1:
+        raise ValueError(
+            "Tool confirmation result for is not valid, decisions should be of length 1, "
+            f"was of length {len(decision_list)}"
+        )
+    decision = decision_list[0]
+    if "type" not in decision or not decision["type"] in ALLOWED_DECISIONS:
+        raise ValueError(
+            "Tool confirmation result for is not valid, decision should be in "
+            f"{ALLOWED_DECISIONS}, was {decision}."
+        )
+
+    return (decision["type"] == "approve"), decision.get("reason", "No reason was provided.")
+
+
+def _confirm_then(
+    func: Callable[..., Any],
+    tool_name: str,
+    requires_confirmation: bool,
+) -> Callable[..., Any]:
+    """Wrap a callable so that it first interrupts for confirmation (if required)."""
+    if not requires_confirmation:
+        return func
+
+    def _wrapped(**kwargs: Any) -> Any:
+        confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
+
+        if not confirmed:
+            return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
+
+        return func(**kwargs)
+
+    return _wrapped
+
+
+def _ensure_checkpointer_and_valid_tool_config(
+    agentspec_tool: AgentSpecTool, checkpointer: Optional[Checkpointer]
+) -> None:
+    tool_name = agentspec_tool.name
+    if agentspec_tool.requires_confirmation and checkpointer is None:
+        raise ValueError(
+            f"A Checkpointer is required for tool '{tool_name}' because requires_confirmation=True"
+        )
+    elif isinstance(agentspec_tool, AgentSpecClientTool) and checkpointer is None:
+        raise ValueError(f"A Checkpointer is required when using ClientTool '{tool_name}'.")
+
+    tool_output = agentspec_tool.outputs or []
+    if agentspec_tool.requires_confirmation and (
+        len(tool_output) != 1 or "type" in tool_output[0].json_schema
+    ):
+        raise ValueError(
+            f"Invalid output schema for tool '{tool_name}' requiring tool confirmation: "
+            f"json schema should be left unspecified when using tool confirmation, was {tool_output}. "
+            f'Please use outputs=[Property(title="{tool_name}", json_schema={{}})]'
+        )
