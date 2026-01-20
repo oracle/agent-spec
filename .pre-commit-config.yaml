@@ -61,7 +61,7 @@ repos:
         types_or: [python]
     -   id: mypy-type-checking-hook
         name: Run type checking (mypy)
-        entry: bash -xc 'mypy -- "$@"' --
+        entry: bash -xc 'mypy --config ./pyproject.toml -- "$@"' --
         language: system
         types_or: [python]
         # We exclude the fuzz tests from this check
