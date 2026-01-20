@@ -7,6 +7,18 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+Improvements
+^^^^^^^^^^^^
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Agent Spec 26.1.0
+--------------------
+
+New features
+^^^^^^^^^^^^
+
 * **MCP tools support in LangGraph adapter:**
 
   The LangGraph adapter now supports Model Context Protocol (MCP) tools.
