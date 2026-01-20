@@ -789,6 +789,8 @@ class AgentSpecToLangGraphConverter:
             checkpointer=checkpointer,
             config=config,
         )
+
+        tools_with_confirmation = [t.name for t in tools if t.requires_confirmation]
         langgraph_tools = [
             self.convert(
                 t,
@@ -844,6 +846,7 @@ class AgentSpecToLangGraphConverter:
             checkpointer=checkpointer,
             response_format=output_model,
             state_schema=input_model,
+            interrupt_before=tools_with_confirmation,
         )
 
     def _agent_convert_to_langgraph(
