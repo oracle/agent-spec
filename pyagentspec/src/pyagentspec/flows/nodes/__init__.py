@@ -9,6 +9,7 @@
 from .agentnode import AgentNode
 from .apinode import ApiNode
 from .branchingnode import BranchingNode
+from .catchexceptionnode import CatchExceptionNode
 from .endnode import EndNode
 from .flownode import FlowNode
 from .inputmessagenode import InputMessageNode
@@ -25,6 +26,7 @@ __all__ = [
     "ApiNode",
     "BranchingNode",
     "EndNode",
+    "CatchExceptionNode",
     "FlowNode",
     "InputMessageNode",
     "LlmNode",

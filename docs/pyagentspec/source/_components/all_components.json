@@ -58,6 +58,10 @@
                 "name": "pyagentspec.flows.nodes.FlowNode"
             },
             {
+                "path": "pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode",
+                "name": "pyagentspec.flows.nodes.CatchExceptionNode"
+            },
+            {
                 "path": "pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode",
                 "name": "pyagentspec.flows.nodes.ParallelFlowNode"
             },
