@@ -35,7 +35,7 @@ sphinx_design==0.6.1
 
 -c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
--e .[autogen,langgraph_mcp,wayflow_oci,wayflow_datastore,wayflow_a2a,agent-framework]
+-e .[autogen,langgraph_mcp,wayflow_oci,wayflow_datastore,wayflow_a2a,agent-framework,openai-agents]
 # or
 -e .
 

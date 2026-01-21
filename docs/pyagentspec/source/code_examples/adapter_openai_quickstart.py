@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,7 +11,7 @@
 # .. start-agentspec_to_runtime
 # Create an Agent Spec agent
 from pyagentspec.agent import Agent
-from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+from pyagentspec.llms import OpenAiConfig
 from pyagentspec.property import FloatProperty
 from pyagentspec.tools import ServerTool
 
@@ -22,16 +22,10 @@ subtraction_tool = ServerTool(
     outputs=[FloatProperty(title="difference")],
 )
 
-agentspec_llm_config = OpenAiCompatibleConfig(
-    name="llama-3.3-70b-instruct",
-    model_id="/storage/models/Llama-3.3-70B-Instruct",
-    url="url.to.my.llm",
-)
-
 agentspec_agent = Agent(
     name="agentspec_tools_test",
     description="agentspec_tools_test",
-    llm_config=agentspec_llm_config,
+    llm_config=OpenAiConfig(name="gpt-5-mini", model_id="gpt-5-mini"),
     system_prompt="Perform subtraction with the given tool.",
     tools=[subtraction_tool],
 )
@@ -41,57 +35,53 @@ from pyagentspec.serialization import AgentSpecSerializer
 
 agentspec_config = AgentSpecSerializer().to_json(agentspec_agent)
 
-# Load and run the Agent Spec configuration with WayFlow
-from pyagentspec.adapters.wayflow import AgentSpecLoader
+# Load and run the Agent Spec configuration with OpenAI Agents
+from agents import Runner, TResponseInputItem
+from pyagentspec.adapters.openaiagents import AgentSpecLoader
 
 def subtract(a: float, b: float) -> float:
     return a - b
 
 async def main():
-    converter = AgentSpecLoader(tool_registry={"subtraction-tool": subtract})
-    assistant = converter.load_json(agentspec_config)
-    conversation = assistant.start_conversation()
+
+    loader = AgentSpecLoader(tool_registry={"subtraction-tool": subtract})
+    assistant = loader.load_json(agentspec_config)
+    conversation_history: list[TResponseInputItem] = []
 
     while True:
         user_input = input("USER >> ")
         if user_input == "exit":
             break
-        conversation.append_user_message(user_input)
-        await conversation.execute_async()
-        last = conversation.get_last_message()
-        print(f"AGENT >> {last.content}")
+
+        conversation_history.append({"role": "user", "content": [{"type": "input_text", "text": user_input}]})
+        result = await Runner.run(assistant, input=[*conversation_history])
+        conversation_history.extend([item.to_input_item() for item in result.new_items])
+
+        print(f"AGENT >> {result.final_output_as(str)}")
+
 
 # anyio.run(main)
 # USER >> Compute 987654321-123456789
-# AGENT >> The result of the subtraction is 864197532.
+# AGENT >> The result of this subtraction is 864197532.
 # .. end-agentspec_to_runtime
 # .. start-runtime_to_agentspec
-# Create a WayFlow Agent
-from wayflowcore.agent import Agent
-from wayflowcore.models import OpenAICompatibleModel
-from wayflowcore.tools import tool
+# Create an OpenAI Agent
+from agents.agent import Agent, function_tool
 
-@tool("subtraction-tool", description_mode="only_docstring")
+@function_tool
 def subtraction_tool(a: float, b: float) -> float:
     """subtract two numbers together"""
     return a - b
 
-llm = OpenAICompatibleModel(
-    name="llama-3.3-70b-instruct",
-    model_id="/storage/models/Llama-3.3-70B-Instruct",
-    base_url="url.to.my.llm",
-)
-
-wayflow_agent = Agent(
-    name="wayflow_agent",
-    description="Simple agent with a tool.",
-    llm=llm,
-    custom_instruction="Perform subtraction with the given tool.",
+openai_agent = Agent(
+    name="openai_agent",
+    model="gpt-5-mini",
+    instructions="Perform subtraction with the given tool.",
     tools=[subtraction_tool],
 )
 
 # Convert to Agent Spec
-from pyagentspec.adapters.wayflow import AgentSpecExporter
+from pyagentspec.adapters.openaiagents import AgentSpecExporter
 
-agentspec_config = AgentSpecExporter().to_json(wayflow_agent)
+agentspec_config = AgentSpecExporter().to_json(openai_agent)
 # .. end-runtime_to_agentspec

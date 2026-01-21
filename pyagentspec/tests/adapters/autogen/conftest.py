@@ -3,8 +3,12 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+import pytest
 
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.nodes import AgentNode, BranchingNode, EndNode, StartNode, ToolNode
@@ -93,3 +97,15 @@ def inspect_names_and_nodes_and_branching_mappings_of_generated_agentspec_flow(
             f"Branching node '{branch_node_name}' expected {num_conditions} branches "
             f"(from original AutoGen conditions), but found {num_agentspec_branches} in AgentSpec."
         )
+
+
+@pytest.fixture(autouse=True)
+def _disable_openai_api_key():
+    """Disable the openai api key environment variable"""
+    old_value = os.environ.get("OPENAI_API_KEY", None)
+    os.environ["OPENAI_API_KEY"] = "fake-api-key"
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ["OPENAI_API_KEY"] = old_value

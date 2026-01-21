@@ -89,18 +89,6 @@ def json_server(json_server_port: int):
         terminate_process_tree(process, timeout=5.0)
 
 
-@pytest.fixture(scope="package", autouse=True)
-def _disable_openai_api_key():
-    """Disable the openai api key environment variable"""
-    old_value = os.environ.get("OPENAI_API_KEY", None)
-    os.environ["OPENAI_API_KEY"] = "fake-api-key"
-    try:
-        yield
-    finally:
-        if old_value is not None:
-            os.environ["OPENAI_API_KEY"] = old_value
-
-
 llama_api_url = os.environ.get("LLAMA_API_URL")
 if not llama_api_url:
     if should_skip_llm_test():

@@ -79,6 +79,10 @@ setup(
             "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
         ],
+        "openai-agents": [
+            "openai-agents>=0.6.9",
+            "libcst>=1.5,<2",
+        ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters"],
         "wayflow": ["wayflowcore>=25.4.3; python_version < '3.14'"],
