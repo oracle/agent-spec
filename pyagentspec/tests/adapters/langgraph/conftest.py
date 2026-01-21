@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +20,18 @@ def pytest_collection_modifyitems(config: Any, items: Any):
         directory=Path(__file__).parent,
         items=items,
     )
+
+
+@pytest.fixture(autouse=True)
+def _disable_openai_api_key():
+    """Disable the openai api key environment variable"""
+    old_value = os.environ.get("OPENAI_API_KEY", None)
+    os.environ["OPENAI_API_KEY"] = "fake-api-key"
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ["OPENAI_API_KEY"] = old_value
 
 
 @pytest.fixture(scope="session")
