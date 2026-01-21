@@ -285,6 +285,40 @@ utilities to avoid unsafe behavior.
 
 When deploying serialized representation to an execution engine, use the engine's secure loading mechanism for the import.
 
+.. _securitycatchexceptionnode:
+
+Considerations regarding exception handling in Flows
+----------------------------------------------------
+
+The :ref:`CatchExceptionNode <catchexceptionnode>` can be used to catch exceptions that may
+occur in the execution of a subflow. This node exposes a ``caught_exception_info`` output that
+may contain sensitive information if populated naïvely from raw exceptions.
+Implementations and runtimes should avoid leaking security-sensitive data such as:
+
+- Authentication/authorization errors or secrets (tokens, API keys, credentials)
+- Internal hostnames, IP addresses, or infrastructure details
+- File paths or environment variables with sensitive values
+- Full stack traces or code internals
+- TLS/SSL or configuration details that could aid exploitation
+
+.. note:: On Exception boundary / what is caught:
+
+  Executors must catch only recoverable exceptions and must not catch fatal/runtime-termination
+  or cancellation/control-flow throwables (e.g., ``KeyboardInterrupt``, ``SystemExit`` in Python).
+
+
+Best practices when using the ``CatchExceptionNode``:
+
+- Keep ``caught_exception_info`` minimal and user-safe; prefer a brief, generic
+  message rather than raw exception/traceback data.
+- Sanitize messages to remove secrets and internal identifiers.
+- Consider not catching specific sensitive exception classes at all (e.g., authz,
+  severe misconfiguration, TLS/SSL failures) so they propagate to secure handlers.
+- Remember that ``caught_exception_info`` is optional and defaults to ``null`` when
+  no exception is raised.
+
+
+
 Considerations regarding Parallelization
 ----------------------------------------
 

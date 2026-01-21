@@ -63,6 +63,7 @@ from pyagentspec.flows.node import Node as AgentSpecNode
 from pyagentspec.flows.nodes import AgentNode as AgentSpecAgentNode
 from pyagentspec.flows.nodes import ApiNode as AgentSpecApiNode
 from pyagentspec.flows.nodes import BranchingNode as AgentSpecBranchingNode
+from pyagentspec.flows.nodes import CatchExceptionNode as AgentSpecCatchExceptionNode
 from pyagentspec.flows.nodes import EndNode as AgentSpecEndNode
 from pyagentspec.flows.nodes import FlowNode as AgentSpecFlowNode
 from pyagentspec.flows.nodes import InputMessageNode as AgentSpecInputMessageNode
@@ -642,6 +643,14 @@ class AgentSpecToLangGraphConverter:
                 checkpointer=checkpointer,
                 config=config,
             )
+        elif isinstance(node, AgentSpecCatchExceptionNode):
+            return self._catch_exception_node_convert_to_langgraph(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
         elif isinstance(node, AgentSpecInputMessageNode):
             return self._input_message_node_convert_to_langgraph(node)
         elif isinstance(node, AgentSpecOutputMessageNode):
@@ -683,10 +692,9 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
-        from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
         from pyagentspec.adapters.langgraph._node_execution import MapNodeExecutor
 
-        subflow = AgentSpecToLangGraphConverter().convert(
+        subflow = self.convert(
             map_node.subflow,
             tool_registry=tool_registry,
             converted_components=converted_components,
@@ -706,10 +714,9 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
     ) -> "NodeExecutor":
-        from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
         from pyagentspec.adapters.langgraph._node_execution import FlowNodeExecutor
 
-        subflow = AgentSpecToLangGraphConverter().convert(
+        subflow = self.convert(
             flow_node.subflow,
             tool_registry=tool_registry,
             converted_components=converted_components,
@@ -721,6 +728,35 @@ class AgentSpecToLangGraphConverter:
 
         return FlowNodeExecutor(
             flow_node,
+            subflow,
+            config,
+        )
+
+    def _catch_exception_node_convert_to_langgraph(
+        self,
+        catch_node: AgentSpecCatchExceptionNode,
+        tool_registry: Dict[str, "LangGraphTool"],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+    ) -> "NodeExecutor":
+        from pyagentspec.adapters.langgraph._node_execution import CatchExceptionNodeExecutor
+
+        subflow = self.convert(
+            catch_node.subflow,
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+        )
+        if not isinstance(subflow, CompiledStateGraph):
+            raise TypeError(
+                "Internal error: CatchExceptionNodeExecutor expects `subflow` "
+                f"to be a CompiledStateGraph, was {type(subflow)}"
+            )
+
+        return CatchExceptionNodeExecutor(
+            catch_node,
             subflow,
             config,
         )

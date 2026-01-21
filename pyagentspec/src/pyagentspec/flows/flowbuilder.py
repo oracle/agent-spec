@@ -6,7 +6,7 @@
 
 """This module defines the flow builder for Agent Spec Flows."""
 
-from typing import Literal, cast, overload
+from typing import Literal, Optional, cast, overload
 
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
@@ -396,7 +396,7 @@ class FlowBuilder:
             | None
         ) = None,
         inputs: list[Property] | None = None,
-        outputs: list[list[Property] | None] | list[Property] | None = None,
+        outputs: list[Property] | None = None,
     ) -> Flow: ...
 
     @overload
@@ -415,7 +415,7 @@ class FlowBuilder:
             | None
         ) = None,
         inputs: list[Property] | None = None,
-        outputs: list[list[Property] | None] | list[Property] | None = None,
+        outputs: list[Property] | None = None,
     ) -> str: ...
 
     @classmethod
@@ -433,7 +433,7 @@ class FlowBuilder:
             | None
         ) = None,
         inputs: list[Property] | None = None,
-        outputs: list[list[Property] | None] | list[Property] | None = None,
+        outputs: list[Property] | None = None,
     ) -> Flow | str:
         """
         Build a linear flow from a list of nodes.
@@ -480,9 +480,12 @@ class FlowBuilder:
                         (edge_info.source_output, edge_info.destination_input),
                     )
 
-        flow_builder.set_entry_point(nodes[0], inputs=inputs).set_finish_points(
-            nodes[-1], outputs=outputs
+        # If inputs/outputs were not provided, infer them from the sequence of nodes.
+        inferred_inputs, inferred_outputs = _infer_linear_flow_inputs_and_outputs(
+            inputs, outputs, nodes
         )
+        flow_builder.set_entry_point(nodes[0], inputs=inferred_inputs)
+        flow_builder.set_finish_points(nodes[-1], outputs=inferred_outputs)
 
         if serialize_as:
             return flow_builder.build_spec(name=name, serialize_as=serialize_as)
@@ -504,3 +507,117 @@ class FlowBuilder:
             return node_or_name
 
         return self._get_node(node_or_name, prefix_err_msg).name
+
+
+def _infer_linear_flow_inputs_and_outputs(
+    inferred_inputs: Optional[list[Property]],
+    inferred_outputs: Optional[list[Property]],
+    nodes: list[Node],
+) -> tuple[list[Property], list[Property]]:
+    """Method to infer inputs and outputs for linear flows
+    which do not have manually set data flow edges.
+
+    This method relies on having shared inputs/outputs data names:
+    When a step requires a input that has not been produced by a previous
+    node, then it is added to the list of inferred inputs.
+
+    All outputs of the nodes are exposed as outputs of the Flow, which
+    means that in case of duplicated property titles nodes may override
+    the values of previous nodes.
+
+    Note: This should only be used for linear flows.
+
+    """
+
+    if inferred_inputs is None:
+        produced_names: set[str] = set()
+        inferred_inputs_map: dict[str, Property] = {}
+        for node_ in nodes:
+            # Collect inputs required by this node that haven't been produced yet
+            for input_property in node_.inputs or []:
+                if (
+                    input_property.title not in produced_names
+                    and input_property.title not in inferred_inputs_map
+                ):
+                    inferred_inputs_map[input_property.title] = input_property
+            # Update produced names with this node outputs
+            for out_prop in node_.outputs or []:
+                produced_names.add(out_prop.title)
+        inferred_inputs = list(inferred_inputs_map.values())
+
+    if inferred_outputs is None:
+        # For a linear flow, expose all outputs produced along the sequence, keeping order
+        # of first appearance across nodes.
+        seen_property_titles: set[str] = set()
+        ordered_properties: list[Property] = []
+        for node_ in nodes:
+            for output_property in node_.outputs or []:
+                if output_property.title not in seen_property_titles:
+                    seen_property_titles.add(output_property.title)
+                    ordered_properties.append(output_property)
+        inferred_outputs = ordered_properties
+
+    return inferred_inputs, inferred_outputs
+
+
+def _autowire_linear_data_edges(
+    flow_builder: FlowBuilder,
+    nodes: list[Node],
+    flow_outputs: list[Property] | None,
+) -> None:
+    # 1) From StartNode to each subsequent node
+    # 2) Between any earlier node and any later node
+    # 3) From any node that produces a flow output to the EndNode
+    try:
+        start_node_obj = flow_builder.start_node
+    except AttributeError as e:
+        raise AttributeError("Internal error, at this stage the start node should be set.") from e
+
+    end_nodes = [n for n in flow_builder.nodes.values() if isinstance(n, EndNode)]
+    end_node_obj = end_nodes[0] if end_nodes else None
+
+    existing: set[tuple[str, str, str, str]] = {
+        (
+            e.source_node.name,
+            e.destination_node.name,
+            e.source_output,
+            e.destination_input,
+        )
+        for e in flow_builder.data_flow_connections
+    }
+
+    def has_matching_property(props: list[Property] | None, title: str) -> bool:
+        return any(p.title == title for p in (props or []))
+
+    def add_edge_if_needed(src: Node, dst: Node, title: str) -> None:
+        key = (src.name, dst.name, title, title)
+        if key in existing:
+            return
+        if has_matching_property(src.outputs, title) and has_matching_property(dst.inputs, title):
+            flow_builder.add_data_edge(src, dst, title)
+            existing.add(key)
+
+    # 1) StartNode -> nodes
+    for dest_node in nodes:
+        for property_ in start_node_obj.outputs or []:
+            if has_matching_property(dest_node.inputs, property_.title):
+                add_edge_if_needed(start_node_obj, dest_node, property_.title)
+
+    # 2) node_i -> node_j for i < j
+    for i, src_node in enumerate(nodes):
+        for j in range(i + 1, len(nodes)):
+            dest_node = nodes[j]
+            for output_property in src_node.outputs or []:
+                if has_matching_property(dest_node.inputs, output_property.title):
+                    add_edge_if_needed(src_node, dest_node, output_property.title)
+
+    # 3) nodes -> EndNode on flow outputs
+    if end_node_obj is not None:
+        # flow_outputs is already a flat list in our usage here
+        flow_output_titles = [p.title for p in (flow_outputs or [])]
+        for src_node in nodes:
+            for output_property in src_node.outputs or []:
+                if output_property.title in flow_output_titles and has_matching_property(
+                    end_node_obj.inputs, output_property.title
+                ):
+                    add_edge_if_needed(src_node, end_node_obj, output_property.title)

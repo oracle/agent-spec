@@ -11,7 +11,7 @@ import pytest
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.flowbuilder import FlowBuilder
 from pyagentspec.flows.nodes import BranchingNode, EndNode, InputMessageNode, LlmNode, StartNode
-from pyagentspec.property import Property
+from pyagentspec.property import StringProperty
 
 
 def test_build_simple_flow_with_single_llm_node(default_llm_config):
@@ -328,8 +328,8 @@ def test_build_linear_flow_accepts_DataFlowEdge_objects(default_llm_config):
 def test_build_linear_flow_with_explicit_inputs_outputs(default_llm_config):
     n1 = LlmNode(name="n1", llm_config=default_llm_config, prompt_template="a")
     n2 = LlmNode(name="n2", llm_config=default_llm_config, prompt_template="b")
-    inp = Property(json_schema={"title": "inp", "type": "string"})
-    outp = Property(json_schema={"title": "outp", "type": "string"})
+    inp = StringProperty(title="inp")
+    outp = StringProperty(title="outp")
     flow = FlowBuilder.build_linear_flow([n1, n2], inputs=[inp], outputs=[outp])
     # Start node should have that input, and one EndNode should have that output
     start_nodes = [n for n in flow.nodes if isinstance(n, StartNode)]
@@ -437,3 +437,58 @@ def test_add_conditional_raises_when_one_mapping_destination_missing():
         builder.add_conditional(
             "src", InputMessageNode.DEFAULT_OUTPUT, {"v": "missing"}, default_destination="ok"
         )
+
+
+def test_build_linear_flow_automatically_infers_inputs_outputs_and_dataflow_edges(
+    default_llm_config,
+) -> None:
+    """
+    This test checks that when creating a sequential flow the inputs and outputs of
+    the flow are correctly inferred, and that the data connections are automatically
+    wired.
+
+            user_input
+          .---------------------------------.------------.
+          |               generated_text    |            |
+          |              .---------------.--+--------.   |
+          |              |               |  |        |   |
+          |              |               v  v        v   v
+    +---------+     +------+           +------+     +------+              +---------+
+    |  Start  |---->|  N1  |---------->|  N2  |---->|  N3  |------------->|   End   |
+    +---------+     +------+           +------+     +------+              +---------+
+                        |               |            |                     ^   ^  ^
+                        |               |            '- generated_text3 ---'   |  |
+                        |               |                                      |  |
+                        |               '------------- generated_text2 --------'  |
+                        '--------------------------- generated_text --------------'
+
+
+    """
+    USER_INPUT_NAME = "user_input"
+    N1_OUTPUT_NAME = LlmNode.DEFAULT_OUTPUT
+    N2_OUTPUT_NAME = "generated_text_2"
+    N3_OUTPUT_NAME = "generated_text_3"
+    p1_out = StringProperty(title=N1_OUTPUT_NAME)
+    p2_out = StringProperty(title=N2_OUTPUT_NAME)
+    p3_out = StringProperty(title=N3_OUTPUT_NAME)
+    n1 = LlmNode(name="n1", llm_config=default_llm_config, prompt_template="a", outputs=[p1_out])
+    n2 = LlmNode(
+        name="n2",
+        llm_config=default_llm_config,
+        prompt_template="{{" + N1_OUTPUT_NAME + "}} {{" + USER_INPUT_NAME + "}}",
+        outputs=[p2_out],
+    )
+    n3 = LlmNode(
+        name="n3",
+        llm_config=default_llm_config,
+        prompt_template="{{" + N1_OUTPUT_NAME + "}} {{" + USER_INPUT_NAME + "}}",
+        outputs=[p3_out],
+    )
+    flow = FlowBuilder.build_linear_flow([n1, n2, n3])
+
+    node_names = {n.name for n in flow.nodes}
+    assert {"StartNode", "n1", "n2", "n3", "EndNode_1"} == node_names
+
+    # Check that inputs/outputs have been properly inferred
+    assert flow.inputs == [StringProperty(title=USER_INPUT_NAME)]
+    assert flow.outputs == [p1_out, p2_out, p3_out]

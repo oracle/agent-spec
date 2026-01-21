@@ -1424,6 +1424,8 @@ Here's the list of nodes supported in Agent Spec:
   better structure agentic components and easily reuse them.
 - FlowNode: runs a flow inline, used to better structure and easily
   reuse Flows
+- CatchExceptionNode: Used to catch exceptions that may be raised during the
+  execution of a given subflow.
 - MapNode: performs a map-reduce operation on a given input collection,
   applying a specified Flow to each element in the collection
 - StartNode:  entry point of a flow
@@ -1648,6 +1650,46 @@ A more detailed description of each node follows.
         - same type of the respective output type in case of ``sum``, ``avg``
 
       - One, the default next
+    * - CatchExceptionNode
+      - * Used to catch exceptions that may be raised during the execution of a given subflow.
+        * If an exception is caught during the subflow execution, branches out to an exception branch.
+          Otherwise, uses the transitions/branches specified for the subflow.
+        * Exposes the inputs of the subflow and outputs the subflow outputs with additional information
+          about a potentially caught exception (for more information read the :ref:`security guidelines <securitycatchexceptionnode>`).
+        * When the subflow runs to completion without failure, this node returns the subflow outputs.
+          Otherwise, it returns the default values for the subflow outputs, along with the exception
+          information.
+      - .. list-table::
+            :header-rows: 1
+            :widths: 20 35 15 15 15
+            :class: mywideinnertable
+
+            * - Name
+              - Description
+              - Type
+              - Mandatory
+              - Default
+            * - subflow
+              - Flow to execute and catch errors from
+              - Flow
+              - Yes
+              - -
+
+      - Same as the inputs from the ``sub_flow``.
+
+      - Composed of:
+
+        * The outputs of the ``sub_flow``. If an exception is raised, will output the default values
+          of each output property of the subflow. As a consequence, all outputs of the node must have
+          default values. If they are not already specified at the subflow level, the developer must
+          specify them in the output properties of the CatchExceptionNode node.
+        * The caught exception information, named ``caught_exception_info``: (optional string,
+          default to null when no exception is raised).
+
+      - Composed of:
+
+        * The branches of the ``sub_flow``;
+        * A branch ``caught_exception_branch`` for when an exception is caught.
     * - ParallelMapNode
       - The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
         defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
