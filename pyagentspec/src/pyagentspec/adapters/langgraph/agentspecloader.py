@@ -9,14 +9,11 @@ from typing import Any, Dict, List, Optional, Union, cast, overload
 
 from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.adapters.langgraph._types import (
-    BaseChatModel,
     Checkpointer,
     CompiledStateGraph,
     LangGraphComponentsRegistryT,
     LangGraphRuntimeComponent,
     RunnableConfig,
-    StateGraph,
-    StructuredTool,
 )
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
@@ -298,33 +295,19 @@ class AgentSpecLoader:
         from pyagentspec.adapters.langgraph._agentspecconverter import (
             LangGraphToAgentSpecConverter,
         )
-        from pyagentspec.adapters.langgraph.agentspecexporter import AgentSpecExporter
 
-        exporter = AgentSpecExporter()
         converter = LangGraphToAgentSpecConverter()
 
         converted: Dict[str, Any] = {}
         for custom_id, value in registry.items():
-            # If it's already an Agent Spec component/value, or not a known LangGraph runtime type,
-            # pass through unchanged so users can mix registries.
-            if isinstance(value, AgentSpecComponent) or not (
-                isinstance(value, (StateGraph, CompiledStateGraph, BaseChatModel, StructuredTool))
-            ):
-                converted[custom_id] = value
-                continue
-
-            # Prefer centralized converter for supported runtime values
             converted_value = converter.convert_runtime_value(value)
             if converted_value is not None:
                 converted[custom_id] = converted_value
-                continue
-
-            # Fallbacks for graph values created via builder/compiled graph
-            if isinstance(value, (StateGraph, CompiledStateGraph)):
-                converted[custom_id] = exporter.to_component(value)
-                continue
-
-            # Otherwise pass through as-is (FieldValue or unsupported type)
-            converted[custom_id] = value
+            elif isinstance(value, AgentSpecComponent):
+                converted[custom_id] = value
+            else:
+                raise NotImplementedError(
+                    f"Unsupported registry value for back-conversion: {value}"
+                )
 
         return converted
