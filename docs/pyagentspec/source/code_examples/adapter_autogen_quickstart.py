@@ -9,7 +9,7 @@
 # mypy: ignore-errors
 
 # .. start-agentspec_to_runtime
-# Create a Agent Spec agent
+# Create an Agent Spec agent
 from pyagentspec.agent import Agent
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 from pyagentspec.property import FloatProperty

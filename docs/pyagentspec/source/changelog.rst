@@ -46,6 +46,12 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.agent_framework`` subpackage.
   It requires the ``agent-framework`` extra dependency to be installed.
 
+* **Added OpenAI Agents SDK adapter to pyagentspec:**
+
+  The OpenAI Agents adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.openaiagents`` subpackage.
+  It requires the ``openai-agents`` extra dependency to be installed.
+
   For more information read the :doc:`API Reference <api/adapters>`.
 
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**

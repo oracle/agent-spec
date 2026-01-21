@@ -122,6 +122,7 @@ Agent Spec is developed jointly between Oracle Cloud Infrastructure and Oracle L
    WayFlow <adapters/wayflow/index>
    AutoGen <adapters/autogen/index>
    Agent Framework <adapters/agent-framework/index>
+   OpenAI Agents <adapters/openai/index>
 
 
 .. toctree::
