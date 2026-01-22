@@ -15,8 +15,6 @@ Improvements
   via `components_registry` when loading the main configuration. This enables keeping sensitive
   fields (like API keys) out of the main spec while still resolving them at load time.
 
-Agent Spec 26.1.0
---------------------
 
 New features
 ^^^^^^^^^^^^
@@ -27,8 +25,6 @@ New features
 
   For more information, see the :doc:`API Reference <api/flows>` and the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
 
-Improvements
-^^^^^^^^^^^^
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
