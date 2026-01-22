@@ -51,7 +51,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.langgraph`` subpackage.
   It requires the ``langgraph`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/langgraph/index>`.
 
 * **Added AutoGen adapter to pyagentspec:**
 
@@ -59,7 +59,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.autogen`` subpackage.
   It requires the ``autogen`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/autogen/index>`.
 
 * **Sensitive Fields Support:**
 
