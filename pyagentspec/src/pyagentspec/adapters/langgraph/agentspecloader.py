@@ -9,11 +9,14 @@ from typing import Any, Dict, List, Optional, Union, cast, overload
 
 from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
     Checkpointer,
     CompiledStateGraph,
     LangGraphComponentsRegistryT,
     LangGraphRuntimeComponent,
     RunnableConfig,
+    StateGraph,
+    StructuredTool,
 )
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
@@ -312,11 +315,9 @@ class AgentSpecLoader:
 
         converted: Dict[str, Any] = {}
         for custom_id, value in registry.items():
-            if isinstance(value, AgentSpecComponent):
-                converted[custom_id] = value
-            else:
-                # this converts the value into a langgraph object
-                # if conversion fails (e.g. unsupported langgraph object), it raises a NotImplementedError
+            if isinstance(value, (StateGraph, CompiledStateGraph, BaseChatModel, StructuredTool)):
                 converted[custom_id] = converter.convert(value)
+            else:
+                converted[custom_id] = value
 
         return converted
