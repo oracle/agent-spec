@@ -1,16 +1,8 @@
-:orphan:
+.. _agentspecspec_v26.1.0:
 
-.. _agentspecspec:
-.. _agentspecspec_nightly:
-
-====================================================
-Agent Spec specification (nightly version |release|)
-====================================================
-
-.. warning::
-    This is the nightly version of Agent Spec, and it is currently under development.
-    It is not an official release, and it might be subject to major changes before official release.
-    Use this version only for testing purposes.
+=========================================
+Agent Spec specification (version 26.1.0)
+=========================================
 
 Language specification
 ======================
@@ -63,7 +55,7 @@ Some other convenient classes can be defined in order to more easily
 describe the configurations of the agents (e.g., ``JSONSchemaValue``, ``LlmGenerationConfig``).
 Those classes do not have to align to the interface of a Component.
 
-.. _symbolic_reference_nightly:
+.. _symbolic_reference_26_1_0:
 
 Symbolic references (configuration components)
 ----------------------------------------------
@@ -600,7 +592,7 @@ Therefore, providing a proper description might improve the quality of the final
     In case structured generation is requested to an LLM that does not natively support it, it's up to
     the Agent Spec Runtime implementation to raise an exception, or to implement it in a different form.
 
-.. _openaicompatiblellms:
+.. _openaicompatiblellms_26_1_0:
 
 OpenAI Compatible LLMs
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -648,7 +640,7 @@ OpenAI
 ^^^^^^
 
 This class of LLMs refers to the models offered by `OpenAI <https://openai.com>`_.
-Similar to :ref:`OpenAI Compatible LLMs <openaicompatiblellms>`, you can also configure the ``api_type`` parameter,
+Similar to :ref:`OpenAI Compatible LLMs <openaicompatiblellms_26_1_0>`, you can also configure the ``api_type`` parameter,
 which takes one of 2 string values, namely ``chat_completions`` or ``responses``.
 By default, the API type is set to chat completions. Additionally, an optional
 ``api_key`` can be set for the remote LLM model.
@@ -856,7 +848,7 @@ code from the agent representation. The representation contains a complete descr
 of the tool—its attributes, inputs, outputs, and related metadata—but does
 not embed executable code.
 
-.. _remotetools:
+.. _remotetools_26_1_0:
 
 Remote Tools
 ^^^^^^^^^^^^
@@ -891,7 +883,7 @@ configurations for secure, remote execution.
 Like other tools, MCP Tools define inputs, outputs, and metadata but include a
 ``client_transport`` for managing connections (e.g., via SSE or Streamable HTTP
 with mTLS) (details about the client transport can be found in
-:ref:`the MCP section <agentspecmcpspec_nightly>` below).
+:ref:`the MCP section <agentspecmcpspec_26_1_0>` below).
 
 .. code-block:: python
 
@@ -1375,7 +1367,7 @@ to one of the values in branches. GUIs will show the different branches
 as output flows of the node, so that each of them can be connected in a
 1-to-1 manner with another node's flow input.
 
-.. _parallelization:
+.. _parallelization_26_1_0:
 
 Parallelization
 ^^^^^^^^^^^^^^^
@@ -1500,7 +1492,7 @@ A more detailed description of each node follows.
               - No
               - null
             * - data
-              - The data to send to this API call. Behaves the same way as the ``data`` parameter in :ref:`RemoteTool <remotetools>`.
+              - The data to send to this API call. Behaves the same way as the ``data`` parameter in :ref:`RemoteTool <remotetools_26_1_0>`.
               - any
               - No
               - {}
@@ -1642,7 +1634,7 @@ A more detailed description of each node follows.
       - The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
         defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
         the only difference is that in this node the map operation is supposed to be performed in parallel.
-        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
+        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization_26_1_0>`.
       - .. list-table::
             :header-rows: 1
             :widths: 20 35 15 15 15
@@ -1695,7 +1687,7 @@ A more detailed description of each node follows.
       - One, the default next
     * - ParallelFlowNode
       - Execute a list of subflows in parallel.
-        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
+        Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization_26_1_0>`.
       - .. list-table::
             :header-rows: 1
             :widths: 20 35 15 15 15
@@ -1847,7 +1839,7 @@ A2AAgent
 ~~~~~~~~
 
 ``A2AAgent`` is an implementation of ``AgenticComponent`` which uses the A2A protocol to communicate with a remote server agent. It handles all necessary data transformation and communication logic to and from the server agent.
-For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Protocol) section <agentspeca2aspec_nightly>`.
+For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Protocol) section <agentspeca2aspec_26_1_0>`.
 
 .. code-block:: python
 
@@ -1975,7 +1967,7 @@ For example, the JSON serialized version of an Agent should look like the follow
        "url": "my.llm.url"
     }
     "tools": [],
-    "agentspec_version": "26.2.0"
+    "agentspec_version": "26.1.0"
   }
 
 For release versioning, Agent Spec follows the format YEAR.QUARTER.PATCH. Agent Spec follows a
@@ -2022,7 +2014,7 @@ but it should not be done in patch releases, unless required for security reason
 
 In any case, removed features must be announced in the release notes.
 
-.. _agentspecmcpspec_nightly:
+.. _agentspecmcpspec_26_1_0:
 
 MCP (Model Context Protocol)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2169,7 +2161,7 @@ Streamable HTTP Transport with mTLS
     For production use, always prefer secure transports like those with mTLS to ensure
     mutual authentication.
 
-.. _agentspeca2aspec_nightly:
+.. _agentspeca2aspec_26_1_0:
 
 A2A (Agent to Agent Protocol)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2219,7 +2211,7 @@ unmodified attributes as the parent type and can only add new attributes.
     :language: JSON5
 
 Assuming an SDK in the Python programming language, as an example (see
-:ref:`the sdk detailed below <sdk-agent-spec_nightly>`), the abstract interface
+:ref:`the sdk detailed below <sdk-agent-spec_26_1_0>`), the abstract interface
 implemented for a plugin should be similar to this:
 
 .. code-block:: python
@@ -2289,7 +2281,7 @@ Additional disaggregated components that are not part of any exported configurat
 potentially sensitive information) can be additionally provided at deserialization time by the SDK or the Runtime
 performing it.
 
-The disaggregated components references follow the same :ref:`reference system <symbolic_reference_nightly>` described for components, based on ID matching.
+The disaggregated components references follow the same :ref:`reference system <symbolic_reference_26_1_0>` described for components, based on ID matching.
 The ID used for matching the disaggregated component is, by default, the key used in the ``$referenced_components`` dictionary.
 Users can override this behavior at deserialization time by mapping it to a different ID to match a component reference.
 A component reference and its matched disaggregated component must be type-compatible.
@@ -2349,9 +2341,7 @@ And here's the configuration containing the disaggregated components:
     }
 
 
-
-
-.. _agentspecsensitivefield_nightly:
+.. _agentspecsensitivefield_26_1_0:
 
 Sensitive fields
 ----------------
@@ -2631,7 +2621,7 @@ Examples of JSON serialization for a few common Components follow.
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
       "component_type": "Agent",
-      "agentspec_version": "26.2.0"
+      "agentspec_version": "26.1.0"
     }
 
 
@@ -2691,7 +2681,7 @@ representation generated in JSON. We use PyAgentSpec in order to define the Agen
     .. literalinclude:: ../agentspec_config_examples/pyagentspec_example_config.json
         :language: json
 
-.. _sdk-agent-spec_nightly:
+.. _sdk-agent-spec_26_1_0:
 
 SDKs for consuming/producing Agent Spec
 =======================================

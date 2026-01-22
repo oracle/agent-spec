@@ -15,8 +15,6 @@ Improvements
   via `components_registry` when loading the main configuration. This enables keeping sensitive
   fields (like API keys) out of the main spec while still resolving them at load time.
 
-Agent Spec 26.1.0
---------------------
 
 New features
 ^^^^^^^^^^^^
@@ -26,6 +24,16 @@ New features
   The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
 
   For more information, see the :doc:`API Reference <api/flows>` and the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
+
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Agent Spec 26.1.0
+-----------------
+
+New features
+^^^^^^^^^^^^
 
 * **MCP tools support in LangGraph adapter:**
 
@@ -39,7 +47,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.langgraph`` subpackage.
   It requires the ``langgraph`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/langgraph/index>`.
 
 * **Added AutoGen adapter to pyagentspec:**
 
@@ -47,7 +55,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.autogen`` subpackage.
   It requires the ``autogen`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/autogen/index>`.
 
 * **Sensitive Fields Support:**
 
