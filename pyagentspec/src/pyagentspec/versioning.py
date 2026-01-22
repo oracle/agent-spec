@@ -27,6 +27,7 @@ class AgentSpecVersionEnum(Enum):
     """
     An Enumeration for different versions of Agent Spec.
     """
+
     v25_3_0 = "25.3.0"
     v25_3_1 = "25.3.1"
     v25_4_0 = "25.4.0"
