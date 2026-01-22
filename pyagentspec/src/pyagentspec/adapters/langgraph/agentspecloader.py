@@ -130,6 +130,12 @@ class AgentSpecLoader:
         >>> registry = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
         >>> compiled = loader.load_yaml(main_yaml, components_registry=registry)
 
+        Alternatively, you can deserialize the disaggregated components with the pyagentspec deserializer and pass them into the load of the main component:
+
+        >>> from pyagentspec.serialization import AgentSpecDeserializer
+        >>> referenced_components = AgentSpecDeserializer().from_yaml(disag_yaml, import_only_referenced_components=True)
+        >>> langgraph = loader.load_yaml(main_yaml, components_registry=referenced_components)
+
         """
         deserializer = AgentSpecDeserializer(plugins=self.plugins)
         converted_registry: Optional[AgentSpecComponentsRegistryT] = (
@@ -229,14 +235,20 @@ class AgentSpecLoader:
         >>> from pyagentspec.agent import Agent
         >>> from pyagentspec.llms import OllamaConfig
         >>> from pyagentspec.serialization import AgentSpecSerializer
-        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(id="llm_id", name="m", model_id="llama3.1", url="http://localhost:11434"))
         >>> main_json, disag_json = AgentSpecSerializer().to_json(
         ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
         ... )
         >>> from pyagentspec.adapters.langgraph import AgentSpecLoader
         >>> loader = AgentSpecLoader()
         >>> registry = loader.load_json(disag_json, import_only_referenced_components=True)
-        >>> compiled = loader.load_json(main_json, components_registry=registry)
+        >>> langgraph = loader.load_json(main_json, components_registry=registry)
+
+        Alternatively, you can deserialize the disaggregated components with the pyagentspec deserializer and pass them into the load of the main component:
+
+        >>> from pyagentspec.serialization import AgentSpecDeserializer
+        >>> referenced_components = AgentSpecDeserializer().from_json(disag_json, import_only_referenced_components=True)
+        >>> langgraph = loader.load_json(main_json, components_registry=referenced_components)
 
         """
         deserializer = AgentSpecDeserializer(plugins=self.plugins)
@@ -300,14 +312,11 @@ class AgentSpecLoader:
 
         converted: Dict[str, Any] = {}
         for custom_id, value in registry.items():
-            converted_value = converter.convert_runtime_value(value)
-            if converted_value is not None:
-                converted[custom_id] = converted_value
-            elif isinstance(value, AgentSpecComponent):
+            if isinstance(value, AgentSpecComponent):
                 converted[custom_id] = value
             else:
-                raise NotImplementedError(
-                    f"Unsupported registry value for back-conversion: {value}"
-                )
+                # this converts the value into a langgraph object
+                # if conversion fails (e.g. unsupported langgraph object), it raises a NotImplementedError
+                converted[custom_id] = converter.convert(value)
 
         return converted
