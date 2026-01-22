@@ -21,6 +21,18 @@ Agent Spec 26.1.0
 New features
 ^^^^^^^^^^^^
 
+Improvements
+^^^^^^^^^^^^
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Agent Spec 26.1.0
+-----------------
+
+New features
+^^^^^^^^^^^^
+
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
 
   The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
