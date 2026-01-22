@@ -501,7 +501,7 @@ class Component(AbstractableModel, abstract=True):
 
         Returns
         -------
-        ComponentT:
+        Component:
             The constructed component
         """
         from pyagentspec.serialization import AgentSpecDeserializer

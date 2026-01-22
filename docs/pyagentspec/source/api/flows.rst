@@ -79,6 +79,10 @@ Nodes
 .. autoclass:: pyagentspec.flows.nodes.toolnode.ToolNode
     :exclude-members: model_post_init, model_config
 
+
+Enumerators
+-----------
+
 .. autoclass:: pyagentspec.flows.nodes.mapnode.ReductionMethod
 
 Flow Builder

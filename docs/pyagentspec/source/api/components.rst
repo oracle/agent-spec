@@ -26,5 +26,6 @@ AgenticComponent class
 
 
 Base Class
+----------
 
 .. autoclass:: pyagentspec.component.AbstractableModel

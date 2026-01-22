@@ -45,4 +45,8 @@ Deserialization plugins
 .. autoclass:: pyagentspec.serialization.pydanticdeserializationplugin.PydanticComponentDeserializationPlugin
 
 
+Validation
+----------
+
 .. autoclass:: pyagentspec.validation_helpers.PyAgentSpecErrorDetails
+    :exclude-members: model_config
