@@ -36,8 +36,8 @@ You can download the Agent Spec technical report at the following :download:`lin
         :maxdepth: 2
 
         Introduction, motivation & vision <intro_and_motivation>
-        Language specification (v26.1.0 latest) <language_spec_26_1_0>
-        Language specification (v25.4.1) <language_spec_25_4_1>
         Language specification (under development) <language_spec_nightly>
+        Language specification (v26.1.0 latest release) <language_spec_26_1_0>
+        Language specification (v25.4.1) <language_spec_25_4_1>
         Positioning in the agentic ecosystem <positioning>
         Tracing <tracing>
