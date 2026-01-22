@@ -52,7 +52,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.openaiagents`` subpackage.
   It requires the ``openai-agents`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/openai/index>`.
 
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
 
