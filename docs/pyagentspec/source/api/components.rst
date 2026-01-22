@@ -29,3 +29,4 @@ Base Class
 ----------
 
 .. autoclass:: pyagentspec.component.AbstractableModel
+    :exclude-members: model_post_init, model_config
