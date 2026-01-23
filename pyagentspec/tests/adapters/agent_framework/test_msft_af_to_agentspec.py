@@ -8,8 +8,8 @@ from typing import cast
 
 from agent_framework import ChatAgent
 from agent_framework.openai import OpenAIChatClient
-from microsoft_agent_framework_agentspec_adapter import AgentSpecExporter
 
+from pyagentspec.adapters.agent_framework import AgentSpecExporter
 from pyagentspec.agent import Agent
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 

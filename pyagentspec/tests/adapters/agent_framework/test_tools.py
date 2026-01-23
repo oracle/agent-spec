@@ -26,7 +26,7 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
     End-to-end: convert an AgentSpec RemoteTool to a Agent Framework AIFunction and run it.
     Patch httpx.request to capture the outgoing HTTP call and verify the rendered JSON payload.
     """
-    from microsoft_agent_framework_agentspec_adapter import AgentSpecLoader
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         city = kwargs["data"]["location"]["city"]
@@ -81,7 +81,7 @@ def test_remote_tool_post_json_array_with_agent_framework() -> None:
     """
     Test RemoteTool with JSON array body (data as list).
     """
-    from microsoft_agent_framework_agentspec_adapter import AgentSpecLoader
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         json_data = kwargs["json"]
@@ -129,7 +129,7 @@ def test_remote_tool_post_raw_body_with_agent_framework() -> None:
     """
     Test RemoteTool with raw string body (non-JSON, uses data=).
     """
-    from microsoft_agent_framework_agentspec_adapter import AgentSpecLoader
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
         raw_data = kwargs["content"]

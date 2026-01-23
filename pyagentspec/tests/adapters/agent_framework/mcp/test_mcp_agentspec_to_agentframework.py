@@ -4,7 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 import anyio
-from microsoft_agent_framework_agentspec_adapter.agentspecloader import AgentSpecLoader
+
+from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
 from .conftest import MCP_SERVER_PORT
 

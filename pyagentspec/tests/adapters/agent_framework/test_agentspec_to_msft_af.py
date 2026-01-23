@@ -11,8 +11,8 @@ from agent_framework import (
     TextContent,
 )
 from agent_framework.openai import OpenAIChatClient
-from microsoft_agent_framework_agentspec_adapter import AgentSpecLoader
 
+from pyagentspec.adapters.agent_framework import AgentSpecLoader
 from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer
