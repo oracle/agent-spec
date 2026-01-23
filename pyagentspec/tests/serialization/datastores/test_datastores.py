@@ -42,8 +42,8 @@ def test_datastore_serialization_with_unsupported_version_raises(
 @pytest.mark.parametrize("datastore, sensitive_fields", DATASTORES_AND_THEIR_SENSITIVE_FIELDS)
 def test_deserialization_with_unsupported_version_raises(datastore, sensitive_fields) -> None:
     serialized_ds = AgentSpecSerializer().to_yaml(datastore)
-    assert "agentspec_version: 26.1.1" in serialized_ds
-    serialized_ds = serialized_ds.replace("agentspec_version: 26.1.1", "agentspec_version: 26.1.0")
+    assert "agentspec_version: 26.2.0" in serialized_ds
+    serialized_ds = serialized_ds.replace("agentspec_version: 26.2.0", "agentspec_version: 26.1.0")
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         _ = AgentSpecDeserializer().from_yaml(

@@ -58,9 +58,9 @@ def test_transform_deserialization_with_unsupported_version_raises(
 ):
     transform = transform_factory(datastore)
     serialized_transform = AgentSpecSerializer().to_yaml(transform)
-    assert "agentspec_version: 26.1.1" in serialized_transform
+    assert "agentspec_version: 26.2.0" in serialized_transform
     serialized_transform = serialized_transform.replace(
-        "agentspec_version: 26.1.1", "agentspec_version: 26.1.0"
+        "agentspec_version: 26.2.0", "agentspec_version: 26.1.0"
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

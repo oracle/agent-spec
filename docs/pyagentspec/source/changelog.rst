@@ -25,6 +25,15 @@ New features
 
   For more information, see the :doc:`API Reference <api/flows>` and the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
 
+* **Datastores**
+
+  Added support for datastores in Agent Spec through :ref:`OracleDatabaseDatastore <oracledatabasedatastore>` and :ref:`PostgresDatabaseDatastore <postgresdatabasedatastore>`.
+  Datastores enable persistent storage and caching capabilities for agent workflows. :ref:`InMemoryCollectionDatastore <inmemorycollectiondatastore>` provides a drop-in replacement for development and prototyping.
+
+* **Context Summarization Transforms**
+
+  Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
+  We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
@@ -122,16 +131,6 @@ New features
 
   Introduced ManagerWorkers in the Agent Spec Language Specification.
   For more information check out the corresponding :doc:`managerworkers how-to guide <howtoguides/howto_managerworkers>` or read the :ref:`API Reference <managerworkers>`.
-
-* **Datastores**
-
-  Added support for datastores in Agent Spec through :ref:`OracleDatabaseDatastore <oracledatabasedatastore>` and :ref:`PostgresDatabaseDatastore <postgresdatabasedatastore>`.
-  Datastores enable persistent storage and caching capabilities for agent workflows. :ref:`InMemoryCollectionDatastore <inmemorycollectiondatastore>` provides a drop-in replacement for development and prototyping.
-
-* **Context Summarization Transforms**
-
-  Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
-  We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
 
 Improvements
 ^^^^^^^^^^^^

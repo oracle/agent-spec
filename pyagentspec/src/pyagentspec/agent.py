@@ -72,7 +72,7 @@ class Agent(AgenticComponent):
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("toolboxes")
             fields_to_exclude.add("human_in_the_loop")
-        if agentspec_version < AgentSpecVersionEnum.v26_1_1:
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
             fields_to_exclude.add("transforms")
         return fields_to_exclude
 
@@ -89,6 +89,6 @@ class Agent(AgenticComponent):
             )
         if self.transforms:
             current_object_min_version = max(
-                current_object_min_version, AgentSpecVersionEnum.v26_1_1
+                current_object_min_version, AgentSpecVersionEnum.v26_2_0
             )
         return max(parent_min_version, current_object_min_version)

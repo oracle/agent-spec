@@ -345,9 +345,9 @@ def test_deserializing_agent_with_non_empty_transforms_and_unsupported_version_r
 ):
     serializer = AgentSpecSerializer()
     serialized_agent = serializer.to_yaml(agent_with_non_empty_transforms)
-    assert "agentspec_version: 26.1.1" in serialized_agent
+    assert "agentspec_version: 26.2.0" in serialized_agent
     serialized_agent = serialized_agent.replace(
-        "agentspec_version: 26.1.1", "agentspec_version: 26.1.0"
+        "agentspec_version: 26.2.0", "agentspec_version: 26.1.0"
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

@@ -56,5 +56,5 @@
         "config_dir": "/path/to/config/dir",
         "protocol": "tcps"
     },
-    "agentspec_version": "26.1.1"
+    "agentspec_version": "26.2.0"
 }
