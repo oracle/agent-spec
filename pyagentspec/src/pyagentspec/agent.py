@@ -16,6 +16,7 @@ from pyagentspec.property import Property
 from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.transforms import MessageTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 
@@ -54,6 +55,8 @@ class Agent(AgenticComponent):
     """List of toolboxes that are passed to the agent."""
     human_in_the_loop: bool = True
     """Flag that determines if the Agent can request input from the user."""
+    transforms: List[MessageTransform] = Field(default_factory=list)
+    """Additional message transforms that are applied to the messages before they are passed to the agent's LLM. For example, MessageSummarizationTransform and ConversationSummarizationTransform can be used when the context becomes long."""
 
     def _get_inferred_inputs(self) -> List[Property]:
         # Extract all the placeholders in the prompt and make them string inputs by default
@@ -69,6 +72,8 @@ class Agent(AgenticComponent):
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("toolboxes")
             fields_to_exclude.add("human_in_the_loop")
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("transforms")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -79,5 +84,11 @@ class Agent(AgenticComponent):
             # If that's the case, we set the min version to 25.4.2, when toolboxes were introduced
             # Similarly, human_in_the_loop was only added in 25.4.2 (human_in_the_loop=True was
             # the de-facto default before)
-            current_object_min_version = AgentSpecVersionEnum.v25_4_2
+            current_object_min_version = max(
+                current_object_min_version, AgentSpecVersionEnum.v25_4_2
+            )
+        if self.transforms:
+            current_object_min_version = max(
+                current_object_min_version, AgentSpecVersionEnum.v26_2_0
+            )
         return max(parent_min_version, current_object_min_version)

@@ -269,6 +269,29 @@
         ]
     },
     {
+        "name": "Datastores",
+        "path": "datastores",
+        "classes": [
+            {"path": "pyagentspec.datastores.Datastore"},
+            {"path": "pyagentspec.datastores.RelationalDatastore"},
+            {"path": "pyagentspec.datastores.InMemoryCollectionDatastore"},
+            {"path": "pyagentspec.datastores.OracleDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.TlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.MTlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.PostgresDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.TlsPostgresDatabaseConnectionConfig"}
+        ]
+    },
+    {
+        "name": "Transforms",
+        "path": "transforms",
+        "classes": [
+            {"path": "pyagentspec.transforms.MessageTransform"},
+            {"path": "pyagentspec.transforms.MessageSummarizationTransform"},
+            {"path": "pyagentspec.transforms.ConversationSummarizationTransform"}
+        ]
+    },
+    {
         "name": "A2A",
         "path": "a2a",
         "classes": [

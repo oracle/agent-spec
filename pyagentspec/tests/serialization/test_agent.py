@@ -19,6 +19,11 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 
 from ..conftest import read_agentspec_config_file
 from .conftest import assert_serialized_representations_are_equal
+from .datastores import DATASTORES_AND_THEIR_SENSITIVE_FIELDS
+from .transforms import (
+    create_conversation_summarization_transform,
+    create_message_summarization_transform,
+)
 
 
 @pytest.fixture()
@@ -273,3 +278,77 @@ def test_deserializing_agent_with_builtin_tools_and_unsupported_version_raises(
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         _ = AgentSpecDeserializer().from_yaml(serialized_node)
+
+
+@pytest.mark.parametrize(
+    "datastore, sensitive_fields",
+    DATASTORES_AND_THEIR_SENSITIVE_FIELDS,
+)
+def test_agent_with_non_empty_transforms_can_be_serialized_and_deserialized(
+    datastore, sensitive_fields, vllmconfig
+):
+    transforms = [
+        create_message_summarization_transform(datastore),
+        create_conversation_summarization_transform(datastore),
+    ]
+
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        transforms=transforms,
+    )
+
+    serializer = AgentSpecSerializer()
+    serialized_agent = serializer.to_yaml(agent)
+    assert len(serialized_agent.strip()) > 0
+    deserialized_agent = AgentSpecDeserializer().from_yaml(
+        yaml_content=serialized_agent, components_registry=sensitive_fields
+    )
+    # The default min_agentspec_version for VllmConfig is v25_4_1. If we leave it unchanged,
+    # the agent with non-empty transforms would serialize to v26_1_1 (due to the transforms requiring that version).
+    # During deserialization, all fields including vllmconfig would be deserialized to v26_1_1,
+    # but vllmconfig's min_agentspec_version would still be v25_4_1, causing the test deserialized == original to fail.
+    assert deserialized_agent._is_equal(agent, fields_to_exclude=["min_agentspec_version"])
+
+
+@pytest.fixture
+def agent_with_non_empty_transforms(vllmconfig):
+    datastore, _ = DATASTORES_AND_THEIR_SENSITIVE_FIELDS[0]
+    transforms = [
+        create_message_summarization_transform(datastore),
+    ]
+
+    agent = Agent(
+        id="agent1",
+        name="Funny agent",
+        llm_config=vllmconfig,
+        system_prompt="No matter what the user asks, don't reply but make a joke instead",
+        transforms=transforms,
+    )
+    return agent
+
+
+def test_serializing_agent_with_non_empty_transforms_and_unsupported_version_raises(
+    agent_with_non_empty_transforms,
+):
+    serializer = AgentSpecSerializer()
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = serializer.to_yaml(
+            agent_with_non_empty_transforms, agentspec_version=AgentSpecVersionEnum.v26_1_0
+        )
+
+
+def test_deserializing_agent_with_non_empty_transforms_and_unsupported_version_raises(
+    agent_with_non_empty_transforms,
+):
+    serializer = AgentSpecSerializer()
+    serialized_agent = serializer.to_yaml(agent_with_non_empty_transforms)
+    assert "agentspec_version: 26.2.0" in serialized_agent
+    serialized_agent = serialized_agent.replace(
+        "agentspec_version: 26.2.0", "agentspec_version: 26.1.0"
+    )
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecDeserializer().from_yaml(serialized_agent)

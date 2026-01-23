@@ -383,6 +383,11 @@ following goals :
         discovered from an MCP server.
       - * A ToolBox connecting to an MCP server and exposing its tools to an Agent
 
+    * - Datastore
+      - A component that provides storage capabilities for agentic systems, enabling them to store and access data.
+      - * An in-memory datastore for testing
+        * An Oracle Database datastore and a Postgres Database datastore for production use
+
 
 
 Agentic Components
@@ -420,6 +425,7 @@ for interactions with the agentic system.
      tools: List[Tool]
      toolboxes: List[ToolBox]
      human_in_the_loop: bool
+     transforms: List[MessageTransform]
 
 Its main goal is to accomplish any task assigned in the ``system_prompt`` and terminate,
 with or without any interaction with the user.
@@ -449,6 +455,9 @@ registry for the Agent. In case of tool name collisions across different sources
 - The specification recommends optional namespacing (e.g., toolbox_name.tool_name) and leaves
   the exact behavior to the runtime. Runtimes MAY error on collisions.
 - Implementations SHOULD provide clear diagnostics when collisions occur.
+
+Transforms, when present, apply transformations to the messages before they are passed to the agent's LLM,
+allowing for message summarization, conversation summarization, or other modifications to optimize the agent's context.
 
 This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, ...).
@@ -1946,6 +1955,159 @@ The ManagerWorkers has two main parameters:
 
   - Workers cannot interact with the end user directly.
   - When invoked, each worker can leverage its equipped tools to complete the assigned task and report the result back to the group manager.
+
+
+Datastores
+~~~~~~~~~~
+
+Datastores are the AgentSpec abstraction that enables agentic systems to store and access data.
+
+.. code-block:: python
+
+    class Datastore(Component, abstract=True):
+        pass
+
+All datastores currently defined represent collections of objects defined by their type as an ``Entity``, however the Datastore parent type is left without constraint to enable future extension or the development of plugins with different Datastore structure (e.g. key-value stores, or graph database, or unstructured data storage)
+
+An ``Entity`` is a property that has a JSON schema equivalent to an object property; an object property would work.
+
+Relational datastores & In-Memory datastore
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Relational datastores (``OracleDatabaseDatastore``, ``PostgresDatabaseDatastore``) should support SQL queries. For development use, we have a drop-in replacement for them  (``InMemoryCollectionDatastore``).
+Both of these contain many collections (tables) where each collection is a set entities. They need to have a predefined fixed schema. A schema is a mapping from a collection name to an Entity object defining the entity(row).
+
+.. code-block:: python
+
+    class InMemoryCollectionDatastore(Datastore):
+        datastore_schema: Dict[str, Entity]
+
+    class RelationalDatastore(Datastore, is_abstract=True):
+        datastore_schema: Dict[str, Entity]
+
+OracleDatabaseDatastore
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``OracleDatabaseDatastore`` is a relational datastore that requires an ``OracleDatabaseConnectionConfig`` object for configuration. Sensitive information (e.g., wallets, keys) is excluded from exported configurations and should be loaded at deserialization time.
+
+.. code-block:: python
+
+    class OracleDatabaseDatastore(RelationalDatastore):
+        connection_config: OracleDatabaseConnectionConfig
+
+``OracleDatabaseConnectionConfig`` is the abstraction we use for configuring connections to Oracle Database.
+
+.. code-block:: python
+
+    class OracleDatabaseConnectionConfig(Component, is_abstract=True):
+        pass
+
+``TlsOracleDatabaseConnectionConfig`` For standard TLS Oracle Database connections.
+
+.. code-block:: python
+
+    class TlsOracleDatabaseConnectionConfig(OracleDatabaseConnectionConfig):
+        user: SensitiveField[str]
+        password: SensitiveField[str]
+        dsn: SensitiveField[str]
+        protocol: Literal["tcp", "tcps"]
+        config_dir: Optional[str]
+
+- ``user``: User used to connect to the database
+- ``password``: Password for the provided user
+- ``dsn``: Connection string for the database
+- ``protocol``: 'tcp' or 'tcps' indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)
+- ``config_dir``: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.
+
+``MTlsOracleDatabaseConnectionConfig`` For Oracle DB connections using mutual TLS (wallet authentication).
+
+.. code-block:: python
+
+    class MTlsOracleDatabaseConnectionConfig(TlsOracleDatabaseConnectionConfig):
+
+        wallet_location: SensitiveField[str]
+        wallet_password: SensitiveField[str]
+
+- ``wallet_location``: Location where the Oracle Database wallet is stored.
+- ``wallet_password``: Password for the provided wallet.
+
+PostgresDatastore
+^^^^^^^^^^^^^^^^^
+
+The ``PostgresDatabaseDatastore`` is a relational datastore intended to store entities in PostgreSQL databases. It requires a ``PostgresDatabaseConnectionConfig`` object for connection and authentication details. Sensitive information (e.g., user, password, SSL keys) is excluded from exported configurations and should be loaded at deserialization time.
+
+.. code-block:: python
+
+    class PostgresDatabaseDatastore(RelationalDatastore):
+        connection_config: PostgresDatabaseConnectionConfig
+
+    class PostgresDatabaseConnectionConfig(Component, is_abstract=True):
+        pass
+
+    class TlsPostgresDatabaseConnectionConfig(PostgresDatabaseConnectionConfig):
+        user: SensitiveField[str]
+        password: SensitiveField[str]
+        url: str
+        sslmode: Literal["disable","allow", "prefer","require","verify-ca","verify-full"]
+        sslcert: Optional[str]
+        sslkey: Optional[SensitiveField[str]]
+        sslrootcert: Optional[str]
+        sslcrl: Optional[str]
+
+- ``user``: User of the postgres database
+- ``password``: Password of the postgres database
+- ``url``: URL to access the postgres database
+- ``sslmode``: SSL mode for the PostgreSQL connection.
+- ``sslcert``: Path of the client SSL certificate, replacing the default ``~/.postgresql/postgresql.crt``. Ignored if an SSL connection is not made.
+- ``sslkey``: Path of the file containing the secret key used for the client certificate, replacing the default ``~/.postgresql/postgresql.key``. Ignored if an SSL connection is not made.
+- ``sslrootcert``: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.
+- ``sslcrl``: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server's certificate.
+
+
+Transforms
+^^^^^^^^^^
+
+Transforms extend the base ``MessageTransform`` component that can be used in agents. They apply a transformation to the messages before they are passed to the agent's LLM.
+
+.. code-block:: python
+
+    class MessageTransform(Component, abstract=True):
+        pass
+
+MessageSummarizationTransform
+'''''''''''''''''''''''''''''
+
+Summarizes messages exceeding a given number of characters using an LLM and caches the summaries in a ``Datastore``. This is useful for conversations with long messages where the context can become too large for the agent LLM to handle.
+
+.. code-block:: python
+
+    class MessageSummarizationTransform(MessageTransform):
+        llm: LlmConfig  # LLM to use for the summarization.
+        max_message_size: int  # The maximum size in number of characters for the content of a message.
+        summarization_instructions: str  # Instruction for the LLM on how to summarize the messages.
+        summarized_message_template: str  # Jinja2 template on how to present the summary (with variable `summary`) to the agent using the transform.
+        datastore: Optional[Datastore]  # Datastore on which to store the cache. If None, no caching happens.
+        max_cache_size: Optional[int]  # The number of cache entries (messages) kept in the cache. If None, there is no limit on cache size and no eviction occurs.
+        max_cache_lifetime: Optional[int]  # max lifetime of a message in the cache in seconds. If None, cached data persists indefinitely.
+        cache_collection_name: str  # Name of the collection in the cache for storing summarized messages.
+
+ConversationSummarizationTransform
+''''''''''''''''''''''''''''''''''
+
+Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``. This is useful to reduce long conversation history into a concise context for downstream LLM calls.
+
+.. code-block:: python
+
+    class ConversationSummarizationTransform(MessageTransform):
+        llm: LlmConfig  # LLM to use for the summarization.
+        max_num_messages: int  # Number of message after which we trigger summarization.
+        min_num_messages: int  # Number of recent messages to keep from summarizing.
+        summarization_instructions: str  # Instruction for the LLM on how to summarize the conversation.
+        summarized_conversation_template: str  # Jinja2 template on how to present the summary (with variable ``summary``) to the agent using the transform.
+        datastore: Optional[Datastore]  # Datastore on which to store the cache. If None, no caching happens.
+        max_cache_size: Optional[int]  # The maximum number of entries kept in the cache
+        max_cache_lifetime: Optional[int]  # max lifetime of an element in the cache in seconds
+        cache_collection_name: str  # Name of the collection in the cache datastore where summarized conversations will be stored
 
 Versioning
 ----------
