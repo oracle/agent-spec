@@ -38,6 +38,13 @@ New features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
+* **Empty titles in properties**
+
+Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
+
+Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+
+
 Agent Spec 26.1.0
 -----------------
 

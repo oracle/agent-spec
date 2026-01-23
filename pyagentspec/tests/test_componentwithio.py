@@ -46,21 +46,26 @@ def test_component_with_no_inputs_raises_when_input_is_passed() -> None:
         component_cls(name="my_component", inputs=[StringProperty(title="input_1")])
 
 
-def test_component_with_no_inputs_raises_when_empty_input_is_passed() -> None:
-    with pytest.raises(
-        ValueError,
-        match=(
-            r"The MockComponent component received a property titled ``, but did not expect any properties"
-        ),
-    ):
-        component_cls = create_mock_component_cls_with_defaults([], [])
-        component_cls(name="my_component", inputs=[StringProperty(title="")])
-
-
 def test_component_with_inputs_works_when_passed_correct_input() -> None:
     component_cls = create_mock_component_cls_with_defaults([StringProperty(title="input_1")], [])
     component = component_cls(name="my_component", inputs=[StringProperty(title="input_1")])
     assert component.inputs == [StringProperty(title="input_1")]
+
+
+def test_component_with_empty_title_input_raises() -> None:
+    with pytest.raises(ValueError, match=("cannot have an empty title")):
+        component_cls = create_mock_component_cls_with_defaults([StringProperty(title="")], [])
+        component_cls(name="my_component", inputs=[StringProperty(title="")])
+
+
+def test_component_with_empty_input_in_json_schema_raises() -> None:
+    with pytest.raises(ValueError, match=("cannot have an empty title")):
+        component_cls = create_mock_component_cls_with_defaults(
+            [Property(json_schema={"type": "string", "title": ""})], []
+        )
+        component_cls(
+            name="my_component", inputs=[Property(json_schema={"type": "string", "title": ""})]
+        )
 
 
 def test_component_with_inputs_raises_when_missing_inputs_are_not_passed() -> None:
@@ -77,20 +82,6 @@ def test_component_with_inputs_raises_when_missing_inputs_are_not_passed() -> No
         component_cls(name="my_component", inputs=[StringProperty(title="input_1")])
 
 
-def test_component_with_inputs_and_empty_title_raises_when_missing_inputs_are_not_passed() -> None:
-    with pytest.raises(
-        ValueError,
-        match=(
-            r"The MockComponent component expected a property titled ``, but none of the passed "
-            r"properties have this title:"
-        ),
-    ):
-        component_cls = create_mock_component_cls_with_defaults(
-            [StringProperty(title="input_1"), StringProperty(title="")], []
-        )
-        component_cls(name="my_component", inputs=[StringProperty(title="input_1")])
-
-
 def test_component_with_non_unique_inputs_raises() -> None:
     with pytest.raises(
         ValueError,
@@ -102,20 +93,6 @@ def test_component_with_non_unique_inputs_raises() -> None:
         component_cls(
             name="my_component",
             inputs=[StringProperty(title="input_1"), StringProperty(title="input_1")],
-        )
-
-
-def test_component_with_non_unique_empty_inputs_raises() -> None:
-    with pytest.raises(
-        ValueError,
-        match=r".*Found multiple instances of properties \(inputs or outputs\) with the same title in a MockComponent.*",
-    ):
-        component_cls = create_mock_component_cls_with_defaults(
-            [StringProperty(title=""), StringProperty(title="")], []
-        )
-        component_cls(
-            name="my_component",
-            inputs=[StringProperty(title=""), StringProperty(title="")],
         )
 
 
