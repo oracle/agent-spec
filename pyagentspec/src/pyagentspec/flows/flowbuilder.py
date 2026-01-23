@@ -58,7 +58,7 @@ class FlowBuilder:
         Parameters
         ----------
         source_node:
-        Single node/name (creates 1 edge) or list of nodes/names (creates N edges)
+            Single node/name (creates 1 edge) or list of nodes/names (creates N edges)
             which constitute the start of the control flow edge(s).
         dest_node:
             Node/name that constitutes the end of the control flow edge(s).

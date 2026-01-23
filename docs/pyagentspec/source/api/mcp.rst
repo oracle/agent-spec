@@ -31,6 +31,15 @@ Client Transports
 .. autoclass:: pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport
     :exclude-members: model_post_init, model_config
 
+Base Classes for Client Transports
+----------------------------------
+
+.. autoclass:: pyagentspec.mcp.clienttransport.ClientTransport
+    :exclude-members: model_post_init, model_config
+
+.. autoclass:: pyagentspec.mcp.clienttransport.RemoteTransport
+    :exclude-members: model_post_init, model_config
+
 
 Tools
 -----

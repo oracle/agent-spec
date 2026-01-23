@@ -195,6 +195,26 @@ html_sidebars = {
 html_css_files = ["css-style.css", "core.css"]
 html_favicon = "_static/favicon.svg"
 
+nitpicky = True
+nitpick_ignore_regex = [
+    # External Packages
+    ("py:.*", r"langgraph\..*"),
+    ("py:.*", r"langchain_core\..*"),
+    ("py:.*", r"pydantic\..*"),
+    ("py:.*", r"pydantic_core\..*"),
+    ("py:.*", r"enum.Enum"),
+    ("py:.*", r"abc.ABC"),
+    ("py:class", r"BaseModel"),
+    ("py:class", r"ConfigDict"),
+    ("py:class", r"JsonSchemaValue"),
+    ("py:class", r"autogen_core\..*"),
+    ("py:class", r"autogen_agentchat\..*"),
+    # Purposely ignoring classes
+    ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
+    ("py:class", r"pyagentspec.serialization.serializationcontext.T"),
+    ("py:class", r"pyagentspec.property._empty_default"),
+]
+
 # to remove the `View page source` link
 html_show_sourcelink = False
 
