@@ -6,6 +6,8 @@
 
 from unittest.mock import patch
 
+import pytest
+
 from pyagentspec.tools.remotetool import RemoteTool
 
 
@@ -29,7 +31,7 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
     from pyagentspec.adapters.autogen import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
-        city = kwargs["data"]["location"]["city"]
+        city = kwargs["json"]["location"]["city"]
         return DummyResponse({"weather": f"sunny in {city}"})
 
     # Build a RemoteTool with nested data containing multiple template placeholders.
@@ -77,9 +79,9 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
         called_args, called_kwargs = patched_request.call_args
         # The converter uses `data=remote_tool_data` when calling httpx.request for dict data
         assert (
-            "data" in called_kwargs
-        ), f"Expected 'data' kwarg in request call since data is a dict, got {called_kwargs}"
-        assert called_kwargs["data"] == expected_data
+            "json" in called_kwargs
+        ), f"Expected 'json' kwarg in request call since json is a dict, got {called_kwargs}"
+        assert called_kwargs["json"] == expected_data
         assert called_kwargs["url"] == expected_url
         assert called_kwargs["headers"] == expected_headers
         assert result == {"weather": "sunny in Agadir"}
@@ -174,3 +176,62 @@ def test_remote_tool_post_raw_body() -> None:
         assert called_kwargs["content"] == expected_data
         assert called_kwargs["headers"] == expected_headers
         assert result["city"] == "Agadir"
+
+
+@pytest.mark.parametrize(
+    "data, headers, is_json_payload",
+    [
+        (
+            {"value": "{{ v1 }}", "listofvalues": ["a", "{{ v2 }}", "c"]},
+            {"header1": "{{ h1 }}"},
+            True,
+        ),
+        (
+            {"value": "{{ v1 }}", "listofvalues": ["a", "{{ v2 }}", "c"]},
+            {"header1": "{{ h1 }}", "Content-Type": "application/x-www-form-urlencoded"},
+            False,
+        ),
+        ("value: {{ v1 }}, listofvalues: [a, {{ v2 }}, c]", {"header1": "{{ h1 }}"}, False),
+        (["value: {{ v1 }}", "listofvalues: [a, {{ v2 }}, c]"], {"header1": "{{ h1 }}"}, True),
+    ],
+)
+def test_remote_tool_actual_endpoint_with_autogen(
+    json_server: str, data, headers, is_json_payload
+) -> None:
+    """
+    Real-server test using in-repo FastAPI app (json_server fixture).
+    Validates templating, JSON vs form vs raw payload handling, headers, query params, and path rendering.
+    """
+    from pyagentspec.adapters.autogen import AgentSpecLoader
+
+    remote_tool = RemoteTool(
+        name="echo_tool",
+        description="Echo tool for testing",
+        url=f"{json_server}/api/echo/" + "{{u1}}",
+        http_method="POST",
+        data=data,
+        query_params={"param": "{{ p1 }}"},
+        headers=headers,
+    )
+
+    autogen_tool = AgentSpecLoader().load_component(remote_tool)
+
+    inputs = {
+        "v1": "test1",
+        "v2": "test2",
+        "p1": "test3",
+        "h1": "test4",
+        "u1": "u_seg",
+    }
+
+    result = autogen_tool._func(**inputs)
+    expected_msg = "JSON received" if is_json_payload else "JSON not received"
+
+    assert result["test"] == "test"
+    assert result["__parsed_path"] == "/api/echo/u_seg"
+    assert result["param"] == "test3"
+    assert result["header1"] == "test4"
+    assert result["json_body_received"] == expected_msg
+
+    assert result["value"] == "test1"
+    assert result["listofvalues"] == ["a", "test2", "c"]

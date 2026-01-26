@@ -470,7 +470,16 @@ class ApiNodeExecutor(NodeExecutor):
         data = None
         json_data = None
         content = None
-        if isinstance(api_node_data, dict):
+        content_type_headers = api_node_headers.get("Content-Type") or api_node_headers.get(
+            "content-type"
+        )
+        expect_urlencoded_form_data = (
+            ("application/x-www-form-urlencoded" in content_type_headers)
+            if content_type_headers is not None
+            else False
+        )
+
+        if isinstance(api_node_data, dict) and expect_urlencoded_form_data:
             data = api_node_data
         elif isinstance(api_node_data, (str, bytes)):
             content = api_node_data

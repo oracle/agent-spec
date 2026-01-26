@@ -889,6 +889,7 @@ of data, query_params, headers, and sensitive_headers). The ``data`` parameter i
 If ``data`` is specified as a string, the runtime must encode and pass it as the body of the HTTP request,
 otherwise the value of ``data`` should be JSON serializable and runtimes are
 expected to dump it when adding it in the body of the HTTP request.
+The data is passed to the request as Form Data if the header ``{"Content-Type": "application/x-www-form-urlencoded"}`` is specified.
 
 MCP Tools
 ^^^^^^^^^
