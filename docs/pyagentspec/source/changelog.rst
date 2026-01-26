@@ -15,6 +15,11 @@ Improvements
   via `components_registry` when loading the main configuration. This enables keeping sensitive
   fields (like API keys) out of the main spec while still resolving them at load time.
 
+* **OCI GenAI model support in LangGraph adapter**
+
+  The LangGraph adapter now supports loading/exporting OCI GenAI models.
+  Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
+
 
 New features
 ^^^^^^^^^^^^
