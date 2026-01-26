@@ -81,5 +81,6 @@ setup(
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
+        "wayflow": ["wayflowcore>=25.4.3"],
     },
 )
