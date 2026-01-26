@@ -158,6 +158,8 @@ def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[U
         CONFIGS_DIR,
         # Docs path
         Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
+        # Accessed by pandas, dependency of wayflowcore
+        Path("/usr/share/zoneinfo/UTC"),
         # Used in docstring tests
         Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
         Path("~/.pdbrc").expanduser(),
