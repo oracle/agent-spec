@@ -17,7 +17,7 @@ from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer
 
-from .conftest import JSON_SERVER_PORT, get_weather
+from .conftest import get_weather
 
 
 def test_agentspec_converts_to_agent_framework_with_server_tool(
@@ -66,12 +66,8 @@ def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool
     assert isinstance(last_content, TextContent)
 
 
-def test_remote_tool_with_agent(json_server, weather_agent_remote_tool: str) -> None:
-    agent = AgentSpecLoader().load_yaml(
-        weather_agent_remote_tool.replace(
-            "[[remote_tools_server]]", f"http://localhost:{JSON_SERVER_PORT}"
-        )
-    )
+def test_remote_tool_with_agent(weather_agent_remote_tool: str) -> None:
+    agent = AgentSpecLoader().load_yaml(weather_agent_remote_tool)
     assert isinstance(agent, ChatAgent)
 
     result = anyio.run(agent.run, "What is the weather like in Agadir?")
