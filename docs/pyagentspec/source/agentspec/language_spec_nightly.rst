@@ -934,7 +934,7 @@ A ToolBox also exposes an optional ``requires_confirmation`` flag; it exists to 
 confirmation for the entire toolbox without having to set ``requires_confirmation=True`` on every tool it provides.
 Runtimes should compute the effective confirmation as follows: when ``ToolBox.requires_confirmation`` is ``None``,
 use the Tool's value; otherwise, confirmation is required unless both flags are ``False``,
-and if the two flags disagree (one ``True``, one ``False``) runtimes must still ask for confirmation.
+and if the any of the two flags is set to ``True``, runtimes must still ask for confirmation.
 
 .. code-block:: python
 
