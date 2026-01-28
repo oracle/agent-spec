@@ -34,6 +34,7 @@ from pyagentspec.flows.node import Node
 from pyagentspec.flows.nodes import AgentNode as AgentSpecAgentNode
 from pyagentspec.flows.nodes import ApiNode as AgentSpecApiNode
 from pyagentspec.flows.nodes import BranchingNode as AgentSpecBranchingNode
+from pyagentspec.flows.nodes import CatchExceptionNode as AgentSpecCatchExceptionNode
 from pyagentspec.flows.nodes import EndNode as AgentSpecEndNode
 from pyagentspec.flows.nodes import FlowNode as AgentSpecFlowNode
 from pyagentspec.flows.nodes import InputMessageNode as AgentSpecInputMessageNode
@@ -518,6 +519,43 @@ class FlowNodeExecutor(NodeExecutor):
         return flow_output["outputs"], NodeExecutionDetails(
             branch=flow_output["node_execution_details"]["branch"]
         )
+
+
+class CatchExceptionNodeExecutor(NodeExecutor):
+    node: AgentSpecCatchExceptionNode
+
+    def __init__(
+        self,
+        node: AgentSpecCatchExceptionNode,
+        subflow: CompiledStateGraph[Any, Any],
+        config: RunnableConfig,
+    ) -> None:
+        super().__init__(node)
+        if not isinstance(self.node, AgentSpecCatchExceptionNode):
+            raise TypeError("CatchExceptionNodeExecutor can only initialize CatchExceptionNode")
+        self.subflow = subflow
+        self.config = config
+
+    def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
+        try:
+            flow_output = self.subflow.invoke({"messages": messages, "inputs": inputs}, self.config)
+            outputs = dict(flow_output.get("outputs", {}))
+            outputs["caught_exception_info"] = None
+            # ^ as per the spec, when the subflow runs without error
+            # `caught_exception_info` is `None`
+            return outputs, NodeExecutionDetails(
+                branch=flow_output["node_execution_details"].get("branch", Node.DEFAULT_NEXT_BRANCH)
+            )
+        except Exception as e:
+            # On exception: default subflow outputs + caught_exception_info
+            default_outputs: Dict[str, Any] = {}
+            for property_ in self.node.subflow.outputs or []:
+                # Use default value for subflow outputs when exception occurs
+                default_outputs[property_.title] = property_.default
+            default_outputs["caught_exception_info"] = str(e)
+            return default_outputs, NodeExecutionDetails(
+                branch=AgentSpecCatchExceptionNode.CAUGHT_EXCEPTION_BRANCH
+            )
 
 
 class MapNodeExecutor(NodeExecutor):
