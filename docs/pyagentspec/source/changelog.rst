@@ -158,6 +158,13 @@ Improvements
 
   Introduced support for Python version 3.14.
 
+* **ReAct agent node conversion in LangGraph → Agent Spec**
+
+  When converting from LangGraph to Agent Spec, graphs that include a node with a ReAct agent
+  now convert into an Agent Spec Flow containing an AgentNode for that node (instead of only
+  ToolNodes). Pure ReAct agents continue to convert to an Agent, while arbitrary graphs still
+  convert to a Flow with supported node types preserved.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

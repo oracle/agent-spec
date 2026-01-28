@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -73,3 +73,55 @@ def test_agentnode_can_be_imported_and_executed() -> None:
 
     outputs = result["outputs"]
     assert car_property.title in outputs
+
+
+def test_langgraph_graph_with_agent_node_can_be_exported() -> None:
+    from typing import TypedDict
+
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+    from langgraph.prebuilt import create_react_agent
+    from pydantic import SecretStr
+    from typing_extensions import Dict, List
+
+    from pyagentspec.adapters.langgraph import AgentSpecExporter
+
+    class InternalState(TypedDict):
+        # structured_response: Dict[str, str] = {}
+        messages: List[Dict[str, str]]
+        remaining_steps: int = 25
+
+    agent = create_react_agent(
+        model=ChatOpenAI(
+            base_url=os.environ.get("LLAMA70BV33_API_URL"),
+            model="/storage/models/Llama-3.3-70B-Instruct",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+    )
+
+    workflow = (
+        StateGraph(InternalState)
+        .add_node("myagent_node", agent)
+        .add_edge(START, "myagent_node")
+        .add_edge("myagent_node", END)
+        .compile()
+    )
+
+    agentspec_config = AgentSpecExporter().to_component(workflow)
+
+    assert isinstance(agentspec_config, Flow)
+    assert len(agentspec_config.nodes) == 3
+    agent_node = [node for node in agentspec_config.nodes if isinstance(node, AgentNode)]
+    assert len(agent_node) == 1
+    assert agent_node[0].name == "myagent_node"
+    assert any(isinstance(node, StartNode) for node in agentspec_config.nodes)
+    assert any(isinstance(node, EndNode) for node in agentspec_config.nodes)
+    assert len(agentspec_config.outputs) == 1
+    assert agentspec_config.outputs[0].title == "state"
+    assert agentspec_config.outputs[0].type == "object"
+    assert set(agentspec_config.outputs[0].json_schema["properties"].keys()) == {
+        "messages",
+        "remaining_steps",
+    }
