@@ -6,6 +6,7 @@
 
 import ast
 import json
+import logging
 import typing
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict, TypeVar, Union
 from uuid import UUID
@@ -61,6 +62,8 @@ LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
 
 T = TypeVar("T")
 
+logger = logging.getLogger(__file__)
+
 # NOTE ABOUT CONTEXTVARS AND THE ACTIVE SPAN STACK
 #
 # LangGraph schedules callbacks on executors and wraps them with copy_context().run(...),
@@ -90,6 +93,7 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
         # Track the active span stack captured right after span.start()
         # so we can run subsequent callbacks against the same stack
         self._span_stacks: Dict[str, List[AgentSpecSpan]] = {}
+        self.raise_error = True
 
     def _run_in_ctx(self, run_id_str: str, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         stack = self._span_stacks.get(run_id_str)
@@ -105,27 +109,38 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
         return result
 
     def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
-        # If we're inside an async Trace, avoid calling sync APIs
-        tr = get_trace()
-        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
+        if self._in_async_trace():
+            self._warn_async_mismatch("_add_event", run_id_str)
             return
         self._run_in_ctx(run_id_str, span.add_event, event)
 
     def _end_span(self, run_id_str: str, span: AgentSpecSpan) -> None:
-        tr = get_trace()
-        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
-            self._span_stacks.pop(run_id_str)
+        if self._in_async_trace():
+            self._warn_async_mismatch("_end_span", run_id_str)
+            self._span_stacks.pop(run_id_str, None)
             return
         self._run_in_ctx(run_id_str, span.end)
         self._span_stacks.pop(run_id_str)
 
     def _start_and_copy_ctx(self, run_id_str: str, span: AgentSpecSpan) -> None:
-        tr = get_trace()
-        if tr and getattr(tr, "is_async_mode_active", lambda: False)():
+        if self._in_async_trace():
+            self._warn_async_mismatch("_start_and_copy_ctx", run_id_str)
+            # Still capture stack to avoid later "Missing Context" if other sync callbacks happen
             self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
             return
         span.start()
         self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
+
+    def _warn_async_mismatch(self, where: str, run_id_str: str) -> None:
+        logger.debug(
+            "Sync callback '%s' invoked during async Trace for run_id=%s; skipping to avoid duplicate/sync emissions.",
+            where,
+            run_id_str,
+        )
+
+    def _in_async_trace(self) -> bool:
+        tr = get_trace()
+        return bool(tr and tr.is_async_mode_active())
 
 
 class AgentSpecAsyncCallbackHandler(AsyncCallbackHandler):
@@ -134,6 +149,7 @@ class AgentSpecAsyncCallbackHandler(AsyncCallbackHandler):
         self.agentspec_spans_registry: Dict[str, AgentSpecSpan] = {}
         # Track the active span stack captured right after span.start_async()
         self._span_stacks: Dict[str, List[AgentSpecSpan]] = {}
+        self.raise_error = True
 
     def _get_stack(self, run_id_str: str) -> List[AgentSpecSpan]:
         stack = self._span_stacks.get(run_id_str)
@@ -159,7 +175,7 @@ class AgentSpecAsyncCallbackHandler(AsyncCallbackHandler):
 
     async def _end_span_async(self, run_id_str: str, span: AgentSpecSpan) -> None:
         await self._run_in_ctx_async(run_id_str, span.end_async)
-        self._span_stacks.pop(run_id_str, None)
+        self._span_stacks.pop(run_id_str)
 
     async def _start_and_copy_ctx_async(self, run_id_str: str, span: AgentSpecSpan) -> None:
         await span.start_async()
@@ -336,7 +352,7 @@ class AgentSpecLlmCallbackHandler(AgentSpecCallbackHandler):
         )
         self._add_event(run_id_str, span, event)
         self._end_span(run_id_str, span)
-        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.agentspec_spans_registry.pop(run_id_str)
         self.messages_in_process.pop(run_id_str, None)
 
 
@@ -416,7 +432,7 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         )
         self._add_event(run_id_str, tool_span, response_event)
         self._end_span(run_id_str, tool_span)
-        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.agentspec_spans_registry.pop(run_id_str)
 
     def on_tool_error(
         self,
@@ -572,7 +588,7 @@ class AgentSpecAsyncLlmCallbackHandler(AgentSpecAsyncCallbackHandler):
         )
         await self._add_event_async(run_id_str, span, event)
         await self._end_span_async(run_id_str, span)
-        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.agentspec_spans_registry.pop(run_id_str)
         self.messages_in_process.pop(run_id_str, None)
 
 
@@ -645,7 +661,7 @@ class AgentSpecAsyncToolCallbackHandler(AgentSpecAsyncCallbackHandler):
         )
         await self._add_event_async(run_id_str, tool_span, response_event)
         await self._end_span_async(run_id_str, tool_span)
-        self.agentspec_spans_registry.pop(run_id_str, None)
+        self.agentspec_spans_registry.pop(run_id_str)
 
     async def on_tool_error(
         self,
