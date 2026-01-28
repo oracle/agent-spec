@@ -15,6 +15,7 @@ from typing import (
     Literal,
     Optional,
     Tuple,
+    TypeGuard,
     Union,
     cast,
 )
@@ -92,7 +93,7 @@ from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools import ToolBox as AgentSpecToolBox
 
 if TYPE_CHECKING:
-    from langchain_mcp_adapters.sessions import (  # type: ignore
+    from langchain_mcp_adapters.sessions import (
         SSEConnection,
         StdioConnection,
         StreamableHttpConnection,
@@ -216,6 +217,7 @@ def _create_pydantic_model_from_properties(
         if property_.description:
             field_params["description"] = property_.description
 
+        annotation: Any
         if property_.title == "messages":
             # Special-case: LangGraph messages state
             annotation = Annotated[list[BaseMessage], add_messages]
@@ -665,7 +667,9 @@ class AgentSpecToLangGraphConverter:
         tool_registry: Dict[str, LangGraphTool],
         config: RunnableConfig,
     ) -> LangGraphTool:
-        # Ensure the tool exists in the registry
+        def _is_structured_tool(x: Any) -> TypeGuard[StructuredTool]:
+            return isinstance(x, StructuredTool)
+
         if agentspec_server_tool.name not in tool_registry:
             raise ValueError(
                 f"The Agent Spec representation includes a tool '{agentspec_server_tool.name}' "
@@ -676,39 +680,50 @@ class AgentSpecToLangGraphConverter:
         tool_name = agentspec_server_tool.name
         tool_description = agentspec_server_tool.description or ""
         requires_confirmation = agentspec_server_tool.requires_confirmation
-        is_structured_tool = isinstance(tool_obj, StructuredTool)
-        if not ((is_structured_tool and tool_obj.func is not None) or callable(tool_obj)):
-            raise TypeError(
-                f"Unsupported tool type for '{agentspec_server_tool.name}': {type(tool_obj)}. "
-                "Expected a callable or a StructuredTool with a non-empty function."
-            )
+        if _is_structured_tool(tool_obj):
+            if tool_obj.func is None:
+                raise TypeError(
+                    f"Unsupported tool type for '{tool_name}': StructuredTool has no func."
+                )
+            if tool_obj.args_schema is None:
+                raise TypeError(
+                    f"Unsupported tool type for '{tool_name}': StructuredTool has no args_schema."
+                )
 
-        base_func = tool_obj.func if is_structured_tool else tool_obj
-        wrapped_tool_func = _confirm_then(
-            func=base_func,
-            tool_name=tool_name,
-            requires_confirmation=requires_confirmation,
-        )
-        if is_structured_tool:
+            wrapped_tool_func = _confirm_then(
+                func=tool_obj.func,
+                tool_name=tool_name,
+                requires_confirmation=requires_confirmation,
+            )
             return StructuredTool(
                 name=tool_obj.name,
                 description=tool_obj.description,
                 args_schema=tool_obj.args_schema,
                 func=wrapped_tool_func,
             )
-        else:
-            # If it's a plain callable, wrap it with a Pydantic args schema
-            args_model = _create_pydantic_model_from_properties(
-                f"{tool_name}Args",
-                agentspec_server_tool.inputs or [],
+
+        if not callable(tool_obj):
+            raise TypeError(
+                f"Unsupported tool type for '{tool_name}': {type(tool_obj)}. Expected callable or StructuredTool."
             )
-            return StructuredTool(
-                name=tool_name,
-                description=tool_description,
-                args_schema=args_model,  # model class, not a dict
-                func=wrapped_tool_func,
-                callbacks=config.get("callbacks"),
-            )
+
+        wrapped_tool_func = _confirm_then(
+            func=tool_obj,
+            tool_name=tool_name,
+            requires_confirmation=requires_confirmation,
+        )
+
+        args_model = _create_pydantic_model_from_properties(
+            f"{tool_name}Args",
+            agentspec_server_tool.inputs or [],
+        )
+        return StructuredTool(
+            name=tool_name,
+            description=tool_description,
+            args_schema=args_model,
+            func=wrapped_tool_func,
+            callbacks=config.get("callbacks"),
+        )
 
     def _client_tool_convert_to_langgraph(
         self, agentspec_client_tool: AgentSpecClientTool
@@ -1058,7 +1073,7 @@ class AgentSpecToLangGraphConverter:
         without reloading.
         - Otherwise, loads tools and inserts them atomically into the registry.
         """
-        from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore
+        from langchain_mcp_adapters.tools import load_mcp_tools
 
         conn_prefix = f"{connection_key}::"
         existing = _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
