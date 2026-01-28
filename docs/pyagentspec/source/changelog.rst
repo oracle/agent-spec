@@ -15,6 +15,13 @@ Improvements
   via `components_registry` when loading the main configuration. This enables keeping sensitive
   fields (like API keys) out of the main spec while still resolving them at load time.
 
+* **Added AGENTS.md file:**
+
+  Added AGENTS.md file, a dedicated, open-format guide to help AI coding agents work effectively with the project
+  by providing essential context, build/test commands, code style guidelines, and other key instructions.
+
+  We thank @kanak02rawat for the contribution!
+
 
 New features
 ^^^^^^^^^^^^
