@@ -6,7 +6,7 @@
 
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import httpx
 
@@ -25,6 +25,7 @@ from pyagentspec.adapters.langgraph._types import (
     NodeOutputsType,
     RunnableConfig,
     interrupt,
+    langchain_core_messages_content,
     langgraph_graph,
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
@@ -283,11 +284,139 @@ class ToolNodeExecutor(NodeExecutor):
             tool_output = tool(**inputs)
 
         if isinstance(tool_output, dict):
-            # useful for multiple outputs, avoid nesting dictionaries
-            return tool_output, NodeExecutionDetails()
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="dict"
+            )
+        elif isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
+            extracted_values = self._extract_values_from_content_blocks(tool_output)
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=extracted_values, output_type="mcp_list_extracted"
+            )
+        elif isinstance(tool_output, tuple):
+            # Map tuples positionally to declared outputs
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=list(tool_output), output_type="list_tuple"
+            )
+        else:
+            # Scalar or other types, including a list type: map to the single declared output or a generic name
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="scalar"
+            )
 
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+        return mapped, NodeExecutionDetails()
+
+    def _is_mcp_content_blocks_list(self, items: List[Any]) -> bool:
+        # Empty lists are ambiguous; treat them as non-MCP to avoid false positives
+        if not items:
+            return False
+        for el in items:
+            if not isinstance(el, dict):
+                return False
+            t = el.get("type")
+            if t not in {"text", "image", "file"}:
+                return False
+            if t == "text":
+                if "text" not in el or not isinstance(el["text"], str):
+                    return False
+            elif t in {"image", "file"}:
+                # Accept any supported payload reference
+                if not any(k in el for k in ["base64", "url", "file_id"]):
+                    return False
+        return True
+
+    def _extract_value_from_block(
+        self,
+        block: Union[
+            langchain_core_messages_content.FileContentBlock,
+            langchain_core_messages_content.TextContentBlock,
+            langchain_core_messages_content.ImageContentBlock,
+        ],
+    ) -> Any:
+        t = block["type"]
+        if t == "text":
+            text_block = cast(langchain_core_messages_content.TextContentBlock, block)
+            return text_block["text"]
+        if t == "image":
+            image_block = cast(langchain_core_messages_content.ImageContentBlock, block)
+            if "base64" in image_block:
+                return image_block["base64"]
+            if "url" in image_block:
+                return image_block["url"]
+            if "file_id" in image_block:
+                return image_block["file_id"]
+            raise ValueError(f"No payload found in image block: {image_block}")
+        if t == "file":
+            file_block = cast(langchain_core_messages_content.FileContentBlock, block)
+            if "base64" in file_block:
+                return file_block["base64"]
+            if "url" in file_block:
+                return file_block["url"]
+            if "file_id" in file_block:
+                return file_block["file_id"]
+            raise ValueError(f"No payload found in file block: {file_block}")
+        else:
+            raise NotImplementedError(f"Unsupported message content block type: {t}")
+
+    def _extract_values_from_content_blocks(
+        self,
+        blocks: List[
+            Union[
+                langchain_core_messages_content.FileContentBlock,
+                langchain_core_messages_content.TextContentBlock,
+                langchain_core_messages_content.ImageContentBlock,
+            ]
+        ],
+    ) -> List[Any]:
+        return [self._extract_value_from_block(block) for block in blocks]
+
+    def _map_tool_outputs_to_output_properties(
+        self, raw_output: Any, output_type: str
+    ) -> Dict[str, Any]:
+        node_outputs = self.node.outputs or []
+        list_types = {"mcp_list_extracted", "list_tuple"}
+
+        # 0 declared outputs, meaning the node does not emit any output
+        if not node_outputs:
+            return {}
+
+        # 1 declared output
+        if len(node_outputs) == 1:
+            out_name = node_outputs[0].title
+
+            if output_type == "dict":
+                # If raw_output is exactly {out_name: <value>}, keep as-is; otherwise wrap the whole dict
+                if isinstance(raw_output, dict) and out_name in raw_output and len(raw_output) == 1:
+                    return raw_output
+                return {out_name: raw_output}
+
+            if output_type == "mcp_list_extracted" and node_outputs[0].type != "array":
+                # Use first value if exactly one, else the whole list/tuple
+                value = raw_output[0] if len(raw_output) == 1 else raw_output
+                return {out_name: value}
+
+            # Scalar (e.g., number, string) to single output
+            return {out_name: raw_output}
+
+        # Multiple declared outputs
+        if output_type == "dict":
+            # raw_output is a dict as checked above
+            declared_titles = {prop.title for prop in node_outputs}
+            return {k: raw_output[k] for k in declared_titles if k in raw_output}
+
+        if output_type in list_types:
+            expected = len(node_outputs)
+            actual = len(raw_output) if hasattr(raw_output, "__len__") else -1
+            if actual != expected:
+                msg = (
+                    "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
+                    if output_type == "mcp_list_extracted"
+                    else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs: "
+                )
+                raise ValueError(f"{msg}returned={actual}, declared={expected}")
+            return {prop.title: raw_output[i] for i, prop in enumerate(node_outputs)}
+
+        # Scalar with multiple outputs: assign to first (preserve original behavior)
+        return {node_outputs[0].title: raw_output}
 
 
 class AgentNodeExecutor(NodeExecutor):
@@ -340,6 +469,12 @@ class AgentNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent = self._create_react_agent_with_given_input_values(inputs)
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are provided
+        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
+        # user message when the message list is empty.
+        if not messages:
+            messages = cast(Messages, [{"role": "user", "content": ""}])
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,
