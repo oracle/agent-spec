@@ -22,6 +22,12 @@ Improvements
 
   We thank @kanak02rawat for the contribution!
 
+* **Tracing in LangGraph adapter flows**
+
+  The LangGraph adapter now supports emitting Agent Spec tracing spans and events for Flows.
+  It also adds tracing support for async APIs of LangGraph (e.g. `ainvoke`, `astream`).
+  Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
+  span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.
 
 New features
 ^^^^^^^^^^^^
