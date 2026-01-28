@@ -26,6 +26,14 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Added OpenAI Agents SDK adapter to pyagentspec:**
+
+  The OpenAI Agents adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.openaiagents`` subpackage.
+  It requires the ``openai-agents`` extra dependency to be installed.
+
+  For more information read the :doc:`adapter page <adapters/openai/index>`.
+
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
 
   The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
