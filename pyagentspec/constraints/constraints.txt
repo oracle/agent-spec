@@ -14,3 +14,7 @@ langgraph==0.6.11
 langchain-core==0.3.75
 langchain-openai==0.3.30
 langchain-ollama==0.3.6
+
+# AgentFramework adapter
+agent-framework==1.0.0b251028
+agent-framework-core==1.0.0b251028

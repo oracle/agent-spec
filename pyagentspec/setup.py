@@ -81,5 +81,9 @@ setup(
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
+        "agent-framework": [
+            "agent-framework==1.0.0b251028; python_version < '3.14'",
+            "agent-framework-core==1.0.0b251028; python_version < '3.14'",
+        ],
     },
 )
