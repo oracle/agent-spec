@@ -8,7 +8,6 @@
 # fmt: off
 # mypy: ignore-errors
 
-exit() # wayflow not installed
 # .. start-agentspec_to_runtime
 # Create a Agent Spec agent
 from pyagentspec.agent import Agent
@@ -43,7 +42,7 @@ from pyagentspec.serialization import AgentSpecSerializer
 agentspec_config = AgentSpecSerializer().to_json(agentspec_agent)
 
 # Load and run the Agent Spec configuration with WayFlow
-from wayflowcore.agentspec import AgentSpecLoader
+from pyagentspec.adapters.wayflow import AgentSpecLoader
 
 def subtract(a: float, b: float) -> float:
     return a - b
@@ -92,7 +91,7 @@ wayflow_agent = Agent(
 )
 
 # Convert to Agent Spec
-from wayflowcore.agentspec import AgentSpecExporter
+from pyagentspec.adapters.wayflow import AgentSpecExporter
 
 agentspec_config = AgentSpecExporter().to_json(wayflow_agent)
 # .. end-runtime_to_agentspec
