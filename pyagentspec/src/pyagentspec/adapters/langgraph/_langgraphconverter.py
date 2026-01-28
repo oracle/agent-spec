@@ -93,7 +93,7 @@ from pyagentspec.tools import Tool as AgentSpecTool
 from pyagentspec.tools import ToolBox as AgentSpecToolBox
 
 if TYPE_CHECKING:
-    from langchain_mcp_adapters.sessions import (
+    from langchain_mcp_adapters.sessions import (  # type: ignore
         SSEConnection,
         StdioConnection,
         StreamableHttpConnection,
@@ -1073,7 +1073,7 @@ class AgentSpecToLangGraphConverter:
         without reloading.
         - Otherwise, loads tools and inserts them atomically into the registry.
         """
-        from langchain_mcp_adapters.tools import load_mcp_tools
+        from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore
 
         conn_prefix = f"{connection_key}::"
         existing = _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
