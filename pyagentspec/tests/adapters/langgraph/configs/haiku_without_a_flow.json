@@ -1,0 +1,181 @@
+{
+  "component_type": "Flow",
+  "id": "4697413c-bd67-4852-b502-135d0563a9df",
+  "name": "haiku_without_a_flow",
+  "description": null,
+  "metadata": {},
+  "inputs": [],
+  "outputs": [
+    {
+      "title": "haiku_without_a",
+      "type": "string"
+    }
+  ],
+  "start_node": {
+    "$component_ref": "c50c7182-1859-4c80-8e48-843abba0f1b1"
+  },
+  "nodes": [
+    {
+      "$component_ref": "c50c7182-1859-4c80-8e48-843abba0f1b1"
+    },
+    {
+      "$component_ref": "4c20efdb-8e0b-4b36-a9f4-237071944f71"
+    },
+    {
+      "$component_ref": "84a0cfc8-da04-46e9-bec2-c4a0c5c14362"
+    },
+    {
+      "$component_ref": "2403bfe4-a49d-46b9-9bcd-828b6d3d152e"
+    }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "cc16730a-a97b-4a7e-978c-3c6559542bbd",
+      "name": "cf1",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "c50c7182-1859-4c80-8e48-843abba0f1b1"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "84a0cfc8-da04-46e9-bec2-c4a0c5c14362"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "e1d3d676-0fca-47a9-933c-027a7a0d46f9",
+      "name": "cf2",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "84a0cfc8-da04-46e9-bec2-c4a0c5c14362"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "2403bfe4-a49d-46b9-9bcd-828b6d3d152e"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "id": "f771cdc0-8a6f-487a-a64e-a23ba481f3ab",
+      "name": "cf3",
+      "description": null,
+      "metadata": {},
+      "from_node": {
+        "$component_ref": "2403bfe4-a49d-46b9-9bcd-828b6d3d152e"
+      },
+      "from_branch": null,
+      "to_node": {
+        "$component_ref": "4c20efdb-8e0b-4b36-a9f4-237071944f71"
+      }
+    }
+  ],
+  "data_flow_connections": null,
+  "$referenced_components": {
+    "c50c7182-1859-4c80-8e48-843abba0f1b1": {
+      "component_type": "StartNode",
+      "id": "c50c7182-1859-4c80-8e48-843abba0f1b1",
+      "name": "start node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [],
+      "branches": [
+        "next"
+      ]
+    },
+    "84a0cfc8-da04-46e9-bec2-c4a0c5c14362": {
+      "component_type": "LlmNode",
+      "id": "84a0cfc8-da04-46e9-bec2-c4a0c5c14362",
+      "name": "llm node",
+      "description": null,
+      "metadata": {},
+      "inputs": [],
+      "outputs": [
+        {
+          "title": "haiku",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "llm_config": {
+        "component_type": "OpenAiCompatibleConfig",
+        "id": "81c0e83e-3585-44b5-8d47-41dd6a0783ee",
+        "name": "Llama-3.3-70B-Instruct",
+        "description": null,
+        "metadata": {},
+        "default_generation_parameters": null,
+        "url": "[[LLAMA70BV33_API_URL]]",
+        "model_id": "/storage/models/Llama-3.3-70B-Instruct"
+      },
+      "prompt_template": "Write a haiku about Oracle."
+    },
+    "2403bfe4-a49d-46b9-9bcd-828b6d3d152e": {
+      "component_type": "ToolNode",
+      "id": "2403bfe4-a49d-46b9-9bcd-828b6d3d152e",
+      "name": "tool node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "haiku",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "haiku_without_a",
+          "type": "string"
+        }
+      ],
+      "branches": [
+        "next"
+      ],
+      "tool": {
+        "component_type": "ServerTool",
+        "id": "934c16e4-a1f6-4c13-863c-fb5454bd765f",
+        "name": "remove_a",
+        "description": "Remove all the letters `a` from the given input string",
+        "metadata": {},
+        "inputs": [
+          {
+            "title": "haiku",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "title": "haiku_without_a",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "4c20efdb-8e0b-4b36-a9f4-237071944f71": {
+      "component_type": "EndNode",
+      "id": "4c20efdb-8e0b-4b36-a9f4-237071944f71",
+      "name": "end node",
+      "description": null,
+      "metadata": {},
+      "inputs": [
+        {
+          "title": "haiku_without_a",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "haiku_without_a",
+          "type": "string"
+        }
+      ],
+      "branches": [],
+      "branch_name": "next"
+    }
+  },
+  "agentspec_version": "25.4.1"
+}
