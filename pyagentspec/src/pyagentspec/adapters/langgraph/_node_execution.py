@@ -432,7 +432,15 @@ class AgentNodeExecutor(NodeExecutor):
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
-        outputs = dict(result.get("structured_response", {}))
+
+        outputs = {
+            **dict(result.get("structured_response", {})),
+            **{
+                output.title: result[output.title]
+                for output in self.node.outputs or []
+                if output.title in result
+            },
+        }
         return outputs, NodeExecutionDetails()
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:

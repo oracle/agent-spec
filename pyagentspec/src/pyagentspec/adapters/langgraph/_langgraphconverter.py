@@ -779,7 +779,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=remote_tool.name,
             description=remote_tool.description or "",
-            args_schema=args_model,
+            args_schema=args_model.model_json_schema(),
             func=_remote_tool,
             callbacks=[
                 AgentSpecToolCallbackHandler(tool=remote_tool),
@@ -817,7 +817,7 @@ class AgentSpecToLangGraphConverter:
             wrapped = StructuredTool(
                 name=agentspec_server_tool.name,
                 description=description,
-                args_schema=args_model,  # model class, not a dict
+                args_schema=args_model.model_json_schema(),
                 func=tool_obj,
                 callbacks=[
                     AgentSpecToolCallbackHandler(tool=agentspec_server_tool),
@@ -863,7 +863,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
-            args_schema=args_model,
+            args_schema=args_model.model_json_schema(),
             func=client_tool,
             # We do not add the tool execution callback here as it's not expected for client tools
         )
@@ -978,7 +978,7 @@ class AgentSpecToLangGraphConverter:
             )
         ]
         prompt = SystemMessage(system_prompt)
-        output_model: Optional[type[BaseModel]] = None
+        output_model: Optional[Dict[str, Any]] = None
         input_model: Optional[type[BaseModel]] = None
 
         if inputs:
@@ -1002,7 +1002,9 @@ class AgentSpecToLangGraphConverter:
             )
 
         if outputs:
-            output_model = _create_pydantic_model_from_properties("AgentOutputModel", outputs)
+            output_model = _create_pydantic_model_from_properties(
+                "AgentOutputModel", outputs
+            ).model_json_schema()
 
         compiled_graph = langgraph_prebuilt.create_react_agent(
             name=name,
@@ -1036,7 +1038,14 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                outputs = dict(result.get("structured_response", {}))
+                outputs = {
+                    **dict(result.get("structured_response", {})),
+                    **{
+                        output.title: result[output.title]
+                        for output in agent.outputs or []
+                        if output.title in result
+                    },
+                }
                 span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
 
         original_astream = compiled_graph.astream
@@ -1071,7 +1080,15 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                outputs = dict(result.get("structured_response", {}))
+
+                outputs = {
+                    **dict(result.get("structured_response", {})),
+                    **{
+                        output.title: result[output.title]
+                        for output in agent.outputs or []
+                        if output.title in result
+                    },
+                }
                 try:
                     await span.add_event_async(
                         AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs)

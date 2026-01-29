@@ -589,7 +589,7 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
             ):
                 outputs = {self.tool.outputs[0].title: output}
             else:
-                outputs = output
+                outputs = {}
 
         # once we use the latest langchain, the tool_call_id will be available in on_tool_start, and we can use it there as well
         # for now, we MUST use tool_call_id (if given from an agent) as the request_id here so that the AG-UI integration works
