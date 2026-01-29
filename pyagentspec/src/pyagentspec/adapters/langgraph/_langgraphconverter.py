@@ -48,8 +48,6 @@ from pyagentspec.adapters.langgraph._types import (
 )
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import (
-    AgentSpecAsyncLlmCallbackHandler,
-    AgentSpecAsyncToolCallbackHandler,
     AgentSpecLlmCallbackHandler,
     AgentSpecToolCallbackHandler,
 )
@@ -91,6 +89,7 @@ from pyagentspec.property import DictProperty as AgentSpecDictProperty
 from pyagentspec.property import IntegerProperty as AgentSpecIntegerProperty
 from pyagentspec.property import ListProperty as AgentSpecListProperty
 from pyagentspec.property import Property as AgentSpecProperty
+from pyagentspec.property import StringProperty as AgentSpecStringProperty
 from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.property import json_schemas_have_same_type
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
@@ -511,8 +510,18 @@ class AgentSpecToLangGraphConverter:
             inputs = kwargs.get("input", {})
             if not isinstance(inputs, dict):
                 inputs = {}
-            async with AgentSpecFlowExecutionSpan(name=span_name, flow=flow) as span:
-                await span.add_event_async(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
+            span = AgentSpecFlowExecutionSpan(name=span_name, flow=flow)
+            try:
+                await span.start_async()
+            except NotImplementedError:
+                span.start()
+            try:
+                try:
+                    await span.add_event_async(
+                        AgentSpecFlowExecutionStart(flow=flow, inputs=inputs)
+                    )
+                except NotImplementedError:
+                    span.add_event(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
                 original_result: dict[str, Any] | Any = {}
                 result: dict[str, Any]
                 # This is going to patch stream and astream, that return iterators and yield chunks
@@ -524,13 +533,20 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                await span.add_event_async(
-                    AgentSpecFlowExecutionEnd(
-                        flow=flow,
-                        outputs=result.get("outputs", {}),
-                        branch_selected=result.get("node_execution_details", {}).get("branch", ""),
-                    )
+                span_end_event = AgentSpecFlowExecutionEnd(
+                    flow=flow,
+                    outputs=result.get("outputs", {}),
+                    branch_selected=result.get("node_execution_details", {}).get("branch", ""),
                 )
+                try:
+                    await span.add_event_async(span_end_event)
+                except NotImplementedError:
+                    span.add_event(span_end_event)
+            finally:
+                try:
+                    await span.end_async()
+                except NotImplementedError:
+                    span.end()
 
         # Monkey patch invocation functions to inject tracing
         # No need to patch `(a)invoke` as the internally use `(a)stream`
@@ -767,7 +783,6 @@ class AgentSpecToLangGraphConverter:
             func=_remote_tool,
             callbacks=[
                 AgentSpecToolCallbackHandler(tool=remote_tool),
-                AgentSpecAsyncToolCallbackHandler(tool=remote_tool),
             ],
         )
         return structured_tool
@@ -806,7 +821,6 @@ class AgentSpecToLangGraphConverter:
                 func=tool_obj,
                 callbacks=[
                     AgentSpecToolCallbackHandler(tool=agentspec_server_tool),
-                    AgentSpecAsyncToolCallbackHandler(tool=agentspec_server_tool),
                 ],
             )
             return wrapped
@@ -867,6 +881,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
         )
         exposed_tools = self._get_or_create_langgraph_mcp_tools(
+            client_transport=agentspec_mcp_tool.client_transport,
             langgraph_connection=connection,
             connection_key=agentspec_mcp_tool.client_transport.id,
             tool_registry=tool_registry,
@@ -885,6 +900,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
         )
         remote_tools = self._get_or_create_langgraph_mcp_tools(
+            client_transport=agentspec_mcp_toolbox.client_transport,
             langgraph_connection=connection,
             connection_key=agentspec_mcp_toolbox.client_transport.id,
             tool_registry=tool_registry,
@@ -1032,8 +1048,18 @@ class AgentSpecToLangGraphConverter:
             inputs = kwargs.get("input", {})
             if not isinstance(inputs, dict):
                 inputs = {}
-            async with AgentSpecAgentExecutionSpan(name=span_name, agent=agent) as span:
-                await span.add_event_async(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
+            span = AgentSpecAgentExecutionSpan(name=span_name, agent=agent)
+            try:
+                await span.start_async()
+            except NotImplementedError:
+                span.start()
+            try:
+                try:
+                    await span.add_event_async(
+                        AgentSpecAgentExecutionStart(agent=agent, inputs=inputs)
+                    )
+                except NotImplementedError:
+                    span.add_event(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
                 original_result: dict[str, Any] | Any = {}
                 result: dict[str, Any]
                 # This is going to patch stream and astream, that return iterators and yield chunks
@@ -1046,7 +1072,17 @@ class AgentSpecToLangGraphConverter:
                 else:
                     result = original_result
                 outputs = dict(result.get("structured_response", {}))
-                await span.add_event_async(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
+                try:
+                    await span.add_event_async(
+                        AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs)
+                    )
+                except NotImplementedError:
+                    span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
+            finally:
+                try:
+                    await span.end_async()
+                except NotImplementedError:
+                    span.end()
 
         # Monkey patch invocation functions to inject tracing
         # No need to patch `(a)invoke` as the internally use `(a)stream`
@@ -1095,7 +1131,6 @@ class AgentSpecToLangGraphConverter:
 
         callbacks: List[BaseCallbackHandler] = [
             AgentSpecLlmCallbackHandler(llm_config=llm_config),
-            AgentSpecAsyncLlmCallbackHandler(llm_config=llm_config),
         ]
 
         if isinstance(llm_config, VllmConfig):
@@ -1211,6 +1246,7 @@ class AgentSpecToLangGraphConverter:
 
     def _get_or_create_langgraph_mcp_tools(
         self,
+        client_transport: AgentSpecClientTransport,
         langgraph_connection: Dict[str, Any],
         connection_key: str,
         tool_registry: Dict[str, LangGraphTool],
@@ -1236,6 +1272,25 @@ class AgentSpecToLangGraphConverter:
             return await load_mcp_tools(session=None, connection=langgraph_connection)  # type: ignore
 
         tools = run_async_in_sync(load_all_mcp_tools, method_name="load_mcp_tools")
+        # We add callbacks to the tool for proper tracing
+        for tool in tools:
+            # Since we might not have the tool definition (e.g., in toolboxes)
+            # we create the tool on-the-fly
+            agentspec_tool = AgentSpecMCPTool(
+                name=tool.name,
+                description=tool.description,
+                client_transport=client_transport,
+                inputs=[
+                    AgentSpecProperty(title=arg_name, json_schema=arg_json_schema)
+                    for arg_name, arg_json_schema in tool.args.items()
+                ],
+                outputs=[AgentSpecStringProperty(title="tool_output")],
+            )
+            if not tool.callbacks:
+                tool.callbacks = []
+            if isinstance(tool.callbacks, BaseCallbackHandler):
+                tool.callbacks = [tool.callbacks]
+            tool.callbacks.append(AgentSpecToolCallbackHandler(tool=agentspec_tool))  # type: ignore
 
         _add_session_tools_to_registry(tool_registry, tools, conn_prefix)
 
