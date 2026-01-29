@@ -152,9 +152,8 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
 
     def _run_in_ctx(self, run_id_str: str, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         stack = self._get_stack(run_id_str)
-        current_active_span_stack_token = _ACTIVE_SPAN_STACK.set(stack)
+        _ACTIVE_SPAN_STACK.set(stack)
         result = func(*args, **kwargs)
-        # _ACTIVE_SPAN_STACK.reset(current_active_span_stack_token)
         return result
 
     def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
@@ -172,9 +171,8 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
         self, run_id_str: str, afunc: Callable[..., Awaitable[T]], *args: Any, **kwargs: Any
     ) -> T:
         stack = self._get_stack(run_id_str)
-        current_active_span_stack_token = _ACTIVE_SPAN_STACK.set(stack)
+        _ACTIVE_SPAN_STACK.set(stack)
         result = await afunc(*args, **kwargs)
-        # _ACTIVE_SPAN_STACK.reset(current_active_span_stack_token)
         return result
 
     async def _add_event_async(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
