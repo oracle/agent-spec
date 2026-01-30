@@ -46,6 +46,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
+from pyagentspec.adapters.langgraph.conversion_utils import extract_outputs_from_invoke_result
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecLlmCallbackHandler,
@@ -978,7 +979,7 @@ class AgentSpecToLangGraphConverter:
             )
         ]
         prompt = SystemMessage(system_prompt)
-        output_model: Optional[Dict[str, Any]] = None
+        output_model: Optional[type[BaseModel]] = None
         input_model: Optional[type[BaseModel]] = None
 
         if inputs:
@@ -1002,9 +1003,7 @@ class AgentSpecToLangGraphConverter:
             )
 
         if outputs:
-            output_model = _create_pydantic_model_from_properties(
-                "AgentOutputModel", outputs
-            ).model_json_schema()
+            output_model = _create_pydantic_model_from_properties("AgentOutputModel", outputs)
 
         compiled_graph = langgraph_prebuilt.create_react_agent(
             name=name,
@@ -1038,14 +1037,7 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                outputs = {
-                    **dict(result.get("structured_response", {})),
-                    **{
-                        output.title: result[output.title]
-                        for output in agent.outputs or []
-                        if output.title in result
-                    },
-                }
+                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
                 span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
 
         original_astream = compiled_graph.astream
@@ -1081,14 +1073,7 @@ class AgentSpecToLangGraphConverter:
                 else:
                     result = original_result
 
-                outputs = {
-                    **dict(result.get("structured_response", {})),
-                    **{
-                        output.title: result[output.title]
-                        for output in agent.outputs or []
-                        if output.title in result
-                    },
-                }
+                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
                 try:
                     await span.add_event_async(
                         AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs)
