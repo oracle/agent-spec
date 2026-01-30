@@ -54,3 +54,14 @@ def no_network_plusapi(monkeypatch):
         monkeypatch.setattr(PlusAPI, "_make_request", fake_response, raising=True)
     except ImportError:
         pass
+
+
+@pytest.fixture
+def mute_crewai_console_prints():
+    try:
+        from crewai.events.event_listener import event_listener as default_listener
+        from crewai.events.utils.console_formatter import ConsoleFormatter
+    except Exception:
+        return
+
+    default_listener.formatter = ConsoleFormatter(verbose=False)

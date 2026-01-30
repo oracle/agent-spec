@@ -4,79 +4,45 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
-from pydantic import BaseModel, Field, create_model
-
+from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
+from pyagentspec.adapters._utils import create_pydantic_model_from_properties
+from pyagentspec.adapters.crewai._node_execution import NodeExecutor
 from pyagentspec.adapters.crewai._types import (
+    ControlFlow,
     CrewAIAgent,
     CrewAIBaseTool,
+    CrewAIFlow,
+    CrewAIListenNode,
     CrewAILlm,
+    CrewAIOrOperator,
     CrewAIServerToolType,
+    CrewAIStartNode,
     CrewAITool,
+    FlowState,
 )
 from pyagentspec.adapters.crewai.tracing import CrewAIAgentWithTracing
 from pyagentspec.agent import Agent as AgentSpecAgent
-from pyagentspec.component import Component as AgentSpecComponent
+from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
+from pyagentspec.flows.flow import Flow as AgentSpecFlow
+from pyagentspec.flows.node import Node as AgentSpecNode
+from pyagentspec.flows.nodes import EndNode as AgentSpecEndNode
+from pyagentspec.flows.nodes import InputMessageNode as AgentSpecInputMessageNode
+from pyagentspec.flows.nodes import LlmNode as AgentSpecLlmNode
+from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageNode
+from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
+from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
-from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
-from pyagentspec.llms.openaicompatibleconfig import (
-    OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig,
-)
-from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
-from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
-from pyagentspec.property import Property as AgentSpecProperty
-from pyagentspec.property import _empty_default as _agentspec_empty_default
+from pyagentspec.llms import OllamaConfig as AgentSpecOllamaModel
+from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
+from pyagentspec.llms import OpenAiConfig as AgentSpecOpenAiConfig
+from pyagentspec.llms import VllmConfig as AgentSpecVllmModel
+from pyagentspec.tools import ClientTool as AgentSpecClientTool
+from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
+from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
-from pyagentspec.tools.clienttool import ClientTool as AgentSpecClientTool
-from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
-from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
-
-
-def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
-    if "anyOf" in json_schema:
-        possible_types = set(
-            _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema["anyOf"]
-        )
-        return f"Union[{','.join(possible_types)}]"
-    if isinstance(json_schema["type"], list):
-        possible_types = set(
-            _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema["type"]
-        )
-        return f"Union[{','.join(possible_types)}]"
-    mapping = {
-        "string": "str",
-        "number": "float",
-        "integer": "int",
-        "boolean": "bool",
-        "null": "None",
-    }
-    if json_schema["type"] == "object":
-        # We could do better in inferring the type of values, for now we just use Any
-        return "Dict[str, Any]"
-    if json_schema["type"] == "array":
-        return f"List[{_json_schema_type_to_python_annotation(json_schema['items'])}]"
-    return mapping.get(json_schema["type"], "Any")
-
-
-def _create_pydantic_model_from_properties(
-    model_name: str, properties: List[AgentSpecProperty]
-) -> type[BaseModel]:
-    """Create a Pydantic model CLASS whose attributes are the given properties."""
-    fields: Dict[str, Any] = {}
-    for property_ in properties:
-        field_parameters: Dict[str, Any] = {}
-        param_name = property_.title
-        if property_.default is not _agentspec_empty_default:
-            field_parameters["default"] = property_.default
-        if property_.description:
-            field_parameters["description"] = property_.description
-        annotation = _json_schema_type_to_python_annotation(property_.json_schema)
-        fields[param_name] = (annotation, Field(**field_parameters))
-    return create_model(model_name, **fields)
 
 
 class AgentSpecToCrewAIConverter:
@@ -118,6 +84,14 @@ class AgentSpecToCrewAIConverter:
                 crewai_component = self._tool_convert_to_crewai(
                     agentspec_component, tool_registry, converted_components
                 )
+            elif isinstance(agentspec_component, AgentSpecFlow):
+                crewai_component = self._flow_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
+            elif isinstance(agentspec_component, AgentSpecNode):
+                crewai_component = self._node_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
             elif isinstance(agentspec_component, AgentSpecComponent):
                 raise NotImplementedError(
                     f"The AgentSpec Component type '{agentspec_component.__class__.__name__}' is not yet supported "
@@ -148,6 +122,155 @@ class AgentSpecToCrewAIConverter:
 
         self._is_root_call = is_root_call
         return converted_crewai_component
+
+    def _flow_convert_to_crewai(
+        self,
+        flow: AgentSpecFlow,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Dict[str, Any],
+    ) -> CrewAIFlow[FlowState]:
+
+        node_executors: Dict[str, NodeExecutor] = {
+            node.id: self.convert(
+                node,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+            )
+            for node in (flow.nodes or [])
+        }
+
+        # Data flow edges (handled by node executors)
+        for data_flow_edge in flow.data_flow_connections or []:
+            node_executors[data_flow_edge.source_node.id].attach_edge(data_flow_edge)
+            node_executors[data_flow_edge.destination_node.id].attach_edge(data_flow_edge)
+
+        # Initialize the class namespace for the CrewAI Flow
+        crewai_class_namespace: Dict[str, Any] = {}
+        crewai_class_namespace["name"] = flow.name or "ConvertedCrewAIFlow"
+
+        # Prepare node executors to be decorated
+        for _node_id, node_executor in node_executors.items():
+            node_wrapper = node_executor.get_node_wrapper()
+            node_wrapper.__name__ = node_executor.node.name
+            crewai_class_namespace[node_wrapper.__name__] = node_wrapper
+
+        # Apply the @start decorator to the AgentSpec start node
+        start_node_name = flow.start_node.name
+        crewai_class_namespace[start_node_name] = CrewAIStartNode()(
+            crewai_class_namespace[start_node_name]
+        )
+
+        # Apply the @listen decorator to destination nodes
+        control_flow = self._create_control_flow(flow.control_flow_connections)
+
+        listen_conditions: Dict[str, List[str]] = {}
+        for source_node_id, control_flow_mapping in control_flow.items():
+            for _branch_label, destination_node_id in control_flow_mapping.items():
+                source_node_name = node_executors[source_node_id].node.name
+                destination_node_name = node_executors[destination_node_id].node.name
+                listen_conditions.setdefault(destination_node_name, []).append(source_node_name)
+
+        for listen_node_name, conditions in listen_conditions.items():
+            conditions_union = CrewAIOrOperator(*conditions)
+            crewai_class_namespace[listen_node_name] = CrewAIListenNode(conditions_union)(
+                crewai_class_namespace[listen_node_name]
+            )
+
+        # Create the Flow subclass and return an instance of it
+        ConvertedCrewAIFlow = cast(
+            type[CrewAIFlow[FlowState]],
+            type(
+                "ConvertedCrewAIFlow",
+                (CrewAIFlow,),
+                crewai_class_namespace,
+            ),
+        )
+        return ConvertedCrewAIFlow()
+
+    def _create_control_flow(self, control_flow_connections: List[ControlFlowEdge]) -> ControlFlow:
+        control_flow: ControlFlow = {}
+        for control_flow_edge in control_flow_connections:
+            source_node_id = control_flow_edge.from_node.id
+            if source_node_id not in control_flow:
+                control_flow[source_node_id] = {}
+
+            branch_name = control_flow_edge.from_branch or AgentSpecNode.DEFAULT_NEXT_BRANCH
+            control_flow[source_node_id][branch_name] = control_flow_edge.to_node.id
+
+        return control_flow
+
+    def _node_convert_to_crewai(
+        self,
+        node: AgentSpecNode,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> NodeExecutor:
+        if isinstance(node, AgentSpecStartNode):
+            return self._start_node_convert_to_crewai(node)
+        elif isinstance(node, AgentSpecEndNode):
+            return self._end_node_convert_to_crewai(node)
+        elif isinstance(node, AgentSpecToolNode):
+            return self._tool_node_convert_to_crewai(node, tool_registry, converted_components)
+        elif isinstance(node, AgentSpecLlmNode):
+            return self._llm_node_convert_to_crewai(node, tool_registry, converted_components)
+        elif isinstance(node, AgentSpecInputMessageNode):
+            return self._input_message_node_convert_to_crewai(node)
+        elif isinstance(node, AgentSpecOutputMessageNode):
+            return self._output_message_node_convert_to_crewai(node)
+        else:
+            raise NotImplementedError(
+                f"The AgentSpec component of type {type(node)} is not yet supported for conversion"
+            )
+
+    def _start_node_convert_to_crewai(self, node: AgentSpecStartNode) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import StartNodeExecutor
+
+        return StartNodeExecutor(node)
+
+    def _end_node_convert_to_crewai(self, node: AgentSpecEndNode) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import EndNodeExecutor
+
+        return EndNodeExecutor(node)
+
+    def _tool_node_convert_to_crewai(
+        self,
+        node: AgentSpecToolNode,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]],
+    ) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import ToolNodeExecutor
+
+        tool = self.convert(
+            node.tool, tool_registry=tool_registry, converted_components=converted_components
+        )
+        return ToolNodeExecutor(node, tool)
+
+    def _llm_node_convert_to_crewai(
+        self,
+        node: AgentSpecLlmNode,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]],
+    ) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import LlmNodeExecutor
+
+        llm = self.convert(
+            node.llm_config, tool_registry=tool_registry, converted_components=converted_components
+        )
+        return LlmNodeExecutor(node, llm)
+
+    def _input_message_node_convert_to_crewai(
+        self, node: AgentSpecInputMessageNode
+    ) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import InputMessageNodeExecutor
+
+        return InputMessageNodeExecutor(node)
+
+    def _output_message_node_convert_to_crewai(
+        self, node: AgentSpecOutputMessageNode
+    ) -> "NodeExecutor":
+        from pyagentspec.adapters.crewai._node_execution import OutputMessageNodeExecutor
+
+        return OutputMessageNodeExecutor(node)
 
     def _llm_convert_to_crewai(
         self,
@@ -204,7 +327,7 @@ class AgentSpecToCrewAIConverter:
                 return CrewAITool(
                     name=agentspec_tool.name,
                     description=agentspec_tool.description or "",
-                    args_schema=_create_pydantic_model_from_properties(
+                    args_schema=create_pydantic_model_from_properties(
                         agentspec_tool.name.title() + "InputSchema", agentspec_tool.inputs or []
                     ),
                     func=tool,
@@ -235,7 +358,7 @@ class AgentSpecToCrewAIConverter:
             return CrewAITool(
                 name=agentspec_tool.name,
                 description=agentspec_tool.description or "",
-                args_schema=_create_pydantic_model_from_properties(
+                args_schema=create_pydantic_model_from_properties(
                     agentspec_tool.name.title() + "InputSchema", agentspec_tool.inputs or []
                 ),
                 func=client_tool,
@@ -253,7 +376,7 @@ class AgentSpecToCrewAIConverter:
         return CrewAITool(
             name=remote_tool.name,
             description=remote_tool.description or "",
-            args_schema=_create_pydantic_model_from_properties(
+            args_schema=create_pydantic_model_from_properties(
                 remote_tool.name.title() + "InputSchema", remote_tool.inputs or []
             ),
             func=_remote_tool,
