@@ -580,16 +580,23 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
                 )
             except json.JSONDecodeError:
                 parsed = str(output.content)
-            outputs = parsed if isinstance(parsed, dict) else {"output": parsed}
-        else:
-            if (
-                not isinstance(output, dict)
-                and isinstance(self.tool.outputs, list)
-                and len(self.tool.outputs) == 1
-            ):
+            output = parsed
+
+        if self.tool.outputs:
+            # If tool outputs is a non-empty list
+            if len(self.tool.outputs) == 1:
+                # If it has exactly one output, we use the title of that output
                 outputs = {self.tool.outputs[0].title: output}
             else:
-                outputs = {}
+                # Otherwise we should already have the dictionary with the right entries
+                if isinstance(output, dict):
+                    outputs = output
+                else:
+                    # If it's not a dictionary, then something went wrong, we don't report any output
+                    outputs = {}
+        else:
+            # If tool outputs is None, or an empty list, it means that the tool has no entries
+            outputs = {}
 
         # once we use the latest langchain, the tool_call_id will be available in on_tool_start, and we can use it there as well
         # for now, we MUST use tool_call_id (if given from an agent) as the request_id here so that the AG-UI integration works
