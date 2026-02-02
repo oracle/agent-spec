@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, Callable, Dict, TypeAlias
+from typing import Any, Callable, Dict, List, TypeAlias
 
 from pyagentspec.adapters.langgraph._types import (
     BaseStore,
@@ -12,6 +12,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
+from pyagentspec.property import Property, _empty_default
 
 State: TypeAlias = Dict[str, Any]
 RegistryCallable: TypeAlias = Callable[[State], Any]
@@ -97,3 +98,27 @@ def _convert_node_to_registry_tool(
             raise NotImplementedError(
                 f"Provided node type: {type(unsupported_node)} is not supported"
             )
+
+
+def extract_outputs_from_invoke_result(
+    result: Dict[str, Any], expected_outputs: List[Property]
+) -> Dict[str, Any]:
+    # Extracts the outputs from the return value of an invoke call made on an agent
+    # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
+    # We give priority to the latter.
+    return {
+        # Defaults if available
+        **{
+            output.title: output.default
+            for output in expected_outputs or []
+            if output.default is not _empty_default
+        },
+        # Results in `structured_response`
+        **dict(result.get("structured_response", {})),
+        # Results appended to main dictionary
+        **{
+            output.title: result[output.title]
+            for output in expected_outputs or []
+            if output.title in result
+        },
+    }

@@ -46,6 +46,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
+from pyagentspec.adapters.langgraph.conversion_utils import extract_outputs_from_invoke_result
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecLlmCallbackHandler,
@@ -779,7 +780,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=remote_tool.name,
             description=remote_tool.description or "",
-            args_schema=args_model,
+            args_schema=args_model.model_json_schema(),
             func=_remote_tool,
             callbacks=[
                 AgentSpecToolCallbackHandler(tool=remote_tool),
@@ -817,7 +818,7 @@ class AgentSpecToLangGraphConverter:
             wrapped = StructuredTool(
                 name=agentspec_server_tool.name,
                 description=description,
-                args_schema=args_model,  # model class, not a dict
+                args_schema=args_model.model_json_schema(),
                 func=tool_obj,
                 callbacks=[
                     AgentSpecToolCallbackHandler(tool=agentspec_server_tool),
@@ -863,7 +864,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
-            args_schema=args_model,
+            args_schema=args_model.model_json_schema(),
             func=client_tool,
             # We do not add the tool execution callback here as it's not expected for client tools
         )
@@ -1036,7 +1037,7 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                outputs = dict(result.get("structured_response", {}))
+                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
                 span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
 
         original_astream = compiled_graph.astream
@@ -1071,7 +1072,8 @@ class AgentSpecToLangGraphConverter:
                     result = {}
                 else:
                     result = original_result
-                outputs = dict(result.get("structured_response", {}))
+
+                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
                 try:
                     await span.add_event_async(
                         AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs)

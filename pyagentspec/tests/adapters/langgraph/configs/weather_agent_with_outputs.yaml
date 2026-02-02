@@ -28,8 +28,7 @@ outputs:
 - default: I don't know what the weather is
   title: weather
   type: string
-system_prompt: You are a weather agent. Use tools to answer user questions. And on
-  a scale of 1 to 5, rate how high the temperature might be.
+system_prompt: "You are a weather agent. Use tools to retrieve the weather. You should output two things:\n- the weather you received from the tool as a string\n- an estimate of how high the temperature might be as an integer rating on a scale from 1 to 5."
 tools:
 - component_type: ServerTool
   description: Returns the weather in a certain city

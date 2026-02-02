@@ -29,6 +29,7 @@ from pyagentspec.adapters.langgraph._types import (
     interrupt,
     langgraph_graph,
 )
+from pyagentspec.adapters.langgraph.conversion_utils import extract_outputs_from_invoke_result
 from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
@@ -432,7 +433,8 @@ class AgentNodeExecutor(NodeExecutor):
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
-        outputs = dict(result.get("structured_response", {}))
+
+        outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:

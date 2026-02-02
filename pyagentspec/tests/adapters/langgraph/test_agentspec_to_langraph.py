@@ -59,9 +59,9 @@ def test_weather_agent_with_server_tool_with_output_descriptors(
         {"messages": [{"role": "user", "content": "What is the weather like in Agadir?"}]},
         config,
     )
-    last_message = result["structured_response"]
-    assert isinstance(last_message.temperature_rating, int)
-    assert isinstance(last_message.weather, str)
+    last_message = dict(result["structured_response"])
+    assert isinstance(last_message["temperature_rating"], int)
+    assert isinstance(last_message["weather"], str)
 
 
 def test_client_tool_with_agent(weather_agent_client_tool_yaml: str) -> None:
