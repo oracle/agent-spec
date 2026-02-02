@@ -692,6 +692,9 @@ def test_invalid_confirmation_resume_payload_raises() -> None:
     bad = Command(resume={"not_decisions": []})
     with pytest.raises(
         ValueError,
-        match="Tool confirmation result for is not valid, should be a dict with a 'decisions' key",
+        match=(
+            "Tool confirmation result for tool double_tool is not valid, "
+            "should be a dict with a 'decisions' key"
+        ),
     ):
         app.invoke(bad, config=config)
