@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -190,6 +190,9 @@ class AgentSpecToAgentFrameworkConverter:
             description=remote_tool.description or "",
             input_model=args_model,
             func=_remote_tool,
+            approval_mode=(
+                "always_require" if remote_tool.requires_confirmation else "never_require"
+            ),
         )
         return aifunction
 

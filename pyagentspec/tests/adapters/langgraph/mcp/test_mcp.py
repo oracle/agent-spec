@@ -129,6 +129,7 @@ def test_mcp_toolbox_exposes_proper_tools(loaded_langgraph_agent):
         "fooza_tool",
         "bwip_tool",
         "zbuk_tool",
+        "zwak",
         "generate_random_string",
     }
 
@@ -197,13 +198,19 @@ async def test_export_langgraph_agent_with_mcp_to_agentspec_agent_with_mcp(sse_c
     assert isinstance(config, OpenAiCompatibleConfig)
     assert config.model_id == model_id
     assert config.url == f"http://{url}/v1"
-    assert len(agentspec_agent.tools) == 4
+    assert len(agentspec_agent.tools) == 5
 
     for tool in agentspec_agent.tools:
         assert isinstance(tool, MCPTool)
         assert isinstance(tool.client_transport, SSETransport)
         assert tool.client_transport.url == sse_client_transport.url
-        assert tool.name in {"fooza_tool", "generate_random_string", "bwip_tool", "zbuk_tool"}
+        assert tool.name in {
+            "fooza_tool",
+            "generate_random_string",
+            "bwip_tool",
+            "zbuk_tool",
+            "zwak",
+        }
 
 
 @pytest.mark.anyio

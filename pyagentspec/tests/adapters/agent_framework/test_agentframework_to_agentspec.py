@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -6,15 +6,17 @@
 
 from typing import cast
 
-from agent_framework import ChatAgent
-from agent_framework.openai import OpenAIChatClient
-
-from pyagentspec.adapters.agent_framework import AgentSpecExporter
 from pyagentspec.agent import Agent
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 
 
 def test_agent_framework_converts_to_agent_spec_with_server_tool() -> None:
+
+    from agent_framework import ChatAgent
+    from agent_framework.openai import OpenAIChatClient
+
+    from pyagentspec.adapters.agent_framework import AgentSpecExporter
+
     def add_tool(a: int, b: int) -> int:
         return a + b
 

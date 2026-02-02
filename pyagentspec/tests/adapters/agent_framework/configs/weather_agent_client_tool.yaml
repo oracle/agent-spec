@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -24,7 +24,7 @@ metadata:
   __metadata_info__: {}
 name: agent_75dd14fc
 outputs: []
-system_prompt: You are a weather agent. Use tools to answer user questions.
+system_prompt: You are a weather agent. Use the tool to answer user questions.
 tools:
 - component_type: ClientTool
   description: Returns the weather in a certain city

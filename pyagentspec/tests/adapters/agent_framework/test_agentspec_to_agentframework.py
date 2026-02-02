@@ -1,18 +1,11 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import anyio
-from agent_framework import (
-    AIFunction,
-    ChatAgent,
-    TextContent,
-)
-from agent_framework.openai import OpenAIChatClient
 
-from pyagentspec.adapters.agent_framework import AgentSpecLoader
 from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer
@@ -23,6 +16,12 @@ from .conftest import get_weather
 def test_agentspec_converts_to_agent_framework_with_server_tool(
     weather_agent_server_tool: str,
 ) -> None:
+
+    from agent_framework import AIFunction, ChatAgent
+    from agent_framework.openai import OpenAIChatClient
+
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
+
     agent_component = AgentSpecDeserializer().from_yaml(weather_agent_server_tool)
     assert isinstance(agent_component, Agent)
     loader = AgentSpecLoader({"get_weather": get_weather})
@@ -56,6 +55,11 @@ def test_agentspec_converts_to_agent_framework_with_server_tool(
 
 
 def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool: str) -> None:
+
+    from agent_framework import ChatAgent, TextContent
+
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
+
     loader = AgentSpecLoader({"get_weather": get_weather})
     agent = loader.load_yaml(weather_agent_server_tool)
     assert isinstance(agent, ChatAgent)
@@ -67,6 +71,11 @@ def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool
 
 
 def test_remote_tool_with_agent(weather_agent_remote_tool: str) -> None:
+
+    from agent_framework import ChatAgent, TextContent
+
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
+
     agent = AgentSpecLoader().load_yaml(weather_agent_remote_tool)
     assert isinstance(agent, ChatAgent)
 

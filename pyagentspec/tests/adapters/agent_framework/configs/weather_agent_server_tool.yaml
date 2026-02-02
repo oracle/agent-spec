@@ -21,7 +21,7 @@ metadata:
   __metadata_info__: {}
 name: agent_87040c07
 outputs: []
-system_prompt: You are a weather agent. You will see a list of messages. Whenever you see a message from a user asking a question, if it's about the weather, make sure to answer that. If you see a message in the form of "The weather in `city` is sunny", you should generate another text that reformulates that sentence to the user. The user cannot see the messages that originate from tools. It can only see messages that you generate.
+system_prompt: You are a weather agent. Use the tool to answer user questions.
 tools:
 - component_type: ServerTool
   description: Returns the weather in a certain city

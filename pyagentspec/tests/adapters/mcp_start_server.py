@@ -80,9 +80,13 @@ def create_server(host: str, port: int):
     def zbuk_tool(a: int, b: int) -> int:
         return a + b * 2
 
+    @server.tool()
+    def zwak(a: int, b: int) -> int:
+        """Zwaks two numbers"""
+        return a + b + 40
+
     @server.tool(description="Tool to return a random string")
     def generate_random_string() -> str:
-
         return "random_string_1234"
 
     return server

@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -29,7 +29,7 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
     def mock_request(*args, **kwargs):
-        city = kwargs["data"]["location"]["city"]
+        city = kwargs["json"]["location"]["city"]
         return DummyResponse({"weather": f"sunny in {city}"})
 
     # Build a RemoteTool with nested data containing multiple template placeholders.
@@ -71,9 +71,9 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
         called_args, called_kwargs = patched_request.call_args
         # The converter uses `data=remote_tool_data` when calling httpx.request for dict data
         assert (
-            "data" in called_kwargs
-        ), f"Expected 'data' kwarg in request call since data is a dict, got {called_kwargs}"
-        assert called_kwargs["data"] == expected_json
+            "json" in called_kwargs
+        ), f"Expected 'json' kwarg in request call since data is a dict, got {called_kwargs}"
+        assert called_kwargs["json"] == expected_json
         assert result == {"weather": "sunny in Agadir"}
 
 
