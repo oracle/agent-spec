@@ -10,6 +10,7 @@ flake8==5.0.4
 flake8-copyright==0.2.4
 pyflakes==2.5.0
 pytest==7.4.4
+pytest-asyncio==0.23.8
 
 # stubs for mypy
 types-PyYAML

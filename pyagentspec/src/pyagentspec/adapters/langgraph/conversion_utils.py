@@ -12,7 +12,7 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_prebuilt,
 )
-from pyagentspec.property import Property
+from pyagentspec.property import Property, _empty_default
 
 State: TypeAlias = Dict[str, Any]
 RegistryCallable: TypeAlias = Callable[[State], Any]
@@ -107,7 +107,15 @@ def extract_outputs_from_invoke_result(
     # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
     # We give priority to the latter.
     return {
+        # Defaults if available
+        **{
+            output.title: output.default
+            for output in expected_outputs or []
+            if output.default is not _empty_default
+        },
+        # Results in `structured_response`
         **dict(result.get("structured_response", {})),
+        # Results appended to main dictionary
         **{
             output.title: result[output.title]
             for output in expected_outputs or []
