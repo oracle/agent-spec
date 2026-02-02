@@ -4,11 +4,21 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from typing import Any
 from unittest.mock import patch
 
 import pytest
 
-from pyagentspec.tools.remotetool import RemoteTool
+from pyagentspec.agent import Agent
+from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
+from pyagentspec.flows.edges.dataflowedge import DataFlowEdge
+from pyagentspec.flows.flow import Flow
+from pyagentspec.flows.nodes import ToolNode
+from pyagentspec.flows.nodes.endnode import EndNode
+from pyagentspec.flows.nodes.startnode import StartNode
+from pyagentspec.llms import OpenAiCompatibleConfig
+from pyagentspec.property import IntegerProperty, Property
+from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
 
 
 class DummyResponse:
@@ -231,3 +241,460 @@ def test_remote_tool_actual_endpoint_with_langgraph(
     # Body-derived assertions (work for JSON, form-encoded, and parsed text formats)
     assert result["value"] == "test1"
     assert result["listofvalues"] == ["a", "test2", "c"]
+
+
+def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):
+    """Builds Start -> Tool -> End flow with x->x and result->result edges."""
+
+    start_node = StartNode(name="start", inputs=start_inputs or tool_node.inputs)
+    end_node = EndNode(name="end", outputs=end_outputs or tool_node.outputs)
+
+    return Flow(
+        name="flow",
+        start_node=start_node,
+        nodes=[start_node, tool_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_tool", from_node=start_node, to_node=tool_node),
+            ControlFlowEdge(name="tool_to_end", from_node=tool_node, to_node=end_node),
+        ],
+        data_flow_connections=[
+            DataFlowEdge(
+                name="input_edge",
+                source_node=start_node,
+                source_output="x",
+                destination_node=tool_node,
+                destination_input="x",
+            ),
+            DataFlowEdge(
+                name="output_edge",
+                source_node=tool_node,
+                source_output="result",
+                destination_node=end_node,
+                destination_input="result",
+            ),
+        ],
+    )
+
+
+def _invoke_until_interrupt(app, payload, config):
+    """Invoke and assert first response is an interrupt; return interrupt value."""
+    result = app.invoke(payload, config=config)
+    assert "__interrupt__" in result and len(result["__interrupt__"]) > 0
+    return result["__interrupt__"][0].value
+
+
+def _approve_command():
+    from langgraph.types import Command
+
+    return Command(resume={"decisions": [{"type": "approve"}]})
+
+
+def _reject_command(reason="no"):
+    from langgraph.types import Command
+
+    return Command(resume={"decisions": [{"type": "reject", "reason": reason}]})
+
+
+def test_server_tool_confirmation_flow_approve_executes() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def double_tool_func(x: int) -> int:
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x", description="The number to double")],
+        outputs=[Property(title="result", description="The doubled number", json_schema={})],
+        # the property is a AnyProperty as the output may not be of type string.
+        requires_confirmation=True,
+    )
+    agentspec_flow = _make_simple_flow_with_tool(
+        ToolNode(name="double_tool_node", tool=server_tool)
+    )
+
+    langgraph_agent = AgentSpecLoader(
+        tool_registry={"double_tool": double_tool_func},
+        checkpointer=MemorySaver(),
+    ).load_component(agentspec_flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "t1"}})
+
+    interrupt_payload = _invoke_until_interrupt(
+        langgraph_agent, {"inputs": {"x": 5}}, config=config
+    )
+    assert interrupt_payload["action_requests"][0]["name"] == "double_tool"
+    assert interrupt_payload["action_requests"][0]["arguments"] == {"x": 5}
+
+    result = langgraph_agent.invoke(_approve_command(), config=config)
+    assert result["outputs"] == {"result": 10}
+
+
+def test_flow_with_server_tool_confirmation_reject_skips_executes_denial_message() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    called = {"n": 0}
+
+    def double_tool_func(x: int) -> int:
+        called["n"] += 1
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    agentspec_flow = _make_simple_flow_with_tool(
+        ToolNode(name="double_tool_node", tool=server_tool)
+    )
+
+    langgraph_agent = AgentSpecLoader(
+        tool_registry={"double_tool": double_tool_func},
+        checkpointer=MemorySaver(),
+    ).load_component(agentspec_flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "t2"}})
+
+    _ = _invoke_until_interrupt(langgraph_agent, {"inputs": {"x": 5}}, config=config)
+    result = langgraph_agent.invoke(_reject_command("nope"), config=config)
+
+    assert called["n"] == 0  # Tool should not be executed
+
+    assert "outputs" in result
+    assert "denied execution" in str(result["outputs"])
+
+
+def test_flow_with_client_tool_confirmation_approve_then_interrupts_for_client_execution() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    client_tool = ClientTool(
+        name="client_double",
+        description="Client doubles the number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="client_tool_node", tool=client_tool))
+
+    app = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+    config = RunnableConfig({"configurable": {"thread_id": "ct1"}})
+
+    # 1. confirmation interrupt
+    confirm_interrupt = _invoke_until_interrupt(app, {"inputs": {"x": 7}}, config=config)
+    assert confirm_interrupt["action_requests"][0]["name"] == "client_double"
+    assert confirm_interrupt["action_requests"][0]["arguments"] == {"x": 7}
+
+    # 2. approve -> should now interrupt with client_tool_request
+    next_result = app.invoke(_approve_command(), config=config)
+    assert "__interrupt__" in next_result and len(next_result["__interrupt__"]) > 0
+    client_tool_request = next_result["__interrupt__"][0].value
+    assert client_tool_request["type"] == "client_tool_request"
+    assert client_tool_request["name"] == "client_double"
+    assert client_tool_request["inputs"]["kwargs"] == {"x": 7}
+
+
+def test_flow_with_client_tool_confirmation_reject_returns_denial_and_no_client_request() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    client_tool = ClientTool(
+        name="client_double",
+        description="Client doubles the number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="client_tool_node", tool=client_tool))
+
+    app = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+    config = RunnableConfig({"configurable": {"thread_id": "ct2"}})
+
+    _ = _invoke_until_interrupt(app, {"inputs": {"x": 7}}, config=config)
+
+    result = app.invoke(_reject_command("no"), config=config)
+    assert "__interrupt__" not in result  # should not proceed to client request
+    assert "outputs" in result
+    assert "denied execution" in str(result["outputs"])
+
+
+def test_flow_with_remote_tool_confirmation_approve_executes_http_request() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def mock_request(*args, **kwargs):
+        body = kwargs.get("json") or kwargs.get("data") or kwargs.get("content")
+        return DummyResponse({"ok": True, "body": body})
+
+    remote_tool = RemoteTool(
+        name="remote_echo",
+        description="Echo",
+        url="https://example.com/echo",
+        http_method="POST",
+        data={"x": "{{x}}"},
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="remote_node", tool=remote_tool))
+
+    app = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+    config = RunnableConfig({"configurable": {"thread_id": "rt1"}})
+
+    _ = _invoke_until_interrupt(app, {"inputs": {"x": 3}}, config=config)
+
+    with patch("httpx.request", side_effect=mock_request) as patched:
+        result = app.invoke(_approve_command(), config=config)
+        patched.assert_called_once()
+        assert "outputs" in result
+        assert result["outputs"] == {"result": {"ok": True, "body": {"x": "3"}}}
+
+
+def test_flow_with_remote_tool_confirmation_reject_does_not_call_http() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    remote_tool = RemoteTool(
+        name="remote_echo",
+        description="Echo",
+        url="https://example.com/echo",
+        http_method="POST",
+        data={"x": "{{x}}"},
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="remote_node", tool=remote_tool))
+
+    app = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+    config = RunnableConfig({"configurable": {"thread_id": "rt2"}})
+
+    _ = _invoke_until_interrupt(app, {"inputs": {"x": 3}}, config=config)
+
+    with patch("httpx.request") as patched:
+        result = app.invoke(_reject_command("no"), config=config)
+        patched.assert_not_called()
+        assert "outputs" in result
+        assert "denied execution" in str(result["outputs"])
+
+
+def _get_fake_model() -> Any:
+    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.messages import AIMessage
+    from langchain_openai import ChatOpenAI
+
+    class FakeModel(FakeMessagesListChatModel, ChatOpenAI):
+        pass
+
+    return FakeModel(
+        responses=[
+            AIMessage(
+                content="Calling tool",
+                tool_calls=[{"name": "double_tool", "args": {"x": 5}, "id": "call_1"}],
+            ),
+            AIMessage(content="Done"),
+        ]
+    )
+
+
+def test_server_tool_confirmation_in_agent_approve_executes_tool() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+
+    def double_tool_func(x: int) -> int:
+        return x * 2
+
+    agent_spec = Agent(
+        name="agent",
+        system_prompt="You are a helpful agent.",
+        llm_config=OpenAiCompatibleConfig(name="llm", model_id="fake", url="null"),
+        # ^ will be patched
+        tools=[
+            ServerTool(
+                name="double_tool",
+                description="Doubles input",
+                inputs=[IntegerProperty(title="x")],
+                outputs=[Property(title="result", json_schema={})],
+                requires_confirmation=True,
+            )
+        ],
+    )
+    loader = AgentSpecLoader(
+        tool_registry={"double_tool": double_tool_func},
+        checkpointer=MemorySaver(),
+    )
+    with patch.object(
+        AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=_get_fake_model()
+    ):
+        app = loader.load_component(agent_spec)
+
+    config = RunnableConfig({"configurable": {"thread_id": "ag1"}})
+
+    interrupt_payload = _invoke_until_interrupt(app, {"inputs": {"x": 5}}, config=config)
+    assert interrupt_payload["action_requests"][0]["name"] == "double_tool"
+    assert interrupt_payload["action_requests"][0]["arguments"] == {"x": 5}
+
+    result = app.invoke(_approve_command(), config=config)
+
+    assert "messages" in result and len(result["messages"]) > 1
+    tool_result_message = result["messages"][-2]
+    assert "10" in tool_result_message.content
+
+
+def test_server_tool_confirmation_in_agent_reject_denies_and_does_not_execute() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+
+    called = {"n": 0}
+
+    def double_tool_func(x: int) -> int:
+        called["n"] += 1
+        return x * 2
+
+    agent_spec = Agent(
+        name="agent",
+        system_prompt="You are a helpful agent.",
+        llm_config=OpenAiCompatibleConfig(
+            name="llm", model_id="fake", url="null"
+        ),  # will be patched
+        tools=[
+            ServerTool(
+                name="double_tool",
+                description="Doubles input",
+                inputs=[IntegerProperty(title="x")],
+                outputs=[Property(title="result", json_schema={})],
+                requires_confirmation=True,
+            )
+        ],
+    )
+
+    loader = AgentSpecLoader(
+        tool_registry={"double_tool": double_tool_func},
+        checkpointer=MemorySaver(),
+    )
+
+    with patch.object(
+        AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=_get_fake_model()
+    ):
+        app = loader.load_component(agent_spec)
+
+    config = RunnableConfig({"configurable": {"thread_id": "ag2"}})
+
+    _ = _invoke_until_interrupt(app, {"inputs": {"x": 5}}, config=config)
+    result = app.invoke(_reject_command("no"), config=config)
+
+    assert called["n"] == 0
+    assert "messages" in result and len(result["messages"]) > 1
+    tool_result_message = result["messages"][-2]
+    assert "denied execution" in tool_result_message.content
+
+
+def test_requires_confirmation_without_checkpointer_raises_for_server_tool_in_flow() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def double_tool_func(x: int) -> int:
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+
+    with pytest.raises(ValueError, match="Checkpointer is required"):
+        AgentSpecLoader(
+            tool_registry={"double_tool": double_tool_func}, checkpointer=None
+        ).load_component(flow)
+
+
+def test_requires_confirmation_without_checkpointer_raises_for_client_tool() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    client_tool = ClientTool(
+        name="client_tool",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=client_tool))
+
+    with pytest.raises(ValueError, match="Checkpointer is required"):
+        AgentSpecLoader(tool_registry={}, checkpointer=None).load_component(flow)
+
+
+def test_server_tool_missing_from_registry_raises() -> None:
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    server_tool = ServerTool(
+        name="missing_tool",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=False,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+
+    with pytest.raises(ValueError, match="does not appear in the tool registry"):
+        AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+
+
+def test_invalid_confirmation_resume_payload_raises() -> None:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def double_tool_func(x: int) -> int:
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+
+    app = AgentSpecLoader(
+        tool_registry={"double_tool": double_tool_func},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "neg1"}})
+    _ = _invoke_until_interrupt(app, {"inputs": {"x": 5}}, config=config)
+
+    bad = Command(resume={"not_decisions": []})
+    with pytest.raises(
+        ValueError,
+        match=(
+            "Tool confirmation result for tool double_tool is not valid, "
+            "should be a dict with a 'decisions' key"
+        ),
+    ):
+        app.invoke(bad, config=config)
