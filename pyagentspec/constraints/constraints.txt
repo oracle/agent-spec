@@ -16,4 +16,4 @@ langchain-openai==0.3.30
 langchain-ollama==0.3.6
 
 # WayFlow adapter
-wayflowcore==26.1.0
+wayflowcore==25.4.3
