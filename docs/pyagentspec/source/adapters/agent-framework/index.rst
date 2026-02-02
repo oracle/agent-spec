@@ -1,16 +1,16 @@
 .. _agentframeworkadapter:
 
-=====================================
-Agent Spec Adapters - Agent Framework
-=====================================
+===============================================
+Agent Spec Adapters - Microsoft Agent Framework
+===============================================
 
 
 .. figure:: ../../_static/icons/agent-framework-adapter.jpg
     :align: center
     :scale: 18%
-    :alt: Agent Spec adapter for Agent Framework
+    :alt: Agent Spec adapter for Microsoft Agent Framework
 
-    ↑ With the **Agent Spec adapter for Agent Framework**, you can easily import agents from external frameworks using Agent Spec and run them with Agent Framework.
+    ↑ With the **Agent Spec adapter for Microsoft Agent Framework**, you can easily import agents from external frameworks using Agent Spec and run them with Agent Framework.
 
 
 *Microsoft Agent Framework is a framework for building, orchestrating and deploying AI agents and multi-agent workflows*
@@ -28,7 +28,6 @@ and then install the PyAgentSpec package with the AgentFramework extension.
     python -m venv .venv
     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
     pip install "pyagentspec[agent-framework]"
-
 
 
 Usage Examples
