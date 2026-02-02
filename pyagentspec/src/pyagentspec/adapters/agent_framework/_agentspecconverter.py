@@ -136,6 +136,7 @@ class AgentFrameworkToAgentSpecConverter:
                     name=f"{mcp_tool.name}_transport",
                     command=mcp_tool.command,
                 ),
+                requires_confirmation=mcp_tool.approval_mode == "always_require",
             )
         elif isinstance(mcp_tool, MCPStreamableHTTPTool):
             return MCPTool(
@@ -145,6 +146,7 @@ class AgentFrameworkToAgentSpecConverter:
                     name=f"{mcp_tool.name}_transport",
                     url=mcp_tool.url,
                 ),
+                requires_confirmation=mcp_tool.approval_mode == "always_require",
             )
         else:
             raise NotImplementedError(
@@ -168,9 +170,11 @@ class AgentFrameworkToAgentSpecConverter:
         tool: AgentFrameworkTool,
         referenced_objects: dict[str, AgentSpecComponent],
     ) -> AgentSpecTool:
+        requires_confirmation = False
         callable_tool: Any = tool
         tool_description: str | None = None
         if isinstance(tool, AIFunction):
+            requires_confirmation = tool.approval_mode == "always_require"
             tool_description = tool.description
             callable_tool = tool.func
 
@@ -190,6 +194,7 @@ class AgentFrameworkToAgentSpecConverter:
             inputs=input_properties,
             outputs=[output_property],
             description=tool_description or callable_tool.__doc__,
+            requires_confirmation=requires_confirmation,
         )
 
     def _llm_convert_to_agentspec(

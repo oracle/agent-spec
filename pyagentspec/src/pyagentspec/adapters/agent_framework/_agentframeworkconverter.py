@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from pydantic import BaseModel, Field, create_model
 
@@ -150,6 +150,8 @@ class AgentSpecToAgentFrameworkConverter:
     ) -> AgentFrameworkMCPTool:
         from pyagentspec.mcp.clienttransport import StdioTransport, StreamableHTTPTransport
 
+        approval_mode = "always_require" if mcp_tool.requires_confirmation else None
+        approval_mode = cast(Literal["always_require", "never_require"] | None, approval_mode)
         client_transport = mcp_tool.client_transport
         if isinstance(client_transport, StdioTransport):
             return MCPStdioTool(
@@ -158,6 +160,7 @@ class AgentSpecToAgentFrameworkConverter:
                 command=client_transport.command,
                 args=client_transport.args,
                 env=client_transport.env,
+                approval_mode=approval_mode,
             )
         elif isinstance(client_transport, StreamableHTTPTransport):
             return MCPStreamableHTTPTool(
@@ -165,6 +168,7 @@ class AgentSpecToAgentFrameworkConverter:
                 description=mcp_tool.description,
                 url=client_transport.url,
                 headers=client_transport.headers,
+                approval_mode=approval_mode,
             )
         else:
             raise NotImplementedError(
@@ -217,6 +221,9 @@ class AgentSpecToAgentFrameworkConverter:
                 func=function,
                 description=server_tool.description or "",
                 input_model=input_model,
+                approval_mode=(
+                    "always_require" if server_tool.requires_confirmation else "never_require"
+                ),
             )
         return function
 

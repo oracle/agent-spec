@@ -56,3 +56,10 @@ def weather_agent_client_tool(json_server: str) -> str:
     return _replace_config_placeholders(
         (CONFIGS / "weather_agent_client_tool.yaml").read_text(), json_server
     )
+
+
+@pytest.fixture()
+def weather_agent_server_tool_confirmation(json_server: str) -> str:
+    return _replace_config_placeholders(
+        (CONFIGS / "weather_agent_server_tool_confirmation.yaml").read_text(), json_server
+    )

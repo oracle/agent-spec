@@ -85,3 +85,49 @@ def test_remote_tool_with_agent(weather_agent_remote_tool: str) -> None:
     last_content = contents[-1]
     assert isinstance(last_content, TextContent)
     assert all(x in last_content.text.lower() for x in ("agadir", "sunny"))
+
+
+def test_server_tool_requires_confirmation_with_agent(
+    weather_agent_server_tool_confirmation: str,
+) -> None:
+
+    from agent_framework import AIFunction, ChatAgent, ChatMessage, Role, TextContent
+
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
+
+    loader = AgentSpecLoader({"get_weather": get_weather})
+    agent = loader.load_yaml(weather_agent_server_tool_confirmation)
+    assert isinstance(agent, ChatAgent)
+
+    # Ensure approval mode is set to always_require for the converted tool
+    tools = agent.chat_options.tools or []
+    assert len(tools) == 1
+    t = tools[0]
+    assert isinstance(t, AIFunction)
+    assert t.approval_mode == "always_require"
+
+    async def run_agent_with_confirmation(agent):
+        # First run should request user approval for the function call
+        first_result = await agent.run("What is the weather like in Agadir?")
+        assert (
+            first_result.user_input_requests
+        ), "Expected a user approval request before tool execution"
+        req = first_result.user_input_requests[0]
+        # Verify it is asking to call the expected tool
+        assert getattr(req.function_call, "name", "") == "get_weather"
+
+        # Now add a single approval response and continue
+        final_result = await agent.run(
+            [
+                "What is the weather like in Agadir?",
+                ChatMessage(role=Role.ASSISTANT, contents=[req]),
+                ChatMessage(role=Role.USER, contents=[req.create_response(True)]),
+            ],
+        )
+        contents = final_result.messages[-1].contents
+        assert len(contents) > 0
+        last_content = contents[-1]
+        assert isinstance(last_content, TextContent)
+        assert all(x in last_content.text.lower() for x in ("agadir", "sunny"))
+
+    anyio.run(run_agent_with_confirmation, agent)
