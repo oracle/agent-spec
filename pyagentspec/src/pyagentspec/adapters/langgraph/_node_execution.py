@@ -7,7 +7,7 @@
 import json
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import anyio
 import httpx
@@ -308,11 +308,69 @@ class ToolNodeExecutor(NodeExecutor):
         self.tool_callable = tool
 
     def _format_tool_result(self, tool_output: Any) -> ExecuteOutput:
-        # If multiple outputs are defined and the tool returned a dict, use as-is.
-        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
-            return tool_output, NodeExecutionDetails()
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+        # Dict → map as dict (filters/reshapes per declared outputs)
+        if isinstance(tool_output, dict):
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="dict"
+            )
+        # Tuple → positional mapping
+        elif isinstance(tool_output, tuple):
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=list(tool_output), output_type="list_tuple"
+            )
+        else:
+            # Fallback: scalar (or list treated as scalar) mapping
+            mapped = self._map_tool_outputs_to_output_properties(
+                raw_output=tool_output, output_type="scalar"
+            )
+        return mapped, NodeExecutionDetails()
+
+    def _map_tool_outputs_to_output_properties(
+        self, raw_output: Any, output_type: str
+    ) -> Dict[str, Any]:
+        outputs = self.node.outputs or []
+        if not outputs:
+            return {}
+        safe_len: Callable[[Any], int] = lambda x: len(x) if hasattr(x, "__len__") else -1
+        # Single declared output
+        if len(outputs) == 1:
+            prop = outputs[0]
+            name = prop.title
+            match output_type:
+                case "dict":
+                    # If raw_output is exactly {name: <value>}, keep it; otherwise wrap.
+                    if isinstance(raw_output, dict) and set(raw_output) == {name}:
+                        return raw_output
+                    return {name: raw_output}
+                case "mcp_list_extracted" if prop.type != "array":
+                    # Use first value if exactly one, else the whole list/tuple
+                    value = raw_output[0] if safe_len(raw_output) == 1 else raw_output
+                    return {name: value}
+                case _:
+                    # Scalar (e.g., number, string) to single output
+                    return {name: raw_output}
+        # Multiple declared outputs
+        match output_type:
+            case "dict":
+                if not isinstance(raw_output, dict):
+                    raise TypeError(
+                        f"Expected dict raw_output for output_type='dict', got {type(raw_output).__name__}"
+                    )
+                declared = {p.title for p in outputs}
+                return {k: raw_output[k] for k in declared if k in raw_output}
+            case "mcp_list_extracted" | "list_tuple":
+                expected = len(outputs)
+                actual = safe_len(raw_output)
+                if actual != expected:
+                    prefix = (
+                        "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
+                        if output_type == "mcp_list_extracted"
+                        else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs: "
+                    )
+                    raise ValueError(f"{prefix}returned={actual}, declared={expected}")
+                return {prop.title: raw_output[i] for i, prop in enumerate(outputs)}
+            case _:
+                raise ValueError(f"Unsupported output_type={output_type!r}")
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]
