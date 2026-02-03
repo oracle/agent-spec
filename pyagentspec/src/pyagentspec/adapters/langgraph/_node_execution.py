@@ -7,7 +7,7 @@
 import json
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import anyio
 import httpx
@@ -326,13 +326,14 @@ class ToolNodeExecutor(NodeExecutor):
         return mapped, NodeExecutionDetails()
 
     def _map_tool_outputs_to_output_properties(
-        self, raw_output: Any, output_type: str
+        self,
+        raw_output: Any,
+        output_type: Literal["dict", "list", "list_tuple", "mcp_list_extracted", "scalar"],
     ) -> Dict[str, Any]:
         outputs = self.node.outputs or []
         if not outputs:
             return {}
         safe_len: Callable[[Any], int] = lambda x: len(x) if hasattr(x, "__len__") else -1
-        # Single declared output
         if len(outputs) == 1:
             prop = outputs[0]
             name = prop.title
@@ -349,7 +350,6 @@ class ToolNodeExecutor(NodeExecutor):
                 case _:
                     # Scalar (e.g., number, string) to single output
                     return {name: raw_output}
-        # Multiple declared outputs
         match output_type:
             case "dict":
                 if not isinstance(raw_output, dict):
