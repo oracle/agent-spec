@@ -154,7 +154,7 @@ def test_generated_schema_correctly_validates_all_valid_serializations(
     file_path: str, component_type: Type[Component]
 ) -> None:
     serialized_component = read_agentspec_config_file(file_path)
-    component_schema = component_type.model_json_schema()
+    component_schema = component_type.model_json_schema(only_core_components=True)
     validate(yaml.safe_load(serialized_component), component_schema)
 
 
