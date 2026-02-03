@@ -82,5 +82,8 @@ setup(
         "langgraph": LANGGRAPH_DEPS,
         "langgraph_mcp": LANGGRAPH_DEPS + ["langchain-mcp-adapters>=0.1.13,<0.2.0"],
         "wayflow": ["wayflowcore>=25.4.3; python_version < '3.14'"],
+        "wayflow_oci": ["wayflowcore[oci]>=25.4.3; python_version < '3.14'"],
+        "wayflow_a2a": ["wayflowcore[a2a]>=25.4.3; python_version < '3.14'"],
+        "wayflow_datastore": ["wayflowcore[datastore]>=25.4.3; python_version < '3.14'"],
     },
 )
