@@ -7,7 +7,7 @@
 import json
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import anyio
 import httpx
@@ -330,47 +330,70 @@ class ToolNodeExecutor(NodeExecutor):
         raw_output: Any,
         output_type: Literal["dict", "list", "list_tuple", "mcp_list_extracted", "scalar"],
     ) -> Dict[str, Any]:
+        """
+        Map a tool's raw output into the ToolNode's declared output properties.
+
+        - No declared outputs -> {}.
+        - One declared output -> return {title: value} (with a couple of format-specific tweaks).
+        - Multiple declared outputs -> either select declared keys from a dict, or map by index from a tuple/list.
+        """
         outputs = self.node.outputs or []
         if not outputs:
             return {}
-        safe_len: Callable[[Any], int] = lambda x: len(x) if hasattr(x, "__len__") else -1
+
+        # --------------------
+        # Single declared output
+        # --------------------
         if len(outputs) == 1:
             prop = outputs[0]
             name = prop.title
-            match output_type:
-                case "dict":
-                    # If raw_output is exactly {name: <value>}, keep it; otherwise wrap.
-                    if isinstance(raw_output, dict) and set(raw_output) == {name}:
-                        return raw_output
-                    return {name: raw_output}
-                case "mcp_list_extracted" if prop.type != "array":
-                    # Use first value if exactly one, else the whole list/tuple
-                    value = raw_output[0] if safe_len(raw_output) == 1 else raw_output
-                    return {name: value}
-                case _:
-                    # Scalar (e.g., number, string) to single output
-                    return {name: raw_output}
-        match output_type:
-            case "dict":
-                if not isinstance(raw_output, dict):
-                    raise TypeError(
-                        f"Expected dict raw_output for output_type='dict', got {type(raw_output).__name__}"
-                    )
-                declared = {p.title for p in outputs}
-                return {k: raw_output[k] for k in declared if k in raw_output}
-            case "mcp_list_extracted" | "list_tuple":
-                expected = len(outputs)
-                actual = safe_len(raw_output)
-                if actual != expected:
+
+            if output_type == "dict":
+                # If raw_output is already exactly {name: <value>}, keep it; otherwise wrap.
+                if isinstance(raw_output, dict) and set(raw_output.keys()) == {name}:
+                    return raw_output
+                return {name: raw_output}
+
+            if output_type == "mcp_list_extracted" and prop.type != "array":
+                # For non-array outputs, MCP may return a list/tuple of content blocks.
+                # If there's exactly one, unwrap it; otherwise keep the collection.
+                if hasattr(raw_output, "__len__") and len(raw_output) == 1:
+                    return {name: raw_output[0]}
+                return {name: raw_output}
+
+            # Default: treat raw_output as the single output value (scalar/list/etc.)
+            return {name: raw_output}
+
+        # --------------------
+        # Multiple declared outputs
+        # --------------------
+        if output_type == "dict":
+            if not isinstance(raw_output, dict):
+                raise TypeError(
+                    f"Expected dict raw_output for output_type='dict', got {type(raw_output).__name__}"
+                )
+            declared = {p.title for p in outputs}
+            return {k: raw_output[k] for k in declared if k in raw_output}
+
+        if output_type in ("mcp_list_extracted", "list_tuple"):
+            expected = len(outputs)
+            actual = len(raw_output) if hasattr(raw_output, "__len__") else -1
+            if actual != expected:
+                if output_type == "mcp_list_extracted":
                     prefix = (
-                        "MCP tool returned a different number of content blocks than the ToolNode declares as outputs: "
-                        if output_type == "mcp_list_extracted"
-                        else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs: "
+                        "MCP tool returned a different number of content blocks than the "
+                        "ToolNode declares as outputs"
                     )
-                    raise ValueError(f"{prefix}returned={actual}, declared={expected}")
-                return {prop.title: raw_output[i] for i, prop in enumerate(outputs)}
-            case _:
-                raise ValueError(f"Unsupported output_type={output_type!r}")
+                else:
+                    prefix = (
+                        "Tool returned a tuple with a different number of items than the "
+                        "ToolNode declares as outputs"
+                    )
+                raise ValueError(f"{prefix}: returned={actual}, declared={expected}")
+
+            return {prop.title: raw_output[i] for i, prop in enumerate(outputs)}
+
+        raise ValueError(f"Unsupported output_type={output_type!r}")
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]
