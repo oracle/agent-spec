@@ -6,27 +6,32 @@
 
 import os
 
+import pytest
+
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
-from pyagentspec.llms import VllmConfig
+from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.property import StringProperty
 
 
+@pytest.mark.usefixtures("mute_crewai_console_prints")
 def test_llmnode_can_be_imported_and_executed() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from crewai import Flow as CrewAIFlow
+
+    from pyagentspec.adapters.crewai import AgentSpecLoader
 
     nationality_property = StringProperty(title="nationality")
     car_property = StringProperty(title="car")
-    llm_config = VllmConfig(
+    llm_config = OpenAiCompatibleConfig(
         name="llm_config",
         model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.environ.get("LLAMA70BV33_API_URL"),
+        url=os.environ.get("LLAMA_API_URL"),
     )
     llm_node = LlmNode(
         name="llm_node",
         llm_config=llm_config,
-        prompt_template="What is the fastest {{nationality}} car?",
+        prompt_template="What is the fastest {{nationality}} car? Output in the format <country>: <car_brand>",
         inputs=[nationality_property],
         outputs=[car_property],
     )
@@ -60,13 +65,13 @@ def test_llmnode_can_be_imported_and_executed() -> None:
         outputs=[car_property],
     )
 
-    agent = AgentSpecLoader().load_component(flow)
-    result = agent.invoke({"inputs": {"nationality": "italian"}})
+    flow_instance = AgentSpecLoader().load_component(flow)
 
-    assert "outputs" in result
-    assert "messages" in result
+    assert isinstance(flow_instance, CrewAIFlow)
 
-    outputs = result["outputs"]
-    assert car_property.title in outputs
-    assert isinstance(outputs[car_property.title], str)
-    assert outputs[car_property.title] != ""
+    result = flow_instance.kickoff({"nationality": "italian"})
+
+    assert isinstance(result, dict)
+    assert car_property.title in result
+    assert isinstance(result[car_property.title], str)
+    assert result[car_property.title] != ""
