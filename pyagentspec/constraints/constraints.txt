@@ -10,10 +10,11 @@ autogen-ext==0.7.4
 autogen-agentchat==0.7.4
 
 # LangGraph adapter
-langgraph==0.6.11
-langchain-core==0.3.75
-langchain-openai==0.3.30
-langchain-ollama==0.3.6
+langgraph==1.0.5
+langchain==1.2.0
+langchain-openai==1.1.7
+langchain-ollama==1.0.1
+langchain-mcp-adapters==0.2.1
 
 # WayFlow adapter
 wayflowcore==25.4.3

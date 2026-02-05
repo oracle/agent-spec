@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -153,8 +153,11 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
     def _run_in_ctx(self, run_id_str: str, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         stack = self._get_stack(run_id_str)
         _ACTIVE_SPAN_STACK.set(stack)
-        result = func(*args, **kwargs)
-        return result
+        try:
+            result = func(*args, **kwargs)
+            return result
+        finally:
+            self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
 
     def _add_event(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
         self._run_in_ctx(run_id_str, span.add_event, event)
@@ -172,8 +175,11 @@ class AgentSpecCallbackHandler(BaseCallbackHandler):
     ) -> T:
         stack = self._get_stack(run_id_str)
         _ACTIVE_SPAN_STACK.set(stack)
-        result = await afunc(*args, **kwargs)
-        return result
+        try:
+            result = await afunc(*args, **kwargs)
+            return result
+        finally:
+            self._span_stacks[run_id_str] = get_active_span_stack(return_copy=True)
 
     async def _add_event_async(self, run_id_str: str, span: AgentSpecSpan, event: Any) -> None:
         try:
@@ -598,11 +604,8 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
             # If tool outputs is None, or an empty list, it means that the tool has no entries
             outputs = {}
 
-        # once we use the latest langchain, the tool_call_id will be available in on_tool_start, and we can use it there as well
-        # for now, we MUST use tool_call_id (if given from an agent) as the request_id here so that the AG-UI integration works
-        # see https://docs.ag-ui.com/concepts/events#tool-call-events
         response_event = AgentSpecToolExecutionResponse(
-            request_id=getattr(output, "tool_call_id", run_id_str),
+            request_id=run_id_str,
             tool=tool_span.tool,
             outputs=outputs,
         )
@@ -726,7 +729,10 @@ def _extract_message_content_and_tool_calls(
     chat_generation = response.generations[0][0]
     finish_reason = chat_generation.generation_info["finish_reason"]
     content = chat_generation.message.content
-    tool_calls = chat_generation.message.additional_kwargs.get("tool_calls", [])
+    tool_calls = (
+        chat_generation.message.tool_calls
+        or chat_generation.message.additional_kwargs.get("tool_calls", [])
+    )
     # NOTE: content can be empty (empty string "")
     # in that case, chat_generation.generation_info["finish_reason"] is "tool_calls"
     # and tool_calls should not be empty

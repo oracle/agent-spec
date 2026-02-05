@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -34,8 +34,8 @@ def agentspec_exporter() -> "AgentSpecExporter":
 def test_convert_react_agent_with_tools_to_agentspec(
     agentspec_exporter: "AgentSpecExporter",
 ) -> None:
+    from langchain.agents import create_agent
     from langchain_openai.chat_models import ChatOpenAI
-    from langgraph.prebuilt import create_react_agent
 
     model_id = "Llama-3.1-70B-Instruct"
     url = "url.to.my.llama.model"
@@ -44,7 +44,7 @@ def test_convert_react_agent_with_tools_to_agentspec(
         api_key=SecretStr("EMPTY"),
         base_url=f"https://{url}/v1",
     )
-    agent = create_react_agent(
+    agent = create_agent(
         model=model,
         tools=[
             get_weather,
@@ -68,8 +68,8 @@ def test_convert_react_agent_with_tools_to_agentspec(
 def test_convert_react_agent_without_tools_to_agentspec(
     agentspec_exporter: "AgentSpecExporter",
 ) -> None:
+    from langchain.agents import create_agent
     from langchain_openai.chat_models import ChatOpenAI
-    from langgraph.prebuilt import create_react_agent
 
     model_id = "Llama-3.1-70B-Instruct"
     url = "url.to.my.llama.model"
@@ -78,7 +78,7 @@ def test_convert_react_agent_without_tools_to_agentspec(
         api_key=SecretStr("EMPTY"),
         base_url=f"https://{url}/v1",
     )
-    agent = create_react_agent(model=model, tools=[])
+    agent = create_agent(model=model, tools=[])
     agentspec_agent: Component = agentspec_exporter.to_component(agent)
     assert isinstance(agentspec_agent, AgentSpecAgent)
     config = agentspec_agent.llm_config

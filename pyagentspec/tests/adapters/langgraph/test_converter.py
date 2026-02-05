@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -21,8 +21,8 @@ def mock_tool() -> str:
 
 
 def test_langgraph_agent_can_be_converted_to_agentspec() -> None:
+    from langchain.agents import create_agent
     from langchain_ollama import ChatOllama
-    from langgraph.prebuilt import create_react_agent
 
     from pyagentspec.adapters.langgraph import AgentSpecExporter
 
@@ -30,10 +30,10 @@ def test_langgraph_agent_can_be_converted_to_agentspec() -> None:
         model="agi_model",
         base_url=f"http://url_to_my_agi_model/v1",
     )
-    agent = create_react_agent(
+    agent = create_agent(
         name="langgraph_assistant",
         model=model,
-        prompt="Use tools to solve tasks.",
+        system_prompt="Use tools to solve tasks.",
         tools=[mock_tool],
     )
 
