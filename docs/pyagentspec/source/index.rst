@@ -183,7 +183,7 @@ Open Agent Specification, Agent Spec
 
       Agent Spec configurations can be executed with Agent Spec-compatible runtimes,
       such as `WayFlow <https://github.com/oracle/wayflow>`_, or
-      with other agentic frameworks, like AutoGen, and LangGraph, through adapters.
+      with other agentic frameworks, like AutoGen, CrewAI, and LangGraph, through adapters.
 
       ㅤ➔ :doc:`Run your Agent Spec Configuration Across Frameworks <howtoguides/howto_execute_agentspec_across_frameworks>`
 

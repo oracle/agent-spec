@@ -137,6 +137,13 @@ from pyagentspec.adapters.langgraph import AgentSpecLoader as LangGraphLoader
 loader = LangGraphLoader(tool_registry=tool_registry)
 agent = loader.load_component(deserialized_agentspec_agent)
 # .. end-using-langgraph-agentspec-adapter:
+# .. using-crewai-agentspec-adapter:
+# Load the Agent Spec component into a CrewAI assistant
+from pyagentspec.adapters.crewai import AgentSpecLoader as CrewAILoader
+
+loader = CrewAILoader(tool_registry=tool_registry)
+agent = loader.load_component(deserialized_agentspec_agent)
+# .. end-using-crewai-agentspec-adapter:
 # .. using-autogen-agentspec-adapter:
 # Load the Agent Spec component into a AutoGen assistant
 from pyagentspec.adapters.autogen import AgentSpecLoader as AutoGenLoader
