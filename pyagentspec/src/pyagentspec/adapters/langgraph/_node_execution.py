@@ -308,11 +308,42 @@ class ToolNodeExecutor(NodeExecutor):
         self.tool_callable = tool
 
     def _format_tool_result(self, tool_output: Any) -> ExecuteOutput:
-        # If multiple outputs are defined and the tool returned a dict, use as-is.
-        if isinstance(tool_output, dict) and len(self.node.outputs or []) > 1:
-            return tool_output, NodeExecutionDetails()
-        output_name = self.node.outputs[0].title if self.node.outputs else "tool_output"
-        return {output_name: tool_output}, NodeExecutionDetails()
+        """
+        Best-effort formatting of raw tool outputs to the ToolNode's declared output properties.
+
+        Cases:
+        - the node declares 0 output property: we return an empty dict
+        - the node declares 1 output property: we return a wrapper dict with a single key being the property's title
+        - the node declares multiple output properties:
+            - the tool returns a dict: we filter this dict by the property titles and return the filtered dict
+            - the tool returns a tuple: we assume alignment between the order of the tuple items
+            and the order of the properties in self.node.outputs and return an ordered dict keyed by property titles
+        """
+        node_output_properties = self.node.outputs or []
+        if not node_output_properties:
+            # the node does not emit any output
+            mapped = {}
+        if len(node_output_properties) == 1:
+            mapped = {node_output_properties[0].title: tool_output}
+        elif isinstance(tool_output, dict):
+            # the node emits multiple outputs, need to filter the tool_output
+            mapped = {
+                property_.title: tool_output[property_.title]
+                for property_ in node_output_properties
+                if property_.title in tool_output
+            }
+        elif isinstance(tool_output, tuple):
+            # if it's multiple outputs, map positionally
+            mapped = {
+                property_.title: tool_output[i]
+                for i, property_ in enumerate(node_output_properties)
+            }
+        else:
+            raise ValueError(
+                f"Unsupported multi-output mapping for tool_output: {tool_output}"
+                f"(declared_outputs={len(node_output_properties)})."
+            )
+        return mapped, NodeExecutionDetails()
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]
