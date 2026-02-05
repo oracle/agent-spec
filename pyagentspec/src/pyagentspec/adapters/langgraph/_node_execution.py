@@ -331,23 +331,19 @@ class ToolNodeExecutor(NodeExecutor):
 
         # 0 declared outputs, meaning the node does not emit any output
         if not outputs:
-            return {}
-
-        if len(outputs) == 1:
-            return self._map_single_declared_output(raw_output=raw_output, output_type=output_type)
-
-        if output_type == "dict":
-            return self._map_multi_declared_outputs_from_dict(raw_output=raw_output)
-
-        if output_type in {"mcp_list_extracted", "list_tuple"} and output_type != "scalar":
-            return self._map_multi_declared_outputs_from_list(
-                raw_output=raw_output, output_type=output_type
+            mapped = {}
+        elif len(outputs) == 1:
+            mapped = self._map_single_declared_output(raw_output, output_type)
+        elif output_type == "dict":
+            mapped = self._map_multi_declared_outputs_from_dict(raw_output)
+        elif output_type in {"mcp_list_extracted", "list_tuple"} and output_type != "scalar":
+            mapped = self._map_multi_declared_outputs_from_list(raw_output, output_type)
+        else:
+            raise TypeError(
+                f"Unsupported output_type={output_type!r} for multi-output mapping "
+                f"(declared_outputs={len(outputs)})."
             )
-
-        raise TypeError(
-            f"Unsupported output_type={output_type!r} for multi-output mapping "
-            f"(declared_outputs={len(outputs)})."
-        )
+        return mapped
 
     def _map_single_declared_output(
         self,
@@ -359,17 +355,18 @@ class ToolNodeExecutor(NodeExecutor):
 
         Accepts all output_type variants because single-output mapping can sensibly wrap most shapes.
         """
-        prop = (self.node.outputs or [])[0]
-        name = prop.title
+        property_ = (self.node.outputs or [])[0]
+        name = property_.title
 
         if output_type == "dict":
-            raw_dict: Dict[str, Any] = raw_output
-            # If raw_output is exactly {out_name: <value>}, keep as-is; otherwise wrap the whole dict
-            if set(raw_dict.keys()) == {name}:
-                return raw_dict
+            if not isinstance(raw_output, dict):
+                raise ValueError(f"Expected raw_output to be a dict but got {raw_output}")
+            # If raw_output is exactly {out_name: <value>}, return as-is; otherwise wrap the whole dict
+            if set(raw_output.keys()) == {name}:
+                return raw_output
             return {name: raw_output}
 
-        if output_type == "mcp_list_extracted" and prop.type != "array":
+        if output_type == "mcp_list_extracted" and property_.type != "array":
             raw_list: List[Any] = raw_output
             # Use first value if exactly one, else the whole list/tuple
             if len(raw_list) == 1:
@@ -411,7 +408,7 @@ class ToolNodeExecutor(NodeExecutor):
             )
             raise ValueError(f"{msg}: returned={actual}, declared={expected}")
 
-        return {prop.title: raw_output[i] for i, prop in enumerate(outputs)}
+        return {property_.title: raw_output[i] for i, property_ in enumerate(outputs)}
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]

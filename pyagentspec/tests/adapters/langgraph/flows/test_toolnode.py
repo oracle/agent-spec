@@ -178,26 +178,27 @@ def _run_flow_and_resume(flow: Flow, resume_payload: Any) -> Dict[str, Any]:
 
 
 def test_toolnode_single_output_wraps_arbitrary_dict_under_declared_key() -> None:
-    x = NumberProperty(title="x")
-    out = ObjectProperty(title="out", properties={})
-    flow = _build_flow_with_client_tool(input_prop=x, output_props=[out])
+    flow = _build_flow_with_client_tool(
+        input_prop=NumberProperty(title="x"),
+        output_props=[ObjectProperty(title="out", properties={})],
+    )
     outputs = _run_flow_and_resume(flow, {"a": 1, "b": 2})
     assert outputs == {"out": {"a": 1, "b": 2}}
 
 
 def test_toolnode_single_output_passes_through_when_key_matches() -> None:
-    x = NumberProperty(title="x")
-    out = StringProperty(title="out")
-    flow = _build_flow_with_client_tool(input_prop=x, output_props=[out])
+    flow = _build_flow_with_client_tool(
+        input_prop=NumberProperty(title="x"), output_props=[StringProperty(title="out")]
+    )
     outputs = _run_flow_and_resume(flow, {"out": "value"})
     assert outputs == {"out": "value"}
 
 
 def test_toolnode_multiple_outputs_filter_and_defaults_fill_missing() -> None:
-    x = NumberProperty(title="x")
-    a = NumberProperty(title="a")
-    b = NumberProperty(title="b", default=0)
-    flow = _build_flow_with_client_tool(input_prop=x, output_props=[a, b])
+    flow = _build_flow_with_client_tool(
+        input_prop=NumberProperty(title="x"),
+        output_props=[NumberProperty(title="a"), NumberProperty(title="b", default=0)],
+    )
     outputs = _run_flow_and_resume(flow, {"a": 5})
     assert outputs == {"a": 5, "b": 0}
 
@@ -235,3 +236,16 @@ def test_toolnode_tuple_output_maps_positionally_to_multiple_outputs() -> None:
     flow = _build_flow_with_client_tool(input_prop=x, output_props=[a, b])
     outputs = _run_flow_and_resume(flow, (7, "ok"))
     assert outputs == {"a": 7, "b": "ok"}
+
+
+def test_tool_node_multiple_complex_outputs() -> None:
+    flow = _build_flow_with_client_tool(
+        input_prop=NumberProperty(title="x"),
+        output_props=[
+            NumberProperty(title="num"),
+            ObjectProperty(title="obj", properties={}),
+            ListProperty(title="array", item_type=NumberProperty(title="elem")),
+        ],
+    )
+    outputs = _run_flow_and_resume(flow, (7, {"key": "val"}, [1]))
+    assert outputs == {"num": 7, "obj": {"key": "val"}, "array": [1]}
