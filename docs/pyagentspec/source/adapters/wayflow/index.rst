@@ -28,7 +28,7 @@ and then install the PyAgentSpec package as well as WayFlowCore.
 
     python -m venv .venv
     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-    pip install pyagentspec wayflowcore
+    pip install pyagentspec[wayflow]
 
 
 Usage Examples

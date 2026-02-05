@@ -32,6 +32,14 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Added WayFlow adapter to pyagentspec:**
+
+  The WayFlow adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.wayflow`` subpackage.
+  It requires the ``wayflow`` extra dependency to be installed.
+
+  For more information read the :doc:`adapter page <adapters/wayflow/index>`.
+
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
 
   The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.

@@ -70,7 +70,8 @@ Extra dependencies
 |project| offers optional extra dependencies that can be installed to enable additional features.
 
 * The ``autogen`` extra dependency gives access to the AutoGen runtime adapter.
-* The ``langgraph`` extra dependency gives access to the LangGraph runtime adapter.
+* The ``langgraph``, ``langgraph_mcp`` extra dependencies give access to the LangGraph runtime adapter.
+* The ``wayflow``, ``wayflow_oci``, ``wayflow_a2a``, ``wayflow_datastore`` extra dependency gives access to the WayFlow runtime adapter.
 
 To install extra dependencies, run the following command specifying the list of dependencies you want to install:
 
