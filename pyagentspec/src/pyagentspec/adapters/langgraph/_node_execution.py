@@ -7,7 +7,7 @@
 import json
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import anyio
 import httpx
@@ -308,107 +308,42 @@ class ToolNodeExecutor(NodeExecutor):
         self.tool_callable = tool
 
     def _format_tool_result(self, tool_output: Any) -> ExecuteOutput:
-        if isinstance(tool_output, dict):
-            mapped = self._map_tool_outputs_to_output_properties(tool_output, "dict")
-        elif isinstance(tool_output, tuple):
-            mapped = self._map_tool_outputs_to_output_properties(list(tool_output), "list_tuple")
-        else:
-            mapped = self._map_tool_outputs_to_output_properties(tool_output, "scalar")
-
-        return mapped, NodeExecutionDetails()
-
-    def _map_tool_outputs_to_output_properties(
-        self,
-        raw_output: Any,
-        output_type: Literal["dict", "mcp_list_extracted", "list_tuple", "scalar"],
-    ) -> Dict[str, Any]:
         """
-        Convert a tool's raw output into a dict keyed by the ToolNode's declared output titles.
+        Best-effort formatting of raw tool outputs to the ToolNode's declared output properties.
 
-        The caller is responsible for selecting `output_type` consistent with `raw_output`.
+        Cases:
+        - the node declares 0 output property: we return an empty dict
+        - the node declares 1 output property: we return a wrapper dict with a single key being the property's title
+        - the node declares multiple output properties:
+            - the tool returns a dict: we filter this dict by the property titles and return the filtered dict
+            - the tool returns a tuple: we assume alignment between the order of the tuple items
+            and the order of the properties in self.node.outputs and return an ordered dict keyed by property titles
         """
-        outputs = self.node.outputs or []
-
-        # 0 declared outputs, meaning the node does not emit any output
-        if not outputs:
+        node_output_properties = self.node.outputs or []
+        if not node_output_properties:
+            # the node does not emit any output
             mapped = {}
-        elif len(outputs) == 1:
-            mapped = self._map_single_declared_output(raw_output, output_type)
-        elif output_type == "dict":
-            mapped = self._map_multi_declared_outputs_from_dict(raw_output)
-        elif output_type in {"mcp_list_extracted", "list_tuple"} and output_type != "scalar":
-            mapped = self._map_multi_declared_outputs_from_list(raw_output, output_type)
+        if len(node_output_properties) == 1:
+            mapped = {node_output_properties[0].title: tool_output}
+        elif isinstance(tool_output, dict):
+            # the node emits multiple outputs, need to filter the tool_output
+            mapped = {
+                property_.title: tool_output[property_.title]
+                for property_ in node_output_properties
+                if property_.title in tool_output
+            }
+        elif isinstance(tool_output, tuple):
+            # if it's multiple outputs, map positionally
+            mapped = {
+                property_.title: tool_output[i]
+                for i, property_ in enumerate(node_output_properties)
+            }
         else:
-            raise TypeError(
-                f"Unsupported output_type={output_type!r} for multi-output mapping "
-                f"(declared_outputs={len(outputs)})."
+            raise ValueError(
+                f"Unsupported multi-output mapping for tool_output: {tool_output}"
+                f"(declared_outputs={len(node_output_properties)})."
             )
-        return mapped
-
-    def _map_single_declared_output(
-        self,
-        raw_output: Any,
-        output_type: Literal["dict", "mcp_list_extracted", "list_tuple", "scalar"],
-    ) -> Dict[str, Any]:
-        """
-        Map output when exactly one output property is declared.
-
-        Accepts all output_type variants because single-output mapping can sensibly wrap most shapes.
-        """
-        property_ = (self.node.outputs or [])[0]
-        name = property_.title
-
-        if output_type == "dict":
-            if not isinstance(raw_output, dict):
-                raise ValueError(f"Expected raw_output to be a dict but got {raw_output}")
-            # If raw_output is exactly {out_name: <value>}, return as-is; otherwise wrap the whole dict
-            if set(raw_output.keys()) == {name}:
-                return raw_output
-            return {name: raw_output}
-
-        if output_type == "mcp_list_extracted" and property_.type != "array":
-            raw_list: List[Any] = raw_output
-            # Use first value if exactly one, else the whole list/tuple
-            if len(raw_list) == 1:
-                return {name: raw_list[0]}
-            return {name: raw_list}
-
-        return {name: raw_output}
-
-    def _map_multi_declared_outputs_from_dict(
-        self,
-        raw_output: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """
-        Map multi-output tool results from a dict by selecting declared keys.
-
-        Only declared output titles are returned; extra keys are ignored.
-        """
-        outputs = self.node.outputs or []
-        declared_titles = {p.title for p in outputs}
-        return {k: raw_output[k] for k in declared_titles if k in raw_output}
-
-    def _map_multi_declared_outputs_from_list(
-        self,
-        raw_output: List[Any],
-        output_type: Literal["mcp_list_extracted", "list_tuple"],
-    ) -> Dict[str, Any]:
-        """
-        Map multi-output tool results from a list positionally; length must match declared outputs.
-        """
-        outputs = self.node.outputs or []
-        expected = len(outputs)
-        actual = len(raw_output)
-
-        if actual != expected:
-            msg = (
-                "MCP tool returned a different number of content blocks than the ToolNode declares as outputs"
-                if output_type == "mcp_list_extracted"
-                else "Tool returned a tuple with a different number of items than the ToolNode declares as outputs"
-            )
-            raise ValueError(f"{msg}: returned={actual}, declared={expected}")
-
-        return {property_.title: raw_output[i] for i, property_ in enumerate(outputs)}
+        return mapped, NodeExecutionDetails()
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]

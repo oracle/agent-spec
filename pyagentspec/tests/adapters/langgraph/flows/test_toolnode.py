@@ -177,21 +177,33 @@ def _run_flow_and_resume(flow: Flow, resume_payload: Any) -> Dict[str, Any]:
     return resumed["outputs"]
 
 
-def test_toolnode_single_output_wraps_arbitrary_dict_under_declared_key() -> None:
+def test_toolnode_single_output_wraps_multi_dict_under_declared_key() -> None:
     flow = _build_flow_with_client_tool(
         input_prop=NumberProperty(title="x"),
-        output_props=[ObjectProperty(title="out", properties={})],
+        output_props=[ObjectProperty(title="out_dict", properties={})],
     )
-    outputs = _run_flow_and_resume(flow, {"a": 1, "b": 2})
-    assert outputs == {"out": {"a": 1, "b": 2}}
+    expected_return_value = {"a": 1, "b": 2}
+    outputs = _run_flow_and_resume(flow, expected_return_value)
+    assert outputs == {"out_dict": expected_return_value}
+
+
+def test_toolnode_single_output_wraps_single_dict_under_declared_key() -> None:
+    flow = _build_flow_with_client_tool(
+        input_prop=NumberProperty(title="x"),
+        output_props=[ObjectProperty(title="out_dict", properties={})],
+    )
+    expected_return_value = {"a": 1}
+    outputs = _run_flow_and_resume(flow, expected_return_value)
+    assert outputs == {"out_dict": expected_return_value}
 
 
 def test_toolnode_single_output_passes_through_when_key_matches() -> None:
     flow = _build_flow_with_client_tool(
-        input_prop=NumberProperty(title="x"), output_props=[StringProperty(title="out")]
+        input_prop=NumberProperty(title="x"), output_props=[StringProperty(title="out_string")]
     )
-    outputs = _run_flow_and_resume(flow, {"out": "value"})
-    assert outputs == {"out": "value"}
+    expected_return_value = "value"
+    outputs = _run_flow_and_resume(flow, expected_return_value)
+    assert outputs == {"out_string": expected_return_value}
 
 
 def test_toolnode_multiple_outputs_filter_and_defaults_fill_missing() -> None:
@@ -213,10 +225,10 @@ def test_toolnode_list_output_generic_maps_to_single_declared_output() -> None:
 
 def test_toolnode_scalar_output_maps_to_single_declared_output() -> None:
     x = NumberProperty(title="x")
-    out = NumberProperty(title="out")
+    out = NumberProperty(title="out_number")
     flow = _build_flow_with_client_tool(input_prop=x, output_props=[out])
     outputs = _run_flow_and_resume(flow, 42)
-    assert outputs == {"out": 42}
+    assert outputs == {"out_number": 42}
 
 
 def test_toolnode_tuple_output_maps_to_single_declared_string_output() -> None:
