@@ -1,7 +1,11 @@
-agents: []
+# Copyright © 2026 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
 component_type: Agent
 description: 'Agent that is responsible for telling the weather'
-flows: []
 id: 6135866f-7fbe-4874-8a84-4b2e021aa721
 inputs: []
 llm_config:

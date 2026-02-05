@@ -40,9 +40,9 @@ New features
 
   For more information read the :doc:`adapter page <adapters/wayflow/index>`.
 
-* **Added Agent Framework adapter to pyagentspec:**
+* **Added Microsoft Agent Framework adapter to pyagentspec:**
 
-  The Agent Framework adapter is now available as part of ``pyagentspec``.
+  The Microsoft Agent Framework adapter is now available as part of ``pyagentspec``.
   You can access its functionality through the ``pyagentspec.adapters.agent_framework`` subpackage.
   It requires the ``agent-framework`` extra dependency to be installed.
 

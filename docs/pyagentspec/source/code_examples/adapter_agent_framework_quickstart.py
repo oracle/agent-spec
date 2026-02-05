@@ -10,7 +10,6 @@
 
 # .. start-agentspec_to_runtime
 # Create an Agent Spec agent
-from agent_framework import ChatAgent
 from pyagentspec.agent import Agent
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 from pyagentspec.property import FloatProperty
@@ -42,7 +41,7 @@ from pyagentspec.serialization import AgentSpecSerializer
 
 agentspec_config = AgentSpecSerializer().to_json(agentspec_agent)
 
-# Load and run the Agent Spec configuration with Agent Framework
+# Load and run the Agent Spec configuration with Microsoft Agent Framework
 from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
 def subtract(a: float, b: float) -> float:
@@ -70,6 +69,7 @@ async def main():
 # .. end-agentspec_to_runtime
 # .. start-runtime_to_agentspec
 # Create an Agent Framework Agent
+from agent_framework import ChatAgent
 from agent_framework.openai import OpenAIChatClient
 
 def get_weather(city: str) -> str:

@@ -4,10 +4,8 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-agents: []
 component_type: Agent
 description: ''
-flows: []
 id: 6135866f-7fbe-4874-8a84-4b2e021aa721
 inputs: []
 llm_config:

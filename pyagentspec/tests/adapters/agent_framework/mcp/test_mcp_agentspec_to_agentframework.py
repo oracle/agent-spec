@@ -7,66 +7,17 @@
 import anyio
 import pytest
 
-from pyagentspec.mcp.clienttransport import (
-    SSEmTLSTransport,
-    SSETransport,
-    StreamableHTTPmTLSTransport,
-    StreamableHTTPTransport,
-)
+from pyagentspec.mcp.clienttransport import StreamableHTTPTransport
 
 CLIENT_TRANSPORT_NAMES = [
     # Only streamablehttp_client_transport is currently supported
-    # "sse_client_transport",
-    # "sse_client_transport_https",
-    # "sse_client_transport_mtls",
     "streamablehttp_client_transport",
-    # "streamablehttp_client_transport_https",
-    # "streamablehttp_client_transport_mtls",
 ]
-
-
-@pytest.fixture
-def sse_client_transport(sse_mcp_server_http):
-    return SSETransport(name="my server 1", url=sse_mcp_server_http)
-
-
-@pytest.fixture
-def sse_client_transport_https(sse_mcp_server_https):
-    return SSETransport(name="my server 2", url=sse_mcp_server_https)
-
-
-@pytest.fixture
-def sse_client_transport_mtls(sse_mcp_server_mtls, client_cert_path, client_key_path, ca_cert_path):
-    return SSEmTLSTransport(
-        name="my server 3",
-        url=sse_mcp_server_mtls,
-        key_file=client_key_path,
-        cert_file=client_cert_path,
-        ca_file=ca_cert_path,
-    )
 
 
 @pytest.fixture
 def streamablehttp_client_transport(streamablehttp_mcp_server_http):
     return StreamableHTTPTransport(name="my server 4", url=streamablehttp_mcp_server_http)
-
-
-@pytest.fixture
-def streamablehttp_client_transport_https(streamablehttp_mcp_server_https):
-    return StreamableHTTPTransport(name="my server 5", url=streamablehttp_mcp_server_https)
-
-
-@pytest.fixture
-def streamablehttp_client_transport_mtls(
-    streamablehttp_mcp_server_mtls, client_cert_path, client_key_path, ca_cert_path
-):
-    return StreamableHTTPmTLSTransport(
-        name="my server 6",
-        url=streamablehttp_mcp_server_mtls,
-        key_file=client_key_path,
-        cert_file=client_cert_path,
-        ca_file=ca_cert_path,
-    )
 
 
 @pytest.fixture

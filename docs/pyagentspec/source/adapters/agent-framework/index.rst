@@ -20,7 +20,7 @@ Get started
 ===========
 
 To get started, set up your Python environment (Python 3.10 or newer required),
-and then install the PyAgentSpec package with the AgentFramework extension.
+and then install the PyAgentSpec package with the Microsoft Agent Framework extension.
 
 
 .. code-block:: bash
@@ -38,5 +38,5 @@ You are now ready to use the adapter to:
 .. toctree::
    :maxdepth: 1
 
-   Run Agent Spec configurations with Agent Framework <spec_to_agent_framework>
-   Convert Agent Framework agents to Agent Spec <agent_framework_to_spec>
+   Run Agent Spec configurations with Microsoft Agent Framework <spec_to_agent_framework>
+   Convert Microsoft Agent Framework agents to Agent Spec <agent_framework_to_spec>
