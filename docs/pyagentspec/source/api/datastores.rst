@@ -34,21 +34,28 @@ OracleDatabaseDatastore
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _oracledatabasedatastore:
-.. autoclass:: pyagentspec.datastores.OracleDatabaseDatastore
+.. autoclass:: pyagentspec.datastores.oracle.OracleDatabaseDatastore
+    :exclude-members: model_post_init, model_config
+
+OracleDatabaseConnectionConfig
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _oracledatabaseconnectionconfig:
+.. autoclass:: pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig
     :exclude-members: model_post_init, model_config
 
 TlsOracleDatabaseConnectionConfig
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _tlsoracledatabaseconnectionconfig:
-.. autoclass:: pyagentspec.datastores.TlsOracleDatabaseConnectionConfig
+.. autoclass:: pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig
     :exclude-members: model_post_init, model_config
 
 MTlsOracleDatabaseConnectionConfig
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _mtlsoracledatabaseconnectionconfig:
-.. autoclass:: pyagentspec.datastores.MTlsOracleDatabaseConnectionConfig
+.. autoclass:: pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig
     :exclude-members: model_post_init, model_config
 
 PostgreSQL datastore
@@ -58,12 +65,19 @@ PostgresDatabaseDatastore
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _postgresdatabasedatastore:
-.. autoclass:: pyagentspec.datastores.PostgresDatabaseDatastore
+.. autoclass:: pyagentspec.datastores.postgres.PostgresDatabaseDatastore
+    :exclude-members: model_post_init, model_config
+
+PostgresDatabaseConnectionConfig
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _postgresdatabaseconnectionconfig:
+.. autoclass:: pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig
     :exclude-members: model_post_init, model_config
 
 TlsPostgresDatabaseConnectionConfig
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _tlspostgresdatabaseconnectionconfig:
-.. autoclass:: pyagentspec.datastores.TlsPostgresDatabaseConnectionConfig
+.. autoclass:: pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig
     :exclude-members: model_post_init, model_config

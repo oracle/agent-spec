@@ -275,11 +275,13 @@
             {"path": "pyagentspec.datastores.Datastore"},
             {"path": "pyagentspec.datastores.RelationalDatastore"},
             {"path": "pyagentspec.datastores.InMemoryCollectionDatastore"},
-            {"path": "pyagentspec.datastores.OracleDatabaseDatastore"},
-            {"path": "pyagentspec.datastores.TlsOracleDatabaseConnectionConfig"},
-            {"path": "pyagentspec.datastores.MTlsOracleDatabaseConnectionConfig"},
-            {"path": "pyagentspec.datastores.PostgresDatabaseDatastore"},
-            {"path": "pyagentspec.datastores.TlsPostgresDatabaseConnectionConfig"}
+            {"path": "pyagentspec.datastores.oracle.OracleDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.postgres.PostgresDatabaseDatastore"},
+            {"path": "pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig"},
+            {"path": "pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig"}
         ]
     },
     {
@@ -306,7 +308,11 @@
             {"path": "pyagentspec.adapters.autogen.AgentSpecExporter"},
             {"path": "pyagentspec.adapters.autogen.AgentSpecLoader"},
             {"path": "pyagentspec.adapters.langgraph.AgentSpecExporter"},
-            {"path": "pyagentspec.adapters.langgraph.AgentSpecLoader"}
+            {"path": "pyagentspec.adapters.langgraph.AgentSpecLoader"},
+            {"path": "pyagentspec.adapters.wayflow.AgentSpecExporter"},
+            {"path": "pyagentspec.adapters.wayflow.AgentSpecLoader"},
+            {"path": "pyagentspec.adapters.agent_framework.AgentSpecExporter"},
+            {"path": "pyagentspec.adapters.agent_framework.AgentSpecLoader"}
         ]
     },
     {

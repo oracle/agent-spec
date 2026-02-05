@@ -24,3 +24,21 @@ AutoGen
 
 .. _adapters_autogen_loader:
 .. autoclass:: pyagentspec.adapters.autogen.AgentSpecLoader
+
+WayFlow
+-------
+
+.. _adapters_wayflow_exporter:
+.. autoclass:: pyagentspec.adapters.wayflow.AgentSpecExporter
+
+.. _adapters_wayflow_loader:
+.. autoclass:: pyagentspec.adapters.wayflow.AgentSpecLoader
+
+Microsoft Agent Framework
+-------------------------
+
+.. _adapters_agent_framework_exporter:
+.. autoclass:: pyagentspec.adapters.agent_framework.AgentSpecExporter
+
+.. _adapters_agent_framework_loader:
+.. autoclass:: pyagentspec.adapters.agent_framework.AgentSpecLoader
