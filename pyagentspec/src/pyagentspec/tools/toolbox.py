@@ -16,7 +16,7 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 class ToolBox(Component, abstract=True):
     """A ToolBox is a component that exposes one or more tools to agentic components."""
 
-    requires_confirmation: Optional[bool] = None
+    requires_confirmation: bool = False
     """Flag to make tool require user confirmation before execution. If set to True, should ask for confirmation for all tools in the ToolBox."""
 
     def _versioned_model_fields_to_exclude(
@@ -30,7 +30,7 @@ class ToolBox(Component, abstract=True):
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         parent_min_version = super()._infer_min_agentspec_version_from_configuration()
         current_object_min_version = self.min_agentspec_version
-        if self.requires_confirmation is not None:
+        if self.requires_confirmation:
             # If the toolbox has requires confirmation flag set, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
             current_object_min_version = AgentSpecVersionEnum.v26_2_0
