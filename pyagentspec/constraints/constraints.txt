@@ -18,3 +18,7 @@ langchain-mcp-adapters==0.2.1
 
 # WayFlow adapter
 wayflowcore==25.4.3
+
+# AgentFramework adapter
+agent-framework==1.0.0b251028
+agent-framework-core==1.0.0b251028

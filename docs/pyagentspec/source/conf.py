@@ -207,8 +207,11 @@ nitpick_ignore_regex = [
     ("py:class", r"BaseModel"),
     ("py:class", r"ConfigDict"),
     ("py:class", r"JsonSchemaValue"),
+    # External packages for adapters
     ("py:class", r"autogen_core\..*"),
     ("py:class", r"autogen_agentchat\..*"),
+    ("py:class", r"agent_framework\..*"),
+    ("py:class", r"wayflowcore\..*"),
     # Purposely ignoring classes
     ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
     ("py:class", r"pyagentspec.serialization.serializationcontext.T"),

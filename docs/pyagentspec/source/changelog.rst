@@ -40,6 +40,14 @@ New features
 
   For more information read the :doc:`adapter page <adapters/wayflow/index>`.
 
+* **Added Microsoft Agent Framework adapter to pyagentspec:**
+
+  The Microsoft Agent Framework adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.agent_framework`` subpackage.
+  It requires the ``agent-framework`` extra dependency to be installed.
+
+  For more information read the :doc:`API Reference <api/adapters>`.
+
 * **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
 
   The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
