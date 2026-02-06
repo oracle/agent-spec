@@ -29,6 +29,21 @@ from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
 from pyagentspec.llms import OpenAiConfig as AgentSpecOpenAiConfig
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithApiKey as AgentSpecOciClientConfigWithApiKey,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithInstancePrincipal as AgentSpecOciClientConfigWithInstancePrincipal,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithResourcePrincipal as AgentSpecOciClientConfigWithResourcePrincipal,
+)
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithSecurityToken as AgentSpecOciClientConfigWithSecurityToken,
+)
+from pyagentspec.llms.ocigenaiconfig import ModelProvider as AgentSpecModelProvider
+from pyagentspec.llms.ocigenaiconfig import OciAPIType as AgentSpecOciAPIType
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig as AgentSpecOciGenAiConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType as AgentSpecOpenAIAPIType
 from pyagentspec.mcp import MCPTool as AgentSpecMCPTool
 from pyagentspec.mcp.clienttransport import (
@@ -137,13 +152,54 @@ class LangGraphToAgentSpecConverter:
         """
         Convert a LangChain BaseChatModel into the closest Agent Spec LLM config.
         """
+        try:
+            from langchain_oci import ChatOCIGenAI as _ChatOCIGenAI  # type: ignore
+        except ImportError:
+            _ChatOCIGenAI = None
+
+        if _ChatOCIGenAI is not None and isinstance(model, _ChatOCIGenAI):
+            auth_type = model.auth_type
+            service_endpoint = model.service_endpoint
+            if auth_type == "INSTANCE_PRINCIPAL":
+                client_cfg: Any = AgentSpecOciClientConfigWithInstancePrincipal(
+                    name="oci_client", service_endpoint=service_endpoint
+                )
+            elif auth_type == "RESOURCE_PRINCIPAL":
+                client_cfg = AgentSpecOciClientConfigWithResourcePrincipal(
+                    name="oci_client", service_endpoint=service_endpoint
+                )
+            elif auth_type == "API_KEY":
+                client_cfg = AgentSpecOciClientConfigWithApiKey(
+                    name="oci_client",
+                    service_endpoint=service_endpoint,
+                    auth_profile=model.auth_profile,
+                    auth_file_location=model.auth_file_location,
+                )
+            elif auth_type == "SECURITY_TOKEN":
+                client_cfg = AgentSpecOciClientConfigWithSecurityToken(
+                    name="oci_client",
+                    service_endpoint=service_endpoint,
+                    auth_profile=model.auth_profile,
+                    auth_file_location=model.auth_file_location,
+                )
+            else:
+                raise ValueError(f"Unsupported OCI auth_type: {auth_type}")
+
+            return AgentSpecOciGenAiConfig(
+                name="oci",
+                model_id=model.model_id,
+                compartment_id=model.compartment_id,
+                client_config=client_cfg,
+                provider=AgentSpecModelProvider(model.provider.upper()) if model.provider else None,
+                api_type=AgentSpecOciAPIType.OCI,
+            )
         if isinstance(model, langchain_ollama.ChatOllama):
             return AgentSpecOllamaConfig(
                 name=model.model,
                 url=model.base_url or "",
                 model_id=model.model,
             )
-        elif isinstance(model, langchain_openai.ChatOpenAI):
+        if isinstance(model, langchain_openai.ChatOpenAI):
             api_type = (
                 AgentSpecOpenAIAPIType.RESPONSES
                 if model.use_responses_api

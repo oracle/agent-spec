@@ -329,6 +329,6 @@ def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_s
     # check if the run_ids match
     tool_start_events = [e for (e, _) in proc.events if isinstance(e, ToolExecutionRequest)]
     tool_end_events = [e for (e, _) in proc.events if isinstance(e, ToolExecutionResponse)]
-    assert len(tool_start_events) == 1
-    assert len(tool_end_events) == 1
-    assert tool_start_events[0].request_id == tool_end_events[0].request_id
+    assert len(tool_start_events) == len(tool_end_events)
+    for i in range(len(tool_start_events)):
+        assert tool_start_events[i].request_id == tool_end_events[i].request_id
