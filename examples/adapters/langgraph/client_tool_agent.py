@@ -65,9 +65,11 @@ result: Optional[Any] = None
 try:
     while True:
         if result is not None and "__interrupt__" in result:
+            weather = random.choice(  # nosec: Not used for cryptography
+                ["sunny", "cloudy", "windy"]
+            )
             result = agent.invoke(
-                input=Command(resume={"weather": random.choice(["sunny", "cloudy", "windy"])}),
-                config=config,
+                input=Command(resume={"weather": weather}),
             )
         else:
             if result is not None:

@@ -89,5 +89,10 @@ setup(
             "agent-framework==1.0.0b251028; python_version < '3.14'",
             "agent-framework-core==1.0.0b251028; python_version < '3.14'",
         ],
+        "evaluation": [
+            "litellm>=1.79.0",
+            "pandas>=2.0.3,<3.0.0",
+            "oci>=2.158.2",
+        ],
     },
 )

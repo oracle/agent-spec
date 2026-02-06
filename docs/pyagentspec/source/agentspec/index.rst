@@ -29,6 +29,7 @@ You can download the Agent Spec technical report at the following :download:`lin
         Language specification (v25.4.1) <language_spec_25_4_1>
         Positioning in the agentic ecosystem <positioning>
         Tracing <tracing>
+        Evaluation <evaluation>
 
 .. only:: dev
 
@@ -41,3 +42,4 @@ You can download the Agent Spec technical report at the following :download:`lin
         Language specification (v25.4.1) <language_spec_25_4_1>
         Positioning in the agentic ecosystem <positioning>
         Tracing <tracing>
+        Evaluation <evaluation>
