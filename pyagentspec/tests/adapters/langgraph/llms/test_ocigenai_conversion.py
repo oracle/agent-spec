@@ -21,10 +21,13 @@ from pyagentspec.llms.ociclientconfig import (
 )
 from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 
+# required env variables to run OCI tests here
+# as well as OCI_GENAI_API_KEY_CONFIG and OCI_GENAI_API_KEY_PEM
 OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL = os.getenv("INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL")
 OCI_COMPARTMENT_ID = os.getenv("COMPARTMENT_ID")
-
 OCI_SERVICE_ENDPOINT = "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"
+OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN = os.getenv("OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN")
+OCI_IS_INSTANCE_PRINCIPAL_MACHINE = os.getenv("IS_INSTANCE_PRINCIPAL_MACHINE")
 
 
 def _has_oci_api_key_setup() -> bool:
@@ -39,7 +42,7 @@ def _has_instance_principal_setup() -> bool:
     return (
         bool(OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL)
         and bool(OCI_COMPARTMENT_ID)
-        and bool(os.getenv("IS_INSTANCE_PRINCIPAL_MACHINE"))
+        and bool(OCI_IS_INSTANCE_PRINCIPAL_MACHINE)
     )
 
 
@@ -60,8 +63,8 @@ def auth_profile_contains_security_token(client_config):
             file_location=client_config.auth_file_location,
             profile_name=client_config.auth_profile,
         )
-        return oci_config.get("security_token_file")
-    except Exception:
+        return bool(oci_config.get("security_token_file"))
+    except Exception as e:
         # If the config/profile is missing or unreadable, treat as no token
         return False
 
@@ -71,7 +74,7 @@ _SEC_TOKEN_PRESENT = auth_profile_contains_security_token(
     OciClientConfigWithSecurityToken(
         name="with_security_token",
         service_endpoint=OCI_SERVICE_ENDPOINT,
-        auth_profile="DEFAULT",
+        auth_profile=OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN or "DEFAULT",
         auth_file_location=_oci_user_config_path(),
     )
 )
@@ -96,7 +99,7 @@ def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
         client_config=client_config,
     )
 
-    model = AgentSpecToLangGraphConverter().convert(llm_cfg)
+    model = AgentSpecToLangGraphConverter().convert(llm_cfg, {})
     assert isinstance(model, ChatOCIGenAI)
     assert model.model_id == llm_cfg.model_id
     assert model.model_kwargs["temperature"] == default_generation_parameters.temperature
@@ -118,7 +121,7 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
     client_config = OciClientConfigWithSecurityToken(
         name="with_security_token",
         service_endpoint=OCI_SERVICE_ENDPOINT,
-        auth_profile="DEFAULT",
+        auth_profile="WEBAUTH",
         auth_file_location=_oci_user_config_path(),
     )
     llm_cfg = OciGenAiConfig(
@@ -128,7 +131,7 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
         default_generation_parameters=default_generation_parameters,
         client_config=client_config,
     )
-    model = AgentSpecToLangGraphConverter().convert(llm_cfg)
+    model = AgentSpecToLangGraphConverter().convert(llm_cfg, {})
     assert isinstance(model, ChatOCIGenAI)
     assert model.model_id == llm_cfg.model_id
     assert model.model_kwargs["temperature"] == default_generation_parameters.temperature
