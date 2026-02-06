@@ -197,7 +197,7 @@ def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
 
     monkeypatch.setattr(langchain_oci, "ChatOCIGenAI", FakeOCIChat, raising=True)
 
-    from langgraph.prebuilt import create_react_agent
+    from langchain.agents import create_agent
 
     from pyagentspec.adapters.langgraph import AgentSpecExporter
     from pyagentspec.agent import Agent
@@ -217,7 +217,7 @@ def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
         auth_profile="DEFAULT",
         auth_file_location="~/.oci/config",
     )
-    cg = create_react_agent(model, tools=[], prompt="You are helpful.", name="OCI Agent")
+    cg = create_agent(model, tools=[], system_prompt="You are helpful.", name="OCI Agent")
 
     component = AgentSpecExporter().to_component(cg)
 
@@ -247,8 +247,8 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
     This does not invoke the model; it only constructs the agent graph and converts it.
     It requires valid OCI auth on the machine to instantiate ChatOCIGenAI.
     """
+    from langchain.agents import create_agent
     from langchain_oci import ChatOCIGenAI
-    from langgraph.prebuilt import create_react_agent
 
     from pyagentspec.adapters.langgraph import AgentSpecExporter
     from pyagentspec.agent import Agent
@@ -268,7 +268,7 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
         auth_profile="DEFAULT",
         auth_file_location=_oci_user_config_path(),
     )
-    cg = create_react_agent(model, tools=[], prompt="You are helpful.", name="OCI Agent")
+    cg = create_agent(model, tools=[], system_prompt="You are helpful.", name="OCI Agent")
 
     component = AgentSpecExporter().to_component(cg)
     assert isinstance(component, Agent)
