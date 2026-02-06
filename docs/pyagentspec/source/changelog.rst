@@ -32,6 +32,14 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **CatchExceptionNode:**
+
+  Added a new node that executes a subflow and catches exceptions.
+  When an exception is raised, it branches to ``caught_exception_branch``
+  and exposes an additional output string information ``caught_exception_info``.
+
+  For more information and security considerations, read the :ref:`API Reference <catchexceptionnode>`.
+
 * **Added WayFlow adapter to pyagentspec:**
 
   The WayFlow adapter is now available as part of ``pyagentspec``.

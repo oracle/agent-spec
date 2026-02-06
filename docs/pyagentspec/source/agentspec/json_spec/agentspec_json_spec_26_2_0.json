@@ -112,6 +112,16 @@
         }
       ]
     },
+    "CatchExceptionNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseCatchExceptionNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ClientTool": {
       "anyOf": [
         {
@@ -1740,6 +1750,97 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseCatchExceptionNode": {
+      "additionalProperties": false,
+      "description": "Node to execute a Flow and catch exceptions.\n\n- If no exception is caught, the node will transition to the branches of its subflow.\n- If an exception is caught, it will transition to an exception branch.\n\nInputs\n------\nSame as the inputs from the ``subflow``.\n\nOutputs\n-------\n\n- The outputs of the ``subflow``.\n  If an exception is raised, the default values of each output property are used.\n- An additional output named ``caught_exception_info`` with type ``string | null``\n  and default value ``null``. Executors may populate it with a non-sensitive\n  error description when an exception is caught.\n\nBranches\n--------\n\n- The branches of the ``subflow``\n- One additional branch named ``caught_exception_branch``\n\nSecurity Considerations\n-----------------------\n\nSee security considerations regarding exception catching in\nthe :ref:`Security Considerations <securitycatchexceptionnode>`",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "outputs": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Property"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputs"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Branches",
+          "type": "array"
+        },
+        "subflow": {
+          "$ref": "#/$defs/Flow"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "CatchExceptionNode"
+        }
+      },
+      "required": [
+        "name",
+        "subflow"
+      ],
+      "title": "CatchExceptionNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseClientTool": {
       "additionalProperties": false,
       "description": "A tool that needs to be run by the client application.",
@@ -1873,6 +1974,9 @@
         },
         {
           "$ref": "#/$defs/BuiltinTool"
+        },
+        {
+          "$ref": "#/$defs/CatchExceptionNode"
         },
         {
           "$ref": "#/$defs/ClientTool"
@@ -3469,6 +3573,9 @@
         },
         {
           "$ref": "#/$defs/BranchingNode"
+        },
+        {
+          "$ref": "#/$defs/CatchExceptionNode"
         },
         {
           "$ref": "#/$defs/EndNode"
@@ -6162,6 +6269,9 @@
             "$ref": "#/$defs/BaseBuiltinTool"
           },
           {
+            "$ref": "#/$defs/BaseCatchExceptionNode"
+          },
+          {
             "$ref": "#/$defs/BaseClientTool"
           },
           {
@@ -6504,6 +6614,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseBuiltinTool"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedCatchExceptionNode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseCatchExceptionNode"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -7387,6 +7512,9 @@
     },
     {
       "$ref": "#/$defs/VersionedBuiltinTool"
+    },
+    {
+      "$ref": "#/$defs/VersionedCatchExceptionNode"
     },
     {
       "$ref": "#/$defs/VersionedClientTool"

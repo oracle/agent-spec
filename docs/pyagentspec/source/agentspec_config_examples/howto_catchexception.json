@@ -1,0 +1,544 @@
+{
+    "component_type": "Flow",
+    "id": "6bc2cce1-179f-4247-ad79-38584a46036e",
+    "name": "catch_exception_flow",
+    "description": null,
+    "metadata": {},
+    "inputs": [
+        {
+            "title": "raise_error",
+            "type": "boolean"
+        }
+    ],
+    "outputs": [
+        {
+            "title": "tool_output",
+            "default": "",
+            "type": "string"
+        }
+    ],
+    "start_node": {
+        "$component_ref": "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee"
+    },
+    "nodes": [
+        {
+            "$component_ref": "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee"
+        },
+        {
+            "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+        },
+        {
+            "$component_ref": "92bf1a17-d88f-4bed-b551-baf10e36cf3f"
+        },
+        {
+            "$component_ref": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6"
+        },
+        {
+            "$component_ref": "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41"
+        },
+        {
+            "$component_ref": "f03c9b31-8363-40bd-9361-30ae6a6700de"
+        }
+    ],
+    "control_flow_connections": [
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "b0aecea2-4d0a-412a-8373-7e282ed087c4",
+            "name": "start_to_catch",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "c20f9f66-d7fd-4cc8-baf5-272179fb2501",
+            "name": "catch_to_success",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "ac902f82-453c-4988-b4cd-c10e1ed68fdf",
+            "name": "caught_to_handler",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            },
+            "from_branch": "caught_exception_branch",
+            "to_node": {
+                "$component_ref": "92bf1a17-d88f-4bed-b551-baf10e36cf3f"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "9df552e3-d624-4286-95e6-135a5cf31883",
+            "name": "handler_to_branching",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "92bf1a17-d88f-4bed-b551-baf10e36cf3f"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "9a384029-486e-42f7-9cdf-adfbfc0a7800",
+            "name": "branch_to_failure",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6"
+            },
+            "from_branch": "HANDLE_ERROR",
+            "to_node": {
+                "$component_ref": "f03c9b31-8363-40bd-9361-30ae6a6700de"
+            }
+        },
+        {
+            "component_type": "ControlFlowEdge",
+            "id": "d5001f9b-8c9d-43c9-8487-99f14ee2b658",
+            "name": "branch_default_to_success",
+            "description": null,
+            "metadata": {},
+            "from_node": {
+                "$component_ref": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6"
+            },
+            "from_branch": null,
+            "to_node": {
+                "$component_ref": "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41"
+            }
+        }
+    ],
+    "data_flow_connections": [
+        {
+            "component_type": "DataFlowEdge",
+            "id": "993d8f9d-0516-435b-a738-35835c14d04b",
+            "name": "start_to_catch_input",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee"
+            },
+            "source_output": "raise_error",
+            "destination_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            },
+            "destination_input": "raise_error"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "b89b3743-fdce-4979-a836-93714f58a211",
+            "name": "catch_to_success_output",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            },
+            "source_output": "tool_output",
+            "destination_node": {
+                "$component_ref": "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41"
+            },
+            "destination_input": "tool_output"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "46c7242e-ae1f-4a71-8ff5-33760c0827be",
+            "name": "exception_to_handler",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "19589a23-7957-45b9-ac20-fd7543acae2c"
+            },
+            "source_output": "caught_exception_info",
+            "destination_node": {
+                "$component_ref": "92bf1a17-d88f-4bed-b551-baf10e36cf3f"
+            },
+            "destination_input": "exception_info"
+        },
+        {
+            "component_type": "DataFlowEdge",
+            "id": "d72c5d26-edbe-4565-a175-009fde4c5074",
+            "name": "handler_to_branch",
+            "description": null,
+            "metadata": {},
+            "source_node": {
+                "$component_ref": "92bf1a17-d88f-4bed-b551-baf10e36cf3f"
+            },
+            "source_output": "branch_key",
+            "destination_node": {
+                "$component_ref": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6"
+            },
+            "destination_input": "branch_key"
+        }
+    ],
+    "$referenced_components": {
+        "19589a23-7957-45b9-ac20-fd7543acae2c": {
+            "component_type": "CatchExceptionNode",
+            "id": "19589a23-7957-45b9-ac20-fd7543acae2c",
+            "name": "catch_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "raise_error",
+                    "type": "boolean"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "tool_output",
+                    "default": "",
+                    "type": "string"
+                },
+                {
+                    "title": "caught_exception_info",
+                    "default": null,
+                    "anyOf": [
+                        {
+                            "title": "caught_exception_info",
+                            "type": "string"
+                        },
+                        {
+                            "title": "caught_exception_info",
+                            "type": "null"
+                        }
+                    ]
+                }
+            ],
+            "branches": [
+                "caught_exception_branch",
+                "next"
+            ],
+            "subflow": {
+                "component_type": "Flow",
+                "id": "5fa6c8c6-f37d-46a8-8344-b95df6350d77",
+                "name": "flaky_subflow",
+                "description": null,
+                "metadata": {},
+                "inputs": [
+                    {
+                        "title": "raise_error",
+                        "type": "boolean"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "title": "tool_output",
+                        "default": "",
+                        "type": "string"
+                    }
+                ],
+                "start_node": {
+                    "$component_ref": "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863"
+                },
+                "nodes": [
+                    {
+                        "$component_ref": "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863"
+                    },
+                    {
+                        "$component_ref": "17de1841-a52d-4a10-aeac-6b0c948f1347"
+                    },
+                    {
+                        "$component_ref": "e37dfcc3-6e1e-479f-a8ab-4ad0f1bd0b07"
+                    }
+                ],
+                "control_flow_connections": [
+                    {
+                        "component_type": "ControlFlowEdge",
+                        "id": "93725dcb-ee32-41c4-9ff9-115cf5c75943",
+                        "name": "s2tool",
+                        "description": null,
+                        "metadata": {},
+                        "from_node": {
+                            "$component_ref": "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863"
+                        },
+                        "from_branch": null,
+                        "to_node": {
+                            "$component_ref": "17de1841-a52d-4a10-aeac-6b0c948f1347"
+                        }
+                    },
+                    {
+                        "component_type": "ControlFlowEdge",
+                        "id": "53b9fb98-3212-44ed-a581-3623bddb7b1e",
+                        "name": "tool2e",
+                        "description": null,
+                        "metadata": {},
+                        "from_node": {
+                            "$component_ref": "17de1841-a52d-4a10-aeac-6b0c948f1347"
+                        },
+                        "from_branch": null,
+                        "to_node": {
+                            "$component_ref": "e37dfcc3-6e1e-479f-a8ab-4ad0f1bd0b07"
+                        }
+                    }
+                ],
+                "data_flow_connections": [
+                    {
+                        "component_type": "DataFlowEdge",
+                        "id": "97169e1b-1c83-499e-bf1f-9c94adf0766c",
+                        "name": "in_to_tool",
+                        "description": null,
+                        "metadata": {},
+                        "source_node": {
+                            "$component_ref": "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863"
+                        },
+                        "source_output": "raise_error",
+                        "destination_node": {
+                            "$component_ref": "17de1841-a52d-4a10-aeac-6b0c948f1347"
+                        },
+                        "destination_input": "raise_error"
+                    },
+                    {
+                        "component_type": "DataFlowEdge",
+                        "id": "8ffeacda-efdd-4216-a87f-0a0668196176",
+                        "name": "tool_to_end",
+                        "description": null,
+                        "metadata": {},
+                        "source_node": {
+                            "$component_ref": "17de1841-a52d-4a10-aeac-6b0c948f1347"
+                        },
+                        "source_output": "tool_output",
+                        "destination_node": {
+                            "$component_ref": "e37dfcc3-6e1e-479f-a8ab-4ad0f1bd0b07"
+                        },
+                        "destination_input": "tool_output"
+                    }
+                ],
+                "$referenced_components": {
+                    "17de1841-a52d-4a10-aeac-6b0c948f1347": {
+                        "component_type": "ToolNode",
+                        "id": "17de1841-a52d-4a10-aeac-6b0c948f1347",
+                        "name": "flaky_tool_node",
+                        "description": null,
+                        "metadata": {},
+                        "inputs": [
+                            {
+                                "title": "raise_error",
+                                "type": "boolean"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "title": "tool_output",
+                                "default": "",
+                                "type": "string"
+                            }
+                        ],
+                        "branches": [
+                            "next"
+                        ],
+                        "tool": {
+                            "component_type": "ServerTool",
+                            "id": "77e3bb9f-c816-44a5-bd53-b4a66cfec96c",
+                            "name": "flaky_tool",
+                            "description": "A tool that may raise an exception depending on inputs",
+                            "metadata": {},
+                            "inputs": [
+                                {
+                                    "title": "raise_error",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "title": "tool_output",
+                                    "default": "",
+                                    "type": "string"
+                                }
+                            ],
+                            "requires_confirmation": false
+                        }
+                    },
+                    "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863": {
+                        "component_type": "StartNode",
+                        "id": "a084f1e2-2e97-4bd6-9fb8-a035e5e3a863",
+                        "name": "sub_start",
+                        "description": null,
+                        "metadata": {},
+                        "inputs": [
+                            {
+                                "title": "raise_error",
+                                "type": "boolean"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "title": "raise_error",
+                                "type": "boolean"
+                            }
+                        ],
+                        "branches": [
+                            "next"
+                        ]
+                    },
+                    "e37dfcc3-6e1e-479f-a8ab-4ad0f1bd0b07": {
+                        "component_type": "EndNode",
+                        "id": "e37dfcc3-6e1e-479f-a8ab-4ad0f1bd0b07",
+                        "name": "sub_end",
+                        "description": null,
+                        "metadata": {},
+                        "inputs": [
+                            {
+                                "title": "tool_output",
+                                "default": "",
+                                "type": "string"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "title": "tool_output",
+                                "default": "",
+                                "type": "string"
+                            }
+                        ],
+                        "branches": [],
+                        "branch_name": "next"
+                    }
+                }
+            }
+        },
+        "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee": {
+            "component_type": "StartNode",
+            "id": "cb560dfd-7f7a-4bab-b9a3-9da5b50f0bee",
+            "name": "start",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "raise_error",
+                    "type": "boolean"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "raise_error",
+                    "type": "boolean"
+                }
+            ],
+            "branches": [
+                "next"
+            ]
+        },
+        "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41": {
+            "component_type": "EndNode",
+            "id": "7a8e68c0-c31e-44c8-abe9-567d1e7bcb41",
+            "name": "success_end",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "tool_output",
+                    "default": "",
+                    "type": "string"
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "tool_output",
+                    "default": "",
+                    "type": "string"
+                }
+            ],
+            "branches": [],
+            "branch_name": "next"
+        },
+        "92bf1a17-d88f-4bed-b551-baf10e36cf3f": {
+            "component_type": "ToolNode",
+            "id": "92bf1a17-d88f-4bed-b551-baf10e36cf3f",
+            "name": "exception_to_branch_node",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "exception_info",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "title": "branch_key",
+                    "type": "string"
+                }
+            ],
+            "branches": [
+                "next"
+            ],
+            "tool": {
+                "component_type": "ServerTool",
+                "id": "ed14b5ca-3524-45d7-b1f6-c9901c158f7b",
+                "name": "exception_to_branch",
+                "description": "Map caught_exception_info to a branch key (has_error/no_error)",
+                "metadata": {},
+                "inputs": [
+                    {
+                        "title": "exception_info",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "title": "branch_key",
+                        "type": "string"
+                    }
+                ],
+                "requires_confirmation": false
+            }
+        },
+        "fed81e66-5d5e-4910-a9f2-e52b7697d5f6": {
+            "component_type": "BranchingNode",
+            "id": "fed81e66-5d5e-4910-a9f2-e52b7697d5f6",
+            "name": "branch_on_exception",
+            "description": null,
+            "metadata": {},
+            "inputs": [
+                {
+                    "title": "branch_key",
+                    "type": "string"
+                }
+            ],
+            "outputs": [],
+            "branches": [
+                "HANDLE_ERROR",
+                "default"
+            ],
+            "mapping": {
+                "has_error": "HANDLE_ERROR"
+            }
+        },
+        "f03c9b31-8363-40bd-9361-30ae6a6700de": {
+            "component_type": "EndNode",
+            "id": "f03c9b31-8363-40bd-9361-30ae6a6700de",
+            "name": "failure_end",
+            "description": null,
+            "metadata": {},
+            "inputs": [],
+            "outputs": [],
+            "branches": [],
+            "branch_name": "next"
+        }
+    },
+    "agentspec_version": "26.1.0"
+}

@@ -43,6 +43,10 @@ Nodes
 .. autoclass:: pyagentspec.flows.nodes.endnode.EndNode
     :exclude-members: model_post_init, model_config
 
+.. _catchexceptionnode:
+.. autoclass:: pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode
+    :exclude-members: model_post_init, model_config
+
 .. _flownode:
 .. autoclass:: pyagentspec.flows.nodes.flownode.FlowNode
     :exclude-members: model_post_init, model_config
