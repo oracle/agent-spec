@@ -32,6 +32,17 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Introduced Open Agent Specification Evaluation:**
+
+  Open Agent Specification Evaluation (Agent Spec Eval) is an extension of
+  Agent Spec that standardizes how agentic systems are evaluated in a framework-agnostic way.
+
+  The Agent Spec Eval Python SDK is now available as part of ``pyagentspec``.
+  You can access its functionalities through the ``pyagentspec.evaluation`` subpackage.
+  It requires the ``evaluation`` extra dependency to be installed.
+
+  For more information read the :doc:`evaluation specification page <agentspec/evaluation>`.
+
 * **Added WayFlow adapter to pyagentspec:**
 
   The WayFlow adapter is now available as part of ``pyagentspec``.
