@@ -19,6 +19,7 @@ langchain-openai==1.1.7
 langchain-ollama==1.0.1
 langchain-oci==0.2.3
 langchain-mcp-adapters==0.2.1
+langgraph-swarm==0.1.0
 
 # WayFlow adapter
 wayflowcore==25.4.3

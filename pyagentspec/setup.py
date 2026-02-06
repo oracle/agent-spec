@@ -32,6 +32,7 @@ LANGGRAPH_DEPS = [
     "langchain-openai>=1.1.7",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
+    "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
     "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
 ]
