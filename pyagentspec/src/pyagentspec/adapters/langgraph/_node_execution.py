@@ -336,7 +336,14 @@ class ToolNodeExecutor(NodeExecutor):
                 for i, property_ in enumerate(node_output_properties)
             }
         elif len(node_output_properties) == 1:
-            mapped = {node_output_properties[0].title: tool_output}
+            # the tool returns a dict with a single key being the node's output property's title
+            # so we avoid double-wrapping
+            if isinstance(tool_output, dict) and set(tool_output.keys()) == {
+                node_output_properties[0].title
+            }:
+                mapped = tool_output
+            else:
+                mapped = {node_output_properties[0].title: tool_output}
         elif isinstance(tool_output, dict):
             # the node emits multiple outputs, need to filter the tool_output
             mapped = {
