@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -177,6 +177,7 @@ def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[U
             Path(os.path.dirname(__file__)).parent / ".pdbrc",
             Path(os.path.dirname(__file__)) / ".pdbrc",
             Path("/etc/os-release"),
+            Path("~/.oci/").expanduser(),
         ]
         + crewai_read_dirs
     )
