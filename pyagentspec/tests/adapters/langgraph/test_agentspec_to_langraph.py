@@ -204,3 +204,39 @@ def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
     assert last_message.type == "ai"
     tool_call_message = result["messages"][-2]
     assert isinstance(tool_call_message, ToolMessage)
+
+
+def test_execute_swarm(swarm_calculator_yaml: str) -> None:
+    from langchain_core.runnables import RunnableConfig
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    tools_called = []
+
+    def add(a: int, b: int) -> int:
+        """Add two numbers"""
+        tools_called.append("add")
+        return a + b
+
+    def multiply(a: int, b: int) -> int:
+        """Multiply two numbers"""
+        tools_called.append("multiply")
+        return a * b
+
+    langgraph_swarm = AgentSpecLoader(tool_registry={"add": add, "multiply": multiply}).load_yaml(
+        swarm_calculator_yaml
+    )
+
+    config = RunnableConfig({"configurable": {"thread_id": "1"}})
+    messages = [{"role": "user", "content": "2+2"}]
+    response = langgraph_swarm.invoke(input={"messages": messages}, config=config)
+    last_message = response["messages"][-1]
+    assert "4" in last_message.content
+    assert "add" in tools_called
+
+    messages.append({"role": "assistant", "content": last_message.content})
+    messages.append({"role": "user", "content": "3*3"})
+    response = langgraph_swarm.invoke(input={"messages": messages}, config=config)
+    last_message = response["messages"][-1]
+    assert "9" in last_message.content
+    assert "multiply" in tools_called

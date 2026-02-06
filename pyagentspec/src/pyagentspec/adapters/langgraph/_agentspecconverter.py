@@ -5,8 +5,22 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import datetime
-from types import FunctionType
-from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Union, cast
+from types import FunctionType, UnionType
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+    get_args,
+    get_origin,
+)
+
+from typing_extensions import Literal
 
 from pyagentspec import Property
 from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
@@ -22,8 +36,10 @@ from pyagentspec.adapters.langgraph._types import (
     SystemMessage,
     langchain_ollama,
     langchain_openai,
+    langgraph_graph,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
+from pyagentspec.agenticcomponent import AgenticComponent as AgentSpecAgenticComponent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
@@ -38,6 +54,8 @@ from pyagentspec.mcp.clienttransport import (
     StdioTransport,
     StreamableHTTPTransport,
 )
+from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
+from pyagentspec.swarm import Swarm as AgentSpecSwarm
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
 
@@ -80,6 +98,10 @@ class LangGraphToAgentSpecConverter:
             agentspec_component = self._langgraph_any_tool_to_agentspec_tool(langgraph_component)
         elif isinstance(langgraph_component, BaseChatModel):
             agentspec_component = self._basechatmodel_convert_to_agentspec(langgraph_component)
+        elif self._is_swarm(langgraph_component):
+            agentspec_component = self._langgraph_swarm_convert_to_agentspec(
+                langgraph_component, referenced_objects
+            )
         elif self._is_react_agent(langgraph_component):
             agentspec_component = self._langgraph_agent_convert_to_agentspec(
                 langgraph_component, referenced_objects
@@ -100,6 +122,44 @@ class LangGraphToAgentSpecConverter:
             langgraph_component = langgraph_component.builder
         node = langgraph_component.nodes.get("model")
         return node is not None and hasattr(node.runnable, "get_graph")
+
+    def _is_swarm(self, langgraph_component: LangGraphComponent) -> bool:
+        # Normalize the component so we can inspect the builder regardless of whether it has
+        # already been compiled into a state graph or is still a builder instance.
+        builder = (
+            langgraph_component.builder
+            if isinstance(langgraph_component, CompiledStateGraph)
+            else langgraph_component
+        )
+
+        # LangGraph swarms expose a `branches` mapping and a state schema describing swarm
+        # bookkeeping state. If either is missing, we can immediately rule out the swarm shape.
+        branches = getattr(builder, "branches", None)
+        state_schema = getattr(builder, "state_schema", None)
+
+        if not branches or not state_schema:
+            return False
+
+        # Swarms track which agent is currently active via an `active_agent` field on the
+        # state schema. Without that annotation the structure cannot be a swarm.
+        annotations = getattr(state_schema, "__annotations__", {}) or {}
+        if "active_agent" not in annotations:
+            return False
+
+        start_branches = branches.get(langgraph_graph.START, {})
+        if not isinstance(start_branches, dict):
+            return False
+
+        # Swarms use a routing helper called `route_to_active_agent` on the START branch so
+        # that the graph hands off execution to whichever agent matches the state. If we find
+        # that routing function, we have high confidence the component is a swarm.
+        for branch_spec in start_branches.values():
+            path = getattr(branch_spec, "path", None)
+            func = getattr(path, "func", None)
+            if getattr(func, "__name__", "") == "route_to_active_agent":
+                return True
+
+        return False
 
     def _get_closure_cells(self, model_node: StateNodeSpec[Any, Any]) -> list[Any]:
         """Extract and return the cell contents from the function's closure, or raise if invalid."""
@@ -186,6 +246,129 @@ class LangGraphToAgentSpecConverter:
             system_prompt=self._extract_prompt_from_model_node(model_node),
             tools=tools,
         )
+
+    def _langgraph_swarm_convert_to_agentspec(
+        self,
+        langgraph_component: LangGraphComponent,
+        referenced_objects: Dict[str, AgentSpecComponent],
+    ) -> AgentSpecSwarm:
+        # Compiled swarms already expose their compiled graph; otherwise we compile the builder
+        # to obtain the graph structure and reuse it for agent extraction.
+        if isinstance(langgraph_component, CompiledStateGraph):
+            compiled_swarm = langgraph_component
+            graph = langgraph_component.get_graph()
+        else:
+            compiled_swarm = langgraph_component.compile()
+            graph = compiled_swarm.get_graph()
+
+        # Every swarm graph should start from the synthetic `__start__` node that dispatches to
+        # the first agent. If it is missing, the graph shape is unexpected and unsupported.
+        if "__start__" not in graph.nodes:
+            raise ValueError("LangGraph swarm graph does not contain a start node")
+
+        start_node = graph.nodes["__start__"].data
+        swarm_state_schema = compiled_swarm.builder.state_schema
+
+        # The state schema includes an annotation describing the set of possible active agents.
+        # We rely on that typing information to recover all swarm agent names.
+        active_agent_annotation = getattr(swarm_state_schema, "__annotations__", {}).get(
+            "active_agent"
+        )
+        if active_agent_annotation is None:
+            raise ValueError("Unable to detect active agent annotation in LangGraph swarm state")
+
+        agent_names = self._extract_agent_names_from_annotation(active_agent_annotation)
+
+        if not agent_names:
+            raise ValueError("No agent names detected in LangGraph swarm")
+
+        agents: Dict[str, AgentSpecAgenticComponent] = {}
+        for agent_name in agent_names:
+            node = graph.nodes.get(agent_name)
+            if node is None:
+                raise ValueError(f"Agent '{agent_name}' not found in LangGraph swarm graph")
+
+            agent_graph = getattr(node, "data", None)
+            if not isinstance(agent_graph, CompiledStateGraph):
+                raise ValueError(f"Swarm node '{agent_name}' is not a CompiledStateGraph")
+
+            # Recursively convert each agent graph so the resulting Swarm references the same
+            # AgentSpec components as standalone conversions.
+            agents[agent_name] = self.convert(agent_graph, referenced_objects)  # type: ignore
+
+        # Build the relationship edges by walking the compiled graph edges originating from
+        # each agent node. Only real agent targets (not internal helpers) are recorded.
+        relationships: List[Tuple[AgentSpecAgenticComponent, AgentSpecAgenticComponent]] = []
+        for agent_name in agent_names:
+            destinations = self._extract_handoff_destinations(graph, agent_name)
+            for destination in destinations:
+                if destination not in agents:
+                    continue
+                relationships.append((agents[agent_name], agents[destination]))
+
+        # The start node points to the agent invoked first. Fall back to the first declared
+        # agent name if the start node lacks destinations to keep the conversion resilient.
+        first_agent_name = getattr(start_node, "destinations", [None])[0]
+        if first_agent_name is None and agent_names:
+            first_agent_name = agent_names[0]
+
+        if first_agent_name is None:
+            raise ValueError("Unable to determine first agent for LangGraph swarm")
+
+        # Create the AgentSpec Swarm component with the discovered first agent, the handoff
+        # relationships reconstructed from the LangGraph edges, and the default optional mode
+        # to match the LangGraph swarm handoff semantics.
+        return AgentSpecSwarm(
+            name=(
+                compiled_swarm.get_name()
+                if isinstance(langgraph_component, CompiledStateGraph)
+                else "LangGraph Swarm"
+            ),
+            first_agent=agents[first_agent_name],
+            relationships=relationships,
+            handoff=AgentSpecHandoffMode.OPTIONAL,
+        )
+
+    def _extract_agent_names_from_annotation(self, annotation: Any) -> List[str]:
+        origin = get_origin(annotation)
+
+        if origin in {Union, UnionType}:
+            names: List[str] = []
+            for arg in get_args(annotation):
+                if arg is type(None):
+                    continue
+                names.extend(self._extract_agent_names_from_annotation(arg))
+            return names
+
+        if origin is Literal:
+            names = []
+            for arg in get_args(annotation):
+                if arg is type(None):
+                    continue
+                if not isinstance(arg, str):
+                    raise ValueError(
+                        "Unsupported Literal value for swarm conversion. Expected string agent name."
+                    )
+                names.append(arg)
+            return names
+
+        if isinstance(annotation, str):
+            return [annotation]
+
+        if isinstance(annotation, type) and issubclass(annotation, str):
+            raise ValueError("Unsupported active agent annotation for swarm conversion: plain str")
+
+        raise ValueError("Unsupported active agent annotation for swarm conversion")
+
+    def _extract_handoff_destinations(self, graph: Any, agent_name: str) -> List[str]:
+        edges = getattr(graph, "edges", [])
+        destinations: List[str] = []
+        for edge in edges:
+            if getattr(edge, "source", None) == agent_name:
+                target = getattr(edge, "target", None)
+                if target is not None and not str(target).startswith("__"):
+                    destinations.append(target)
+        return destinations
 
     def _extract_tools_from_react_agent(
         self, langgraph_component: StateNodeSpec[Any, Any]
