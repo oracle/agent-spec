@@ -556,7 +556,16 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         )
         # starting a tool span for this tool
         span_name = f"ToolExecution[{self.tool.name}]"
-        tool_span = AgentSpecToolExecutionSpan(name=span_name, tool=self.tool)
+        # Hack: transmit the tool_call_id as the span's description
+        # so that tool results can learn of its tool_call_id
+        # by correlating with tool starts using the run_id
+        if "tool_call_id" in kwargs:
+            tcid_string = "tcid__" + str(kwargs["tool_call_id"])
+        else:
+            tcid_string = ""
+        tool_span = AgentSpecToolExecutionSpan(
+            name=span_name, description=tcid_string, tool=self.tool
+        )
         self.agentspec_spans_registry[run_id_str] = tool_span
         self._start_and_copy_ctx(run_id_str, tool_span)
         self._add_event(run_id_str, tool_span, request_event)
