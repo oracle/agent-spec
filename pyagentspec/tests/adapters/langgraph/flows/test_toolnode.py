@@ -8,7 +8,11 @@ import sys
 from typing import Any, Dict, List
 
 import pytest
+from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command
 
+from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
@@ -161,12 +165,6 @@ def _build_flow_with_client_tool(
 
 
 def _run_flow_and_resume(flow: Flow, resume_payload: Any) -> Dict[str, Any]:
-    from langchain_core.runnables import RunnableConfig
-    from langgraph.checkpoint.memory import MemorySaver
-    from langgraph.types import Command
-
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
     agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(flow)
     config = RunnableConfig({"configurable": {"thread_id": "t"}})
     # First call interrupts at the client tool

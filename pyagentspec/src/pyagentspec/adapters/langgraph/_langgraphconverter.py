@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -23,11 +23,16 @@ from typing import (
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, create_model
+from typing_extensions import NotRequired, Required
 
 from pyagentspec import Component as AgentSpecComponent
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
-from pyagentspec.adapters.langgraph._node_execution import NodeExecutor
+from pyagentspec.adapters.langgraph._node_execution import (
+    NodeExecutor,
+    extract_outputs_from_invoke_result,
+)
 from pyagentspec.adapters.langgraph._types import (
+    AgentState,
     BaseCallbackHandler,
     BaseChatModel,
     BaseTool,
@@ -41,12 +46,10 @@ from pyagentspec.adapters.langgraph._types import (
     RunnableConfig,
     StateGraph,
     StructuredTool,
-    SystemMessage,
     interrupt,
+    langchain_agents,
     langgraph_graph,
-    langgraph_prebuilt,
 )
-from pyagentspec.adapters.langgraph.conversion_utils import extract_outputs_from_invoke_result
 from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
 from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecLlmCallbackHandler,
@@ -86,8 +89,6 @@ from pyagentspec.mcp.clienttransport import (
 from pyagentspec.mcp.tools import MCPTool as AgentSpecMCPTool
 from pyagentspec.mcp.tools import MCPToolBox as AgentSpecMCPToolBox
 from pyagentspec.mcp.tools import MCPToolSpec as AgentSpecMCPToolSpec
-from pyagentspec.property import DictProperty as AgentSpecDictProperty
-from pyagentspec.property import IntegerProperty as AgentSpecIntegerProperty
 from pyagentspec.property import ListProperty as AgentSpecListProperty
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import StringProperty as AgentSpecStringProperty
@@ -106,7 +107,7 @@ from pyagentspec.tracing.spans import AgentExecutionSpan as AgentSpecAgentExecut
 from pyagentspec.tracing.spans import FlowExecutionSpan as AgentSpecFlowExecutionSpan
 
 if TYPE_CHECKING:
-    from langchain_mcp_adapters.sessions import (  # type: ignore
+    from langchain_mcp_adapters.sessions import (
         SSEConnection,
         StdioConnection,
         StreamableHttpConnection,
@@ -238,6 +239,44 @@ def _create_pydantic_model_from_properties(
         fields[property_.title] = (annotation, default_field)
 
     return create_model(model_name, **fields)  # type: ignore
+
+
+def _create_agent_state_typed_dict(
+    model_name: str,
+    inputs: List[AgentSpecProperty],
+) -> "type[AgentState[BaseModel]]":
+    """Create a TypedDict subclass of LangChain's AgentState with custom inputs.
+
+    We extend the default AgentState (which already includes `messages` and
+    optional `structured_response`) by adding our input properties and a
+    required `remaining_steps` field. Required/optional inputs are expressed
+    using PEP 655 `Required`/`NotRequired`.
+    """
+    import types
+
+    registry = SchemaRegistry()
+
+    annotations: Dict[str, Any] = {
+        "remaining_steps": Required[int],
+    }
+
+    for property_ in inputs:
+        annotation = _build_type_from_schema(property_.title, property_.json_schema, registry)
+        if property_.default is not _agentspec_empty_default:
+            annotations[property_.title] = NotRequired[annotation]
+        else:
+            annotations[property_.title] = Required[annotation]
+
+    def _exec_body(ns: Dict[str, Any]) -> None:
+        ns["__annotations__"] = annotations
+
+    # total=False => unspecified fields are optional unless wrapped with Required
+    return types.new_class(
+        model_name,
+        (AgentState[BaseModel],),
+        {"total": False},
+        _exec_body,
+    )
 
 
 class AgentSpecToLangGraphConverter:
@@ -419,7 +458,7 @@ class AgentSpecToLangGraphConverter:
             # Provide both sync and async entrypoints natively. LangGraph will use
             # the appropriate one based on invoke/stream vs ainvoke/astream.
             runnable = RunnableLambda(
-                func=lambda state, _exec=node_executor: _exec(state),
+                func=lambda state, _exec=node_executor: _exec(state),  # type: ignore
                 afunc=lambda state, _exec=node_executor: _exec.__acall__(state),
                 name=node_id,
             )
@@ -780,7 +819,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=remote_tool.name,
             description=remote_tool.description or "",
-            args_schema=args_model.model_json_schema(),
+            args_schema=args_model,
             func=_remote_tool,
             callbacks=[
                 AgentSpecToolCallbackHandler(tool=remote_tool),
@@ -818,7 +857,7 @@ class AgentSpecToLangGraphConverter:
             wrapped = StructuredTool(
                 name=agentspec_server_tool.name,
                 description=description,
-                args_schema=args_model.model_json_schema(),
+                args_schema=args_model,
                 func=tool_obj,
                 callbacks=[
                     AgentSpecToolCallbackHandler(tool=agentspec_server_tool),
@@ -864,7 +903,7 @@ class AgentSpecToLangGraphConverter:
         structured_tool = StructuredTool(
             name=agentspec_client_tool.name,
             description=agentspec_client_tool.description or "",
-            args_schema=args_model.model_json_schema(),
+            args_schema=args_model,
             func=client_tool,
             # We do not add the tool execution callback here as it's not expected for client tools
         )
@@ -978,41 +1017,27 @@ class AgentSpecToLangGraphConverter:
                 config=config,
             )
         ]
-        prompt = SystemMessage(system_prompt)
         output_model: Optional[type[BaseModel]] = None
-        input_model: Optional[type[BaseModel]] = None
+        state_schema: Optional[Any] = None
 
-        if inputs:
-            input_model = _create_pydantic_model_from_properties(
-                "AgentInputModel",
-                inputs
-                + [
-                    # Properties required by langgraph
-                    AgentSpecIntegerProperty(title="remaining_steps"),
-                    AgentSpecListProperty(title="messages", item_type=AgentSpecProperty()),
-                ]
-                + (
-                    [
-                        AgentSpecDictProperty(
-                            title="structured_response", value_type=AgentSpecProperty()
-                        )
-                    ]
-                    if outputs
-                    else []
-                ),
-            )
-
+        # Build response (output) model (used for response_format)
         if outputs:
             output_model = _create_pydantic_model_from_properties("AgentOutputModel", outputs)
 
-        compiled_graph = langgraph_prebuilt.create_react_agent(
+        if inputs:
+            state_schema = _create_agent_state_typed_dict(
+                "AgentState",
+                inputs=inputs,
+            )
+
+        compiled_graph = langchain_agents.create_agent(
             name=name,
             model=model,
             tools=langgraph_tools,
-            prompt=prompt,
+            system_prompt=system_prompt,
             checkpointer=checkpointer,
             response_format=output_model,
-            state_schema=input_model,
+            state_schema=state_schema,
         )
 
         # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
@@ -1249,7 +1274,7 @@ class AgentSpecToLangGraphConverter:
     def _get_or_create_langgraph_mcp_tools(
         self,
         client_transport: AgentSpecClientTransport,
-        langgraph_connection: Dict[str, Any],
+        langgraph_connection: "Union[StdioConnection, SSEConnection, StreamableHttpConnection]",
         connection_key: str,
         tool_registry: Dict[str, LangGraphTool],
     ) -> Dict[str, BaseTool]:
@@ -1262,7 +1287,7 @@ class AgentSpecToLangGraphConverter:
         without reloading.
         - Otherwise, loads tools and inserts them atomically into the registry.
         """
-        from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore
+        from langchain_mcp_adapters.tools import load_mcp_tools
 
         conn_prefix = f"{connection_key}::"
         existing = _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
@@ -1271,7 +1296,7 @@ class AgentSpecToLangGraphConverter:
 
         async def load_all_mcp_tools() -> List[BaseTool]:
             # Note: langchain supports session-specific MCP tools but we don't support that
-            return await load_mcp_tools(session=None, connection=langgraph_connection)  # type: ignore
+            return await load_mcp_tools(session=None, connection=langgraph_connection)
 
         tools = run_async_in_sync(load_all_mcp_tools, method_name="load_mcp_tools")
         # We add callbacks to the tool for proper tracing

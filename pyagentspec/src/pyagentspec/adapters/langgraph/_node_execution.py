@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -7,7 +7,7 @@
 import json
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import anyio
 import httpx
@@ -27,9 +27,9 @@ from pyagentspec.adapters.langgraph._types import (
     NodeOutputsType,
     RunnableConfig,
     interrupt,
+    langchain_core_messages_content,
     langgraph_graph,
 )
-from pyagentspec.adapters.langgraph.conversion_utils import extract_outputs_from_invoke_result
 from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
@@ -323,7 +323,13 @@ class ToolNodeExecutor(NodeExecutor):
         if not node_output_properties:
             # the node does not emit any output
             mapped = {}
-        if len(node_output_properties) == 1:
+        if isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
+            extracted_values = self._extract_values_from_content_blocks(tool_output)
+            mapped = {
+                property_.title: extracted_values[i]
+                for i, property_ in enumerate(node_output_properties)
+            }
+        elif len(node_output_properties) == 1:
             mapped = {node_output_properties[0].title: tool_output}
         elif isinstance(tool_output, dict):
             # the node emits multiple outputs, need to filter the tool_output
@@ -344,6 +350,70 @@ class ToolNodeExecutor(NodeExecutor):
                 f"(declared_outputs={len(node_output_properties)})."
             )
         return mapped, NodeExecutionDetails()
+
+    def _is_mcp_content_blocks_list(self, items: List[Any]) -> bool:
+        # Empty lists are ambiguous; treat them as non-MCP to avoid false positives
+        if not items:
+            return False
+        for el in items:
+            if not isinstance(el, dict):
+                return False
+            t = el.get("type")
+            if t not in {"text", "image", "file"}:
+                return False
+            if t == "text":
+                if "text" not in el or not isinstance(el["text"], str):
+                    return False
+            elif t in {"image", "file"}:
+                # Accept any supported payload reference
+                if not any(k in el for k in ["base64", "url", "file_id"]):
+                    return False
+        return True
+
+    def _extract_value_from_block(
+        self,
+        block: Union[
+            langchain_core_messages_content.FileContentBlock,
+            langchain_core_messages_content.TextContentBlock,
+            langchain_core_messages_content.ImageContentBlock,
+        ],
+    ) -> Any:
+        t = block["type"]
+        if t == "text":
+            text_block = cast(langchain_core_messages_content.TextContentBlock, block)
+            return text_block["text"]
+        if t == "image":
+            image_block = cast(langchain_core_messages_content.ImageContentBlock, block)
+            if "base64" in image_block:
+                return image_block["base64"]
+            if "url" in image_block:
+                return image_block["url"]
+            if "file_id" in image_block:
+                return image_block["file_id"]
+            raise ValueError(f"No payload found in image block: {image_block}")
+        if t == "file":
+            file_block = cast(langchain_core_messages_content.FileContentBlock, block)
+            if "base64" in file_block:
+                return file_block["base64"]
+            if "url" in file_block:
+                return file_block["url"]
+            if "file_id" in file_block:
+                return file_block["file_id"]
+            raise ValueError(f"No payload found in file block: {file_block}")
+        else:
+            raise NotImplementedError(f"Unsupported message content block type: {t}")
+
+    def _extract_values_from_content_blocks(
+        self,
+        blocks: List[
+            Union[
+                langchain_core_messages_content.FileContentBlock,
+                langchain_core_messages_content.TextContentBlock,
+                langchain_core_messages_content.ImageContentBlock,
+            ]
+        ],
+    ) -> List[Any]:
+        return [self._extract_value_from_block(block) for block in blocks]
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         # LangGraphTool = Union[BaseTool, Callable[..., Any]]
@@ -450,6 +520,12 @@ class AgentNodeExecutor(NodeExecutor):
         self, inputs: Dict[str, Any], messages: Messages
     ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
         agent = self._create_react_agent_with_given_input_values(inputs)
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are provided
+        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
+        # user message when the message list is empty.
+        if not messages:
+            messages = cast(Messages, [{"role": "user", "content": ""}])
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,
@@ -768,3 +844,27 @@ class MapNodeExecutor(NodeExecutor):
             # Not all outputs might be exposed, we filter those that are required by node's outputs
             if collected_output_name in outputs:
                 outputs[collected_output_name].append(output_value)
+
+
+def extract_outputs_from_invoke_result(
+    result: Dict[str, Any], expected_outputs: List[AgentSpecProperty]
+) -> Dict[str, Any]:
+    # Extracts the outputs from the return value of an invoke call made on an agent
+    # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
+    # We give priority to the latter.
+    return {
+        # Defaults if available
+        **{
+            output.title: output.default
+            for output in expected_outputs or []
+            if output.default is not pyagentspec_empty_default
+        },
+        # Results in `structured_response`
+        **dict(result.get("structured_response", {})),
+        # Results appended to main dictionary
+        **{
+            output.title: result[output.title]
+            for output in expected_outputs or []
+            if output.title in result
+        },
+    }

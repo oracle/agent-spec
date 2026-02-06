@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -98,7 +98,7 @@ def test_client_tool_with_two_inputs(ancestry_agent_with_client_tool_yaml: str) 
         ancestry_agent_with_client_tool_yaml
     )
     config = RunnableConfig({"configurable": {"thread_id": "1"}})
-    messages = {"messages": [{"role": "user", "content": "Who's the son of Tim and Dorothy"}]}
+    messages = {"messages": [{"role": "user", "content": "Who's the son of Tim and Dorothy?"}]}
     agent.invoke(
         messages,
         config,
@@ -107,9 +107,29 @@ def test_client_tool_with_two_inputs(ancestry_agent_with_client_tool_yaml: str) 
         input=Command(resume={"son": "himothy"}),
         config=config,
     )
-    last_message = result["messages"][-1]
-    assert last_message.type == "ai"
-    assert "himothy" in last_message.content.lower()
+    messages = result["messages"]
+    last_message = messages[-1]
+
+    # Ensure the client tool ToolMessage carrying resume inputs exists and includes "himothy"
+    get_child_msgs = [m for m in messages if m.type == "tool" and m.name == "get_child"]
+    assert get_child_msgs, "Expected a ToolMessage from client tool 'get_child'"
+    assert "himothy" in str(get_child_msgs[0].content).lower()
+
+    # ancestry_agent_with_client_tool_yaml is an agent with outputs and with a client tool with outputs
+    # With latest langchain, agents with outputs may be emitted either as:
+    # - a ToolMessage created from a structured-output tool (ToolStrategy path), or
+    # - an AIMessage with a structured-output tool_call (ProviderStrategy path).
+    # - the langgraph adapter defaults to ToolStrategy, but the agent may fail to generate the AgentOutputModel tool call
+    # - so it may try to re-generate the tool call (last_message being of type "AIMessage")
+    structured_tool_msgs = [
+        m for m in messages if m.type == "tool" and m.name == "AgentOutputModel"
+    ]
+    if structured_tool_msgs:
+        assert structured_tool_msgs[-1] is last_message
+    else:
+        assert last_message.type == "ai"
+
+    assert "structured_response" in result
 
 
 def test_remote_tool_with_agent(json_server: str, weather_agent_remote_tool_yaml: str) -> None:

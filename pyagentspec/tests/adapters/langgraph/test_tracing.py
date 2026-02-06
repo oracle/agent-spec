@@ -12,6 +12,7 @@ from pyagentspec.tracing.events import (
     Event,
     FlowExecutionEnd,
     FlowExecutionStart,
+    LlmGenerationChunkReceived,
     LlmGenerationRequest,
     LlmGenerationResponse,
     NodeExecutionEnd,
@@ -287,3 +288,47 @@ def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
         assert "a" not in response["outputs"]["haiku_without_a"]
 
     check_dummyspanprocessor_flow_events_and_spans(proc)
+
+
+def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_server: str):
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    # Prepare YAML config with placeholders replaced
+    yaml_content = (CONFIGS / "weather_agent_remote_tool.yaml").read_text()
+    final_yaml = _replace_config_placeholders(yaml_content, json_server)
+
+    # Convert to LangGraph agent
+    weather_agent = AgentSpecLoader().load_yaml(final_yaml)
+
+    proc = DummySpanProcessor()
+    with Trace(name="langgraph_tracing_tool_call_test", span_processors=[proc]):
+        agent_input = {
+            "inputs": {},
+            "messages": [{"role": "user", "content": "What's the weather in Agadir?"}],
+        }
+        response = ""
+        for message_chunk, metadata in weather_agent.stream(
+            input=agent_input, stream_mode="messages"
+        ):
+            if message_chunk.content:
+                response += message_chunk.content
+
+    llm_response_chunk_events = [
+        e for (e, _) in proc.events if isinstance(e, LlmGenerationChunkReceived)
+    ]
+    tool_call_chunks = [e for e in llm_response_chunk_events if len(e.tool_calls) == 1]
+    tool_call_ids = {e.tool_calls[0].call_id for e in tool_call_chunks}
+
+    # on_tool_start starts the spans and assigns the tool_call_id to the span's description if available
+    # which is the case in react agents
+    # this allows on_tool_end and ToolExecutionResponse to track the original tool_call_id via the ToolExecutionSpan
+    tool_spans = [s for (_, s) in proc.events if isinstance(s, ToolExecutionSpan)]
+    assert tool_call_ids == set(s.description.replace("tcid__", "") for s in tool_spans)
+
+    # check if the run_ids match
+    tool_start_events = [e for (e, _) in proc.events if isinstance(e, ToolExecutionRequest)]
+    tool_end_events = [e for (e, _) in proc.events if isinstance(e, ToolExecutionResponse)]
+    assert len(tool_start_events) == 1
+    assert len(tool_end_events) == 1
+    assert tool_start_events[0].request_id == tool_end_events[0].request_id

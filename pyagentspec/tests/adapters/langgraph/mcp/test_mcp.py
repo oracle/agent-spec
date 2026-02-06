@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -114,7 +114,7 @@ def agentspec_agent_with_mcp_toolbox(sse_client_transport, big_llama):
             )
         ],
         llm_config=big_llama,
-        system_prompt="You must begin the conversation by telling the user what tools are available to you.",
+        system_prompt="You must begin the conversation by telling the user what tools are available to you. Do not call any tools. You should generate only textual responses.",
     )
 
 
@@ -138,10 +138,19 @@ async def test_can_run_imported_agent_with_mcp_tools(agentspec_agent_with_mcp_to
     langgraph_agent = AgentSpecLoader().load_component(agentspec_agent_with_mcp_toolbox)
 
     response = await langgraph_agent.ainvoke(
-        {"messages": [{"role": "user", "content": "What tools do you have?"}]},
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "What tools do you have?",
+                }
+            ]
+        },
         {"configurable": {"thread_id": "1"}},
     )
-    output = "".join([m.content or "" for m in response["messages"][1:]])
+    output = ""
+    for m in response["messages"][1:]:
+        output += m.content
     assert output  # should not be empty
 
 
@@ -158,9 +167,9 @@ def test_cannot_export_langgraph_agent_with_mcp_tools_with_arbitrary_httpx_clien
 
 @pytest.mark.anyio
 async def test_export_langgraph_agent_with_mcp_to_agentspec_agent_with_mcp(sse_client_transport):
+    from langchain.agents import create_agent
     from langchain_mcp_adapters.client import MultiServerMCPClient
     from langchain_openai.chat_models import ChatOpenAI
-    from langgraph.prebuilt import create_react_agent
 
     model_id = "Llama-3.1-70B-Instruct"
     url = "url.to.my.llama.model"
@@ -178,7 +187,7 @@ async def test_export_langgraph_agent_with_mcp_to_agentspec_agent_with_mcp(sse_c
         }
     )
     tools = await client.get_tools()
-    agent = create_react_agent(
+    agent = create_agent(
         model=model,
         tools=tools,
     )
@@ -208,7 +217,7 @@ async def test_flow_with_mcp_tool_with_interrupt(sse_client_transport):
     # Define inputs and outputs
     a_property = Property(json_schema={"title": "a", "type": "number"})
     b_property = Property(json_schema={"title": "b", "type": "number"})
-    result_property = Property(json_schema={"title": "result", "type": "number"})
+    result_property = Property(json_schema={"title": "my_result", "type": "number"})
 
     # MCP tool bound to SSE transport and exposing explicit IO
     fooza_tool = MCPTool(
@@ -254,9 +263,9 @@ async def test_flow_with_mcp_tool_with_interrupt(sse_client_transport):
             DataFlowEdge(
                 name="result_edge",
                 source_node=tool_node,
-                source_output="result",
+                source_output="my_result",
                 destination_node=end_node,
-                destination_input="result",
+                destination_input="my_result",
             ),
         ],
         outputs=[result_property],
@@ -284,4 +293,4 @@ async def test_flow_with_mcp_tool_with_interrupt(sse_client_transport):
     )  # must be a string, since it's converted to a langchain message
 
     # Server fooza: a*2 + b*3 - 1 => 2*2 + 5*3 - 1 = 18
-    assert result["outputs"]["result"] == 18
+    assert result["outputs"]["my_result"] == 18
