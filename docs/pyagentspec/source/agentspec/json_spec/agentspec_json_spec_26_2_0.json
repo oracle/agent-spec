@@ -82,6 +82,16 @@
         }
       ]
     },
+    "AnthropicLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseAnthropicLlmConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ApiNode": {
       "anyOf": [
         {
@@ -1384,6 +1394,84 @@
         }
       ],
       "x-abstract-component": true
+    },
+    "BaseAnthropicLlmConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to an Anthropic Claude model.\n\nRequires to specify the model identity. The API key and endpoint are optional\nand may be provided by the runtime environment.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "base_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Base Url"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "AnthropicLlmConfig"
+        }
+      },
+      "required": [
+        "model_id",
+        "name"
+      ],
+      "title": "AnthropicLlmConfig",
+      "type": "object",
+      "x-abstract-component": false
     },
     "BaseApiNode": {
       "additionalProperties": false,
@@ -2779,6 +2867,9 @@
     },
     "BaseLlmConfig": {
       "anyOf": [
+        {
+          "$ref": "#/$defs/AnthropicLlmConfig"
+        },
         {
           "$ref": "#/$defs/OciGenAiConfig"
         },
@@ -6260,6 +6351,9 @@
             "$ref": "#/$defs/BaseAgenticComponent"
           },
           {
+            "$ref": "#/$defs/BaseAnthropicLlmConfig"
+          },
+          {
             "$ref": "#/$defs/BaseApiNode"
           },
           {
@@ -6569,6 +6663,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseAgenticComponent"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedAnthropicLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseAnthropicLlmConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -7503,6 +7612,9 @@
     },
     {
       "$ref": "#/$defs/VersionedAgenticComponent"
+    },
+    {
+      "$ref": "#/$defs/VersionedAnthropicLlmConfig"
     },
     {
       "$ref": "#/$defs/VersionedApiNode"
