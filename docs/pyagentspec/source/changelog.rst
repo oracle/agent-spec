@@ -72,6 +72,12 @@ New features
   Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
   We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
 
+* **ToolBox with User Confirmation**
+
+  ToolBoxes now have a new flag named `requires_confirmation`, which can be set to require user/operator approval before running any of the tools in the toolbox.
+  For more information read the :doc:`API Reference <api/tools>`.
+
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

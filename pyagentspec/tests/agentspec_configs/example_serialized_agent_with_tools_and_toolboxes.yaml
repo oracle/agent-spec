@@ -43,6 +43,7 @@ toolboxes:
   client_transport:
     $component_ref: mcp_transport
   tool_filter: null
+  requires_confirmation: true
 - component_type: MCPToolBox
   id: mcptoolbox_with_filter
   name: MCP ToolBox
@@ -50,6 +51,7 @@ toolboxes:
   metadata: {}
   client_transport:
     $component_ref: mcp_transport
+  requires_confirmation: false
   tool_filter:
   - tool_name1
   - component_type: MCPToolSpec

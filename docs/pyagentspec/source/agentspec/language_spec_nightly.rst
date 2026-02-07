@@ -930,10 +930,15 @@ When the set of tools is dynamic, its content should be established just before 
 consuming component. ToolBoxes do not embed executable code or the full discovered tool list
 at serialization time. Discovery happens at runtime.
 
+A ToolBox also exposes an optional ``requires_confirmation`` flag; it exists to let users enforce
+confirmation for the entire toolbox without having to set ``requires_confirmation=True`` on every
+tool it provides. If the tool box does not require confirmation, confirmation is still required
+for individual tools which explicitly specify it.
+
 .. code-block:: python
 
    class ToolBox(Component):
-     pass
+     requires_confirmation: bool = False
 
 
 MCPToolBox

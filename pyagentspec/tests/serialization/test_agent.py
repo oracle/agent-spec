@@ -155,7 +155,10 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
     )
     mcp_tool = MCPTool(id="mcptool", name="my_mcp_tool", client_transport=_mcp_client)
     mcp_toolbox_without_filters = MCPToolBox(
-        id="mcptoolbox_no_filter", name="MCP ToolBox", client_transport=_mcp_client
+        id="mcptoolbox_no_filter",
+        name="MCP ToolBox",
+        client_transport=_mcp_client,
+        requires_confirmation=True,
     )
     mcp_toolbox_with_filters = MCPToolBox(
         id="mcptoolbox_with_filter",
@@ -170,6 +173,7 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
                 requires_confirmation=True,
             ),
         ],
+        requires_confirmation=False,
     )
 
     agent = Agent(
