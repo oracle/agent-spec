@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
     import langchain.agents as langchain_agents
+    import langchain_anthropic
     import langchain_core.messages.content as langchain_core_messages_content
     import langchain_ollama
     import langchain_openai
@@ -44,6 +45,7 @@ else:
     langgraph = LazyLoader("langgraph")
     langchain_ollama = LazyLoader("langchain_ollama")
     langchain_openai = LazyLoader("langchain_openai")
+    langchain_anthropic = LazyLoader("langchain_anthropic")
     langgraph_graph = LazyLoader("langgraph.graph")
     langgraph_types = LazyLoader("langgraph.types")
     langgraph_prebuilt = LazyLoader("langgraph.prebuilt")
@@ -134,6 +136,7 @@ __all__ = [
     "langchain_core_messages_content",
     "langgraph_prebuilt",
     "langchain_agents",
+    "langchain_anthropic",
     "langchain_ollama",
     "langchain_openai",
     "LangGraphTool",
