@@ -7,7 +7,7 @@
 import pytest
 
 
-def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic() -> None:
+def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic():
     pytest.importorskip("langchain_anthropic")
 
     from langchain_anthropic import ChatAnthropic
@@ -45,7 +45,7 @@ def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic(
     assert model.top_p == top_p
 
 
-def test_langgraph_to_agentspec_converts_chat_anthropic_to_anthropic_llm_config() -> None:
+def test_langgraph_to_agentspec_converts_chat_anthropic_to_anthropic_llm_config():
     pytest.importorskip("langchain_anthropic")
 
     from langchain_anthropic import ChatAnthropic
