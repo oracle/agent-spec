@@ -386,9 +386,14 @@ class LangGraphToAgentSpecConverter:
         )
 
     def _extract_agent_names_from_annotation(self, annotation: Any) -> List[str]:
+        # LangGraph encodes the "active agent" field in the swarm state schema as a type annotation.
+        # That annotation acts as the canonical source of truth for which agent names are valid,
+        # so we parse it instead of relying on graph node names (which also include internal helpers).
         origin = get_origin(annotation)
 
         if origin in {Union, UnionType}:
+            # Common shape: Optional[Literal["a", "b"]] which is a Union[Literal[...], NoneType].
+            # We flatten the union to a single list of concrete agent names while discarding None.
             names: List[str] = []
             for arg in get_args(annotation):
                 if arg is type(None):
@@ -397,6 +402,8 @@ class LangGraphToAgentSpecConverter:
             return names
 
         if origin is Literal:
+            # Literal values are the actual agent identifiers used as node keys inside the compiled
+            # swarm graph; validating they are strings ensures we don't silently accept enums/ints.
             names = []
             for arg in get_args(annotation):
                 if arg is type(None):
@@ -409,20 +416,23 @@ class LangGraphToAgentSpecConverter:
             return names
 
         if isinstance(annotation, str):
+            # Some runtimes may preserve forward-referenced annotations as raw strings; treat them
+            # as a single agent name so conversion still succeeds in minimally-typed environments.
             return [annotation]
 
-        if isinstance(annotation, type) and issubclass(annotation, str):
-            raise ValueError("Unsupported active agent annotation for swarm conversion: plain str")
-
+        # We don't know how to translate the remaining cases, therefore we raise an exception
         raise ValueError("Unsupported active agent annotation for swarm conversion")
 
     def _extract_handoff_destinations(self, graph: Any, agent_name: str) -> List[str]:
+        # Reconstruct swarm "handoff" relationships by scanning the compiled graph edges that
+        # originate from a given agent node. LangGraph includes synthetic nodes (e.g. __end__),
+        # which are part of orchestration and should not become Agent Spec edges.
         edges = getattr(graph, "edges", [])
         destinations: List[str] = []
         for edge in edges:
             if getattr(edge, "source", None) == agent_name:
                 target = getattr(edge, "target", None)
-                if target is not None and not str(target).startswith("__"):
+                if isinstance(target, str) and not target.startswith("__"):
                     destinations.append(target)
         return destinations
 
