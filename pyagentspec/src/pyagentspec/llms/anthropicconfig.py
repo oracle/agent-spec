@@ -13,12 +13,11 @@ class AnthropicLlmConfig(LlmConfig):
     """
     Class to configure a connection to an Anthropic Claude model.
 
-    Requires to specify the model identity. The API key and endpoint are optional
-    and may be provided by the runtime environment.
+    Requires to specify the model identity. The API key and endpoint are provided by the runtime environment.
     """
 
     model_id: str
-    """ID of the model to use."""
+    """ID of the Anthropic model to use, e.g., claude-haiku-4-5-20251001."""
 
     base_url: str | None = None
     """Base URL of the Anthropic API.

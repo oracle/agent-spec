@@ -1397,7 +1397,7 @@
     },
     "BaseAnthropicLlmConfig": {
       "additionalProperties": false,
-      "description": "Class to configure a connection to an Anthropic Claude model.\n\nRequires to specify the model identity. The API key and endpoint are optional\nand may be provided by the runtime environment.",
+      "description": "Class to configure a connection to an Anthropic Claude model.\n\nRequires to specify the model identity. The API key and endpoint are provided by the runtime environment.",
       "properties": {
         "id": {
           "title": "Id",
