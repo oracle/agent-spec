@@ -57,7 +57,10 @@ def _override_module_models(mod: types.ModuleType) -> None:
     from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
     from openai import AsyncOpenAI
 
-    from ..conftest import oss_api_url
+    from ..conftest import oss_api_url, should_skip_llm_test
+
+    if should_skip_llm_test():
+        pytest.skip("LLM called, skipping test")
 
     base_url = oss_api_url
     if not base_url.startswith("http"):
