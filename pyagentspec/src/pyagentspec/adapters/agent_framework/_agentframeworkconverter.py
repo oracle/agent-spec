@@ -13,9 +13,9 @@ from pyagentspec.adapters.agent_framework._types import (
     AgentFrameworkComponent,
     AgentFrameworkMCPTool,
     AgentFrameworkTool,
-    AIFunction,
     BaseChatClient,
     ChatAgent,
+    FunctionTool,
     MCPStdioTool,
     MCPStreamableHTTPTool,
     OpenAIChatClient,
@@ -189,7 +189,7 @@ class AgentSpecToAgentFrameworkConverter:
             remote_tool.inputs or [],
         )
 
-        aifunction = AIFunction(
+        aifunction = FunctionTool(
             name=remote_tool.name,
             description=remote_tool.description or "",
             input_model=args_model,
@@ -216,7 +216,7 @@ class AgentSpecToAgentFrameworkConverter:
                 f"{server_tool.name}Args",
                 server_tool.inputs or [],
             )
-            return AIFunction(
+            return FunctionTool(
                 name=server_tool.name,
                 func=function,
                 description=server_tool.description or "",

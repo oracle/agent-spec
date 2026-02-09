@@ -23,7 +23,7 @@ class DummyResponse:
 
 def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
     """
-    End-to-end: convert an AgentSpec RemoteTool to a Agent Framework AIFunction and run it.
+    End-to-end: convert an AgentSpec RemoteTool to a Agent Framework FunctionTool and run it.
     Patch httpx.request to capture the outgoing HTTP call and verify the rendered JSON payload.
     """
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
@@ -49,7 +49,7 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
         headers={"X-Caller": "{{user}}"},
     )
 
-    # Convert to a Agent Framework AIFunction using the Agent Framework adapter converter.
+    # Convert to a Agent Framework FunctionTool using the Agent Framework adapter converter.
     msft_af_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected object passed as the `json` kwarg to httpx.request after rendering.
@@ -61,8 +61,8 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
 
     # Patch httpx.request (used inside the converted agent framework tool) to capture the call.
     with patch("httpx.request", side_effect=mock_request) as patched_request:
-        # Call the underlying function of the AIFunction directly with keyword args.
-        # The Agent Framework converter wraps the function as a AIFunction with a call method.
+        # Call the underlying function of the FunctionTool directly with keyword args.
+        # The Agent Framework converter wraps the function as a FunctionTool with a call method.
         result = msft_af_tool(
             city="Agadir", lat="30.4", lon="-9.6", user="alice", suffix="world", bin_suffix="blob"
         )
@@ -101,7 +101,7 @@ def test_remote_tool_post_json_array_with_agent_framework() -> None:
         headers={"X-Caller": "{{user}}"},
     )
 
-    # Convert to Agent Framework AIFunction using the Agent Framework adapter converter.
+    # Convert to Agent Framework FunctionTool using the Agent Framework adapter converter.
     msft_af_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected rendered data (list).
@@ -112,7 +112,7 @@ def test_remote_tool_post_json_array_with_agent_framework() -> None:
 
     # Patch httpx.request.
     with patch("httpx.request", side_effect=mock_request) as patched_request:
-        # Call the underlying function of the AIFunction directly with keyword args.
+        # Call the underlying function of the FunctionTool directly with keyword args.
         result = msft_af_tool(
             city="Agadir",
             temp="25",
@@ -147,7 +147,7 @@ def test_remote_tool_post_raw_body_with_agent_framework() -> None:
         headers={"X-Caller": "{{user}}"},
     )
 
-    # Convert to a Agent Framework AIFunction using the Agent Framework adapter converter.
+    # Convert to a Agent Framework FunctionTool using the Agent Framework adapter converter.
     msft_af_tool = AgentSpecLoader().load_component(remote_tool)
 
     # Expected rendered data (str).
@@ -155,7 +155,7 @@ def test_remote_tool_post_raw_body_with_agent_framework() -> None:
 
     # Patch httpx.request.
     with patch("httpx.request", side_effect=mock_request) as patched_request:
-        # Call the underlying function of the AIFunction directly with keyword args.
+        # Call the underlying function of the FunctionTool directly with keyword args.
         result = msft_af_tool(
             city="Agadir",
             note="urgent",

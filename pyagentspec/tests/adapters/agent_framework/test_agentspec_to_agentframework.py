@@ -17,7 +17,7 @@ def test_agentspec_converts_to_agent_framework_with_server_tool(
     weather_agent_server_tool: str,
 ) -> None:
 
-    from agent_framework import AIFunction, ChatAgent
+    from agent_framework import ChatAgent, FunctionTool
     from agent_framework.openai import OpenAIChatClient
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
@@ -31,7 +31,7 @@ def test_agentspec_converts_to_agent_framework_with_server_tool(
     # Agent Config
     assert agent_component.name == agent.name
     assert agent_component.description == agent.description
-    assert agent_component.system_prompt == agent.chat_options.instructions
+    assert agent_component.system_prompt == agent.default_options["instructions"]
 
     # Llm Config
     assert isinstance(agent_component.llm_config, VllmConfig)
@@ -40,23 +40,23 @@ def test_agentspec_converts_to_agent_framework_with_server_tool(
     assert agent_component.llm_config.model_id == agent.chat_client.model_id
     default_generation_parameters = agent_component.llm_config.default_generation_parameters
     assert default_generation_parameters is not None
-    assert default_generation_parameters.temperature == agent.chat_options.temperature
-    assert default_generation_parameters.top_p == agent.chat_options.top_p
-    assert default_generation_parameters.max_tokens == agent.chat_options.max_tokens
+    assert default_generation_parameters.temperature == agent.additional_properties["temperature"]
+    assert default_generation_parameters.top_p == agent.additional_properties["top_p"]
+    assert default_generation_parameters.max_tokens == agent.additional_properties["max_tokens"]
 
     # Tools
     assert len(agent_component.tools) == 1
-    assert len(agent_component.tools) == len(agent.chat_options.tools)  # type: ignore
-    assert agent_component.tools[0].name == agent.chat_options.tools[0].name  # type: ignore
-    tool = agent.chat_options.tools[0]  # type: ignore
-    assert isinstance(tool, AIFunction)
+    assert len(agent_component.tools) == len(agent.default_options["tools"])  # type: ignore
+    assert agent_component.tools[0].name == agent.default_options["tools"][0].name  # type: ignore
+    tool = agent.default_options["tools"][0]  # type: ignore
+    assert isinstance(tool, FunctionTool)
     tool_schema = tool.input_model.model_json_schema()
     assert "properties" in tool_schema and "city" in tool_schema["properties"]
 
 
 def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool: str) -> None:
 
-    from agent_framework import ChatAgent, TextContent
+    from agent_framework import ChatAgent
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
@@ -67,12 +67,11 @@ def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool
     contents = result.messages[-1].contents
     assert len(contents) > 0
     last_content = contents[-1]
-    assert isinstance(last_content, TextContent)
 
 
 def test_remote_tool_with_agent(weather_agent_remote_tool: str) -> None:
 
-    from agent_framework import ChatAgent, TextContent
+    from agent_framework import ChatAgent
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
@@ -83,7 +82,6 @@ def test_remote_tool_with_agent(weather_agent_remote_tool: str) -> None:
     contents = result.messages[-1].contents
     assert len(contents) > 0
     last_content = contents[-1]
-    assert isinstance(last_content, TextContent)
     assert all(x in last_content.text.lower() for x in ("agadir", "sunny"))
 
 
@@ -91,7 +89,7 @@ def test_server_tool_requires_confirmation_with_agent(
     weather_agent_server_tool_confirmation: str,
 ) -> None:
 
-    from agent_framework import AIFunction, ChatAgent, ChatMessage, Role, TextContent
+    from agent_framework import ChatAgent, ChatMessage, FunctionTool, Role
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
@@ -100,10 +98,10 @@ def test_server_tool_requires_confirmation_with_agent(
     assert isinstance(agent, ChatAgent)
 
     # Ensure approval mode is set to always_require for the converted tool
-    tools = agent.chat_options.tools or []
+    tools = agent.default_options["tools"] or []
     assert len(tools) == 1
     t = tools[0]
-    assert isinstance(t, AIFunction)
+    assert isinstance(t, FunctionTool)
     assert t.approval_mode == "always_require"
 
     async def run_agent_with_confirmation(agent):
@@ -121,13 +119,12 @@ def test_server_tool_requires_confirmation_with_agent(
             [
                 "What is the weather like in Agadir?",
                 ChatMessage(role=Role.ASSISTANT, contents=[req]),
-                ChatMessage(role=Role.USER, contents=[req.create_response(True)]),
+                ChatMessage(role=Role.USER, contents=[req.to_function_approval_response(True)]),
             ],
         )
         contents = final_result.messages[-1].contents
         assert len(contents) > 0
         last_content = contents[-1]
-        assert isinstance(last_content, TextContent)
         assert all(x in last_content.text.lower() for x in ("agadir", "sunny"))
 
     anyio.run(run_agent_with_confirmation, agent)

@@ -11,9 +11,8 @@ from pyagentspec.adapters.agent_framework._types import (
     AgentFrameworkLlmConfig,
     AgentFrameworkMCPTool,
     AgentFrameworkTool,
-    AIFunction,
     ChatAgent,
-    ChatOptions,
+    FunctionTool,
     MCPStdioTool,
     MCPStreamableHTTPTool,
     OpenAIChatClient,
@@ -153,18 +152,6 @@ class AgentFrameworkToAgentSpecConverter:
                 f"mcp tool conversion to agentspec for type {type(mcp_tool)} not supported yet"
             )
 
-    def _chat_options_convert_to_agentspec(
-        self,
-        chat_options: ChatOptions,
-        referenced_objects: dict[str, AgentSpecComponent],
-    ) -> LlmGenerationConfig:
-        generation_config = LlmGenerationConfig(
-            temperature=chat_options.temperature,
-            top_p=chat_options.top_p,
-            max_tokens=chat_options.max_tokens,
-        )
-        return generation_config
-
     def _tool_convert_to_agentspec(
         self,
         tool: AgentFrameworkTool,
@@ -173,7 +160,7 @@ class AgentFrameworkToAgentSpecConverter:
         requires_confirmation = False
         callable_tool: Any = tool
         tool_description: str | None = None
-        if isinstance(tool, AIFunction):
+        if isinstance(tool, FunctionTool):
             requires_confirmation = tool.approval_mode == "always_require"
             tool_description = tool.description
             callable_tool = tool.func
@@ -220,9 +207,10 @@ class AgentFrameworkToAgentSpecConverter:
         chat_agent: ChatAgent,
         referenced_objects: dict[str, AgentSpecComponent],
     ) -> AgentSpecComponent:
-        generation_config = self._chat_options_convert_to_agentspec(
-            chat_agent.chat_options,
-            referenced_objects,
+        generation_config = LlmGenerationConfig(
+            temperature=chat_agent.additional_properties.get("temperature", None),
+            top_p=chat_agent.additional_properties.get("top_p", None),
+            max_tokens=chat_agent.additional_properties.get("max_tokens", None),
         )
         llm_config = cast(
             LlmConfig,
@@ -232,9 +220,10 @@ class AgentFrameworkToAgentSpecConverter:
             ),
         )
         llm_config.default_generation_parameters = generation_config
-        system_prompt = chat_agent.chat_options.instructions or ""
+        system_prompt = chat_agent.default_options.get("instructions", "")
         tools = [
-            cast(AgentSpecTool, self.convert(tool)) for tool in chat_agent.chat_options.tools or []
+            cast(AgentSpecTool, self.convert(tool))
+            for tool in chat_agent.default_options.get("tools", [])
         ]
         return AgentSpecAgent(
             id=chat_agent.id,

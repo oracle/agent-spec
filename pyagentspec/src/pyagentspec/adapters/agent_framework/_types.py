@@ -10,11 +10,11 @@ from pyagentspec._lazy_loader import LazyLoader
 
 if TYPE_CHECKING:
     from agent_framework import (
-        AIFunction,
         BaseChatClient,
         ChatAgent,
         ChatClientProtocol,
         ChatOptions,
+        FunctionTool,
         MCPStdioTool,
         MCPStreamableHTTPTool,
         MCPWebsocketTool,
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from agent_framework.openai import OpenAIChatClient
 else:
     ChatOptions = LazyLoader("agent_framework").ChatOptions
-    AIFunction = LazyLoader("agent_framework").AIFunction
+    FunctionTool = LazyLoader("agent_framework").FunctionTool
     BaseChatClient = LazyLoader("agent_framework").BaseChatClient
     ChatAgent = LazyLoader("agent_framework").ChatAgent
     ChatClientProtocol = LazyLoader("agent_framework").ChatClientProtocol
@@ -36,7 +36,7 @@ else:
 AgentFrameworkComponent: TypeAlias = ChatAgent
 AgentFrameworkTool: TypeAlias = (
     ToolProtocol
-    | AIFunction[Any, Any]
+    | FunctionTool[Any, Any]
     | Callable[..., Any]
     | MutableMapping[str, Any]
     | Sequence[ToolProtocol | Callable[..., Any] | MutableMapping[str, Any]]
@@ -46,7 +46,7 @@ AgentFrameworkMCPTool: TypeAlias = MCPStdioTool | MCPStreamableHTTPTool | MCPWeb
 
 __all__ = [
     "BaseChatClient",
-    "AIFunction",
+    "FunctionTool",
     "ChatAgent",
     "ChatClientProtocol",
     "MCPStdioTool",
