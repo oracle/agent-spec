@@ -25,6 +25,18 @@ from .utils import get_available_port, start_uvicorn_server, terminate_process_t
 SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
 
 
+@pytest.fixture(autouse=True)
+def _disable_openai_api_key():
+    """Disable the openai api key environment variable"""
+    old_value = os.environ.get("OPENAI_API_KEY", None)
+    os.environ["OPENAI_API_KEY"] = "sk-fake-api-key"
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ["OPENAI_API_KEY"] = old_value
+
+
 @pytest.fixture(scope="session")
 def json_server_port() -> int:
     return get_available_port()
