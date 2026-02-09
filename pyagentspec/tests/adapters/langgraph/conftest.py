@@ -21,11 +21,6 @@ def pytest_collection_modifyitems(config: Any, items: Any):
     )
 
 
-@pytest.fixture(scope="session")
-def anyio_backend():
-    return "asyncio"
-
-
 def get_weather(city: str) -> str:
     """Returns the weather in a specific city.
     Args

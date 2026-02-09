@@ -16,6 +16,7 @@ setuptools==71.1.0
 # stubs for mypy
 types-PyYAML
 types-jsonschema
+pandas-stubs
 
 # install dev requirements
 sphinx==6.1
@@ -35,7 +36,7 @@ sphinx_design==0.6.1
 
 -c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
--e .[autogen,langgraph-full,wayflow_oci,wayflow_datastore,wayflow_a2a,agent-framework,openai-agents]
+-e .[autogen,langgraph-full,wayflow_oci,wayflow_datastore,wayflow_a2a,agent-framework,openai-agents,evaluation]
 # CrewAI is not installed by default due to dependency incompatability with other frameworks
 # -e .[crewai]
 # or

@@ -127,5 +127,11 @@ setup(
             "agent-framework-core>=1.0.0b260130; python_version < '3.14'",
             # 4rth party dependencies
         ],
+        "evaluation": [
+            "anyio>=4.10.0,<4.12.0",
+            "litellm>=1.79.0",
+            "pandas>=2.0.3,<3.0.0",
+            "oci>=2.158.2",
+        ],
     },
 )

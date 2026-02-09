@@ -316,6 +316,13 @@
         ]
     },
     {
+        "name": "Version",
+        "path": "version",
+        "classes": [
+            {"path": "pyagentspec.versioning.AgentSpecVersionEnum"}
+        ]
+    },
+    {
         "name": "Adapters",
         "path": "adapters",
         "classes": [
@@ -332,10 +339,19 @@
         ]
     },
     {
-        "name": "Version",
-        "path": "version",
+        "name": "Evaluation",
+        "path": "evaluation",
         "classes": [
-            {"path": "pyagentspec.versioning.AgentSpecVersionEnum"}
+            {"path": "pyagentspec.evaluation.Dataset"},
+            {"path": "pyagentspec.evaluation.Evaluator"},
+            {"path": "pyagentspec.evaluation.EvaluationResults"},
+            {"path": "pyagentspec.evaluation.aggregators.Aggregator"},
+            {"path": "pyagentspec.evaluation.aggregators.HarmonicMeanAggregator"},
+            {"path": "pyagentspec.evaluation.aggregators.MeanAggregator"},
+            {"path": "pyagentspec.evaluation.intermediates.Intermediate"},
+            {"path": "pyagentspec.evaluation.metrics.Metric"},
+            {"path": "pyagentspec.evaluation.metrics.LlmBasedMetric"},
+            {"path": "pyagentspec.evaluation.metrics.LlmAsAJudgeMetric"}
         ]
     }
 ]

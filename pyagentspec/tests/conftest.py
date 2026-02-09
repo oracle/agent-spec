@@ -103,6 +103,11 @@ def default_llm_config() -> VllmConfig:
     )
 
 
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+
 class TestError(Exception):
     """TestError
 
