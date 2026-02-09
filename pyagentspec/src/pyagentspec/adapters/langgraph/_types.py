@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     import langgraph.graph.state as langgraph_graph_state
     import langgraph.prebuilt as langgraph_prebuilt
     import langgraph.types as langgraph_types
-    import langgraph_core  # type: ignore
     import langgraph_swarm
     from langchain.agents.middleware.types import AgentState
     from langchain_core.callbacks import BaseCallbackHandler
@@ -45,7 +44,6 @@ if TYPE_CHECKING:
 else:
     langgraph = LazyLoader("langgraph")
     langgraph_swarm = LazyLoader("langgraph_swarm")
-    langgraph_core = LazyLoader("langgraph_core")
     langchain_ollama = LazyLoader("langchain_ollama")
     langchain_openai = LazyLoader("langchain_openai")
     langgraph_graph = LazyLoader("langgraph.graph")
