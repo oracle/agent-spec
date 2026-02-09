@@ -65,7 +65,7 @@ OAComponent: TypeAlias = Union[OAAgent, OAFunctionTool]
 OAHostedTool: TypeAlias = Union[
     OAFileSearchTool,
     OAWebSearchTool,
-    OAComputerTool,
+    OAComputerTool,  # type: ignore
     OAHostedMCPTool,
     OALocalShellTool,
     OAImageGenerationTool,
