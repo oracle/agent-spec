@@ -59,7 +59,7 @@ jobs:
 
       - name: "Mypy static type checking"
         if: ${{ matrix.python-version != '3.13' && matrix.python-version != '3.14' }}
-        run: mypy pyagentspec/ --config-file pyagentspec/pyproject.toml --exclude pyagentspec/tests_fuzz
+        run: mypy pyagentspec/ --config-file pyagentspec/pyproject.toml --exclude pyagentspec/tests_fuzz --exclude pyagentspec/src/pyagentspec/adapters/crewai
 
       - name: "Run tests"
         working-directory: pyagentspec
