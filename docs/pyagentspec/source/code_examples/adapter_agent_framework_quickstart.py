@@ -69,9 +69,10 @@ async def main():
 # .. end-agentspec_to_runtime
 # .. start-runtime_to_agentspec
 # Create an Agent Framework Agent
-from agent_framework import ChatAgent
+from agent_framework import ChatAgent, tool
 from agent_framework.openai import OpenAIChatClient
 
+@tool()
 def get_weather(city: str) -> str:
     """Returns the weather in a specific city.
     Args
