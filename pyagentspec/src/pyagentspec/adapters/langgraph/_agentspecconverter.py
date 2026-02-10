@@ -168,7 +168,7 @@ class LangGraphToAgentSpecConverter:
             return AgentSpecAnthropicLlmConfig(
                 name=model.model,
                 model_id=model.model,
-                base_url=model.anthropic_api_url,
+                url=model.anthropic_api_url,
             )
         raise ValueError(f"The LLM instance provided is of an unsupported type `{type(model)}`.")
 

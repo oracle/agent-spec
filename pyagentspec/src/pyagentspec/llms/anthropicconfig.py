@@ -6,7 +6,12 @@
 
 """Defines the class for configuring how to connect to Anthropic Claude models."""
 
+
+from pydantic import SecretStr
+
 from pyagentspec.llms.llmconfig import LlmConfig
+from pyagentspec.sensitive_field import SensitiveField
+
 
 
 class AnthropicLlmConfig(LlmConfig):
@@ -19,6 +24,10 @@ class AnthropicLlmConfig(LlmConfig):
     model_id: str
     """ID of the Anthropic model to use, e.g., claude-haiku-4-5-20251001."""
 
-    base_url: str | None = None
-    """Base URL of the Anthropic API.
-    If not provided, the default Anthropic API base URL will be used."""
+    url: str | None = None
+    """URL of the Anthropic API.
+    If not provided, the Anthropic API URL from the runtime environment will be used."""
+
+    api_key: SensitiveField[SecretStr | None] = None
+    """An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
+       excluded and replaced by a reference when exporting the configuration."""

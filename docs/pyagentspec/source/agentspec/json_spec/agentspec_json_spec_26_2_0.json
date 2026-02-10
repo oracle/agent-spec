@@ -1446,7 +1446,7 @@
           "title": "Model Id",
           "type": "string"
         },
-        "base_url": {
+        "url": {
           "anyOf": [
             {
               "type": "string"
@@ -1456,7 +1456,21 @@
             }
           ],
           "default": null,
-          "title": "Base Url"
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "format": "password",
+              "type": "string",
+              "writeOnly": true
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"

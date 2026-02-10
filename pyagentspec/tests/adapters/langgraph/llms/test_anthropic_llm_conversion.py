@@ -17,7 +17,8 @@ def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic(
     from pyagentspec.llms import AnthropicLlmConfig, LlmGenerationConfig
 
     model_id: str = "test-anthropic-model"
-    base_url: str = "https://api.test-anthropic.com"
+    url: str = "https://api.test-anthropic.com"
+    api_key: str = "test-anthropic-api-key"
     max_tokens: int = 123
     temperature: float = 0.7
     top_p: float = 0.9
@@ -25,7 +26,8 @@ def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic(
     agentspec_config = AnthropicLlmConfig(
         name="test-name",
         model_id=model_id,
-        base_url=base_url,
+        url=url,
+        api_key=api_key,
         default_generation_parameters=LlmGenerationConfig(
             max_tokens=max_tokens,
             temperature=temperature,
@@ -39,7 +41,9 @@ def test_agentspec_to_langgraph_converts_anthropic_llm_config_to_chat_anthropic(
 
     assert isinstance(model, ChatAnthropic)
     assert model.model == model_id
-    assert model.anthropic_api_url == base_url
+    assert model.anthropic_api_url == url
+    assert model.anthropic_api_key is not None
+    assert model.anthropic_api_key.get_secret_value() == api_key
     assert model.max_tokens == max_tokens
     assert model.temperature == temperature
     assert model.top_p == top_p
@@ -54,15 +58,18 @@ def test_langgraph_to_agentspec_converts_chat_anthropic_to_anthropic_llm_config(
     from pyagentspec.llms import AnthropicLlmConfig
 
     model_id: str = "test-anthropic-model"
-    base_url: str = "https://api.test-anthropic.com"
+    url: str = "https://api.test-anthropic.com"
+    api_key: str = "test-anthropic-api-key"
 
     model = ChatAnthropic(
         model=model_id,
-        base_url=base_url,
+        base_url=url,
+        api_key=api_key,
     )
 
     agentspec_config = LangGraphToAgentSpecConverter().convert(model)
     assert isinstance(agentspec_config, AnthropicLlmConfig)
     assert agentspec_config.name == model_id
     assert agentspec_config.model_id == model_id
-    assert agentspec_config.base_url == base_url
+    assert agentspec_config.url == url
+    assert agentspec_config.api_key is None

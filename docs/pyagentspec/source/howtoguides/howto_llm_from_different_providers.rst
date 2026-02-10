@@ -6,6 +6,7 @@ Agent Spec supports several LLM providers, each one having its own LlmConfig com
 The available LLMs are:
 
 - :ref:`OpenAiConfig <openaiconfig>`
+- :ref:`AnthropicLlmConfig <anthropicllmconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
 - :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>`
 - :ref:`VllmConfig <vllmconfig>`
@@ -162,6 +163,39 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
     :language: python
     :start-after: .. openai-start
     :end-before: .. openai-end
+
+AnthropicLlmConfig
+==================
+
+`Anthropic Models <https://docs.anthropic.com/en/docs/about-claude/models>`_ are powered by Anthropic.
+You can refer to one of those models by using the ``AnthropicLlmConfig`` component.
+
+**Parameters**
+
+.. option:: model_id: str
+
+  ID of the Anthropic model to use.
+
+.. option:: url: str, null
+
+  URL of the Anthropic API endpoint.
+  If omitted, the Anthropic API URL from the runtime environment is used.
+
+.. option:: api_key: SecretStr, null
+
+  An optional API key for authentication to the Anthropic API endpoint.
+  If omitted, configure credentials in your runtime environment.
+
+.. option:: default_generation_parameters: dict, null
+
+  Default parameters for text generation with this model.
+
+**Examples**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. anthropic-start
+    :end-before: .. anthropic-end
 
 
 OpenAiCompatibleConfig

@@ -1257,8 +1257,10 @@ class AgentSpecToLangGraphConverter:
                 "callbacks": callbacks,
                 **anthropic_generation_config,
             }
-            if llm_config.base_url:
-                anthropic_kwargs["base_url"] = llm_config.base_url
+            if llm_config.url:
+                anthropic_kwargs["base_url"] = llm_config.url
+            if llm_config.api_key:
+                anthropic_kwargs["anthropic_api_key"] = llm_config.api_key.get_secret_value()
             return ChatAnthropic(**anthropic_kwargs)
         else:
             raise NotImplementedError(

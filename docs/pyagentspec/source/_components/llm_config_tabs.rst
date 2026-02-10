@@ -60,3 +60,14 @@
                 name="Ollama Config",
                 model_id="model-id",
             )
+
+    .. tab:: Anthropic
+
+        .. code-block:: python
+
+            from pyagentspec.llms import AnthropicLlmConfig
+
+            llm_config = AnthropicLlmConfig(
+                name="Anthropic Config",
+                model_id="claude-haiku-4-5-20251001",
+            )
