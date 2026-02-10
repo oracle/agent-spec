@@ -39,6 +39,12 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Swarm support in LangGraph adapter:**
+
+  The LangGraph adapter now supports the conversion of the Swarm multi-agent pattern.
+
+  To use this, install the optional extra ``pyagentspec[langgraph]``.
+
 * **CatchExceptionNode:**
 
   Added a new node that executes a subflow and catches exceptions.
