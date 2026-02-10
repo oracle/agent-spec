@@ -19,13 +19,6 @@ class MeanAggregator(Aggregator[bool | float | int, float]):
         Call the aggregator instance directly (e.g., ``aggregator(values)``) rather than calling method ``aggregate`` externally.
     """
 
-    def __init__(self) -> None:
-        """
-        Initialize the MeanAggregator.
-        """
-
-        super().__init__()
-
     def aggregate(self, values: Collection[bool | float | int]) -> float:
         """Return the arithmetic mean for the provided numeric values.
 

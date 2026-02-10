@@ -22,13 +22,6 @@ class HarmonicMeanAggregator(Aggregator[bool | float | int, float]):
         Call the aggregator instance directly (e.g., ``aggregator(values)``) rather than calling method ``aggregate`` externally.
     """
 
-    def __init__(self) -> None:
-        """
-        Initialize the HarmonicMeanAggregator.
-        """
-
-        super().__init__()
-
     def aggregate(self, values: Collection[bool | float | int]) -> float:
         """Compute the harmonic mean of the provided non-negative values.
 
