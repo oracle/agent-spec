@@ -975,6 +975,8 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
     ) -> CompiledStateGraph[Any, Any, Any]:
         if agentspec_component.handoff is AgentSpecHandoffMode.NEVER:
+            # As of now, we cannot control what langgraph-swarm does internally in terms of conversation sharing.
+            # The closest behaviors are OPTIONAL (probably best) or ALWAYS, but NEVER is not really supported.
             raise ValueError(
                 "Handoff mode NEVER is not supported for conversion in LangGraph adapter"
             )
