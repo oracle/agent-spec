@@ -5,7 +5,7 @@ Agent Spec Adapters - CrewAI
 ============================
 
 
-.. figure:: ../_static/icons/crewai-adapter.jpg
+.. figure:: ../../_static/icons/crewai-adapter.jpg
     :align: center
     :scale: 18%
     :alt: Agent Spec adapter for CrewAI
@@ -36,25 +36,13 @@ You are now ready to use the adapter:
 - Convert CrewAI agents to Agent Spec (see more details :ref:`below <crewaitospec>`)
 
 
+Usage Examples
+==============
 
-.. _spectocrewai:
+You are now ready to use the adapter to:
 
-Run Agent Spec configurations with CrewAI
-=========================================
+.. toctree::
+   :maxdepth: 1
 
-
-.. literalinclude:: ../code_examples/adapter_crewai_quickstart.py
-    :language: python
-    :start-after: .. start-agentspec_to_runtime
-    :end-before: .. end-agentspec_to_runtime
-
-
-.. _crewaitospec:
-
-Convert CrewAI agents to Agent Spec
-===================================
-
-.. literalinclude:: ../code_examples/adapter_crewai_quickstart.py
-    :language: python
-    :start-after: .. start-runtime_to_agentspec
-    :end-before: .. end-runtime_to_agentspec
+   Run Agent Spec configurations with CrewAI <spec_to_crewai>
+   Convert CrewAI agents to Agent Spec <crewai_to_spec>

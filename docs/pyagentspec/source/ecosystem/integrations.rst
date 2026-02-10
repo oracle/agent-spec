@@ -14,6 +14,9 @@ Agent Spec Integrations
 .. |wayflow-icon| image:: ../_static/icons/wayflow-icon.svg
    :width: 250px
 
+.. |crewai-icon| image:: ../_static/icons/crewai-icon.svg
+   :width: 250px
+
 
 Open Agent Specification provides support for **LangGraph**, **CrewAI**, **WayFlow**, as well as integrations
 for a growing collection of AI Agents frameworks. Learn more in our guide on
