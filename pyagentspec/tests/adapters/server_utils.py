@@ -48,7 +48,7 @@ class LogTee:
         return "\n".join(self.lines)
 
 
-def _terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> None:
+def terminate_process_tree(process: subprocess.Popen, timeout: float = 5.0) -> None:
     """Best-effort, cross-platform termination with escalation and stdout close."""
     try:
         if process.poll() is not None:
@@ -148,7 +148,7 @@ def _check_server_is_up(
     return False
 
 
-def _start_uvicorn_server(
+def start_uvicorn_server(
     server_file_path: str,
     host: str = "localhost",
     port: Optional[int] = None,
@@ -232,7 +232,7 @@ def _start_uvicorn_server(
         )
 
     except Exception as e:
-        _terminate_process_tree(process, timeout=5.0)
+        terminate_process_tree(process, timeout=5.0)
         raise e
     finally:
         tee.stop()
@@ -246,11 +246,11 @@ def register_server_fixture(
         resolved = {name: request.getfixturevalue(name) for name in deps}
         kwargs = {**start_kwargs, **resolved}
 
-        process, url = _start_uvicorn_server(**kwargs)
+        process, url = start_uvicorn_server(**kwargs)
         try:
             yield f"{url}/{url_suffix.strip('/')}"
         finally:
-            _terminate_process_tree(process, timeout=5.0)
+            terminate_process_tree(process, timeout=5.0)
 
     return pytest.fixture(scope="session", name=name)(_fixture)
 
