@@ -644,15 +644,24 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         parent_run_id: Optional[UUID] = None,
         **kwargs: Any,
     ) -> Any:
-
         run_id_str = str(run_id)
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
             tool=self.tool,
             inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
         )
+        # starting a tool span for this tool
         span_name = f"ToolExecution[{self.tool.name}]"
-        tool_span = AgentSpecToolExecutionSpan(name=span_name, tool=self.tool)
+        # Hack: transmit the tool_call_id as the span's description
+        # so that tool results can learn of its tool_call_id
+        # by correlating with tool starts using the run_id
+        if "tool_call_id" in kwargs:
+            tcid_string = "tcid__" + str(kwargs["tool_call_id"])
+        else:
+            tcid_string = ""
+        tool_span = AgentSpecToolExecutionSpan(
+            name=span_name, description=tcid_string, tool=self.tool
+        )
         self.agentspec_spans_registry[run_id_str] = tool_span
         await self._start_and_copy_ctx_async(run_id_str, tool_span)
         await self._add_event_async(run_id_str, tool_span, request_event)
