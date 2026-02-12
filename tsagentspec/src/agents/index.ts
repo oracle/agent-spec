@@ -5,6 +5,7 @@ import { z } from "zod";
 import { AgentSchema } from "./agent.js";
 import { SwarmSchema } from "./swarm.js";
 import { ManagerWorkersSchema } from "./manager-workers.js";
+import { RemoteAgentSchema } from "./remote-agent.js";
 import { A2AAgentSchema } from "./a2a-agent.js";
 import { SpecializedAgentSchema } from "./specialized-agent.js";
 
@@ -13,6 +14,7 @@ export const AgenticComponentUnion = z.discriminatedUnion("componentType", [
   AgentSchema,
   SwarmSchema,
   ManagerWorkersSchema,
+  RemoteAgentSchema,
   A2AAgentSchema,
   SpecializedAgentSchema,
 ]);
@@ -31,11 +33,16 @@ export {
   createManagerWorkers,
   type ManagerWorkers,
 } from "./manager-workers.js";
-export { RemoteAgentSchema, type RemoteAgent } from "./remote-agent.js";
+export {
+  RemoteAgentSchema,
+  createRemoteAgent,
+  type RemoteAgent,
+} from "./remote-agent.js";
 export {
   A2AAgentSchema,
   A2AConnectionConfigSchema,
   createA2AAgent,
+  createA2AConnectionConfig,
   type A2AAgent,
   type A2AConnectionConfig,
 } from "./a2a-agent.js";

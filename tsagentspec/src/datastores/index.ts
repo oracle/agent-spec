@@ -11,6 +11,9 @@ export {
   OracleDatabaseDatastoreSchema,
   TlsOracleDatabaseConnectionConfigSchema,
   MTlsOracleDatabaseConnectionConfigSchema,
+  createOracleDatabaseDatastore,
+  createTlsOracleDatabaseConnectionConfig,
+  createMTlsOracleDatabaseConnectionConfig,
   type OracleDatabaseDatastore,
   type TlsOracleDatabaseConnectionConfig,
   type MTlsOracleDatabaseConnectionConfig,
@@ -19,6 +22,8 @@ export {
 export {
   PostgresDatabaseDatastoreSchema,
   TlsPostgresDatabaseConnectionConfigSchema,
+  createPostgresDatabaseDatastore,
+  createTlsPostgresDatabaseConnectionConfig,
   type PostgresDatabaseDatastore,
   type TlsPostgresDatabaseConnectionConfig,
 } from "./postgres-datastore.js";

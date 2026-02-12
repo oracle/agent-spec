@@ -32,6 +32,26 @@ export const A2AAgentSchema = ComponentWithIOSchema.extend({
 
 export type A2AAgent = z.infer<typeof A2AAgentSchema>;
 
+export function createA2AConnectionConfig(opts: {
+  name: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  timeout?: number;
+  headers?: Record<string, string>;
+  verify?: boolean;
+  keyFile?: string;
+  certFile?: string;
+  sslCaCert?: string;
+}): A2AConnectionConfig {
+  return Object.freeze(
+    A2AConnectionConfigSchema.parse({
+      ...opts,
+      componentType: "A2AConnectionConfig" as const,
+    }),
+  );
+}
+
 export function createA2AAgent(opts: {
   name: string;
   agentUrl: string;

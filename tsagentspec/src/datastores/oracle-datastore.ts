@@ -43,3 +43,59 @@ export const OracleDatabaseDatastoreSchema = ComponentBaseSchema.extend({
 export type OracleDatabaseDatastore = z.infer<
   typeof OracleDatabaseDatastoreSchema
 >;
+
+export function createTlsOracleDatabaseConnectionConfig(opts: {
+  name: string;
+  user: string;
+  password: string;
+  dsn: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  configDir?: string;
+  protocol?: "tcp" | "tcps";
+}): TlsOracleDatabaseConnectionConfig {
+  return Object.freeze(
+    TlsOracleDatabaseConnectionConfigSchema.parse({
+      ...opts,
+      componentType: "TlsOracleDatabaseConnectionConfig" as const,
+    }),
+  );
+}
+
+export function createMTlsOracleDatabaseConnectionConfig(opts: {
+  name: string;
+  user: string;
+  password: string;
+  dsn: string;
+  walletLocation: string;
+  walletPassword: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  configDir?: string;
+  protocol?: "tcp" | "tcps";
+}): MTlsOracleDatabaseConnectionConfig {
+  return Object.freeze(
+    MTlsOracleDatabaseConnectionConfigSchema.parse({
+      ...opts,
+      componentType: "MTlsOracleDatabaseConnectionConfig" as const,
+    }),
+  );
+}
+
+export function createOracleDatabaseDatastore(opts: {
+  name: string;
+  datastoreSchema: Record<string, Record<string, unknown>>;
+  connectionConfig: TlsOracleDatabaseConnectionConfig | MTlsOracleDatabaseConnectionConfig;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}): OracleDatabaseDatastore {
+  return Object.freeze(
+    OracleDatabaseDatastoreSchema.parse({
+      ...opts,
+      componentType: "OracleDatabaseDatastore" as const,
+    }),
+  );
+}

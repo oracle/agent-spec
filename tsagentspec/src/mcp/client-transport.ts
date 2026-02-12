@@ -79,3 +79,118 @@ export const ClientTransportUnion = z.discriminatedUnion("componentType", [
 ]);
 
 export type ClientTransport = z.infer<typeof ClientTransportUnion>;
+
+export function createStdioTransport(opts: {
+  name: string;
+  command: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  args?: string[];
+  env?: Record<string, string>;
+  cwd?: string;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): StdioTransport {
+  return Object.freeze(
+    StdioTransportSchema.parse({
+      ...opts,
+      componentType: "StdioTransport" as const,
+    }),
+  );
+}
+
+export function createSSETransport(opts: {
+  name: string;
+  url: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  sensitiveHeaders?: Record<string, string>;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): SSETransport {
+  return Object.freeze(
+    SSETransportSchema.parse({
+      ...opts,
+      componentType: "SSETransport" as const,
+    }),
+  );
+}
+
+export function createSSEmTLSTransport(opts: {
+  name: string;
+  url: string;
+  keyFile: string;
+  certFile: string;
+  caFile: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  sensitiveHeaders?: Record<string, string>;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): SSEmTLSTransport {
+  return Object.freeze(
+    SSEmTLSTransportSchema.parse({
+      ...opts,
+      componentType: "SSEmTLSTransport" as const,
+    }),
+  );
+}
+
+export function createStreamableHTTPTransport(opts: {
+  name: string;
+  url: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  sensitiveHeaders?: Record<string, string>;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): StreamableHTTPTransport {
+  return Object.freeze(
+    StreamableHTTPTransportSchema.parse({
+      ...opts,
+      componentType: "StreamableHTTPTransport" as const,
+    }),
+  );
+}
+
+export function createStreamableHTTPmTLSTransport(opts: {
+  name: string;
+  url: string;
+  keyFile: string;
+  certFile: string;
+  caFile: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  sensitiveHeaders?: Record<string, string>;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): StreamableHTTPmTLSTransport {
+  return Object.freeze(
+    StreamableHTTPmTLSTransportSchema.parse({
+      ...opts,
+      componentType: "StreamableHTTPmTLSTransport" as const,
+    }),
+  );
+}
+
+export function createRemoteTransport(opts: {
+  name: string;
+  url: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  sensitiveHeaders?: Record<string, string>;
+  sessionParameters?: { readTimeoutSeconds?: number };
+}): RemoteTransport {
+  return Object.freeze(
+    RemoteTransportSchema.parse({
+      ...opts,
+      componentType: "RemoteTransport" as const,
+    }),
+  );
+}

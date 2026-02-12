@@ -39,3 +39,41 @@ export const PostgresDatabaseDatastoreSchema = ComponentBaseSchema.extend({
 export type PostgresDatabaseDatastore = z.infer<
   typeof PostgresDatabaseDatastoreSchema
 >;
+
+export function createTlsPostgresDatabaseConnectionConfig(opts: {
+  name: string;
+  user: string;
+  password: string;
+  url: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  sslmode?: "disable" | "allow" | "prefer" | "require" | "verify-ca" | "verify-full";
+  sslcert?: string;
+  sslkey?: string;
+  sslrootcert?: string;
+  sslcrl?: string;
+}): TlsPostgresDatabaseConnectionConfig {
+  return Object.freeze(
+    TlsPostgresDatabaseConnectionConfigSchema.parse({
+      ...opts,
+      componentType: "TlsPostgresDatabaseConnectionConfig" as const,
+    }),
+  );
+}
+
+export function createPostgresDatabaseDatastore(opts: {
+  name: string;
+  datastoreSchema: Record<string, Record<string, unknown>>;
+  connectionConfig: TlsPostgresDatabaseConnectionConfig;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}): PostgresDatabaseDatastore {
+  return Object.freeze(
+    PostgresDatabaseDatastoreSchema.parse({
+      ...opts,
+      componentType: "PostgresDatabaseDatastore" as const,
+    }),
+  );
+}

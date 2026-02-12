@@ -10,8 +10,8 @@ import {
   ManagerWorkersSchema,
   createManagerWorkers,
 } from "./agents/manager-workers.js";
-import { RemoteAgentSchema } from "./agents/remote-agent.js";
-import { A2AAgentSchema, createA2AAgent } from "./agents/a2a-agent.js";
+import { RemoteAgentSchema, createRemoteAgent } from "./agents/remote-agent.js";
+import { A2AAgentSchema, A2AConnectionConfigSchema, createA2AAgent, createA2AConnectionConfig } from "./agents/a2a-agent.js";
 import {
   SpecializedAgentSchema,
   createSpecializedAgent,
@@ -51,6 +51,12 @@ import {
   StreamableHTTPTransportSchema,
   StreamableHTTPmTLSTransportSchema,
   RemoteTransportSchema,
+  createStdioTransport,
+  createSSETransport,
+  createSSEmTLSTransport,
+  createStreamableHTTPTransport,
+  createStreamableHTTPmTLSTransport,
+  createRemoteTransport,
 } from "./mcp/client-transport.js";
 
 import { FlowSchema, createFlow } from "./flows/flow.js";
@@ -101,8 +107,20 @@ import {
   InMemoryCollectionDatastoreSchema,
   createInMemoryCollectionDatastore,
 } from "./datastores/datastore.js";
-import { OracleDatabaseDatastoreSchema } from "./datastores/oracle-datastore.js";
-import { PostgresDatabaseDatastoreSchema } from "./datastores/postgres-datastore.js";
+import {
+  OracleDatabaseDatastoreSchema,
+  TlsOracleDatabaseConnectionConfigSchema,
+  MTlsOracleDatabaseConnectionConfigSchema,
+  createOracleDatabaseDatastore,
+  createTlsOracleDatabaseConnectionConfig,
+  createMTlsOracleDatabaseConnectionConfig,
+} from "./datastores/oracle-datastore.js";
+import {
+  PostgresDatabaseDatastoreSchema,
+  TlsPostgresDatabaseConnectionConfigSchema,
+  createPostgresDatabaseDatastore,
+  createTlsPostgresDatabaseConnectionConfig,
+} from "./datastores/postgres-datastore.js";
 
 import {
   MessageSummarizationTransformSchema,
@@ -118,6 +136,7 @@ export const BUILTIN_SCHEMA_MAP: Record<string, z.ZodType> = {
   ManagerWorkers: ManagerWorkersSchema,
   RemoteAgent: RemoteAgentSchema,
   A2AAgent: A2AAgentSchema,
+  A2AConnectionConfig: A2AConnectionConfigSchema,
   SpecializedAgent: SpecializedAgentSchema,
   AgentSpecializationParameters: AgentSpecializationParametersSchema,
 
@@ -167,7 +186,10 @@ export const BUILTIN_SCHEMA_MAP: Record<string, z.ZodType> = {
 
   InMemoryCollectionDatastore: InMemoryCollectionDatastoreSchema,
   OracleDatabaseDatastore: OracleDatabaseDatastoreSchema,
+  TlsOracleDatabaseConnectionConfig: TlsOracleDatabaseConnectionConfigSchema,
+  MTlsOracleDatabaseConnectionConfig: MTlsOracleDatabaseConnectionConfigSchema,
   PostgresDatabaseDatastore: PostgresDatabaseDatastoreSchema,
+  TlsPostgresDatabaseConnectionConfig: TlsPostgresDatabaseConnectionConfigSchema,
 
   MessageSummarizationTransform: MessageSummarizationTransformSchema,
   ConversationSummarizationTransform: ConversationSummarizationTransformSchema,
@@ -181,7 +203,9 @@ export const BUILTIN_FACTORY_MAP: Record<string, FactoryFn> = {
   Agent: createAgent,
   Swarm: createSwarm,
   ManagerWorkers: createManagerWorkers,
+  RemoteAgent: createRemoteAgent,
   A2AAgent: createA2AAgent,
+  A2AConnectionConfig: createA2AConnectionConfig,
   SpecializedAgent: createSpecializedAgent,
   AgentSpecializationParameters: createAgentSpecializationParameters,
 
@@ -203,6 +227,13 @@ export const BUILTIN_FACTORY_MAP: Record<string, FactoryFn> = {
   MCPToolSpec: createMCPToolSpec,
   MCPToolBox: createMCPToolBox,
 
+  StdioTransport: createStdioTransport,
+  SSETransport: createSSETransport,
+  SSEmTLSTransport: createSSEmTLSTransport,
+  StreamableHTTPTransport: createStreamableHTTPTransport,
+  StreamableHTTPmTLSTransport: createStreamableHTTPmTLSTransport,
+  RemoteTransport: createRemoteTransport,
+
   Flow: createFlow,
   StartNode: createStartNode,
   EndNode: createEndNode,
@@ -223,6 +254,11 @@ export const BUILTIN_FACTORY_MAP: Record<string, FactoryFn> = {
   DataFlowEdge: createDataFlowEdge,
 
   InMemoryCollectionDatastore: createInMemoryCollectionDatastore,
+  OracleDatabaseDatastore: createOracleDatabaseDatastore,
+  TlsOracleDatabaseConnectionConfig: createTlsOracleDatabaseConnectionConfig,
+  MTlsOracleDatabaseConnectionConfig: createMTlsOracleDatabaseConnectionConfig,
+  PostgresDatabaseDatastore: createPostgresDatabaseDatastore,
+  TlsPostgresDatabaseConnectionConfig: createTlsPostgresDatabaseConnectionConfig,
 
   MessageSummarizationTransform: createMessageSummarizationTransform,
   ConversationSummarizationTransform: createConversationSummarizationTransform,
