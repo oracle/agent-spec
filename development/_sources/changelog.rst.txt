@@ -4,8 +4,101 @@ Changelog
 Agent Spec |release|
 --------------------
 
+Improvements
+^^^^^^^^^^^^
+
+* **Disaggregated configurations in LangGraph adapter**
+
+  The LangGraph adapter now supports loading disaggregated components during deserialization.
+  Use `AgentSpecLoader.load_yaml/json(..., import_only_referenced_components=True)` to import
+  referenced components (e.g., LLM configs, tools), optionally modify them, and then pass them back
+  via `components_registry` when loading the main configuration. This enables keeping sensitive
+  fields (like API keys) out of the main spec while still resolving them at load time.
+
+* **Added AGENTS.md file:**
+
+  Added AGENTS.md file, a dedicated, open-format guide to help AI coding agents work effectively with the project
+  by providing essential context, build/test commands, code style guidelines, and other key instructions.
+
+  We thank @kanak02rawat for the contribution!
+
+* **Tracing in LangGraph adapter flows**
+
+  The LangGraph adapter now supports emitting Agent Spec tracing spans and events for Flows.
+  It also adds tracing support for async APIs of LangGraph (e.g. `ainvoke`, `astream`).
+  Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
+  span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.
+
 New features
 ^^^^^^^^^^^^
+
+* **CatchExceptionNode:**
+
+  Added a new node that executes a subflow and catches exceptions.
+  When an exception is raised, it branches to ``caught_exception_branch``
+  and exposes an additional output string information ``caught_exception_info``.
+
+  For more information and security considerations, read the :ref:`API Reference <catchexceptionnode>`.
+
+* **Added WayFlow adapter to pyagentspec:**
+
+  The WayFlow adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.wayflow`` subpackage.
+  It requires the ``wayflow`` extra dependency to be installed.
+
+  For more information read the :doc:`adapter page <adapters/wayflow/index>`.
+
+* **Added Microsoft Agent Framework adapter to pyagentspec:**
+
+  The Microsoft Agent Framework adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.agent_framework`` subpackage.
+  It requires the ``agent-framework`` extra dependency to be installed.
+
+* **Added OpenAI Agents SDK adapter to pyagentspec:**
+
+  The OpenAI Agents adapter is now available as part of ``pyagentspec``.
+  You can access its functionality through the ``pyagentspec.adapters.openaiagents`` subpackage.
+  It requires the ``openai-agents`` extra dependency to be installed.
+
+  For more information read the :doc:`adapter page <adapters/openai/index>`.
+
+* **Added Flow Builder to simplify programmatic creation of Agent Spec Flows.**
+
+  The Flow Builder is a new chainable API to create and serialize Agent Spec Flows more easily.
+
+  For more information, see the :doc:`API Reference <api/flows>` and the :ref:`Reference Sheet <flowbuilder_ref_sheet>`.
+
+* **Datastores**
+
+  Added support for datastores in Agent Spec through :ref:`OracleDatabaseDatastore <oracledatabasedatastore>` and :ref:`PostgresDatabaseDatastore <postgresdatabasedatastore>`.
+  Datastores enable persistent storage and caching capabilities for agent workflows. :ref:`InMemoryCollectionDatastore <inmemorycollectiondatastore>` provides a drop-in replacement for development and prototyping.
+
+* **Context Summarization Transforms**
+
+  Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
+  We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+* **Empty titles in properties**
+
+Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
+
+Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+
+
+Agent Spec 26.1.0
+-----------------
+
+New features
+^^^^^^^^^^^^
+
+* **MCP tools support in LangGraph adapter:**
+
+  The LangGraph adapter now supports Model Context Protocol (MCP) tools.
+
+  To use this, install the optional extra ``pyagentspec[langgraph_mcp]`` and invoke the loaded graph/agent asynchronously via ``.ainvoke`` within an async context.
 
 * **Added LangGraph adapter to pyagentspec:**
 
@@ -13,7 +106,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.langgraph`` subpackage.
   It requires the ``langgraph`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/langgraph/index>`.
 
 * **Added AutoGen adapter to pyagentspec:**
 
@@ -21,7 +114,7 @@ New features
   You can access its functionality through the ``pyagentspec.adapters.autogen`` subpackage.
   It requires the ``autogen`` extra dependency to be installed.
 
-  For more information read the :doc:`API Reference <api/adapters>`.
+  For more information read the :doc:`adapter page <adapters/autogen/index>`.
 
 * **Sensitive Fields Support:**
 
@@ -91,6 +184,11 @@ New features
 
 Improvements
 ^^^^^^^^^^^^
+
+* **Extended functionality for data parameter**
+
+  Extended the data parameter in ``RemoteTool`` and ``ApiNode`` from only being a dictionary to any JSON serializable object (including nested objects).
+  Also improved template rendering in the ``RemoteTool`` and ``ApiNode`` for PyAgentSpec adapters.
 
 * **Python 3.14 support**
 

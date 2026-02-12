@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agents &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Agents &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,6 +53,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/agent';</script>
     <script>
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +189,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +294,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,8 +345,9 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
@@ -364,11 +369,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
@@ -385,16 +397,41 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -479,7 +516,7 @@
 <h2>Agent class<a class="headerlink" href="#agent-class" title="Permalink to this heading">#</a></h2>
 <span class="target" id="agent"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.agent.Agent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.agent.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolboxes=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_in_the_loop=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.agent.Agent" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.agent.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolboxes=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_in_the_loop=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.agent.Agent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgenticComponent</span></code></a></p>
 <p>An agent is a component that can do several rounds of conversation to solve a task.</p>
 <p>It can be executed by itself, or be executed in a flow using an AgentNode.</p>
@@ -506,8 +543,8 @@
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>llm_config</strong> (<a class="reference internal" href="llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><em>LlmConfig</em></a>) – Configuration of the LLM to use for this Agent</p></li>
@@ -515,6 +552,7 @@
 <li><p><strong>tools</strong> (<em>List</em><em>[</em><a class="reference internal" href="tools.html#pyagentspec.tools.tool.Tool" title="pyagentspec.tools.tool.Tool"><em>Tool</em></a><em>]</em>) – List of tools that the agent can use to fulfil user requests</p></li>
 <li><p><strong>toolboxes</strong> (<em>List</em><em>[</em><a class="reference internal" href="tools.html#pyagentspec.tools.toolbox.ToolBox" title="pyagentspec.tools.toolbox.ToolBox"><em>ToolBox</em></a><em>]</em>) – List of toolboxes that are passed to the agent.</p></li>
 <li><p><strong>human_in_the_loop</strong> (<em>bool</em>) – Flag that determines if the Agent can request input from the user.</p></li>
+<li><p><strong>transforms</strong> (<em>List</em><em>[</em><a class="reference internal" href="transforms.html#pyagentspec.transforms.MessageTransform" title="pyagentspec.transforms.transforms.MessageTransform"><em>MessageTransform</em></a><em>]</em>) – Additional message transforms that are applied to the messages before they are passed to the agent’s LLM. For example, MessageSummarizationTransform and ConversationSummarizationTransform can be used when the context becomes long.</p></li>
 </ul>
 </dd>
 </dl>

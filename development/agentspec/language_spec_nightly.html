@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent Spec specification (nightly version 26.1.0.dev0) &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Agent Spec specification (nightly version 26.2.0.dev1) &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,6 +53,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'agentspec/language_spec_nightly';</script>
     <script>
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +189,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +294,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,8 +345,9 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agent Spec Specification</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 </ul>
@@ -364,11 +369,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
@@ -385,16 +397,41 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -455,7 +492,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec specification (nightly version 26.1.0.dev0)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec specification (nightly version 26.2.0.dev1)</span></li>
   </ul>
 </nav>
 </div>
@@ -473,7 +510,7 @@
                 <article class="bd-article">
                   
   <section id="agent-spec-specification-nightly-version-release">
-<span id="agentspecspec-nightly"></span><h1>Agent Spec specification (nightly version 26.1.0.dev0)<a class="headerlink" href="#agent-spec-specification-nightly-version-release" title="Permalink to this heading">#</a></h1>
+<span id="agentspecspec-nightly"></span><span id="agentspecspec"></span><h1>Agent Spec specification (nightly version 26.2.0.dev1)<a class="headerlink" href="#agent-spec-specification-nightly-version-release" title="Permalink to this heading">#</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This is the nightly version of Agent Spec, and it is currently under development.
@@ -840,6 +877,14 @@ discovered from an MCP server.</p></td>
 </ul>
 </td>
 </tr>
+<tr class="row-odd"><td><p>Datastore</p></td>
+<td><p>A component that provides storage capabilities for agentic systems, enabling them to store and access data.</p></td>
+<td><ul class="simple">
+<li><p>An in-memory datastore for testing</p></li>
+<li><p>An Oracle Database datastore and a Postgres Database datastore for production use</p></li>
+</ul>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -873,6 +918,7 @@ for interactions with the agentic system.</p>
   <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span>
   <span class="n">toolboxes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ToolBox</span><span class="p">]</span>
   <span class="n">human_in_the_loop</span><span class="p">:</span> <span class="nb">bool</span>
+  <span class="n">transforms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MessageTransform</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Its main goal is to accomplish any task assigned in the <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and terminate,
@@ -899,6 +945,8 @@ registry for the Agent. In case of tool name collisions across different sources
 the exact behavior to the runtime. Runtimes MAY error on collisions.</p></li>
 <li><p>Implementations SHOULD provide clear diagnostics when collisions occur.</p></li>
 </ul>
+<p>Transforms, when present, apply transformations to the messages before they are passed to the agent’s LLM,
+allowing for message summarization, conversation summarization, or other modifications to optimize the agent’s context.</p>
 <p>This Component will be expanded as more functionalities will be added to
 Agent Spec (e.g., memory, planners, …).</p>
 <section id="human-in-the-loop-in-agents">
@@ -1229,7 +1277,7 @@ the correct built-in tool.</p>
   <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
   <span class="n">http_method</span><span class="p">:</span> <span class="nb">str</span>
   <span class="n">api_spec_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-  <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+  <span class="n">data</span><span class="p">:</span> <span class="n">Any</span>
   <span class="n">query_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
   <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
   <span class="n">sensitive_headers</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
@@ -1249,7 +1297,7 @@ code from the agent representation. The representation contains a complete descr
 of the tool—its attributes, inputs, outputs, and related metadata—but does
 not embed executable code.</p>
 <section id="remote-tools">
-<h5>Remote Tools<a class="headerlink" href="#remote-tools" title="Permalink to this heading">#</a></h5>
+<span id="remotetools"></span><h5>Remote Tools<a class="headerlink" href="#remote-tools" title="Permalink to this heading">#</a></h5>
 <p>One common way to make tools available to agents, is to make them
 available under the for of REST APIs that the agent can call when the
 tool has to be executed.</p>
@@ -1261,7 +1309,12 @@ in the right manner.</p>
 <p>Note that, similarly to the APINode, we allow users to use placeholders
 (as described in section 5.3.4) in all the string attributes of the
 RemoteTool (i.e., url, http_method, api_spec_uri, and in the dict values
-of data, query_params, headers, and sensitive_headers).</p>
+of data, query_params, headers, and sensitive_headers). The <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in
+<code class="docutils literal notranslate"><span class="pre">RemoteTool</span></code> is what ends up in the body of the request.
+If <code class="docutils literal notranslate"><span class="pre">data</span></code> is specified as a string, the runtime must encode and pass it as the body of the HTTP request,
+otherwise the value of <code class="docutils literal notranslate"><span class="pre">data</span></code> should be JSON serializable and runtimes are
+expected to dump it when adding it in the body of the HTTP request.
+The data is passed to the request as Form Data if the header <code class="docutils literal notranslate"><span class="pre">{&quot;Content-Type&quot;:</span> <span class="pre">&quot;application/x-www-form-urlencoded&quot;}</span></code> is specified.</p>
 </section>
 <section id="mcp-tools">
 <h5>MCP Tools<a class="headerlink" href="#mcp-tools" title="Permalink to this heading">#</a></h5>
@@ -1718,6 +1771,8 @@ Carefully review flows with parallelism to ensure they remain safe and predictab
 better structure agentic components and easily reuse them.</p></li>
 <li><p>FlowNode: runs a flow inline, used to better structure and easily
 reuse Flows</p></li>
+<li><p>CatchExceptionNode: Used to catch exceptions that may be raised during the
+execution of a given subflow.</p></li>
 <li><p>MapNode: performs a map-reduce operation on a given input collection,
 applying a specified Flow to each element in the collection</p></li>
 <li><p>StartNode:  entry point of a flow</p></li>
@@ -1852,8 +1907,8 @@ applying a specified Flow to each element in the collection</p></li>
 <td><p>null</p></td>
 </tr>
 <tr class="row-odd"><td><p>data</p></td>
-<td><p>The data to send to this API call. Allows placeholders in dict values, which can define inputs</p></td>
-<td><p>object[str, any]</p></td>
+<td><p>The data to send to this API call. Behaves the same way as the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in <a class="reference internal" href="#remotetools"><span class="std std-ref">RemoteTool</span></a>.</p></td>
+<td><p>any</p></td>
 <td><p>No</p></td>
 <td><p>{}</p></td>
 </tr>
@@ -2052,7 +2107,67 @@ on the <code class="docutils literal notranslate"><span class="pre">reduce</span
 </td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-odd"><td><p>ParallelMapNode</p></td>
+<tr class="row-odd"><td><p>CatchExceptionNode</p></td>
+<td><ul class="simple">
+<li><p>Used to catch exceptions that may be raised during the execution of a given subflow.</p></li>
+<li><p>If an exception is caught during the subflow execution, branches out to an exception branch.
+Otherwise, uses the transitions/branches specified for the subflow.</p></li>
+<li><p>Exposes the inputs of the subflow and outputs the subflow outputs with additional information
+about a potentially caught exception (for more information read the <a class="reference internal" href="../security.html#securitycatchexceptionnode"><span class="std std-ref">security guidelines</span></a>).</p></li>
+<li><p>When the subflow runs to completion without failure, this node returns the subflow outputs.
+Otherwise, it returns the default values for the subflow outputs, along with the exception
+information.</p></li>
+</ul>
+</td>
+<td><div class="pst-scrollable-table-container"><table class="mywideinnertable table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 35.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mandatory</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>subflow</p></td>
+<td><p>Flow to execute and catch errors from</p></td>
+<td><p>Flow</p></td>
+<td><p>Yes</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+<td><p>Same as the inputs from the <code class="docutils literal notranslate"><span class="pre">sub_flow</span></code>.</p></td>
+<td><p>Composed of:</p>
+<ul class="simple">
+<li><p>The outputs of the <code class="docutils literal notranslate"><span class="pre">sub_flow</span></code>. If an exception is raised, will output the default values
+of each output property of the subflow. As a consequence, all outputs of the node must have
+default values. If they are not already specified at the subflow level, the developer must
+specify them in the output properties of the CatchExceptionNode node.</p></li>
+<li><p>The caught exception information, named <code class="docutils literal notranslate"><span class="pre">caught_exception_info</span></code>: (optional string,
+default to null when no exception is raised).</p></li>
+</ul>
+</td>
+<td><p>Composed of:</p>
+<ul class="simple">
+<li><p>The branches of the <code class="docutils literal notranslate"><span class="pre">sub_flow</span></code>;</p></li>
+<li><p>A branch <code class="docutils literal notranslate"><span class="pre">caught_exception_branch</span></code> for when an exception is caught.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>ParallelMapNode</p></td>
 <td><p>The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
 defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
 the only difference is that in this node the map operation is supposed to be performed in parallel.
@@ -2125,7 +2240,7 @@ on the <code class="docutils literal notranslate"><span class="pre">reduce</span
 </td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-even"><td><p>ParallelFlowNode</p></td>
+<tr class="row-odd"><td><p>ParallelFlowNode</p></td>
 <td><p>Execute a list of subflows in parallel.
 Please check the concerns regarding parallel execution depicted in the <a class="reference internal" href="#parallelization"><span class="std std-ref">parallelization section</span></a>.</p></td>
 <td><div class="pst-scrollable-table-container"><table class="mywideinnertable table">
@@ -2165,7 +2280,7 @@ Inputs of different inner flows with the same name but different types are not a
 Outputs of different inner flows with the same name are not allowed.</p></td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-odd"><td><p>StartNode</p></td>
+<tr class="row-even"><td><p>StartNode</p></td>
 <td><ul class="simple">
 <li><p>Entry point of a flow</p></li>
 <li><p>Defines the flow inputs</p></li>
@@ -2176,7 +2291,7 @@ Outputs of different inner flows with the same name are not allowed.</p></td>
 <td><p>Inferred form the inputs. If a value is given, it must match exactly the list of properties defined in inputs</p></td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-even"><td><p>EndNode</p></td>
+<tr class="row-odd"><td><p>EndNode</p></td>
 <td><ul class="simple">
 <li><p>End point of a flow</p></li>
 <li><p>Defines exported outputs of the flow</p></li>
@@ -2214,7 +2329,7 @@ which will be exposed by the Flow</p></td>
 <td><p>The list of outputs that should be exposed by the flow</p></td>
 <td><p>None (note that the branch_name is used by the Flow, not by this node)</p></td>
 </tr>
-<tr class="row-odd"><td><p>BranchingNode</p></td>
+<tr class="row-even"><td><p>BranchingNode</p></td>
 <td><ul class="simple">
 <li><p>Control flow branching point</p></li>
 <li><p>Defines which branch to follow based on the value of a given input</p></li>
@@ -2257,7 +2372,7 @@ be taken when that input value is given</p></td>
 <td><p>One for each value in the mapping, plus a branch called default, which is the branch taken by the flow
 when mapping fails (i.e., the input does not match any key in the mapping)</p></td>
 </tr>
-<tr class="row-even"><td><p>ToolNode</p></td>
+<tr class="row-odd"><td><p>ToolNode</p></td>
 <td><p>Executes the given tool</p></td>
 <td><div class="pst-scrollable-table-container"><table class="mywideinnertable table">
 <colgroup>
@@ -2293,7 +2408,7 @@ when mapping fails (i.e., the input does not match any key in the mapping)</p></
 <td><p>Inferred from the definition of the tool to execute</p></td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-odd"><td><p>InputMessageNode</p></td>
+<tr class="row-even"><td><p>InputMessageNode</p></td>
 <td><ul class="simple">
 <li><p>Appends an agent message to the conversation, if given</p></li>
 <li><p>Interrupts the execution of the flow in order to wait for a user input and restarts after getting it</p></li>
@@ -2333,7 +2448,7 @@ Allows placeholders, which can define inputs</p></td>
 <td><p>One string property that represents the content of the input user message</p></td>
 <td><p>One, the default next</p></td>
 </tr>
-<tr class="row-even"><td><p>OutputMessageNode</p></td>
+<tr class="row-odd"><td><p>OutputMessageNode</p></td>
 <td><p>Appends an agent message to the ongoing flow conversation</p></td>
 <td><div class="pst-scrollable-table-container"><table class="mywideinnertable table">
 <colgroup>
@@ -2468,6 +2583,138 @@ These agentic components serve as the workers within the group and are coordinat
 </li>
 </ul>
 </section>
+<section id="datastores">
+<h4>Datastores<a class="headerlink" href="#datastores" title="Permalink to this heading">#</a></h4>
+<p>Datastores are the AgentSpec abstraction that enables agentic systems to store and access data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Datastore</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>All datastores currently defined represent collections of objects defined by their type as an <code class="docutils literal notranslate"><span class="pre">Entity</span></code>, however the Datastore parent type is left without constraint to enable future extension or the development of plugins with different Datastore structure (e.g. key-value stores, or graph database, or unstructured data storage)</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">Entity</span></code> is a property that has a JSON schema equivalent to an object property; an object property would work.</p>
+<section id="relational-datastores-in-memory-datastore">
+<h5>Relational datastores &amp; In-Memory datastore<a class="headerlink" href="#relational-datastores-in-memory-datastore" title="Permalink to this heading">#</a></h5>
+<p>Relational datastores (<code class="docutils literal notranslate"><span class="pre">OracleDatabaseDatastore</span></code>, <code class="docutils literal notranslate"><span class="pre">PostgresDatabaseDatastore</span></code>) should support SQL queries. For development use, we have a drop-in replacement for them  (<code class="docutils literal notranslate"><span class="pre">InMemoryCollectionDatastore</span></code>).
+Both of these contain many collections (tables) where each collection is a set entities. They need to have a predefined fixed schema. A schema is a mapping from a collection name to an Entity object defining the entity(row).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">InMemoryCollectionDatastore</span><span class="p">(</span><span class="n">Datastore</span><span class="p">):</span>
+    <span class="n">datastore_schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entity</span><span class="p">]</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RelationalDatastore</span><span class="p">(</span><span class="n">Datastore</span><span class="p">,</span> <span class="n">is_abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">datastore_schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entity</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="oracledatabasedatastore">
+<h5>OracleDatabaseDatastore<a class="headerlink" href="#oracledatabasedatastore" title="Permalink to this heading">#</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">OracleDatabaseDatastore</span></code> is a relational datastore that requires an <code class="docutils literal notranslate"><span class="pre">OracleDatabaseConnectionConfig</span></code> object for configuration. Sensitive information (e.g., wallets, keys) is excluded from exported configurations and should be loaded at deserialization time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">OracleDatabaseDatastore</span><span class="p">(</span><span class="n">RelationalDatastore</span><span class="p">):</span>
+    <span class="n">connection_config</span><span class="p">:</span> <span class="n">OracleDatabaseConnectionConfig</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">OracleDatabaseConnectionConfig</span></code> is the abstraction we use for configuring connections to Oracle Database.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">OracleDatabaseConnectionConfig</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">is_abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">TlsOracleDatabaseConnectionConfig</span></code> For standard TLS Oracle Database connections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TlsOracleDatabaseConnectionConfig</span><span class="p">(</span><span class="n">OracleDatabaseConnectionConfig</span><span class="p">):</span>
+    <span class="n">user</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">password</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">dsn</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;tcps&quot;</span><span class="p">]</span>
+    <span class="n">config_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">user</span></code>: User used to connect to the database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code>: Password for the provided user</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dsn</span></code>: Connection string for the database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">protocol</span></code>: ‘tcp’ or ‘tcps’ indicating whether to use unencrypted network traffic or encrypted network traffic (TLS)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_dir</span></code>: Configuration directory for the database connection. Set this if you are using an alias from your tnsnames.ora files as a DSN. Make sure that the specified DSN is appropriate for TLS connections.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">MTlsOracleDatabaseConnectionConfig</span></code> For Oracle DB connections using mutual TLS (wallet authentication).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MTlsOracleDatabaseConnectionConfig</span><span class="p">(</span><span class="n">TlsOracleDatabaseConnectionConfig</span><span class="p">):</span>
+
+    <span class="n">wallet_location</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">wallet_password</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wallet_location</span></code>: Location where the Oracle Database wallet is stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wallet_password</span></code>: Password for the provided wallet.</p></li>
+</ul>
+</section>
+<section id="postgresdatastore">
+<h5>PostgresDatastore<a class="headerlink" href="#postgresdatastore" title="Permalink to this heading">#</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">PostgresDatabaseDatastore</span></code> is a relational datastore intended to store entities in PostgreSQL databases. It requires a <code class="docutils literal notranslate"><span class="pre">PostgresDatabaseConnectionConfig</span></code> object for connection and authentication details. Sensitive information (e.g., user, password, SSL keys) is excluded from exported configurations and should be loaded at deserialization time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">PostgresDatabaseDatastore</span><span class="p">(</span><span class="n">RelationalDatastore</span><span class="p">):</span>
+    <span class="n">connection_config</span><span class="p">:</span> <span class="n">PostgresDatabaseConnectionConfig</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PostgresDatabaseConnectionConfig</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">is_abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TlsPostgresDatabaseConnectionConfig</span><span class="p">(</span><span class="n">PostgresDatabaseConnectionConfig</span><span class="p">):</span>
+    <span class="n">user</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">password</span><span class="p">:</span> <span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">sslmode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;disable&quot;</span><span class="p">,</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;prefer&quot;</span><span class="p">,</span><span class="s2">&quot;require&quot;</span><span class="p">,</span><span class="s2">&quot;verify-ca&quot;</span><span class="p">,</span><span class="s2">&quot;verify-full&quot;</span><span class="p">]</span>
+    <span class="n">sslcert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">sslkey</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SensitiveField</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="n">sslrootcert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">sslcrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">user</span></code>: User of the postgres database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code>: Password of the postgres database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code>: URL to access the postgres database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sslmode</span></code>: SSL mode for the PostgreSQL connection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sslcert</span></code>: Path of the client SSL certificate, replacing the default <code class="docutils literal notranslate"><span class="pre">~/.postgresql/postgresql.crt</span></code>. Ignored if an SSL connection is not made.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sslkey</span></code>: Path of the file containing the secret key used for the client certificate, replacing the default <code class="docutils literal notranslate"><span class="pre">~/.postgresql/postgresql.key</span></code>. Ignored if an SSL connection is not made.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sslrootcert</span></code>: Path of the file containing SSL certificate authority (CA) certificate(s). Used to verify server identity.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sslcrl</span></code>: Path of the SSL server certificate revocation list (CRL). Certificates listed will be rejected while attempting to authenticate the server’s certificate.</p></li>
+</ul>
+</section>
+<section id="transforms">
+<h5>Transforms<a class="headerlink" href="#transforms" title="Permalink to this heading">#</a></h5>
+<p>Transforms extend the base <code class="docutils literal notranslate"><span class="pre">MessageTransform</span></code> component that can be used in agents. They apply a transformation to the messages before they are passed to the agent’s LLM.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MessageTransform</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<section id="messagesummarizationtransform">
+<h6>MessageSummarizationTransform<a class="headerlink" href="#messagesummarizationtransform" title="Permalink to this heading">#</a></h6>
+<p>Summarizes messages exceeding a given number of characters using an LLM and caches the summaries in a <code class="docutils literal notranslate"><span class="pre">Datastore</span></code>. This is useful for conversations with long messages where the context can become too large for the agent LLM to handle.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MessageSummarizationTransform</span><span class="p">(</span><span class="n">MessageTransform</span><span class="p">):</span>
+    <span class="n">llm</span><span class="p">:</span> <span class="n">LlmConfig</span>  <span class="c1"># LLM to use for the summarization.</span>
+    <span class="n">max_message_size</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># The maximum size in number of characters for the content of a message.</span>
+    <span class="n">summarization_instructions</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Instruction for the LLM on how to summarize the messages.</span>
+    <span class="n">summarized_message_template</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Jinja2 template on how to present the summary (with variable `summary`) to the agent using the transform.</span>
+    <span class="n">datastore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Datastore</span><span class="p">]</span>  <span class="c1"># Datastore on which to store the cache. If None, no caching happens.</span>
+    <span class="n">max_cache_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># The number of cache entries (messages) kept in the cache. If None, there is no limit on cache size and no eviction occurs.</span>
+    <span class="n">max_cache_lifetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># max lifetime of a message in the cache in seconds. If None, cached data persists indefinitely.</span>
+    <span class="n">cache_collection_name</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Name of the collection in the cache for storing summarized messages.</span>
+</pre></div>
+</div>
+</section>
+<section id="conversationsummarizationtransform">
+<h6>ConversationSummarizationTransform<a class="headerlink" href="#conversationsummarizationtransform" title="Permalink to this heading">#</a></h6>
+<p>Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a <code class="docutils literal notranslate"><span class="pre">Datastore</span></code>. This is useful to reduce long conversation history into a concise context for downstream LLM calls.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ConversationSummarizationTransform</span><span class="p">(</span><span class="n">MessageTransform</span><span class="p">):</span>
+    <span class="n">llm</span><span class="p">:</span> <span class="n">LlmConfig</span>  <span class="c1"># LLM to use for the summarization.</span>
+    <span class="n">max_num_messages</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># Number of message after which we trigger summarization.</span>
+    <span class="n">min_num_messages</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># Number of recent messages to keep from summarizing.</span>
+    <span class="n">summarization_instructions</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Instruction for the LLM on how to summarize the conversation.</span>
+    <span class="n">summarized_conversation_template</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Jinja2 template on how to present the summary (with variable ``summary``) to the agent using the transform.</span>
+    <span class="n">datastore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Datastore</span><span class="p">]</span>  <span class="c1"># Datastore on which to store the cache. If None, no caching happens.</span>
+    <span class="n">max_cache_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># The maximum number of entries kept in the cache</span>
+    <span class="n">max_cache_lifetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># max lifetime of an element in the cache in seconds</span>
+    <span class="n">cache_collection_name</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Name of the collection in the cache datastore where summarized conversations will be stored</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 <section id="versioning">
 <h3>Versioning<a class="headerlink" href="#versioning" title="Permalink to this heading">#</a></h3>
@@ -2492,7 +2739,7 @@ is used instead.</p>
 <span class="w">     </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my.llm.url&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.1.0&quot;</span>
+<span class="w">  </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;26.2.0&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -10451,7 +10698,7 @@ The value of <code class="docutils literal notranslate"><span class="pre">compon
 <span class="w">  </span><span class="nv">&quot;system_prompt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;You are an expert in {{domain_of_expertise}}. Please help the users with their requests.&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nv">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
 <span class="w">  </span><span class="nv">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Agent&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nv">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;26.1.0&quot;</span>
+<span class="w">  </span><span class="nv">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;26.2.0&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -10963,6 +11210,17 @@ The API documentation of PyAgentSpec is available at <a class="reference interna
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ociagent">OciAgent</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#swarm">Swarm</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#managerworkers">ManagerWorkers</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#datastores">Datastores</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#relational-datastores-in-memory-datastore">Relational datastores &amp; In-Memory datastore</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#oracledatabasedatastore">OracleDatabaseDatastore</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#postgresdatastore">PostgresDatastore</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#transforms">Transforms</a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#messagesummarizationtransform">MessageSummarizationTransform</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#conversationsummarizationtransform">ConversationSummarizationTransform</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning">Versioning</a><ul class="nav section-nav flex-column">

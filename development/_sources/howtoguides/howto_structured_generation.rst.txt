@@ -66,7 +66,7 @@ Generating raw text within a flow is often not useful, as it can be challenging 
 Instead, let us consider generating data that adheres to a specific schema for easier processing.
 Let us define three outputs that the flow can produce.
 
-Instead of generating only a summary, you can provide three distinct outputs to the :class:`LlmNode` for generation.
+Instead of generating only a summary, you can provide three distinct outputs to the :ref:`LlmNode <llmnode>` for generation.
 
 .. literalinclude:: ../code_examples/howto_structured_generation.py
     :language: python
@@ -141,7 +141,7 @@ You can configure an agent which can do this and it can be used to generate spec
     :start-after: .. start-structured31
     :end-before: .. end-structured31
 
-Here, the :class:`AgentNode` is used, which incorporates an :class:`Agent` and supports outputs similar to :class:`LlmNode`.
+Here, the :ref:`AgentNode <agentnode>` is used, which incorporates an :ref:`Agent <agent>` and supports outputs similar to :ref:`LlmNode <llmnode>`.
 However, the agent offers additional capabilities beyond simple generation which can be useful in many scenarios.
 
 Again, rest of the flow construction looks the same:

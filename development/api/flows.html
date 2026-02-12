@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Flows &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Flows &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,6 +53,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/flows';</script>
     <script>
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +189,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +294,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,8 +345,9 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
@@ -364,11 +369,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
@@ -385,16 +397,41 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -479,7 +516,7 @@
 <h2>Flows &amp; Nodes<a class="headerlink" href="#flows-nodes" title="Permalink to this heading">#</a></h2>
 <span class="target" id="flow"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.flow.Flow">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.flow.</span></span><span class="sig-name descname"><span class="pre">Flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_flow_connections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_flow_connections=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flow.Flow" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.flow.</span></span><span class="sig-name descname"><span class="pre">Flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_flow_connections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_flow_connections=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flow.Flow" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.agenticcomponent.AgenticComponent" title="pyagentspec.agenticcomponent.AgenticComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgenticComponent</span></code></a></p>
 <p>A flow is a component to model sequences of operations to do in a precised order.</p>
 <p>The operations and sequence is defined by the nodes and transitions associated to the flow.
@@ -491,8 +528,8 @@ Steps can be deterministic, or for some use LLMs.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>start_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a>) – The starting node of this flow. It must be also part of the nodes list</p></li>
@@ -553,7 +590,7 @@ Steps can be deterministic, or for some use LLMs.</p>
 
 <span class="target" id="node"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.node.Node">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.node.Node" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.node.Node" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.ComponentWithIO" title="pyagentspec.component.ComponentWithIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentWithIO</span></code></a></p>
 <p>Base class for all nodes that can be put inside a flow.</p>
 <dl class="field-list simple">
@@ -563,8 +600,8 @@ Steps can be deterministic, or for some use LLMs.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -587,7 +624,7 @@ Steps can be deterministic, or for some use LLMs.</p>
 
 <span class="target" id="dataflowedge"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.edges.dataflowedge.DataFlowEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.edges.dataflowedge.</span></span><span class="sig-name descname"><span class="pre">DataFlowEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.edges.dataflowedge.DataFlowEdge" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.edges.dataflowedge.</span></span><span class="sig-name descname"><span class="pre">DataFlowEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.edges.dataflowedge.DataFlowEdge" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>A data flow edge specifies how the output of a node propagates as input of another node.</p>
 <p>An outputs can be propagated as input of several nodes.</p>
@@ -598,8 +635,8 @@ Steps can be deterministic, or for some use LLMs.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>source_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a>) – The instance of the source Node</p></li>
 <li><p><strong>source_output</strong> (<em>str</em>) – The name of the property among the source node outputs that should be connected</p></li>
 <li><p><strong>destination_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a>) – The instance of the destination Node</p></li>
@@ -635,7 +672,7 @@ Steps can be deterministic, or for some use LLMs.</p>
 
 <span class="target" id="controlflowedge"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.edges.controlflowedge.ControlFlowEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.edges.controlflowedge.</span></span><span class="sig-name descname"><span class="pre">ControlFlowEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_branch=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.edges.controlflowedge.</span></span><span class="sig-name descname"><span class="pre">ControlFlowEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_branch=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>A control flow edge specifies a possible transition from a node to another in a flow.</p>
 <p>A single node can have several potential next nodes, in which case several control flow edges
@@ -647,8 +684,8 @@ should be present in the control flow connections of that flow.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>from_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a>) – The instance of the source Node</p></li>
 <li><p><strong>from_branch</strong> (<em>str</em><em> | </em><em>None</em>) – The name of the branch to connect.
 It must be among the list of branches offered by the from_node</p></li>
@@ -682,7 +719,7 @@ It must be among the list of branches offered by the from_node</p>
 <span id="presentnode"></span><h2>Nodes<a class="headerlink" href="#nodes" title="Permalink to this heading">#</a></h2>
 <span class="target" id="agentnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.agentnode.AgentNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.agentnode.</span></span><span class="sig-name descname"><span class="pre">AgentNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.agentnode.AgentNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.agentnode.</span></span><span class="sig-name descname"><span class="pre">AgentNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.agentnode.AgentNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The agent execution node is a node that will execute an agent as part of a flow.</p>
 <p>If branches are configured, the agent will be prompted to select a branch before the agent node
@@ -773,8 +810,8 @@ completes to transition to another node of the Flow.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -792,7 +829,7 @@ completes to transition to another node of the Flow.</p>
 
 <span class="target" id="apinode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.apinode.ApiNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.apinode.</span></span><span class="sig-name descname"><span class="pre">ApiNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.apinode.</span></span><span class="sig-name descname"><span class="pre">ApiNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>Make an API call.</p>
 <p>This node is intended to be a part of a Flow.</p>
@@ -886,8 +923,8 @@ Otherwise, users should manually specify them.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -897,8 +934,14 @@ Allows placeholders, which can define inputs</p></li>
 Allows placeholders, which can define inputs</p></li>
 <li><p><strong>api_spec_uri</strong> (<em>str</em><em> | </em><em>None</em>) – The uri of the specification of the API that is going to be called.
 Allows placeholders, which can define inputs</p></li>
-<li><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The data to send as part of the body of this API call.
-Allows placeholders in dict values, which can define inputs</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> | </em><em>bytes</em><em> | </em><em>Any</em>) – The data to send as part of the body of this API call.
+Allows placeholders in dict values, which can define inputs.
+
+<code class="docutils literal notranslate"><span class="pre">data</span></code> as <cite>bytes</cite> and <cite>strings</cite> will be passed to the request body as-is,
+whereas JSONSerializable objects are converted to string with json.dumps before being added into the request’s body.
+
+Note: For AgentSpec version 25.4.1, this field is strictly typed as Dict[str, Any].
+For versions 25.4.2 and above, it is typed as Any.</p></li>
 <li><p><strong>query_params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Query parameters for the API call.
 Allows placeholders in dict values, which can define inputs</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Additional headers for the API call.
@@ -924,9 +967,13 @@ Allows placeholders, which can define inputs</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.apinode.ApiNode.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.data" title="Permalink to this definition">#</a></dt>
 <dd><p>The data to send as part of the body of this API call.
-Allows placeholders in dict values, which can define inputs</p>
+Allows placeholders in dict values, which can define inputs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">data</span></code> as <cite>bytes</cite> and <cite>strings</cite> will be passed to the request body as-is,
+whereas JSONSerializable objects are converted to string with json.dumps before being added into the request’s body.</p>
+<p>Note: For AgentSpec version 25.4.1, this field is strictly typed as Dict[str, Any].
+For versions 25.4.2 and above, it is typed as Any.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -969,7 +1016,7 @@ Allows placeholders, which can define inputs</p>
 
 <span class="target" id="branchingnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.branchingnode.BranchingNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.branchingnode.</span></span><span class="sig-name descname"><span class="pre">BranchingNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.branchingnode.BranchingNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.branchingnode.</span></span><span class="sig-name descname"><span class="pre">BranchingNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.branchingnode.BranchingNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>Select the next node to transition to based on a mapping.</p>
 <p>The input is used as key for the mapping. If the input does not correspond to any of the keys
@@ -1083,8 +1130,8 @@ which is the branch taken by the flow when mapping fails
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1116,7 +1163,7 @@ that will be taken when that input value is given</p>
 
 <span class="target" id="endnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.endnode.EndNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.endnode.</span></span><span class="sig-name descname"><span class="pre">EndNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_name='next'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.endnode.EndNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.endnode.</span></span><span class="sig-name descname"><span class="pre">EndNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_name='next'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.endnode.EndNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>End nodes denote the end of the execution of a flow.</p>
 <p>There might be several end nodes in a flow, in which case the executor of the flow
@@ -1249,8 +1296,8 @@ are specified they must be an exact match</p>
 which will be exposed by the Flow</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1268,9 +1315,110 @@ which will be exposed by the Flow</p>
 
 </dd></dl>
 
+<span class="target" id="catchexceptionnode"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.catchexceptionnode.</span></span><span class="sig-name descname"><span class="pre">CatchExceptionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Node to execute a Flow and catch exceptions.</p>
+<ul class="simple">
+<li><p>If no exception is caught, the node will transition to the branches of its subflow.</p></li>
+<li><p>If an exception is caught, it will transition to an exception branch.</p></li>
+</ul>
+<section id="inputs">
+<h3>Inputs<a class="headerlink" href="#inputs" title="Permalink to this heading">#</a></h3>
+<p>Same as the inputs from the <code class="docutils literal notranslate"><span class="pre">subflow</span></code>.</p>
+</section>
+<section id="outputs">
+<h3>Outputs<a class="headerlink" href="#outputs" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The outputs of the <code class="docutils literal notranslate"><span class="pre">subflow</span></code>.
+If an exception is raised, the default values of each output property are used.</p></li>
+<li><p>An additional output named <code class="docutils literal notranslate"><span class="pre">caught_exception_info</span></code> with type <code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code>
+and default value <code class="docutils literal notranslate"><span class="pre">null</span></code>. Executors may populate it with a non-sensitive
+error description when an exception is caught.</p></li>
+</ul>
+</section>
+<section id="branches">
+<h3>Branches<a class="headerlink" href="#branches" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The branches of the <code class="docutils literal notranslate"><span class="pre">subflow</span></code></p></li>
+<li><p>One additional branch named <code class="docutils literal notranslate"><span class="pre">caught_exception_branch</span></code></p></li>
+</ul>
+</section>
+<section id="security-considerations">
+<h3>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this heading">#</a></h3>
+<p>See security considerations regarding exception catching in
+the <a class="reference internal" href="../security.html#securitycatchexceptionnode"><span class="std std-ref">Security Considerations</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">param id<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A unique identifier for this Component</p>
+</dd>
+<dt class="field-even">param name<span class="colon">:</span></dt>
+<dd class="field-even"><p>Name of this Component</p>
+</dd>
+<dt class="field-odd">param description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional description of this Component</p>
+</dd>
+<dt class="field-even">param metadata<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional, additional metadata related to this Component</p>
+</dd>
+<dt class="field-odd">param min_agentspec_version<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param max_agentspec_version<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param inputs<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of inputs accepted by this component</p>
+</dd>
+<dt class="field-even">param outputs<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of outputs exposed by this component</p>
+</dd>
+<dt class="field-odd">param branches<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of outgoing branch names that the node will expose</p>
+</dd>
+<dt class="field-even">param subflow<span class="colon">:</span></dt>
+<dd class="field-even"><p>Flow to execute and catch errors from.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH">
+<span class="sig-name descname"><span class="pre">CAUGHT_EXCEPTION_BRANCH</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'caught_exception_branch'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the branch used when an exception is caught.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.DEFAULT_EXCEPTION_INFO_VALUE">
+<span class="sig-name descname"><span class="pre">DEFAULT_EXCEPTION_INFO_VALUE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'caught_exception_info'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.DEFAULT_EXCEPTION_INFO_VALUE" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the output property containing exception details.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.subflow">
+<span class="sig-name descname"><span class="pre">subflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><span class="pre">Flow</span></a></em><a class="headerlink" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.subflow" title="Permalink to this definition">#</a></dt>
+<dd><p>Flow to execute and catch errors from.</p>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>subflow</strong> (<a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><em>Flow</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <span class="target" id="flownode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.flownode.FlowNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.flownode.</span></span><span class="sig-name descname"><span class="pre">FlowNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.flownode.FlowNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.flownode.</span></span><span class="sig-name descname"><span class="pre">FlowNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.flownode.FlowNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The flow node executes a subflow as part of a flow.</p>
 <ul class="simple">
@@ -1300,8 +1448,8 @@ sets of outputs exposed by the EndNodes of the inner flow.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1545,7 +1693,7 @@ using the “wisdowm of the crowd” effect:</p>
 
 <span class="target" id="parallelflownode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.parallelflownode.</span></span><span class="sig-name descname"><span class="pre">ParallelFlowNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflows=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.parallelflownode.</span></span><span class="sig-name descname"><span class="pre">ParallelFlowNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflows=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The parallel flow node executes multiple subflows in parallel.</p>
 <ul class="simple">
@@ -1575,8 +1723,8 @@ Outputs of different inner flows that have the same name are not allowed.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1594,7 +1742,7 @@ Outputs of different inner flows that have the same name are not allowed.</p>
 
 <span class="target" id="inputmessagenode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.inputmessagenode.InputMessageNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.inputmessagenode.</span></span><span class="sig-name descname"><span class="pre">InputMessageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.inputmessagenode.</span></span><span class="sig-name descname"><span class="pre">InputMessageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>This node interrupts the execution of the flow in order to wait for a user input, and restarts after receiving it.
 An agent message, if given, is appended to the conversation before waiting for input.
@@ -1670,8 +1818,8 @@ User input is appended to the conversation as a user message, and it is returned
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1694,7 +1842,7 @@ User input is appended to the conversation as a user message, and it is returned
 
 <span class="target" id="llmnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.llmnode.LlmNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.llmnode.</span></span><span class="sig-name descname"><span class="pre">LlmNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_template</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.llmnode.LlmNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.llmnode.</span></span><span class="sig-name descname"><span class="pre">LlmNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_template</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.llmnode.LlmNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>Execute a prompt template with a given LLM.</p>
 <p>This node is intended to be a part of a Flow.</p>
@@ -1723,8 +1871,8 @@ User input is appended to the conversation as a user message, and it is returned
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -1802,7 +1950,7 @@ User input is appended to the conversation as a user message, and it is returned
 
 <span class="target" id="mapnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.MapNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.mapnode.</span></span><span class="sig-name descname"><span class="pre">MapNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.MapNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.mapnode.</span></span><span class="sig-name descname"><span class="pre">MapNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.MapNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The map node executes a subflow on each element of a given input as part of a flow.</p>
 <ul>
@@ -2070,13 +2218,13 @@ we are going to map only the numerators (i.e., the input numbers).</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
 <li><p><strong>subflow</strong> (<a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><em>Flow</em></a>) – The flow that should be applied to all the input values</p></li>
-<li><p><strong>reducers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>ReductionMethod</em><em>] </em><em>| </em><em>None</em>) – The way the outputs of the different executions (map) should be collected together (reduce).
+<li><p><strong>reducers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod" title="pyagentspec.flows.nodes.mapnode.ReductionMethod"><em>ReductionMethod</em></a><em>] </em><em>| </em><em>None</em>) – The way the outputs of the different executions (map) should be collected together (reduce).
 It’s a dictionary mapping the name of an output to the respective reduction method
 (e.g., append, sum, avg, …, allowed methods depend on the type of the output)</p></li>
 </ul>
@@ -2084,7 +2232,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.MapNode.reducers">
-<span class="sig-name descname"><span class="pre">reducers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ReductionMethod</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.MapNode.reducers" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reducers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod" title="pyagentspec.flows.nodes.mapnode.ReductionMethod"><span class="pre">ReductionMethod</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.MapNode.reducers" title="Permalink to this definition">#</a></dt>
 <dd><p>The way the outputs of the different executions (map) should be collected together (reduce).
 It’s a dictionary mapping the name of an output to the respective reduction method
 (e.g., append, sum, avg, …, allowed methods depend on the type of the output)</p>
@@ -2100,7 +2248,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 
 <span class="target" id="parallelmapnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.parallelmapnode.</span></span><span class="sig-name descname"><span class="pre">ParallelMapNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.parallelmapnode.</span></span><span class="sig-name descname"><span class="pre">ParallelMapNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The parallel map node executes a subflow on each element of a given input in a parallel manner.</p>
 <ul>
@@ -2249,13 +2397,13 @@ in parallel on multiple articles at the same time.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
 <li><p><strong>subflow</strong> (<a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><em>Flow</em></a>) – The flow that should be applied to all the input values</p></li>
-<li><p><strong>reducers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>ReductionMethod</em><em>] </em><em>| </em><em>None</em>) – The way the outputs of the different executions (map) should be collected together (reduce).
+<li><p><strong>reducers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod" title="pyagentspec.flows.nodes.mapnode.ReductionMethod"><em>ReductionMethod</em></a><em>] </em><em>| </em><em>None</em>) – The way the outputs of the different executions (map) should be collected together (reduce).
 It’s a dictionary mapping the name of an output to the respective reduction method
 (e.g., append, sum, avg, …, allowed methods depend on the type of the output)</p></li>
 </ul>
@@ -2263,7 +2411,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode.reducers">
-<span class="sig-name descname"><span class="pre">reducers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ReductionMethod</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode.reducers" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reducers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod" title="pyagentspec.flows.nodes.mapnode.ReductionMethod"><span class="pre">ReductionMethod</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode.reducers" title="Permalink to this definition">#</a></dt>
 <dd><p>The way the outputs of the different executions (map) should be collected together (reduce).
 It’s a dictionary mapping the name of an output to the respective reduction method
 (e.g., append, sum, avg, …, allowed methods depend on the type of the output)</p>
@@ -2279,7 +2427,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 
 <span class="target" id="outputmessagenode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.outputmessagenode.</span></span><span class="sig-name descname"><span class="pre">OutputMessageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.outputmessagenode.</span></span><span class="sig-name descname"><span class="pre">OutputMessageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>This node appends an agent message to the ongoing flow conversation.</p>
 <ul class="simple">
@@ -2352,8 +2500,8 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -2371,7 +2519,7 @@ It’s a dictionary mapping the name of an output to the respective reduction me
 
 <span class="target" id="startnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.startnode.StartNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.startnode.</span></span><span class="sig-name descname"><span class="pre">StartNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.startnode.StartNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.startnode.</span></span><span class="sig-name descname"><span class="pre">StartNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.startnode.StartNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>Start nodes denote the start of the execution of a flow.</p>
 <ul>
@@ -2449,19 +2597,25 @@ must be an exact match</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.startnode.StartNode.branches">
+<span class="sig-name descname"><span class="pre">branches</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyagentspec.flows.nodes.startnode.StartNode.branches" title="Permalink to this definition">#</a></dt>
+<dd><p>The list of outgoing branch names that the node will expose</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="toolnode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.toolnode.ToolNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.toolnode.</span></span><span class="sig-name descname"><span class="pre">ToolNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.toolnode.ToolNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.toolnode.</span></span><span class="sig-name descname"><span class="pre">ToolNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.toolnode.ToolNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>The tool execution node is a node that will execute a tool as part of a flow.</p>
 <ul class="simple">
@@ -2535,8 +2689,8 @@ must be an exact match</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of inputs accepted by this component</p></li>
 <li><p><strong>outputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>Property</em></a><em>] </em><em>| </em><em>None</em>) – List of outputs exposed by this component</p></li>
 <li><p><strong>branches</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of outgoing branch names that the node will expose</p></li>
@@ -2548,6 +2702,267 @@ must be an exact match</p>
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.toolnode.ToolNode.tool">
 <span class="sig-name descname"><span class="pre">tool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="tools.html#pyagentspec.tools.tool.Tool" title="pyagentspec.tools.tool.Tool"><span class="pre">Tool</span></a></em><a class="headerlink" href="#pyagentspec.flows.nodes.toolnode.ToolNode.tool" title="Permalink to this definition">#</a></dt>
 <dd><p>The tool to be executed in this Node</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="enumerators">
+<h2>Enumerators<a class="headerlink" href="#enumerators" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.mapnode.</span></span><span class="sig-name descname"><span class="pre">ReductionMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumerator for the types of reduction available in the MapNode.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod.APPEND">
+<span class="sig-name descname"><span class="pre">APPEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'append'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.APPEND" title="Permalink to this definition">#</a></dt>
+<dd><p>Append all the elements to a list</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod.AVERAGE">
+<span class="sig-name descname"><span class="pre">AVERAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'average'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.AVERAGE" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the average of all the elements</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod.MAX">
+<span class="sig-name descname"><span class="pre">MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'max'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.MAX" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the element with the highest value</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN">
+<span class="sig-name descname"><span class="pre">MIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'min'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the element with the lowest value</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.mapnode.ReductionMethod.SUM">
+<span class="sig-name descname"><span class="pre">SUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sum'</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.SUM" title="Permalink to this definition">#</a></dt>
+<dd><p>Sum all the elements</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="flow-builder">
+<h2>Flow Builder<a class="headerlink" href="#flow-builder" title="Permalink to this heading">#</a></h2>
+<p>The Flow Builder provides a concise, chainable API to assemble Agent Spec Flows programmatically.
+It helps wire control and data edges, set entry/finish points, and serialize flows to JSON/YAML.</p>
+<p>See some code examples in the <a class="reference internal" href="../misc/reference_sheet.html#flowbuilder-ref-sheet"><span class="std std-ref">Reference Sheet</span></a></p>
+<span class="target" id="flowbuilder"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.flowbuilder.</span></span><span class="sig-name descname"><span class="pre">FlowBuilder</span></span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A builder for constructing Agent Spec Flows.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.add_conditional">
+<span class="sig-name descname"><span class="pre">add_conditional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branching_node_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_conditional" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a condition/branching to the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name from which to start the branching from.</p></li>
+<li><p><strong>source_value</strong> (<em>str</em><em> | </em><em>tuple</em><em>[</em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>pyagentspec.flows.node.Node</em></a><em> | </em><em>str</em><em>, </em><em>str</em><em>]</em>) – Which value to use to perform the branching condition. If str, uses the <cite>source_node</cite>.
+If <cite>tuple[Node | str, str]</cite>, uses the specified node and output name.</p></li>
+<li><p><strong>destination_map</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>pyagentspec.flows.node.Node</em></a><em> | </em><em>str</em><em>]</em>) – Dictionary which specifies which node to transition to for given values.</p></li>
+<li><p><strong>default_destination</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name where to transition to if no matching value/transition is found
+in the <cite>destination_map</cite>.</p></li>
+<li><p><strong>branching_node_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name for the branching node. Uses automatically generated auto-incrementing
+names if not providing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.flowbuilder</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowBuilder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.flows.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlmNode</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flow</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">FlowBuilder</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">LlmNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;source_node&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Generate &#39;fail&#39; or &#39;success&#39;&quot;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">LlmNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;fail_node&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Print &#39;FAIL&#39;&quot;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">LlmNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;success_node&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">,</span> <span class="n">prompt_template</span><span class="o">=</span><span class="s2">&quot;Print &#39;SUCESS&#39;&quot;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">add_conditional</span><span class="p">(</span><span class="s2">&quot;source_node&quot;</span><span class="p">,</span> <span class="n">LlmNode</span><span class="o">.</span><span class="n">DEFAULT_OUTPUT</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="s2">&quot;success_node&quot;</span><span class="p">,</span> <span class="s2">&quot;fail&quot;</span><span class="p">:</span> <span class="s2">&quot;fail_node&quot;</span><span class="p">},</span> <span class="n">default_destination</span><span class="o">=</span><span class="s2">&quot;fail_node&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">set_entry_point</span><span class="p">(</span><span class="s2">&quot;source_node&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">set_finish_points</span><span class="p">([</span><span class="s2">&quot;fail_node&quot;</span><span class="p">,</span> <span class="s2">&quot;success_node&quot;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.add_data_edge">
+<span class="sig-name descname"><span class="pre">add_data_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_data_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a data flow edge to the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name which constitute the start/source of the data flow edge.</p></li>
+<li><p><strong>dest_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name that constitutes the end/destination of the data flow edge.</p></li>
+<li><p><strong>data_name</strong> (<em>str</em><em> | </em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Name of the data property to propagate between the two nodes, either
+str when the name is shared, or tuple (source_output, destination_input)
+when the names are different.</p></li>
+<li><p><strong>edge_name</strong> (<em>str</em><em> | </em><em>None</em>) – Name for the edge. Defaults to “data_flow_edge”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a control flow edge to the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_node</strong> (<em>list</em><em>[</em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>pyagentspec.flows.node.Node</em></a><em> | </em><em>str</em><em>] </em><em>| </em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Single node/name (creates 1 edge) or list of nodes/names (creates N edges)
+which constitute the start of the control flow edge(s).</p></li>
+<li><p><strong>dest_node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name that constitutes the end of the control flow edge(s).</p></li>
+<li><p><strong>from_branch</strong> (<em>list</em><em>[</em><em>str</em><em> | </em><em>None</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional source branch name(s) to use in the control flow edge(s).
+When a list, must be of the same length as the list of source_node.</p></li>
+<li><p><strong>edge_name</strong> (<em>str</em><em> | </em><em>None</em>) – Name for the edge. Defaults to f”control_edge_{source_node.name}_{dest_node.name}_{from_branch}”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a new node to the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a>) – Node to add to the Flow.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.add_sequence">
+<span class="sig-name descname"><span class="pre">add_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_sequence" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a sequence of nodes to the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>list</em><em>[</em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>pyagentspec.flows.node.Node</em></a><em>]</em>) – List of nodes to add to the Flow.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Flow'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build" title="Permalink to this definition">#</a></dt>
+<dd><p>Build the Flow.</p>
+<p>Will raise errors if encountering any while building the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><em>Flow</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.build_linear_flow">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_linear_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DEFAULT_FLOW_NAME</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize_as</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_flow_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.edges.dataflowedge.DataFlowEdge" title="pyagentspec.flows.edges.dataflowedge.DataFlowEdge"><span class="pre">DataFlowEdge</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyagentspec.flows.flow.Flow" title="pyagentspec.flows.flow.Flow"><span class="pre">Flow</span></a></span></span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build_linear_flow" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_linear_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DEFAULT_FLOW_NAME</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize_as</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'JSON'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'YAML'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'JSON'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_flow_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.flows.edges.dataflowedge.DataFlowEdge" title="pyagentspec.flows.edges.dataflowedge.DataFlowEdge"><span class="pre">DataFlowEdge</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span></dt>
+<dd><p>Build a linear flow from a list of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> – List of nodes to use to create the linear/sequential Flow.</p></li>
+<li><p><strong>serialize_as</strong> – Format for the returned object. If <cite>None</cite>, returns a pyagentspec <cite>Flow</cite>.
+Otherwise, returns its Agent Spec configuration as JSON/YAML.</p></li>
+<li><p><strong>data_flow_edges</strong> – Optional list of data flow edges. Either a <cite>DataFlowEdge</cite> object
+or a (src_node, dst_node, var_name) tuple when the variable name is
+shared, or (src_node, dst_node, src_in, dst_out) otherwise.</p></li>
+<li><p><strong>inputs</strong> – Optional list of inputs for the flow. If <cite>None</cite>, auto-detects as the list of
+inputs that are not generated at some point in the execution of the flow.</p></li>
+<li><p><strong>outputs</strong> – Optional list of outputs for the flow branches corresponding to each
+of the specified terminal nodes. Must be of the same length as <cite>node</cite>.
+If <cite>None</cite>, auto-detects as the intersection of all the outputs generated by
+any node in any execution branch of the flow.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.build_spec">
+<span class="sig-name descname"><span class="pre">build_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'JSON'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build_spec" title="Permalink to this definition">#</a></dt>
+<dd><p>Build the Flow and return its Agent Spec JSON/YAML configuration.</p>
+<p>Will raise errors if encountering any while building the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>serialize_as</strong> (<em>Literal</em><em>[</em><em>'JSON'</em><em>, </em><em>'YAML'</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.set_entry_point">
+<span class="sig-name descname"><span class="pre">set_entry_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.set_entry_point" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets the first node to execute in the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name that will first be run in the Flow.</p></li>
+<li><p><strong>inputs</strong> (<em>list</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>pyagentspec.property.Property</em></a><em>] </em><em>| </em><em>None</em>) – Optional list of inputs for the flow. If <cite>None</cite>, auto-detects as the list of
+inputs that are not generated at some point in the execution of the flow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.flows.flowbuilder.FlowBuilder.set_finish_points">
+<span class="sig-name descname"><span class="pre">set_finish_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.flowbuilder.FlowBuilder.set_finish_points" title="Permalink to this definition">#</a></dt>
+<dd><p>Specifies the potential points of completion of the Flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>list</em><em>[</em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>pyagentspec.flows.node.Node</em></a><em> | </em><em>str</em><em>] </em><em>| </em><a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><em>Node</em></a><em> | </em><em>str</em>) – Node/name or list of nodes/names which are terminal nodes in the Flow.</p></li>
+<li><p><strong>outputs</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>pyagentspec.property.Property</em></a><em>] </em><em>| </em><em>None</em><em>] </em><em>| </em><em>list</em><em>[</em><a class="reference internal" href="ioproperties.html#pyagentspec.property.Property" title="pyagentspec.property.Property"><em>pyagentspec.property.Property</em></a><em>] </em><em>| </em><em>None</em>) – Optional list of outputs for the flow branches corresponding to each
+of the specified terminal nodes. Must be of the same length as <cite>node</cite>.
+If <cite>None</cite>, auto-detects as the intersection of all the outputs generated by
+any node in any execution branch of the flow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyagentspec.flows.flowbuilder.FlowBuilder" title="pyagentspec.flows.flowbuilder.FlowBuilder"><em>FlowBuilder</em></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -2626,6 +3041,12 @@ must be an exact match</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.endnode.EndNode.branch_name"><code class="docutils literal notranslate"><span class="pre">EndNode.branch_name</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode"><code class="docutils literal notranslate"><span class="pre">CatchExceptionNode</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH"><code class="docutils literal notranslate"><span class="pre">CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.DEFAULT_EXCEPTION_INFO_VALUE"><code class="docutils literal notranslate"><span class="pre">CatchExceptionNode.DEFAULT_EXCEPTION_INFO_VALUE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.subflow"><code class="docutils literal notranslate"><span class="pre">CatchExceptionNode.subflow</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.flownode.FlowNode"><code class="docutils literal notranslate"><span class="pre">FlowNode</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.flownode.FlowNode.subflow"><code class="docutils literal notranslate"><span class="pre">FlowNode.subflow</span></code></a></li>
 </ul>
@@ -2659,9 +3080,39 @@ must be an exact match</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode.message"><code class="docutils literal notranslate"><span class="pre">OutputMessageNode.message</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.startnode.StartNode"><code class="docutils literal notranslate"><span class="pre">StartNode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.startnode.StartNode"><code class="docutils literal notranslate"><span class="pre">StartNode</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.startnode.StartNode.branches"><code class="docutils literal notranslate"><span class="pre">StartNode.branches</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.toolnode.ToolNode"><code class="docutils literal notranslate"><span class="pre">ToolNode</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.toolnode.ToolNode.tool"><code class="docutils literal notranslate"><span class="pre">ToolNode.tool</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerators">Enumerators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod"><code class="docutils literal notranslate"><span class="pre">ReductionMethod</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.APPEND"><code class="docutils literal notranslate"><span class="pre">ReductionMethod.APPEND</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.AVERAGE"><code class="docutils literal notranslate"><span class="pre">ReductionMethod.AVERAGE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.MAX"><code class="docutils literal notranslate"><span class="pre">ReductionMethod.MAX</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN"><code class="docutils literal notranslate"><span class="pre">ReductionMethod.MIN</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.mapnode.ReductionMethod.SUM"><code class="docutils literal notranslate"><span class="pre">ReductionMethod.SUM</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-builder">Flow Builder</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder"><code class="docutils literal notranslate"><span class="pre">FlowBuilder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_conditional"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.add_conditional()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_data_edge"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.add_data_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_edge"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.add_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_node"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.add_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.add_sequence"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.add_sequence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.build()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build_linear_flow"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.build_linear_flow()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.build_spec"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.build_spec()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.set_entry_point"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.set_entry_point()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.flowbuilder.FlowBuilder.set_finish_points"><code class="docutils literal notranslate"><span class="pre">FlowBuilder.set_finish_points()</span></code></a></li>
 </ul>
 </li>
 </ul>
