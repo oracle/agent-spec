@@ -48,32 +48,35 @@ class AgentSpecToOpenAIConverter:
 
     def convert(
         self,
-        comp: AgentSpecComponent,
+        agentspec_component: AgentSpecComponent,
         tool_registry: Dict[str, _TargetTool],
         conversion_cache: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> Any:
         if conversion_cache is None:
             conversion_cache = {}
-        if comp.id in conversion_cache:
-            return conversion_cache[comp.id]
+        if agentspec_component.id in conversion_cache:
+            return conversion_cache[agentspec_component.id]
 
-        if isinstance(comp, AgentSpecLlmConfig):
-            obj = self._llm_convert_to_openai(comp)
-        elif isinstance(comp, AgentSpecAgent):
-            obj = self._agent_convert_to_openai(comp, tool_registry, conversion_cache)
-        elif isinstance(comp, AgentSpecTool):
-            obj = self._tool_convert_to_openai(comp, tool_registry)
-        elif isinstance(comp, AgentSpecComponent):
+        if isinstance(agentspec_component, AgentSpecLlmConfig):
+            obj = self._llm_convert_to_openai(agentspec_component)
+        elif isinstance(agentspec_component, AgentSpecAgent):
+            obj = self._agent_convert_to_openai(
+                agentspec_component, tool_registry, conversion_cache
+            )
+        elif isinstance(agentspec_component, AgentSpecTool):
+            obj = self._tool_convert_to_openai(agentspec_component, tool_registry)
+        elif isinstance(agentspec_component, AgentSpecComponent):
             raise NotImplementedError(
-                f"The Agent Spec Component type '{comp.__class__.__name__}' is not yet supported "
+                f"The Agent Spec Component type '{agentspec_component.__class__.__name__}' is not yet supported "
                 f"for conversion to OpenAI Agents."
             )
         else:
             raise TypeError(
-                f"Expected object of type 'pyagentspec.component.Component', but got {type(comp)} instead"
+                f"Expected object of type 'pyagentspec.component.Component', but got {type(agentspec_component)} instead"
             )
 
-        conversion_cache[comp.id] = obj
+        conversion_cache[agentspec_component.id] = obj
         return obj
 
     def _llm_convert_to_openai(self, llm: AgentSpecLlmConfig) -> Any:

@@ -192,6 +192,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Optional[Dict[str, Any]] = None,
         checkpointer: Optional[Checkpointer] = None,
         config: Optional[RunnableConfig] = None,
+        **kwargs: Any,
     ) -> Any:
         """Convert the given PyAgentSpec component object into the corresponding LangGraph component"""
         if converted_components is None:

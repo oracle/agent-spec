@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
+import json
 import keyword
 import re
 from typing import Any, Dict, List, Optional, cast, get_args
@@ -115,6 +116,7 @@ class AgentSpecToAutogenConverter:
         agentspec_component: AgentSpecComponent,
         tool_registry: Dict[str, AutoGenTool],
         converted_components: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> Any:
         """Convert the given PyAgentSpec component object into the corresponding WayFlow component"""
         if converted_components is None:
@@ -167,6 +169,12 @@ class AgentSpecToAutogenConverter:
             if "/v1" not in base_url:
                 base_url = urljoin(base_url + "/", "v1")
             model_info = metadata.get("model_info") or {}
+            if isinstance(model_info, str):
+                # Sometimes model info is a json serialization
+                try:
+                    model_info = json.loads(model_info)
+                except json.JSONDecodeError:
+                    model_info = {}
             vision = model_info.get("vision", True)
             function_calling = model_info.get("function_calling", True)
             json_output = model_info.get("json_output", True)

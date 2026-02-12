@@ -91,20 +91,21 @@ class LangGraphToAgentSpecConverter:
 
     def convert(
         self,
-        langgraph_component: LangGraphRuntimeComponent,
+        runtime_component: LangGraphRuntimeComponent,
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         """Convert the given LangGraph component object into the corresponding PyAgentSpec component"""
         if referenced_objects is None:
             referenced_objects = {}
 
         # Reuse the same object multiple times in order to exploit the referencing system
-        object_reference = self._get_obj_reference(langgraph_component)
+        object_reference = self._get_obj_reference(runtime_component)
         if object_reference in referenced_objects:
             return referenced_objects[object_reference]
 
         referenced_objects[object_reference] = self._convert(
-            langgraph_component=langgraph_component,
+            langgraph_component=runtime_component,
             referenced_objects=referenced_objects,
         )
         return referenced_objects[object_reference]

@@ -50,26 +50,29 @@ class OpenAIToAgentSpecConverter:
 
     def convert(
         self,
-        obj: Union[OAComponent, Any],
+        runtime_component: Union[OAComponent, Any],
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         if referenced_objects is None:
             referenced_objects = {}
 
-        ref = f"{obj.__class__.__name__.lower()}/{id(obj)}"
+        ref = f"{runtime_component.__class__.__name__.lower()}/{id(runtime_component)}"
         if ref in referenced_objects:
             return referenced_objects[ref]
 
-        if isinstance(obj, OAAgent):
-            comp: AgentSpecComponent = self._agent_convert_to_agentspec(obj, referenced_objects)
-        elif isinstance(obj, OAFunctionTool):
-            comp = self._tool_convert_to_agentspec(obj, referenced_objects)
-        elif isinstance(obj, (str, OAResponsesModel, OAChatCompletionsModel)):
-            comp = self._llm_convert_to_agentspec(obj, referenced_objects)
-        elif isinstance(obj, get_args(OAHostedTool)):
-            comp = self._hosted_tool_to_remote_tool(obj)
+        if isinstance(runtime_component, OAAgent):
+            comp: AgentSpecComponent = self._agent_convert_to_agentspec(
+                runtime_component, referenced_objects
+            )
+        elif isinstance(runtime_component, OAFunctionTool):
+            comp = self._tool_convert_to_agentspec(runtime_component, referenced_objects)
+        elif isinstance(runtime_component, (str, OAResponsesModel, OAChatCompletionsModel)):
+            comp = self._llm_convert_to_agentspec(runtime_component, referenced_objects)
+        elif isinstance(runtime_component, get_args(OAHostedTool)):
+            comp = self._hosted_tool_to_remote_tool(runtime_component)
         else:
-            raise NotImplementedError(f"Unsupported OpenAI Agents type: {type(obj)}.")
+            raise NotImplementedError(f"Unsupported OpenAI Agents type: {type(runtime_component)}.")
 
         referenced_objects[ref] = comp
         return comp

@@ -79,8 +79,9 @@ class AgentFrameworkToAgentSpecConverter:
 
     def convert(
         self,
-        agent_framework_component: Any,
+        runtime_component: Any,
         referenced_objects: dict[str, AgentSpecComponent] | None = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         """Convert the given Microsoft Agent Framework component object into the corresponding PyAgentSpec component"""
 
@@ -88,35 +89,35 @@ class AgentFrameworkToAgentSpecConverter:
             referenced_objects = dict()
 
         # Reuse the same object multiple times in order to exploit the referencing system
-        object_reference = _get_obj_reference(agent_framework_component)
+        object_reference = _get_obj_reference(runtime_component)
         if object_reference in referenced_objects:
             return referenced_objects[object_reference]
 
         # If we did not find the object, we create it, and we record it in the referenced_objects registry
         agentspec_component: AgentSpecComponent
-        if isinstance(agent_framework_component, ChatAgent):
+        if isinstance(runtime_component, ChatAgent):
             agentspec_component = self._agent_convert_to_agentspec(
-                agent_framework_component,
+                runtime_component,
                 referenced_objects,
             )
-        elif isinstance(agent_framework_component, AgentFrameworkLlmConfig):
+        elif isinstance(runtime_component, AgentFrameworkLlmConfig):
             agentspec_component = self._llm_convert_to_agentspec(
-                agent_framework_component,
+                runtime_component,
                 referenced_objects,
             )
-        elif isinstance(agent_framework_component, AgentFrameworkMCPTool):
+        elif isinstance(runtime_component, AgentFrameworkMCPTool):
             agentspec_component = self._mcp_tool_convert_to_agentspec(
-                agent_framework_component,
+                runtime_component,
                 referenced_objects,
             )
-        elif isinstance(agent_framework_component, typing.get_args(AgentFrameworkTool)):
+        elif isinstance(runtime_component, typing.get_args(AgentFrameworkTool)):
             agentspec_component = self._tool_convert_to_agentspec(
-                agent_framework_component,
+                runtime_component,
                 referenced_objects,
             )
         else:
             raise NotImplementedError(
-                f"The AgentFramework type '{agent_framework_component.__class__.__name__}' is not yet supported "
+                f"The AgentFramework type '{runtime_component.__class__.__name__}' is not yet supported "
                 f"for conversion. Please contact the AgentSpec team."
             )
         referenced_objects[object_reference] = agentspec_component
