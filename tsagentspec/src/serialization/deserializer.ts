@@ -11,11 +11,30 @@ import { DeserializationContext } from "./deserialization-context.js";
 import { BuiltinsComponentDeserializationPlugin } from "./builtin-deserialization-plugin.js";
 import type { ComponentAsDict, ComponentsRegistry } from "./types.js";
 
+/** Default limits for deserialization to prevent resource exhaustion */
+const DEFAULT_MAX_INPUT_SIZE = 10 * 1024 * 1024; // 10 MB
+const DEFAULT_MAX_DEPTH = 100;
+
 export class AgentSpecDeserializer {
   private plugins: ComponentDeserializationPlugin[];
+  private maxInputSize: number;
+  private maxDepth: number;
 
-  constructor(plugins?: ComponentDeserializationPlugin[]) {
-    this.plugins = [...(plugins ?? [])];
+  constructor(
+    pluginsOrOptions?:
+      | ComponentDeserializationPlugin[]
+      | {
+          plugins?: ComponentDeserializationPlugin[];
+          maxInputSize?: number;
+          maxDepth?: number;
+        },
+  ) {
+    const opts = Array.isArray(pluginsOrOptions)
+      ? { plugins: pluginsOrOptions }
+      : pluginsOrOptions ?? {};
+    this.plugins = [...(opts.plugins ?? [])];
+    this.maxInputSize = opts.maxInputSize ?? DEFAULT_MAX_INPUT_SIZE;
+    this.maxDepth = opts.maxDepth ?? DEFAULT_MAX_DEPTH;
 
     // Always add the builtin plugin at the end
     this.plugins.push(new BuiltinsComponentDeserializationPlugin());
@@ -89,7 +108,10 @@ export class AgentSpecDeserializer {
       importOnlyReferencedComponents?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
-    return this.fromDict(JSON.parse(json) as ComponentAsDict, options);
+    this.checkInputSize(json.length);
+    const parsed = JSON.parse(json) as ComponentAsDict;
+    this.checkDepth(parsed);
+    return this.fromDict(parsed, options);
   }
 
   /** Deserialize a component from a YAML string */
@@ -100,7 +122,37 @@ export class AgentSpecDeserializer {
       importOnlyReferencedComponents?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
-    return this.fromDict(YAML.parse(yamlStr) as ComponentAsDict, options);
+    this.checkInputSize(yamlStr.length);
+    const parsed = YAML.parse(yamlStr) as ComponentAsDict;
+    this.checkDepth(parsed);
+    return this.fromDict(parsed, options);
+  }
+
+  /** Check that input size is within limits */
+  private checkInputSize(size: number): void {
+    if (size > this.maxInputSize) {
+      throw new Error(
+        `Input size ${size} bytes exceeds maximum of ${this.maxInputSize} bytes`,
+      );
+    }
+  }
+
+  /** Check that object nesting depth is within limits */
+  private checkDepth(value: unknown, depth = 0): void {
+    if (depth > this.maxDepth) {
+      throw new Error(
+        `Object nesting depth exceeds maximum of ${this.maxDepth}`,
+      );
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        this.checkDepth(item, depth + 1);
+      }
+    } else if (typeof value === "object" && value !== null) {
+      for (const v of Object.values(value as Record<string, unknown>)) {
+        this.checkDepth(v, depth + 1);
+      }
+    }
   }
 
   /** Check that all $component_ref references can be resolved */
