@@ -43,9 +43,12 @@ function parseVersion(v: string): number[] {
 export function versionLt(a: AgentSpecVersion, b: AgentSpecVersion): boolean {
   const pa = parseVersion(a);
   const pb = parseVersion(b);
-  for (let i = 0; i < Math.min(pa.length, pb.length); i++) {
-    if (pa[i]! < pb[i]!) return true;
-    if (pa[i]! > pb[i]!) return false;
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const ai = pa[i] ?? 0;
+    const bi = pb[i] ?? 0;
+    if (ai < bi) return true;
+    if (ai > bi) return false;
   }
   return false;
 }

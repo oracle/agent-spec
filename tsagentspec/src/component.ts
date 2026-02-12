@@ -26,6 +26,20 @@ export const ComponentWithIOSchema = ComponentBaseSchema.extend({
 
 export type ComponentWithIO = z.infer<typeof ComponentWithIOSchema>;
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Check if a value is a component (has uuid id, name, componentType) */
+export function isComponent(value: unknown): value is ComponentBase {
+  if (typeof value !== "object" || value === null) return false;
+  const obj = value as Record<string, unknown>;
+  return (
+    typeof obj["id"] === "string" &&
+    UUID_RE.test(obj["id"]) &&
+    typeof obj["name"] === "string" &&
+    typeof obj["componentType"] === "string"
+  );
+}
+
 /** Abstract type markers for discriminated unions */
 export type AbstractComponentType =
   | "Component"

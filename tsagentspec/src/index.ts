@@ -39,6 +39,7 @@ export {
 export {
   ComponentBaseSchema,
   ComponentWithIOSchema,
+  isComponent,
   type ComponentBase,
   type ComponentWithIO,
   type AbstractComponentType,

@@ -5,18 +5,7 @@
  * When a component is referenced from multiple places, it is serialized once and
  * other locations use $component_ref pointers.
  */
-import type { ComponentBase } from "../component.js";
-
-/** Check if a value is a component (has id, name, componentType) */
-function isComponent(value: unknown): value is ComponentBase {
-  if (typeof value !== "object" || value === null) return false;
-  const obj = value as Record<string, unknown>;
-  return (
-    typeof obj["id"] === "string" &&
-    typeof obj["name"] === "string" &&
-    typeof obj["componentType"] === "string"
-  );
-}
+import { isComponent, type ComponentBase } from "../component.js";
 
 /** Extract Component children from a field value (handles arrays, single components, dicts) */
 export function getChildrenFromFieldValue(

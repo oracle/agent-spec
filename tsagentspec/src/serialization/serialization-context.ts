@@ -6,7 +6,7 @@
  */
 import type { AgentSpecVersion } from "../versioning.js";
 import { AGENTSPEC_VERSION_FIELD_NAME, CURRENT_VERSION, versionLt } from "../versioning.js";
-import type { ComponentBase } from "../component.js";
+import { isComponent, type ComponentBase } from "../component.js";
 import type { Property } from "../property.js";
 import { isSensitiveField } from "../sensitive-field.js";
 import { isBuiltinComponentType } from "../component-registry.js";
@@ -49,17 +49,6 @@ const PRIORITY_KEYS = [
   "name",
   "description",
 ];
-
-/** Check if a value is a component (has id, name, componentType) */
-function isComponent(value: unknown): value is ComponentBase {
-  if (typeof value !== "object" || value === null) return false;
-  const obj = value as Record<string, unknown>;
-  return (
-    typeof obj["id"] === "string" &&
-    typeof obj["name"] === "string" &&
-    typeof obj["componentType"] === "string"
-  );
-}
 
 /** Check if a value looks like a Property (has jsonSchema, title) */
 function isProperty(value: unknown): value is Property {
