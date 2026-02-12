@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Agent Spec Adapters - AutoGen &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Version &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,8 +53,9 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'adapters/autogen';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/version';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
@@ -67,8 +68,8 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Agent Spec Integrations" href="../ecosystem/integrations.html" />
-    <link rel="prev" title="Agent Spec Adapters - WayFlow" href="wayflow.html" />
+    <link rel="next" title="Agent Spec Adapters - LangGraph" href="../adapters/langgraph/index.html" />
+    <link rel="prev" title="Agent Spec Adapters" href="adapters.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -179,13 +183,13 @@
         <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+        <a class="nav-link nav-internal" href="index.html">API Reference</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -284,13 +288,13 @@
         <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+        <a class="nav-link nav-internal" href="index.html">API Reference</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,15 +345,16 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
@@ -364,37 +369,69 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="wayflow.html">WayFlow</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">AutoGen</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -452,7 +489,10 @@
     
     <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Agent Spec Adapters - AutoGen</span></li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version</span></li>
   </ul>
 </nav>
 </div>
@@ -469,120 +509,57 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="agent-spec-adapters-autogen">
-<span id="autogenadapter"></span><h1>Agent Spec Adapters - AutoGen<a class="headerlink" href="#agent-spec-adapters-autogen" title="Permalink to this heading">#</a></h1>
-<figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/autogen-adapter.jpg"><img alt="Agent Spec adapter for AutoGen" src="../_images/autogen-adapter.jpg" style="width: 762.6px; height: 232.8px;" /></a>
-<figcaption>
-<p><span class="caption-text">↑ With the <strong>Agent Spec adapter for AutoGen</strong>, you can easily import agents from external frameworks using Agent Spec and run them with AutoGen.</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-<p><em>Microsoft AutoGen supports the development of multi-agent conversational systems,
-allowing agents to communicate and collaborate to solve tasks.</em></p>
-<section id="get-started">
-<h2>Get started<a class="headerlink" href="#get-started" title="Permalink to this heading">#</a></h2>
-<p>To get started, set up your Python environment (Python 3.10 to 3.12 required),
-and then install the PyAgentSpec package with the AutoGen extension.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: .venv\Scripts\activate</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[autogen]&quot;</span>
-</pre></div>
-</div>
-<p>You are now ready to use the adapter:</p>
-<ul class="simple">
-<li><p>Run Agent Spec configurations with AutoGen (see more details <a class="reference internal" href="#spectoautogen"><span class="std std-ref">below</span></a>)</p></li>
-<li><p>Convert AutoGen agents to Agent Spec (see more details <a class="reference internal" href="#autogentospec"><span class="std std-ref">below</span></a>)</p></li>
-</ul>
-</section>
-<section id="run-agent-spec-configurations-with-autogen">
-<span id="spectoautogen"></span><h2>Run Agent Spec configurations with AutoGen<a class="headerlink" href="#run-agent-spec-configurations-with-autogen" title="Permalink to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a Agent Spec agent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.openaicompatibleconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatProperty</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerTool</span>
+  <section id="version">
+<h1>Version<a class="headerlink" href="#version" title="Permalink to this heading">#</a></h1>
+<section id="enum-for-version">
+<h2>Enum for Version<a class="headerlink" href="#enum-for-version" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.versioning.</span></span><span class="sig-name descname"><span class="pre">AgentSpecVersionEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An Enumeration for different versions of Agent Spec.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.current_version">
+<span class="sig-name descname"><span class="pre">current_version</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'26.2.0'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.current_version" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="n">subtraction_tool</span> <span class="o">=</span> <span class="n">ServerTool</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;subtraction-tool&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;subtract two numbers together&quot;</span><span class="p">,</span>
-    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">FloatProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)],</span>
-    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">FloatProperty</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;difference&quot;</span><span class="p">)],</span>
-<span class="p">)</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v25_3_0">
+<span class="sig-name descname"><span class="pre">v25_3_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'25.3.0'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="n">agentspec_llm_config</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llama-3.3-70b-instruct&quot;</span><span class="p">,</span>
-    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;/storage/models/Llama-3.3-70B-Instruct&quot;</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;url.to.my.llm&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v25_3_1">
+<span class="sig-name descname"><span class="pre">v25_3_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'25.3.1'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_1" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="n">agentspec_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agentspec_tools_test&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;agentspec_tools_test&quot;</span><span class="p">,</span>
-    <span class="n">llm_config</span><span class="o">=</span><span class="n">agentspec_llm_config</span><span class="p">,</span>
-    <span class="n">system_prompt</span><span class="o">=</span><span class="s2">&quot;Perform subtraction with the given tool.&quot;</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">subtraction_tool</span><span class="p">],</span>
-<span class="p">)</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v25_4_0">
+<span class="sig-name descname"><span class="pre">v25_4_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'25.4.0'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="c1"># Export the Agent Spec configuration</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v25_4_1">
+<span class="sig-name descname"><span class="pre">v25_4_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'25.4.1'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_1" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="n">agentspec_config</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agentspec_agent</span><span class="p">)</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v25_4_2">
+<span class="sig-name descname"><span class="pre">v25_4_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'25.4.2'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_2" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="c1"># Load and run the Agent Spec configuration with AutoGen</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.autogen</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v26_1_0">
+<span class="sig-name descname"><span class="pre">v26_1_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'26.1.0'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v26_1_0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">subtract</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.versioning.AgentSpecVersionEnum.v26_2_0">
+<span class="sig-name descname"><span class="pre">v26_2_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'26.2.0'</span></em><a class="headerlink" href="#pyagentspec.versioning.AgentSpecVersionEnum.v26_2_0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">converter</span> <span class="o">=</span> <span class="n">AgentSpecLoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subtraction-tool&quot;</span><span class="p">:</span> <span class="n">subtract</span><span class="p">})</span>
-    <span class="n">component</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">agentspec_config</span><span class="p">)</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">input_cmd</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;USER &gt;&gt; &quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">input_cmd</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">component</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">input_cmd</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AGENT &gt;&gt; </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">component</span><span class="o">.</span><span class="n">_model_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</dd></dl>
 
-<span class="c1"># anyio.run(main)</span>
-<span class="c1"># USER &gt;&gt; Compute 987654321-123456789</span>
-<span class="c1"># AGENT &gt;&gt; The result of the subtraction is 864197532.</span>
-</pre></div>
-</div>
-</section>
-<section id="convert-autogen-agents-to-agent-spec">
-<span id="autogentospec"></span><h2>Convert AutoGen agents to Agent Spec<a class="headerlink" href="#convert-autogen-agents-to-agent-spec" title="Permalink to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an AutoGen Agent</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;YOUR_API_KEY&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">autogen_agentchat.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">AssistantAgent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">autogen_ext.models.openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIChatCompletionClient</span>
-
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_tool</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a to b and returns the result&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-
-<span class="n">autogen_tools</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;add_tool&quot;</span><span class="p">:</span> <span class="n">add_tool</span><span class="p">}</span>
-
-<span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIChatCompletionClient</span><span class="p">(</span>
-    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4.1&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">autogen_agent</span> <span class="o">=</span> <span class="n">AssistantAgent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assistant&quot;</span><span class="p">,</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">autogen_tools</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-    <span class="n">system_message</span><span class="o">=</span><span class="s2">&quot;Use tools to solve tasks, and reformulate the answers that you get.&quot;</span><span class="p">,</span>
-    <span class="n">reflect_on_tool_use</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="c1"># Convert to Agent Spec</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.autogen</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecExporter</span>
-
-<span class="n">agentspec_config</span> <span class="o">=</span> <span class="n">AgentSpecExporter</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">autogen_agent</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -609,9 +586,20 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-started">Get started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-agent-spec-configurations-with-autogen">Run Agent Spec configurations with AutoGen</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-autogen-agents-to-agent-spec">Convert AutoGen agents to Agent Spec</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-for-version">Enum for Version</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.current_version"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.current_version</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_0"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v25_3_0</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_1"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v25_3_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_0"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v25_4_0</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_1"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v25_4_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_2"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v25_4_2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v26_1_0"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v26_1_0</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.versioning.AgentSpecVersionEnum.v26_2_0"><code class="docutils literal notranslate"><span class="pre">AgentSpecVersionEnum.v26_2_0</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

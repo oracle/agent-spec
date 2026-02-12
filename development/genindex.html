@@ -9,7 +9,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Index &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -52,6 +52,7 @@
     <script src="_static/copybutton.js"></script>
     <script src="_static/js/fix-navigation.js"></script>
     <script src="_static/js/fix-navigation.js"></script>
+    <script src="_static/announcement.js"></script>
     <script src="_static/tabs.js"></script>
     <script src="_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
@@ -107,6 +108,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -135,8 +139,8 @@
       
     
     
-    <img src="_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -183,7 +187,7 @@
         <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
@@ -286,7 +290,7 @@
         <a class="nav-link nav-internal" href="changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="ecosystem/integrations.html">Ecosystem</a>
@@ -394,6 +398,18 @@
 </li>
       <li><a href="api/a2a.html#pyagentspec.a2aagent.A2ASessionParameters">A2ASessionParameters (class in pyagentspec.a2aagent)</a>
 </li>
+      <li><a href="api/components.html#pyagentspec.component.AbstractableModel">AbstractableModel (class in pyagentspec.component)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_conditional">add_conditional() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_data_edge">add_data_edge() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_edge">add_edge() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_node">add_node() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_sequence">add_sequence() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.AgentSpecializationParameters.additional_instructions">additional_instructions (pyagentspec.specialized_agent.AgentSpecializationParameters attribute)</a>
 </li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.AgentSpecializationParameters.additional_tools">additional_tools (pyagentspec.specialized_agent.AgentSpecializationParameters attribute)</a>
@@ -414,32 +430,48 @@
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer">AgentSpecDeserializer (class in pyagentspec.serialization.deserializer)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter">AgentSpecExporter (class in pyagentspec.adapters.autogen)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter">AgentSpecExporter (class in pyagentspec.adapters.agent_framework)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter">(class in pyagentspec.adapters.autogen)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter">(class in pyagentspec.adapters.langgraph)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter">(class in pyagentspec.adapters.wayflow)</a>
 </li>
       </ul></li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.AgentSpecializationParameters">AgentSpecializationParameters (class in pyagentspec.specialized_agent)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader">AgentSpecLoader (class in pyagentspec.adapters.autogen)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader">AgentSpecLoader (class in pyagentspec.adapters.agent_framework)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader">(class in pyagentspec.adapters.autogen)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader">(class in pyagentspec.adapters.langgraph)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader">(class in pyagentspec.adapters.wayflow)</a>
 </li>
       </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer">AgentSpecSerializer (class in pyagentspec.serialization.serializer)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum">AgentSpecVersionEnum (class in pyagentspec.versioning)</a>
 </li>
       <li><a href="api/agenticpatterns.html#pyagentspec.swarm.HandoffMode.ALWAYS">ALWAYS (pyagentspec.swarm.HandoffMode attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.UnionProperty.any_of">any_of (pyagentspec.property.UnionProperty attribute)</a>
 </li>
-      <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key">api_key (pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.api_key">api_key (pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaiconfig.OpenAiConfig.api_key">(pyagentspec.llms.openaiconfig.OpenAiConfig attribute)</a>
 </li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.api_key">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     api_key:
 
@@ -447,8 +479,6 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[3]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.api_spec_uri">api_spec_uri (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
       <ul>
@@ -458,9 +488,13 @@
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.api_type">api_type (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.api_type">(pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_type">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
 </li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaiconfig.OpenAiConfig.api_type">(pyagentspec.llms.openaiconfig.OpenAiConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.api_type">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -471,6 +505,8 @@
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode">ApiNode (class in pyagentspec.flows.nodes.apinode)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.APPEND">APPEND (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.args">args (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
 </li>
@@ -519,6 +555,8 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth_type">command line option</a>
 </li>
       </ul></li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.AVERAGE">AVERAGE (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -530,12 +568,22 @@
       <li><a href="api/flows.html#pyagentspec.flows.nodes.endnode.EndNode.branch_name">branch_name (pyagentspec.flows.nodes.endnode.EndNode attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.node.Node.branches">branches (pyagentspec.flows.node.Node attribute)</a>
+
+      <ul>
+        <li><a href="api/flows.html#pyagentspec.flows.nodes.startnode.StartNode.branches">(pyagentspec.flows.nodes.startnode.StartNode attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode">BranchingNode (class in pyagentspec.flows.nodes.branchingnode)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode">BranchingNode (class in pyagentspec.flows.nodes.branchingnode)</a>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.build">build() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.component.Component.build_from_partial_config">build_from_partial_config() (pyagentspec.component.Component class method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.build_linear_flow">build_linear_flow() (pyagentspec.flows.flowbuilder.FlowBuilder class method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.build_spec">build_spec() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool">BuiltinTool (class in pyagentspec.tools.builtintool)</a>
 </li>
@@ -551,6 +599,16 @@
         <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.ca_file">(pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.cache_collection_name">cache_collection_name (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.cache_collection_name">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode">CatchExceptionNode (class in pyagentspec.flows.nodes.catchexceptionnode)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH">CAUGHT_EXCEPTION_BRANCH (pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode attribute)</a>
+</li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.cert_file">cert_file (pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
 
       <ul>
@@ -579,6 +637,8 @@
 </li>
       </ul></li>
       <li><a href="api/tools.html#pyagentspec.tools.clienttool.ClientTool">ClientTool (class in pyagentspec.tools.clienttool)</a>
+</li>
+      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.ClientTransport">ClientTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.COHERE">COHERE (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
 </li>
@@ -636,13 +696,25 @@
 </li>
       <li><a href="api/components.html#pyagentspec.component.ComponentWithIO">ComponentWithIO (class in pyagentspec.component)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.config_dir">config_dir (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
+</li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool.configuration">configuration (pyagentspec.tools.builtintool.BuiltinTool attribute)</a>
 </li>
       <li><a href="api/remoteagent.html#pyagentspec.a2aagent.A2AAgent.connection_config">connection_config (pyagentspec.a2aagent.A2AAgent attribute)</a>
+
+      <ul>
+        <li><a href="api/datastores.html#pyagentspec.datastores.oracle.OracleDatabaseDatastore.connection_config">(pyagentspec.datastores.oracle.OracleDatabaseDatastore attribute)</a>
 </li>
+        <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore.connection_config">(pyagentspec.datastores.postgres.PostgresDatabaseDatastore attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge">ControlFlowEdge (class in pyagentspec.flows.edges.controlflowedge)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.conversation_store_id">conversation_store_id (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform">ConversationSummarizationTransform (class in pyagentspec.transforms)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.current_version">current_version (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.cwd">cwd (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
 </li>
@@ -660,9 +732,31 @@
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge">DataFlowEdge (class in pyagentspec.flows.edges.dataflowedge)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.Datastore">Datastore (class in pyagentspec.datastores)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.datastore">datastore (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.datastore">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.InMemoryCollectionDatastore.datastore_schema">datastore_schema (pyagentspec.datastores.InMemoryCollectionDatastore attribute)</a>
+
+      <ul>
+        <li><a href="api/datastores.html#pyagentspec.datastores.RelationalDatastore.datastore_schema">(pyagentspec.datastores.RelationalDatastore attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ServingMode.DEDICATED">DEDICATED (pyagentspec.llms.ocigenaiconfig.ServingMode attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode.DEFAULT_BRANCH">DEFAULT_BRANCH (pyagentspec.flows.nodes.branchingnode.BranchingNode attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.DEFAULT_COLLECTION_NAME">DEFAULT_COLLECTION_NAME (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.DEFAULT_COLLECTION_NAME">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.DEFAULT_EXCEPTION_INFO_VALUE">DEFAULT_EXCEPTION_INFO_VALUE (pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode attribute)</a>
 </li>
       <li>
     default_generation_parameters:
@@ -671,12 +765,12 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[4]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode.DEFAULT_INPUT">DEFAULT_INPUT (pyagentspec.flows.nodes.branchingnode.BranchingNode attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.node.Node.DEFAULT_NEXT_BRANCH">DEFAULT_NEXT_BRANCH (pyagentspec.flows.node.Node attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.DEFAULT_OUTPUT">DEFAULT_OUTPUT (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
       <ul>
@@ -698,6 +792,8 @@
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge.destination_node">destination_node (pyagentspec.flows.edges.dataflowedge.DataFlowEdge attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.DictProperty">DictProperty (class in pyagentspec.property)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.dsn">dsn (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializationcontext.SerializationContext.dump_field">dump_field() (pyagentspec.serialization.serializationcontext.SerializationContext method)</a>
 </li>
@@ -727,6 +823,8 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flow.Flow">Flow (class in pyagentspec.flows.flow)</a>
 </li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder">FlowBuilder (class in pyagentspec.flows.flowbuilder)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.flownode.FlowNode">FlowNode (class in pyagentspec.flows.nodes.flownode)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.from_branch">from_branch (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
@@ -753,10 +851,16 @@
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext.get_component_type">get_component_type() (pyagentspec.serialization.deserializationcontext.DeserializationContext method)</a>
 </li>
-      <li><a href="api/components.html#pyagentspec.component.Component.get_validation_errors">get_validation_errors() (pyagentspec.component.Component class method)</a>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.get_entity_definition">get_entity_definition() (pyagentspec.transforms.ConversationSummarizationTransform static method)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.get_entity_definition">(pyagentspec.transforms.MessageSummarizationTransform static method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/components.html#pyagentspec.component.Component.get_validation_errors">get_validation_errors() (pyagentspec.component.Component class method)</a>
+</li>
       <li><a href="api/components.html#pyagentspec.component.Component.get_versioned_model_fields">get_versioned_model_fields() (pyagentspec.component.Component method)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.GROK">GROK (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
@@ -774,6 +878,12 @@
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.headers">headers (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
       <ul>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport.headers">(pyagentspec.mcp.clienttransport.RemoteTransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport.headers">(pyagentspec.mcp.clienttransport.SSETransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.headers">(pyagentspec.mcp.clienttransport.StreamableHTTPTransport attribute)</a>
+</li>
         <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool.headers">(pyagentspec.tools.remotetool.RemoteTool attribute)</a>
 </li>
       </ul></li>
@@ -793,10 +903,16 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/datastores.html#pyagentspec.datastores.InMemoryCollectionDatastore">InMemoryCollectionDatastore (class in pyagentspec.datastores)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode">InputMessageNode (class in pyagentspec.flows.nodes.inputmessagenode)</a>
 </li>
-      <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.inputs">inputs (pyagentspec.component.ComponentWithIO attribute)</a>
+      <li><a href="api/components.html#pyagentspec.agenticcomponent.AgenticComponent.inputs">inputs (pyagentspec.agenticcomponent.AgenticComponent attribute)</a>
+
+      <ul>
+        <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.inputs">(pyagentspec.component.ComponentWithIO attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.IntegerProperty">IntegerProperty (class in pyagentspec.property)</a>
@@ -831,6 +947,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.ListProperty">ListProperty (class in pyagentspec.property)</a>
 </li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.llm">llm (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.llm">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.llm_config">llm_config (pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig">LlmConfig (class in pyagentspec.llms.llmconfig)</a>
@@ -839,10 +961,14 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode">LlmNode (class in pyagentspec.flows.nodes.llmnode)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_component">load_component() (pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_component">load_component() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_component">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_component">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader.load_component">(pyagentspec.adapters.wayflow.AgentSpecLoader method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -851,18 +977,28 @@
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext.load_field">load_field() (pyagentspec.serialization.deserializationcontext.DeserializationContext method)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_json">load_json() (pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_json">load_json() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_json">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_json">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
 </li>
-      </ul></li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml">load_yaml() (pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
-
-      <ul>
-        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_yaml">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader.load_json">(pyagentspec.adapters.wayflow.AgentSpecLoader method)</a>
 </li>
       </ul></li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_yaml">load_yaml() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
+
+      <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_yaml">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader.load_yaml">(pyagentspec.adapters.wayflow.AgentSpecLoader method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.loc">loc (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -874,6 +1010,24 @@
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.MapNode">MapNode (class in pyagentspec.flows.nodes.mapnode)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode.mapping">mapping (pyagentspec.flows.nodes.branchingnode.BranchingNode attribute)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.MAX">MAX (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.max_cache_lifetime">max_cache_lifetime (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.max_cache_lifetime">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.max_cache_size">max_cache_size (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.max_cache_size">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.max_message_size">max_message_size (pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.max_num_messages">max_num_messages (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
 </li>
       <li><a href="api/a2a.html#pyagentspec.a2aagent.A2ASessionParameters.max_retries">max_retries (pyagentspec.a2aagent.A2ASessionParameters attribute)</a>
 </li>
@@ -893,16 +1047,28 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform">MessageSummarizationTransform (class in pyagentspec.transforms)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.MessageTransform">MessageTransform (class in pyagentspec.transforms)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.META">META (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN">MIN (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.min_num_messages">min_num_messages (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.component.Component.model_fields_set">model_fields_set (pyagentspec.component.Component property)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id">model_id (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.model_id">(pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.model_id">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
 </li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaiconfig.OpenAiConfig.model_id">(pyagentspec.llms.openaiconfig.OpenAiConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.model_id">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -915,6 +1081,10 @@
       <li><a href="api/components.html#pyagentspec.component.Component.model_json_schema">model_json_schema() (pyagentspec.component.Component class method)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider">ModelProvider (class in pyagentspec.llms.ocigenaiconfig)</a>
+</li>
+      <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.msg">msg (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig">MTlsOracleDatabaseConnectionConfig (class in pyagentspec.datastores.oracle)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -965,12 +1135,12 @@
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig">OciGenAiConfig (class in pyagentspec.llms.ocigenaiconfig)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig">OllamaConfig (class in pyagentspec.llms.ollamaconfig)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ServingMode.ON_DEMAND">ON_DEMAND (pyagentspec.llms.ocigenaiconfig.ServingMode attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS">OPENAI_CHAT_COMPLETIONS (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES">OPENAI_RESPONSES (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
@@ -983,12 +1153,20 @@
 </li>
       <li><a href="api/agenticpatterns.html#pyagentspec.swarm.HandoffMode.OPTIONAL">OPTIONAL (pyagentspec.swarm.HandoffMode attribute)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig">OracleDatabaseConnectionConfig (class in pyagentspec.datastores.oracle)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.OracleDatabaseDatastore">OracleDatabaseDatastore (class in pyagentspec.datastores.oracle)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.OTHER">OTHER (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode">OutputMessageNode (class in pyagentspec.flows.nodes.outputmessagenode)</a>
 </li>
-      <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.outputs">outputs (pyagentspec.component.ComponentWithIO attribute)</a>
+      <li><a href="api/components.html#pyagentspec.agenticcomponent.AgenticComponent.outputs">outputs (pyagentspec.agenticcomponent.AgenticComponent attribute)</a>
+
+      <ul>
+        <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.outputs">(pyagentspec.component.ComponentWithIO attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -999,6 +1177,12 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode">ParallelMapNode (class in pyagentspec.flows.nodes.parallelmapnode)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.password">password (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
+
+      <ul>
+        <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.password">(pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin.plugin_name">plugin_name (pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin property)</a>
 
       <ul>
@@ -1023,13 +1207,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/a2a.html#pyagentspec.a2aagent.A2ASessionParameters.poll_interval">poll_interval (pyagentspec.a2aagent.A2ASessionParameters attribute)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig">PostgresDatabaseConnectionConfig (class in pyagentspec.datastores.postgres)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore">PostgresDatabaseDatastore (class in pyagentspec.datastores.postgres)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.prompt_template">prompt_template (pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.ObjectProperty.properties">properties (pyagentspec.property.ObjectProperty attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.Property">Property (class in pyagentspec.property)</a>
 </li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.protocol">protocol (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.provider">provider (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
+</li>
+      <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails">PyAgentSpecErrorDetails (class in pyagentspec.validation_helpers)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.pydanticdeserializationplugin.PydanticComponentDeserializationPlugin">PydanticComponentDeserializationPlugin (class in pyagentspec.serialization.pydanticdeserializationplugin)</a>
 </li>
@@ -1059,11 +1251,17 @@
         <li><a href="api/flows.html#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode.reducers">(pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod">ReductionMethod (class in pyagentspec.flows.nodes.mapnode)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.RelationalDatastore">RelationalDatastore (class in pyagentspec.datastores)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/remoteagent.html#pyagentspec.remoteagent.RemoteAgent">RemoteAgent (class in pyagentspec.remoteagent)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool">RemoteTool (class in pyagentspec.tools.remotetool)</a>
+</li>
+      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport">RemoteTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES">RESPONSES (pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType attribute)</a>
 </li>
@@ -1076,6 +1274,12 @@
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.sensitive_headers">sensitive_headers (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
       <ul>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport.sensitive_headers">(pyagentspec.mcp.clienttransport.RemoteTransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport.sensitive_headers">(pyagentspec.mcp.clienttransport.SSETransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.sensitive_headers">(pyagentspec.mcp.clienttransport.StreamableHTTPTransport attribute)</a>
+</li>
         <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool.sensitive_headers">(pyagentspec.tools.remotetool.RemoteTool attribute)</a>
 </li>
       </ul></li>
@@ -1112,20 +1316,38 @@
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ServingMode">ServingMode (class in pyagentspec.llms.ocigenaiconfig)</a>
 </li>
       <li><a href="api/remoteagent.html#pyagentspec.a2aagent.A2AAgent.session_parameters">session_parameters (pyagentspec.a2aagent.A2AAgent attribute)</a>
+
+      <ul>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.ClientTransport.session_parameters">(pyagentspec.mcp.clienttransport.ClientTransport attribute)</a>
 </li>
+      </ul></li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SessionParameters">SessionParameters (class in pyagentspec.mcp.clienttransport)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.set_entry_point">set_entry_point() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.set_finish_points">set_finish_points() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge.source_node">source_node (pyagentspec.flows.edges.dataflowedge.DataFlowEdge attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge.source_output">source_output (pyagentspec.flows.edges.dataflowedge.DataFlowEdge attribute)</a>
 </li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.SpecializedAgent">SpecializedAgent (class in pyagentspec.specialized_agent)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport">SSEmTLSTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport">SSETransport (class in pyagentspec.mcp.clienttransport)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcert">sslcert (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcrl">sslcrl (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslkey">sslkey (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslmode">sslmode (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslrootcert">sslrootcert (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.startnode.StartNode">StartNode (class in pyagentspec.flows.nodes.startnode)</a>
 </li>
@@ -1137,15 +1359,29 @@
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.StringProperty">StringProperty (class in pyagentspec.property)</a>
 </li>
-      <li><a href="api/flows.html#pyagentspec.flows.nodes.flownode.FlowNode.subflow">subflow (pyagentspec.flows.nodes.flownode.FlowNode attribute)</a>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.subflow">subflow (pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode attribute)</a>
 
       <ul>
+        <li><a href="api/flows.html#pyagentspec.flows.nodes.flownode.FlowNode.subflow">(pyagentspec.flows.nodes.flownode.FlowNode attribute)</a>
+</li>
         <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.MapNode.subflow">(pyagentspec.flows.nodes.mapnode.MapNode attribute)</a>
 </li>
         <li><a href="api/flows.html#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode.subflow">(pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode attribute)</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode.subflows">subflows (pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode attribute)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.SUM">SUM (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.summarization_instructions">summarization_instructions (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+
+      <ul>
+        <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.summarization_instructions">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.summarized_conversation_template">summarized_conversation_template (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
+</li>
+      <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.summarized_message_template">summarized_message_template (pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin.supported_component_types">supported_component_types() (pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin method)</a>
 
@@ -1167,34 +1403,50 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig.temperature">temperature (pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig attribute)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_component">to_component() (pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig">TlsOracleDatabaseConnectionConfig (class in pyagentspec.datastores.oracle)</a>
+</li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig">TlsPostgresDatabaseConnectionConfig (class in pyagentspec.datastores.postgres)</a>
+</li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_component">to_component() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_component">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_component">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_component">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
 </li>
       </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_dict">to_dict() (pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_json">to_json() (pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_json">to_json() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_json">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_json">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_json">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_json">(pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.to_node">to_node (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml">to_yaml() (pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_yaml">to_yaml() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_yaml">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_yaml">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_yaml">(pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tools.html#pyagentspec.tools.tool.Tool">Tool (class in pyagentspec.tools.tool)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.toolnode.ToolNode.tool">tool (pyagentspec.flows.nodes.toolnode.ToolNode attribute)</a>
@@ -1211,6 +1463,8 @@
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig.top_p">top_p (pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig attribute)</a>
 </li>
+      <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.type">type (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1219,10 +1473,22 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.UnionProperty">UnionProperty (class in pyagentspec.property)</a>
 </li>
-      <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.url">url (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.url">url (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 
       <ul>
+        <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.url">(pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.url">(pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.url">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.url">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport.url">(pyagentspec.mcp.clienttransport.RemoteTransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport.url">(pyagentspec.mcp.clienttransport.SSETransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.url">(pyagentspec.mcp.clienttransport.StreamableHTTPTransport attribute)</a>
 </li>
         <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool.url">(pyagentspec.tools.remotetool.RemoteTool attribute)</a>
 </li>
@@ -1236,16 +1502,36 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-12">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-url">[2]</a>
 </li>
       </ul></li>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.user">user (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
+
+      <ul>
+        <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.user">(pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ioproperties.html#pyagentspec.property.DictProperty.value_type">value_type (pyagentspec.property.DictProperty attribute)</a>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_0">v25_3_0 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v25_3_1">v25_3_1 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_0">v25_4_0 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_1">v25_4_1 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v25_4_2">v25_4_2 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v26_1_0">v26_1_0 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.v26_2_0">v26_2_0 (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
+</li>
+      <li><a href="api/ioproperties.html#pyagentspec.property.DictProperty.value_type">value_type (pyagentspec.property.DictProperty attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig">VllmConfig (class in pyagentspec.llms.vllmconfig)</a>
 </li>
   </ul></td>
@@ -1254,6 +1540,12 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig.wallet_location">wallet_location (pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/datastores.html#pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig.wallet_password">wallet_password (pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig attribute)</a>
+</li>
       <li><a href="api/agenticpatterns.html#pyagentspec.managerworkers.ManagerWorkers.workers">workers (pyagentspec.managerworkers.ManagerWorkers attribute)</a>
 </li>
   </ul></td>

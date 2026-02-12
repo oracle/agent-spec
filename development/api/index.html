@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>API Reference &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>API Reference &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,6 +53,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/index';</script>
     <script>
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +189,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +294,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,8 +345,9 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
@@ -364,11 +369,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
@@ -385,16 +397,41 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -550,28 +587,31 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.flownode.FlowNode" title="pyagentspec.flows.nodes.flownode.FlowNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.FlowNode</span></code></a></p></td>
 <td><p>The flow node executes a subflow as part of a flow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode" title="pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ParallelFlowNode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode" title="pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.CatchExceptionNode</span></code></a></p></td>
+<td><p>Node to execute a Flow and catch exceptions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode" title="pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ParallelFlowNode</span></code></a></p></td>
 <td><p>The parallel flow node executes multiple subflows in parallel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode" title="pyagentspec.flows.nodes.inputmessagenode.InputMessageNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.InputMessageNode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode" title="pyagentspec.flows.nodes.inputmessagenode.InputMessageNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.InputMessageNode</span></code></a></p></td>
 <td><p>This node interrupts the execution of the flow in order to wait for a user input, and restarts after receiving it.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.llmnode.LlmNode" title="pyagentspec.flows.nodes.llmnode.LlmNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.LlmNode</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.llmnode.LlmNode" title="pyagentspec.flows.nodes.llmnode.LlmNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.LlmNode</span></code></a></p></td>
 <td><p>Execute a prompt template with a given LLM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.mapnode.MapNode" title="pyagentspec.flows.nodes.mapnode.MapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.MapNode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.mapnode.MapNode" title="pyagentspec.flows.nodes.mapnode.MapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.MapNode</span></code></a></p></td>
 <td><p>The map node executes a subflow on each element of a given input as part of a flow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode" title="pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ParallelMapNode</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode" title="pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ParallelMapNode</span></code></a></p></td>
 <td><p>The parallel map node executes a subflow on each element of a given input in a parallel manner.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode" title="pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.OutputMessageNode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode" title="pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.OutputMessageNode</span></code></a></p></td>
 <td><p>This node appends an agent message to the ongoing flow conversation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.startnode.StartNode" title="pyagentspec.flows.nodes.startnode.StartNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.StartNode</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.startnode.StartNode" title="pyagentspec.flows.nodes.startnode.StartNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.StartNode</span></code></a></p></td>
 <td><p>Start nodes denote the start of the execution of a flow.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.toolnode.ToolNode" title="pyagentspec.flows.nodes.toolnode.ToolNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ToolNode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="flows.html#pyagentspec.flows.nodes.toolnode.ToolNode" title="pyagentspec.flows.nodes.toolnode.ToolNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.flows.nodes.ToolNode</span></code></a></p></td>
 <td><p>The tool execution node is a node that will execute a tool as part of a flow.</p></td>
 </tr>
 </tbody>
@@ -794,6 +834,63 @@
 </table>
 </div>
 </section>
+<section id="datastores">
+<h2><a class="reference internal" href="datastores.html"><span class="doc">Datastores</span></a><a class="headerlink" href="#datastores" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.Datastore" title="pyagentspec.datastores.Datastore"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.Datastore</span></code></a></p></td>
+<td><p>Base class for Datastores. Datastores configure how to store and retrieve data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.RelationalDatastore" title="pyagentspec.datastores.RelationalDatastore"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.RelationalDatastore</span></code></a></p></td>
+<td><p>A relational data store that supports querying data using SQL-like queries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.InMemoryCollectionDatastore" title="pyagentspec.datastores.InMemoryCollectionDatastore"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.InMemoryCollectionDatastore</span></code></a></p></td>
+<td><p>In-memory datastore for testing and development purposes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.oracle.OracleDatabaseDatastore" title="pyagentspec.datastores.oracle.OracleDatabaseDatastore"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.oracle.OracleDatabaseDatastore</span></code></a></p></td>
+<td><p>Datastore that uses Oracle Database as the storage mechanism.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig" title="pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig</span></code></a></p></td>
+<td><p>Base class used for configuring connections to Oracle Database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig" title="pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig</span></code></a></p></td>
+<td><p>TLS Connection Configuration to Oracle Database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig" title="pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig</span></code></a></p></td>
+<td><p>Mutual-TLS Connection Configuration to Oracle Database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore" title="pyagentspec.datastores.postgres.PostgresDatabaseDatastore"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.postgres.PostgresDatabaseDatastore</span></code></a></p></td>
+<td><p>Datastore that uses PostgreSQL Database as the storage mechanism.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig" title="pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig</span></code></a></p></td>
+<td><p>Base class for a PostgreSQL connection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig" title="pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig</span></code></a></p></td>
+<td><p>Configuration for a PostgreSQL connection with TLS/SSL support.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="transforms">
+<h2><a class="reference internal" href="transforms.html"><span class="doc">Transforms</span></a><a class="headerlink" href="#transforms" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="transforms.html#pyagentspec.transforms.MessageTransform" title="pyagentspec.transforms.MessageTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.transforms.MessageTransform</span></code></a></p></td>
+<td><p>Base class for message transformation components.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="transforms.html#pyagentspec.transforms.MessageSummarizationTransform" title="pyagentspec.transforms.MessageSummarizationTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.transforms.MessageSummarizationTransform</span></code></a></p></td>
+<td><p>Summarizes oversized messages using an LLM and optionally caches summaries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="transforms.html#pyagentspec.transforms.ConversationSummarizationTransform" title="pyagentspec.transforms.ConversationSummarizationTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.transforms.ConversationSummarizationTransform</span></code></a></p></td>
+<td><p>Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="a2a">
 <h2><a class="reference internal" href="a2a.html"><span class="doc">A2A</span></a><a class="headerlink" href="#a2a" title="Permalink to this heading">#</a></h2>
 <p><strong>Classes</strong></p>
@@ -825,6 +922,30 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader" title="pyagentspec.adapters.langgraph.AgentSpecLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.langgraph.AgentSpecLoader</span></code></a></p></td>
 <td><p>Helper class to convert Agent Spec configuration into LangGraph objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter" title="pyagentspec.adapters.wayflow.AgentSpecExporter"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.wayflow.AgentSpecExporter</span></code></a></p></td>
+<td><p>Helper class to convert WayFlow objects to Agent Spec configurations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader" title="pyagentspec.adapters.wayflow.AgentSpecLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.wayflow.AgentSpecLoader</span></code></a></p></td>
+<td><p>Helper class to convert Agent Spec configurations to WayFlow objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter" title="pyagentspec.adapters.agent_framework.AgentSpecExporter"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.agent_framework.AgentSpecExporter</span></code></a></p></td>
+<td><p>Helper class to convert Microsoft Agent Framework objects to Agent Spec configurations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader" title="pyagentspec.adapters.agent_framework.AgentSpecLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.agent_framework.AgentSpecLoader</span></code></a></p></td>
+<td><p>Helper class to convert Agent Spec configurations to Microsoft Agent Framework objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="version">
+<h2><a class="reference internal" href="version.html"><span class="doc">Version</span></a><a class="headerlink" href="#version" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.versioning.AgentSpecVersionEnum</span></code></a></p></td>
+<td><p>An Enumeration for different versions of Agent Spec.</p></td>
 </tr>
 </tbody>
 </table>
@@ -868,8 +989,11 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-deserialization"><span class="xref std std-doc">Serialization / Deserialization</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-patterns"><span class="xref std std-doc">Agentic Patterns</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-specialization"><span class="xref std std-doc">Agent Specialization</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datastores"><span class="xref std std-doc">Datastores</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transforms"><span class="xref std std-doc">Transforms</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a2a"><span class="xref std std-doc">A2A</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapters"><span class="xref std std-doc">Adapters</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version"><span class="xref std std-doc">Version</span></a></li>
 </ul>
   </nav></div>
 

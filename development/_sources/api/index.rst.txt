@@ -58,43 +58,45 @@ Click on the components and section names to access the complete API documentati
 **Classes**
 
 
-================================================================================================================ ========================================================================
+=================================================================================================================== ==========================================================================
 
-:class:`pyagentspec.flows.flow.Flow`                                                                             :docstring:`pyagentspec.flows.flow.Flow`
+:class:`pyagentspec.flows.flow.Flow`                                                                                :docstring:`pyagentspec.flows.flow.Flow`
 
-:class:`pyagentspec.flows.node.Node`                                                                             :docstring:`pyagentspec.flows.node.Node`
+:class:`pyagentspec.flows.node.Node`                                                                                :docstring:`pyagentspec.flows.node.Node`
 
-:class:`pyagentspec.flows.edges.DataFlowEdge <pyagentspec.flows.edges.dataflowedge.DataFlowEdge>`                :docstring:`pyagentspec.flows.edges.dataflowedge.DataFlowEdge`
+:class:`pyagentspec.flows.edges.DataFlowEdge <pyagentspec.flows.edges.dataflowedge.DataFlowEdge>`                   :docstring:`pyagentspec.flows.edges.dataflowedge.DataFlowEdge`
 
-:class:`pyagentspec.flows.edges.ControlFlowEdge <pyagentspec.flows.edges.controlflowedge.ControlFlowEdge>`       :docstring:`pyagentspec.flows.edges.controlflowedge.ControlFlowEdge`
+:class:`pyagentspec.flows.edges.ControlFlowEdge <pyagentspec.flows.edges.controlflowedge.ControlFlowEdge>`          :docstring:`pyagentspec.flows.edges.controlflowedge.ControlFlowEdge`
 
-:class:`pyagentspec.flows.nodes.AgentNode <pyagentspec.flows.nodes.agentnode.AgentNode>`                         :docstring:`pyagentspec.flows.nodes.agentnode.AgentNode`
+:class:`pyagentspec.flows.nodes.AgentNode <pyagentspec.flows.nodes.agentnode.AgentNode>`                            :docstring:`pyagentspec.flows.nodes.agentnode.AgentNode`
 
-:class:`pyagentspec.flows.nodes.ApiNode <pyagentspec.flows.nodes.apinode.ApiNode>`                               :docstring:`pyagentspec.flows.nodes.apinode.ApiNode`
+:class:`pyagentspec.flows.nodes.ApiNode <pyagentspec.flows.nodes.apinode.ApiNode>`                                  :docstring:`pyagentspec.flows.nodes.apinode.ApiNode`
 
-:class:`pyagentspec.flows.nodes.BranchingNode <pyagentspec.flows.nodes.branchingnode.BranchingNode>`             :docstring:`pyagentspec.flows.nodes.branchingnode.BranchingNode`
+:class:`pyagentspec.flows.nodes.BranchingNode <pyagentspec.flows.nodes.branchingnode.BranchingNode>`                :docstring:`pyagentspec.flows.nodes.branchingnode.BranchingNode`
 
-:class:`pyagentspec.flows.nodes.EndNode <pyagentspec.flows.nodes.endnode.EndNode>`                               :docstring:`pyagentspec.flows.nodes.endnode.EndNode`
+:class:`pyagentspec.flows.nodes.EndNode <pyagentspec.flows.nodes.endnode.EndNode>`                                  :docstring:`pyagentspec.flows.nodes.endnode.EndNode`
 
-:class:`pyagentspec.flows.nodes.FlowNode <pyagentspec.flows.nodes.flownode.FlowNode>`                            :docstring:`pyagentspec.flows.nodes.flownode.FlowNode`
+:class:`pyagentspec.flows.nodes.FlowNode <pyagentspec.flows.nodes.flownode.FlowNode>`                               :docstring:`pyagentspec.flows.nodes.flownode.FlowNode`
 
-:class:`pyagentspec.flows.nodes.ParallelFlowNode <pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode>`    :docstring:`pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode`
+:class:`pyagentspec.flows.nodes.CatchExceptionNode <pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode>` :docstring:`pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode`
 
-:class:`pyagentspec.flows.nodes.InputMessageNode <pyagentspec.flows.nodes.inputmessagenode.InputMessageNode>`    :docstring:`pyagentspec.flows.nodes.inputmessagenode.InputMessageNode`
+:class:`pyagentspec.flows.nodes.ParallelFlowNode <pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode>`       :docstring:`pyagentspec.flows.nodes.parallelflownode.ParallelFlowNode`
 
-:class:`pyagentspec.flows.nodes.LlmNode <pyagentspec.flows.nodes.llmnode.LlmNode>`                               :docstring:`pyagentspec.flows.nodes.llmnode.LlmNode`
+:class:`pyagentspec.flows.nodes.InputMessageNode <pyagentspec.flows.nodes.inputmessagenode.InputMessageNode>`       :docstring:`pyagentspec.flows.nodes.inputmessagenode.InputMessageNode`
 
-:class:`pyagentspec.flows.nodes.MapNode <pyagentspec.flows.nodes.mapnode.MapNode>`                               :docstring:`pyagentspec.flows.nodes.mapnode.MapNode`
+:class:`pyagentspec.flows.nodes.LlmNode <pyagentspec.flows.nodes.llmnode.LlmNode>`                                  :docstring:`pyagentspec.flows.nodes.llmnode.LlmNode`
 
-:class:`pyagentspec.flows.nodes.ParallelMapNode <pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode>`       :docstring:`pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode`
+:class:`pyagentspec.flows.nodes.MapNode <pyagentspec.flows.nodes.mapnode.MapNode>`                                  :docstring:`pyagentspec.flows.nodes.mapnode.MapNode`
 
-:class:`pyagentspec.flows.nodes.OutputMessageNode <pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode>` :docstring:`pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode`
+:class:`pyagentspec.flows.nodes.ParallelMapNode <pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode>`          :docstring:`pyagentspec.flows.nodes.parallelmapnode.ParallelMapNode`
 
-:class:`pyagentspec.flows.nodes.StartNode <pyagentspec.flows.nodes.startnode.StartNode>`                         :docstring:`pyagentspec.flows.nodes.startnode.StartNode`
+:class:`pyagentspec.flows.nodes.OutputMessageNode <pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode>`    :docstring:`pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode`
 
-:class:`pyagentspec.flows.nodes.ToolNode <pyagentspec.flows.nodes.toolnode.ToolNode>`                            :docstring:`pyagentspec.flows.nodes.toolnode.ToolNode`
+:class:`pyagentspec.flows.nodes.StartNode <pyagentspec.flows.nodes.startnode.StartNode>`                            :docstring:`pyagentspec.flows.nodes.startnode.StartNode`
 
-================================================================================================================ ========================================================================
+:class:`pyagentspec.flows.nodes.ToolNode <pyagentspec.flows.nodes.toolnode.ToolNode>`                               :docstring:`pyagentspec.flows.nodes.toolnode.ToolNode`
+
+=================================================================================================================== ==========================================================================
 
 :doc:`LLMs <llmmodels>`
 -----------------------
@@ -268,6 +270,52 @@ Click on the components and section names to access the complete API documentati
 
 ==================================================================== ========================================================================
 
+:doc:`Datastores <datastores>`
+------------------------------
+
+**Classes**
+
+
+============================================================================ ================================================================================
+
+:class:`pyagentspec.datastores.Datastore`                                    :docstring:`pyagentspec.datastores.Datastore`
+
+:class:`pyagentspec.datastores.RelationalDatastore`                          :docstring:`pyagentspec.datastores.RelationalDatastore`
+
+:class:`pyagentspec.datastores.InMemoryCollectionDatastore`                  :docstring:`pyagentspec.datastores.InMemoryCollectionDatastore`
+
+:class:`pyagentspec.datastores.oracle.OracleDatabaseDatastore`               :docstring:`pyagentspec.datastores.oracle.OracleDatabaseDatastore`
+
+:class:`pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig`        :docstring:`pyagentspec.datastores.oracle.OracleDatabaseConnectionConfig`
+
+:class:`pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig`     :docstring:`pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig`
+
+:class:`pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig`    :docstring:`pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig`
+
+:class:`pyagentspec.datastores.postgres.PostgresDatabaseDatastore`           :docstring:`pyagentspec.datastores.postgres.PostgresDatabaseDatastore`
+
+:class:`pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig`    :docstring:`pyagentspec.datastores.postgres.PostgresDatabaseConnectionConfig`
+
+:class:`pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig` :docstring:`pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig`
+
+============================================================================ ================================================================================
+
+:doc:`Transforms <transforms>`
+------------------------------
+
+**Classes**
+
+
+================================================================== ======================================================================
+
+:class:`pyagentspec.transforms.MessageTransform`                   :docstring:`pyagentspec.transforms.MessageTransform`
+
+:class:`pyagentspec.transforms.MessageSummarizationTransform`      :docstring:`pyagentspec.transforms.MessageSummarizationTransform`
+
+:class:`pyagentspec.transforms.ConversationSummarizationTransform` :docstring:`pyagentspec.transforms.ConversationSummarizationTransform`
+
+================================================================== ======================================================================
+
 :doc:`A2A <a2a>`
 ----------------
 
@@ -288,17 +336,37 @@ Click on the components and section names to access the complete API documentati
 **Classes**
 
 
-========================================================= =============================================================
+=============================================================== ===================================================================
 
-:class:`pyagentspec.adapters.autogen.AgentSpecExporter`   :docstring:`pyagentspec.adapters.autogen.AgentSpecExporter`
+:class:`pyagentspec.adapters.autogen.AgentSpecExporter`         :docstring:`pyagentspec.adapters.autogen.AgentSpecExporter`
 
-:class:`pyagentspec.adapters.autogen.AgentSpecLoader`     :docstring:`pyagentspec.adapters.autogen.AgentSpecLoader`
+:class:`pyagentspec.adapters.autogen.AgentSpecLoader`           :docstring:`pyagentspec.adapters.autogen.AgentSpecLoader`
 
-:class:`pyagentspec.adapters.langgraph.AgentSpecExporter` :docstring:`pyagentspec.adapters.langgraph.AgentSpecExporter`
+:class:`pyagentspec.adapters.langgraph.AgentSpecExporter`       :docstring:`pyagentspec.adapters.langgraph.AgentSpecExporter`
 
-:class:`pyagentspec.adapters.langgraph.AgentSpecLoader`   :docstring:`pyagentspec.adapters.langgraph.AgentSpecLoader`
+:class:`pyagentspec.adapters.langgraph.AgentSpecLoader`         :docstring:`pyagentspec.adapters.langgraph.AgentSpecLoader`
 
-========================================================= =============================================================
+:class:`pyagentspec.adapters.wayflow.AgentSpecExporter`         :docstring:`pyagentspec.adapters.wayflow.AgentSpecExporter`
+
+:class:`pyagentspec.adapters.wayflow.AgentSpecLoader`           :docstring:`pyagentspec.adapters.wayflow.AgentSpecLoader`
+
+:class:`pyagentspec.adapters.agent_framework.AgentSpecExporter` :docstring:`pyagentspec.adapters.agent_framework.AgentSpecExporter`
+
+:class:`pyagentspec.adapters.agent_framework.AgentSpecLoader`   :docstring:`pyagentspec.adapters.agent_framework.AgentSpecLoader`
+
+=============================================================== ===================================================================
+
+:doc:`Version <version>`
+------------------------
+
+**Classes**
+
+
+==================================================== ========================================================
+
+:class:`pyagentspec.versioning.AgentSpecVersionEnum` :docstring:`pyagentspec.versioning.AgentSpecVersionEnum`
+
+==================================================== ========================================================
 
 
 .. toctree::
@@ -316,5 +384,8 @@ Click on the components and section names to access the complete API documentati
    Serialization / Deserialization <serialization>
    Agentic Patterns <agenticpatterns>
    Agent Specialization <agent_specialization>
+   Datastores <datastores>
+   Transforms <transforms>
    A2A <a2a>
    Adapters <adapters>
+   Version <version>

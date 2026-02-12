@@ -1,5 +1,4 @@
 .. _agentspecspec_v25.4.1:
-.. _agentspecspec:
 
 =========================================
 Agent Spec specification (version 25.4.1)

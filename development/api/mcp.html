@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Model Context Protocol (MCP) &#8212; PyAgentSpec 26.1.0.dev0 documentation</title>
+    <title>Model Context Protocol (MCP) &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -53,6 +53,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/mcp';</script>
     <script>
@@ -109,6 +110,9 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -137,8 +141,8 @@
       
     
     
-    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
-    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.1.0.dev0 documentation - Home"/>
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
   
   
 </a></div>
@@ -185,7 +189,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -290,7 +294,7 @@
         <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
     </li>
     <li class="nav-item ">
-        <a class="nav-link nav-internal" href="../adapters/langgraph.html">Adapters</a>
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
@@ -341,8 +345,9 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
 </ul>
@@ -364,11 +369,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
 </ul>
@@ -385,16 +397,41 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../adapters/langgraph.html">LangGraph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/wayflow.html">WayFlow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../adapters/autogen.html">AutoGen</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
 <ul class="nav bd-sidenav">
@@ -491,8 +528,8 @@
 
 <span class="target" id="stdiotransport"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StdioTransport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StdioTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StdioTransport" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClientTransport</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StdioTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StdioTransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.ClientTransport" title="pyagentspec.mcp.clienttransport.ClientTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientTransport</span></code></a></p>
 <p>Base transport for connecting to an MCP server via subprocess with stdio.</p>
 <p>This is a base class that can be subclassed for specific command-based
 transports like Python, Node, Uvx, etc.</p>
@@ -507,8 +544,8 @@ transports like Python, Node, Uvx, etc.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
 <li><p><strong>command</strong> (<em>str</em>) – The executable to run to start the server.</p></li>
 <li><p><strong>args</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Command line arguments to pass to the executable.</p></li>
@@ -546,8 +583,8 @@ transports like Python, Node, Uvx, etc.</p>
 
 <span class="target" id="ssetransport"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.SSETransport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">SSETransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSETransport" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteTransport</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">SSETransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSETransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.RemoteTransport" title="pyagentspec.mcp.clienttransport.RemoteTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteTransport</span></code></a></p>
 <p>Transport implementation that connects to an MCP server via Server-Sent Events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -556,8 +593,8 @@ transports like Python, Node, Uvx, etc.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – The URL of the server.</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – The headers to send to the server.</p></li>
@@ -567,11 +604,31 @@ authentication tokens and will be excluded form exported JSON configs.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.SSETransport.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSETransport.headers" title="Permalink to this definition">#</a></dt>
+<dd><p>The headers to send to the server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.SSETransport.sensitive_headers">
+<span class="sig-name descname"><span class="pre">sensitive_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSETransport.sensitive_headers" title="Permalink to this definition">#</a></dt>
+<dd><p>Additional headers to send to the server.
+These headers are intended to be used for sensitive information such as
+authentication tokens and will be excluded form exported JSON configs.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.SSETransport.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSETransport.url" title="Permalink to this definition">#</a></dt>
+<dd><p>The URL of the server.</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="ssemtlstransport"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.SSEmTLSTransport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">SSEmTLSTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">SSEmTLSTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.SSETransport" title="pyagentspec.mcp.clienttransport.SSETransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">SSETransport</span></code></a></p>
 <p>Transport layer for SSE with mTLS (mutual Transport Layer Security).</p>
 <p>This transport establishes a secure, mutually authenticated TLS connection to the MCP server using client
@@ -592,8 +649,8 @@ environment variables in any production system.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – The URL of the server.</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – The headers to send to the server.</p></li>
@@ -630,8 +687,8 @@ If None, system cert store is used.</p>
 
 <span class="target" id="streamablehttptransport"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPTransport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StreamableHTTPTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteTransport</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StreamableHTTPTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.RemoteTransport" title="pyagentspec.mcp.clienttransport.RemoteTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteTransport</span></code></a></p>
 <p>Transport implementation that connects to an MCP server via Streamable HTTP.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -640,8 +697,8 @@ If None, system cert store is used.</p>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – The URL of the server.</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – The headers to send to the server.</p></li>
@@ -651,11 +708,31 @@ authentication tokens and will be excluded form exported JSON configs.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPTransport.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.headers" title="Permalink to this definition">#</a></dt>
+<dd><p>The headers to send to the server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPTransport.sensitive_headers">
+<span class="sig-name descname"><span class="pre">sensitive_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.sensitive_headers" title="Permalink to this definition">#</a></dt>
+<dd><p>Additional headers to send to the server.
+These headers are intended to be used for sensitive information such as
+authentication tokens and will be excluded form exported JSON configs.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPTransport.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.url" title="Permalink to this definition">#</a></dt>
+<dd><p>The URL of the server.</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="streamablehttpmtlstransport"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StreamableHTTPmTLSTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_1_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">StreamableHTTPmTLSTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport" title="pyagentspec.mcp.clienttransport.StreamableHTTPTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">StreamableHTTPTransport</span></code></a></p>
 <p>Transport layer for streamable HTTP with mTLS (mutual Transport Layer Security).</p>
 <p>This transport establishes a secure, mutually authenticated TLS connection to the MCP server using client
@@ -676,8 +753,8 @@ environment variables in any production system.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
 <li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
-<li><p><strong>min_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
-<li><p><strong>max_agentspec_version</strong> (<em>AgentSpecVersionEnum</em>) – </p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – The URL of the server.</p></li>
 <li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – The headers to send to the server.</p></li>
@@ -708,6 +785,82 @@ If None, system cert store is used.</p>
 <dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.key_file">
 <span class="sig-name descname"><span class="pre">key_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.key_file" title="Permalink to this definition">#</a></dt>
 <dd><p>The path to the client’s private key file (PEM format). If None, mTLS cannot be performed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="base-classes-for-client-transports">
+<h2>Base Classes for Client Transports<a class="headerlink" href="#base-classes-for-client-transports" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.ClientTransport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">ClientTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.ClientTransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<p>Base class for different MCP client transport mechanisms.</p>
+<p>A Transport is responsible for establishing and managing connections
+to an MCP server, and providing a ClientSession within an async context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – A unique identifier for this Component</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
+<li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
+<li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.ClientTransport.session_parameters">
+<span class="sig-name descname"><span class="pre">session_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><span class="pre">SessionParameters</span></a></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.ClientTransport.session_parameters" title="Permalink to this definition">#</a></dt>
+<dd><p>Arguments for the MCP session.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.RemoteTransport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.clienttransport.</span></span><span class="sig-name descname"><span class="pre">RemoteTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parameters=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.clienttransport.RemoteTransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.mcp.clienttransport.ClientTransport" title="pyagentspec.mcp.clienttransport.ClientTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientTransport</span></code></a></p>
+<p>Base transport class for transport with all remotely hosted servers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – A unique identifier for this Component</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of this Component</p></li>
+<li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – Optional description of this Component</p></li>
+<li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
+<li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>session_parameters</strong> (<a class="reference internal" href="#pyagentspec.mcp.clienttransport.SessionParameters" title="pyagentspec.mcp.clienttransport.SessionParameters"><em>SessionParameters</em></a>) – Arguments for the MCP session.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the server.</p></li>
+<li><p><strong>headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – The headers to send to the server.</p></li>
+<li><p><strong>sensitive_headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – Additional headers to send to the server.
+These headers are intended to be used for sensitive information such as
+authentication tokens and will be excluded form exported JSON configs.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.RemoteTransport.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.RemoteTransport.headers" title="Permalink to this definition">#</a></dt>
+<dd><p>The headers to send to the server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.RemoteTransport.sensitive_headers">
+<span class="sig-name descname"><span class="pre">sensitive_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.RemoteTransport.sensitive_headers" title="Permalink to this definition">#</a></dt>
+<dd><p>Additional headers to send to the server.
+These headers are intended to be used for sensitive information such as
+authentication tokens and will be excluded form exported JSON configs.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.mcp.clienttransport.RemoteTransport.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.mcp.clienttransport.RemoteTransport.url" title="Permalink to this definition">#</a></dt>
+<dd><p>The URL of the server.</p>
 </dd></dl>
 
 </dd></dl>
@@ -751,18 +904,41 @@ If None, system cert store is used.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StdioTransport.env"><code class="docutils literal notranslate"><span class="pre">StdioTransport.env</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSETransport"><code class="docutils literal notranslate"><span class="pre">SSETransport</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSETransport"><code class="docutils literal notranslate"><span class="pre">SSETransport</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSETransport.headers"><code class="docutils literal notranslate"><span class="pre">SSETransport.headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSETransport.sensitive_headers"><code class="docutils literal notranslate"><span class="pre">SSETransport.sensitive_headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSETransport.url"><code class="docutils literal notranslate"><span class="pre">SSETransport.url</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport"><code class="docutils literal notranslate"><span class="pre">SSEmTLSTransport</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport.ca_file"><code class="docutils literal notranslate"><span class="pre">SSEmTLSTransport.ca_file</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport.cert_file"><code class="docutils literal notranslate"><span class="pre">SSEmTLSTransport.cert_file</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.SSEmTLSTransport.key_file"><code class="docutils literal notranslate"><span class="pre">SSEmTLSTransport.key_file</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPTransport</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPTransport</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.headers"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPTransport.headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.sensitive_headers"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPTransport.sensitive_headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.url"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPTransport.url</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPmTLSTransport</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.ca_file"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPmTLSTransport.ca_file</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.cert_file"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPmTLSTransport.cert_file</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.key_file"><code class="docutils literal notranslate"><span class="pre">StreamableHTTPmTLSTransport.key_file</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#base-classes-for-client-transports">Base Classes for Client Transports</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.ClientTransport"><code class="docutils literal notranslate"><span class="pre">ClientTransport</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.ClientTransport.session_parameters"><code class="docutils literal notranslate"><span class="pre">ClientTransport.session_parameters</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.RemoteTransport"><code class="docutils literal notranslate"><span class="pre">RemoteTransport</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.RemoteTransport.headers"><code class="docutils literal notranslate"><span class="pre">RemoteTransport.headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.RemoteTransport.sensitive_headers"><code class="docutils literal notranslate"><span class="pre">RemoteTransport.sensitive_headers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.mcp.clienttransport.RemoteTransport.url"><code class="docutils literal notranslate"><span class="pre">RemoteTransport.url</span></code></a></li>
 </ul>
 </li>
 </ul>

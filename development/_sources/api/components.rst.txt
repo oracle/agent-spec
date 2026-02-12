@@ -23,3 +23,10 @@ AgenticComponent class
 .. _agenticcomponent:
 .. autoclass:: pyagentspec.agenticcomponent.AgenticComponent
     :exclude-members: model_post_init, model_config
+
+
+Base Class
+----------
+
+.. autoclass:: pyagentspec.component.AbstractableModel
+    :exclude-members: model_post_init, model_config
