@@ -150,29 +150,6 @@ class AdapterAgnosticAgentSpecExporter(ABC):
 
         str
             The JSON serialization of the root component.
-
-        Examples
-        --------
-        Basic serialization is done as follows.
-
-        To use component disaggregation, specify the component(s) to disaggregate
-        in the ``disaggregated_components`` parameter, and ensure that
-        ``export_disaggregated_components`` is set to ``True``.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_json(
-        ...     agent,
-        ...     disaggregated_components=[llm],
-        ...     export_disaggregated_components=True
-        ... )
-
-        You can also specify custom ids for the disaggregated components.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_json(
-        ...     agent,
-        ...     disaggregated_components=[(llm, "custom_llm_id")],
-        ...     export_disaggregated_components=True
-        ... )
-
         """
         return cast(
             str,
@@ -278,25 +255,6 @@ class AdapterAgnosticAgentSpecExporter(ABC):
 
         str
             The YAML serialization of the root component.
-
-        Examples
-        --------
-        Basic serialization is done as follows.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_yaml(
-        ...     agent,
-        ...     disaggregated_components=[llm],
-        ...     export_disaggregated_components=True
-        ... )
-
-        You can also specify custom ids for the disaggregated components.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_yaml(
-        ...     agent,
-        ...     disaggregated_components=[(llm, "custom_llm_id")],
-        ...     export_disaggregated_components=True
-        ... )
-
         """
         return cast(
             str,
@@ -402,25 +360,6 @@ class AdapterAgnosticAgentSpecExporter(ABC):
 
         str
             The dictionary serialization of the root component.
-
-        Examples
-        --------
-        Basic serialization is done as follows.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_dict(
-        ...     agent,
-        ...     disaggregated_components=[llm],
-        ...     export_disaggregated_components=True
-        ... )
-
-        You can also specify custom ids for the disaggregated components.
-
-        >>> main_config, disag_config = AgentSpecExporter().to_dict(
-        ...     agent,
-        ...     disaggregated_components=[(llm, "custom_llm_id")],
-        ...     export_disaggregated_components=True
-        ... )
-
         """
         return cast(
             dict[str, Any],

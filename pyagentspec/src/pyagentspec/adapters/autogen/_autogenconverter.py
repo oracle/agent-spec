@@ -203,7 +203,9 @@ class AgentSpecToAutogenConverter:
         if isinstance(agentspec_llm, AgentSpecOpenAiConfig):
             return AutogenOpenAIChatCompletionClient(model=agentspec_llm.model_id)
         elif isinstance(agentspec_llm, AgentSpecOllamaModel):
-            return AutogenOllamaChatCompletionClient(**_prepare_llm_args(agentspec_llm))
+            llm_args = _prepare_llm_args(agentspec_llm)
+            llm_args["host"] = llm_args.pop("base_url")
+            return AutogenOllamaChatCompletionClient(**llm_args)
         elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleModel):
             return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
         else:

@@ -77,6 +77,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         >>> loader = AgentSpecLoader()
         >>> registry = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
         >>> compiled = loader.load_yaml(main_yaml, components_registry=registry)
+
         """
         return super().load_yaml(
             serialized_assistant,
@@ -138,9 +139,11 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         Alternatively, you can deserialize the disaggregated components with the pyagentspec deserializer and pass them into the load of the main component:
 
         >>> from pyagentspec.serialization import AgentSpecDeserializer
-        >>> referenced_components = AgentSpecDeserializer().from_json(disag_json, import_only_referenced_components=True)
-        >>> autogen = loader.load_json(main_json, components_registry=referenced_components)
-        >>> compiled = loader.load_component(autogen)
+        >>> deserializer = AgentSpecDeserializer()
+        >>> referenced_components = deserializer.from_json(disag_json, import_only_referenced_components=True)
+        >>> agentspec_agent = deserializer.from_json(main_json, components_registry=referenced_components)
+        >>> autogen_agent = loader.load_component(agentspec_agent)
+
         """
         return super().load_json(
             serialized_assistant,
@@ -202,9 +205,11 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         Alternatively, you can deserialize the disaggregated components with the pyagentspec deserializer and pass them into the load of the main component:
 
         >>> from pyagentspec.serialization import AgentSpecDeserializer
-        >>> referenced_components = AgentSpecDeserializer().from_dict(disag_dict, import_only_referenced_components=True)
-        >>> autogen = loader.load_dict(main_dict, components_registry=referenced_components)
-        >>> compiled = loader.load_component(autogen)
+        >>> deserializer = AgentSpecDeserializer()
+        >>> referenced_components = deserializer.from_dict(disag_dict, import_only_referenced_components=True)
+        >>> agentspec_agent = deserializer.from_dict(main_dict, components_registry=referenced_components)
+        >>> autogen_agent = loader.load_component(agentspec_agent)
+
         """
         return super().load_dict(
             serialized_assistant,
