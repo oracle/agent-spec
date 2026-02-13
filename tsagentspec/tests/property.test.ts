@@ -11,6 +11,7 @@ import {
   objectProperty,
   propertiesHaveSameType,
   propertyIsCastableTo,
+  deduplicatePropertiesByTitleAndType,
 } from "../src/index.js";
 
 describe("stringProperty", () => {
@@ -275,5 +276,277 @@ describe("propertyIsCastableTo", () => {
     const a = stringProperty({ title: "x" });
     const b = { jsonSchema: { title: "y" }, title: "y", type: undefined };
     expect(propertyIsCastableTo(a, b as any)).toBe(true);
+  });
+
+  it("should throw for allOf schemas", () => {
+    const a = { jsonSchema: { allOf: [{ type: "string" }] }, title: "x" } as any;
+    const b = stringProperty({ title: "y" });
+    expect(() => propertyIsCastableTo(a, b)).toThrow(
+      "Support for schemas using allOf is not implemented",
+    );
+  });
+
+  it("should throw for oneOf schemas", () => {
+    const a = { jsonSchema: { oneOf: [{ type: "string" }] }, title: "x" } as any;
+    const b = stringProperty({ title: "y" });
+    expect(() => propertyIsCastableTo(a, b)).toThrow(
+      "Support for schemas using oneOf is not implemented",
+    );
+  });
+
+  it("should handle union type castability", () => {
+    const union = unionProperty({
+      title: "u",
+      anyOf: [integerProperty({ title: "a" }), booleanProperty({ title: "b" })],
+    });
+    // All union members are numerical, so castable to number
+    expect(propertyIsCastableTo(union, numberProperty({ title: "y" }))).toBe(
+      true,
+    );
+    // But not all are castable to null
+    expect(propertyIsCastableTo(union, nullProperty({ title: "y" }))).toBe(
+      false,
+    );
+  });
+
+  it("should handle array item castability", () => {
+    const a = listProperty({
+      title: "x",
+      itemType: integerProperty({ title: "i" }),
+    });
+    const b = listProperty({
+      title: "y",
+      itemType: numberProperty({ title: "j" }),
+    });
+    // integer items castable to number items
+    expect(propertyIsCastableTo(a, b)).toBe(true);
+
+    const c = listProperty({
+      title: "z",
+      itemType: stringProperty({ title: "k" }),
+    });
+    // integer items not castable to string items... actually string is always castable to
+    // Let's test string -> integer (not castable)
+    expect(propertyIsCastableTo(c, a)).toBe(false);
+  });
+
+  it("should handle object property castability", () => {
+    const a = objectProperty({
+      title: "x",
+      properties: {
+        name: stringProperty({ title: "name" }),
+        age: integerProperty({ title: "age" }),
+      },
+    });
+    const b = objectProperty({
+      title: "y",
+      properties: {
+        name: stringProperty({ title: "name" }),
+      },
+    });
+    // a has all properties of b, so castable
+    expect(propertyIsCastableTo(a, b)).toBe(true);
+
+    // b doesn't have "age", so not castable to a
+    const c = objectProperty({
+      title: "z",
+      properties: {
+        name: stringProperty({ title: "name" }),
+        age: integerProperty({ title: "age" }),
+        extra: stringProperty({ title: "extra" }),
+      },
+    });
+    // a doesn't have "extra", so not castable to c
+    expect(propertyIsCastableTo(a, c)).toBe(false);
+  });
+
+  it("should handle dict (additionalProperties) castability", () => {
+    const a = dictProperty({
+      title: "x",
+      valueType: integerProperty({ title: "v" }),
+    });
+    const b = dictProperty({
+      title: "y",
+      valueType: numberProperty({ title: "v" }),
+    });
+    // integer values castable to number values
+    expect(propertyIsCastableTo(a, b)).toBe(true);
+  });
+
+  it("should return false for incompatible simple types", () => {
+    expect(
+      propertyIsCastableTo(
+        nullProperty({ title: "x" }),
+        integerProperty({ title: "y" }),
+      ),
+    ).toBe(false);
+  });
+
+  it("should handle boolean additionalProperties in object castability", () => {
+    const a = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: true },
+      title: "x",
+    } as any;
+    const b = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: true },
+      title: "y",
+    } as any;
+    expect(propertyIsCastableTo(a, b)).toBe(true);
+
+    const c = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: false },
+      title: "z",
+    } as any;
+    expect(propertyIsCastableTo(a, c)).toBe(false);
+  });
+});
+
+describe("propertiesHaveSameType advanced", () => {
+  it("should throw for allOf schemas", () => {
+    const a = { jsonSchema: { allOf: [{ type: "string" }] }, title: "x" } as any;
+    const b = stringProperty({ title: "y" });
+    expect(() => propertiesHaveSameType(a, b)).toThrow(
+      "Support for schemas using allOf is not implemented",
+    );
+  });
+
+  it("should throw for oneOf schemas", () => {
+    const a = stringProperty({ title: "x" });
+    const b = { jsonSchema: { oneOf: [{ type: "string" }] }, title: "y" } as any;
+    expect(() => propertiesHaveSameType(a, b)).toThrow(
+      "Support for schemas using oneOf is not implemented",
+    );
+  });
+
+  it("should compare object properties", () => {
+    const a = objectProperty({
+      title: "x",
+      properties: {
+        name: stringProperty({ title: "name" }),
+        age: integerProperty({ title: "age" }),
+      },
+    });
+    const b = objectProperty({
+      title: "y",
+      properties: {
+        name: stringProperty({ title: "name" }),
+        age: integerProperty({ title: "age" }),
+      },
+    });
+    expect(propertiesHaveSameType(a, b)).toBe(true);
+
+    const c = objectProperty({
+      title: "z",
+      properties: {
+        name: stringProperty({ title: "name" }),
+      },
+    });
+    // Different property keys
+    expect(propertiesHaveSameType(a, c)).toBe(false);
+  });
+
+  it("should compare object properties with different value types", () => {
+    const a = objectProperty({
+      title: "x",
+      properties: { val: stringProperty({ title: "val" }) },
+    });
+    const b = objectProperty({
+      title: "y",
+      properties: { val: integerProperty({ title: "val" }) },
+    });
+    // Same keys but different types
+    expect(propertiesHaveSameType(a, b)).toBe(false);
+  });
+
+  it("should compare additionalProperties (object schemas)", () => {
+    const a = dictProperty({
+      title: "x",
+      valueType: stringProperty({ title: "v" }),
+    });
+    const b = dictProperty({
+      title: "y",
+      valueType: stringProperty({ title: "v" }),
+    });
+    expect(propertiesHaveSameType(a, b)).toBe(true);
+
+    const c = dictProperty({
+      title: "z",
+      valueType: integerProperty({ title: "v" }),
+    });
+    expect(propertiesHaveSameType(a, c)).toBe(false);
+  });
+
+  it("should compare additionalProperties when boolean", () => {
+    const a = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: true },
+      title: "x",
+    } as any;
+    const b = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: true },
+      title: "y",
+    } as any;
+    expect(propertiesHaveSameType(a, b)).toBe(true);
+
+    const c = {
+      jsonSchema: { type: "object", properties: {}, additionalProperties: false },
+      title: "z",
+    } as any;
+    expect(propertiesHaveSameType(a, c)).toBe(false);
+  });
+
+  it("should return false for mismatched union types", () => {
+    const a = unionProperty({
+      title: "u",
+      anyOf: [
+        stringProperty({ title: "a" }),
+        integerProperty({ title: "b" }),
+      ],
+    });
+    const b = unionProperty({
+      title: "v",
+      anyOf: [
+        stringProperty({ title: "c" }),
+        booleanProperty({ title: "d" }),
+      ],
+    });
+    // a has integer but b doesn't -> not same type
+    expect(propertiesHaveSameType(a, b)).toBe(false);
+  });
+
+  it("should handle schema with non-standard type field", () => {
+    // When type is neither string nor array (e.g. number), normalizeUnionTypes
+    // falls back to empty array for types (line 247)
+    const a = {
+      jsonSchema: { type: 42, anyOf: [{ type: "string" }] },
+      title: "x",
+    } as any;
+    const b = {
+      jsonSchema: { anyOf: [{ type: "string" }] },
+      title: "y",
+    } as any;
+    expect(propertiesHaveSameType(a, b)).toBe(true);
+  });
+
+  it("should handle normalizeUnionTypes with array and object in type list", () => {
+    // Multi-type schema with array and object types
+    const a = {
+      jsonSchema: {
+        type: ["array", "object"],
+        items: { type: "string" },
+        properties: { name: { type: "string" } },
+        additionalProperties: false,
+      },
+      title: "x",
+    } as any;
+    const b = {
+      jsonSchema: {
+        type: ["array", "object"],
+        items: { type: "string" },
+        properties: { name: { type: "string" } },
+        additionalProperties: false,
+      },
+      title: "y",
+    } as any;
+    expect(propertiesHaveSameType(a, b)).toBe(true);
   });
 });
