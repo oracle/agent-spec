@@ -13,13 +13,10 @@ import {
 import type { ComponentBase } from "../component.js";
 import type { ComponentDeserializationPlugin } from "./deserialization-plugin.js";
 import type { ComponentAsDict, ComponentsRegistry } from "./types.js";
-import { DeserializationInProgressMarker } from "./types.js";
+import { DANGEROUS_KEYS, DeserializationInProgressMarker } from "./types.js";
 
 /** Legacy field name for backwards compat */
 const LEGACY_VERSION_FIELD_NAME = "air_version";
-
-/** Keys that must be rejected to prevent prototype pollution */
-const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 export class DeserializationContext {
   private componentTypesToPlugins: Map<

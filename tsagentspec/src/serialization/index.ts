@@ -2,10 +2,11 @@
  * Serialization system barrel exports.
  */
 
-// Type aliases
+// Type aliases and constants
 export type {
   ComponentsRegistry,
 } from "./types.js";
+export { DANGEROUS_KEYS } from "./types.js";
 
 // Plugin interfaces
 export type { ComponentSerializationPlugin } from "./serialization-plugin.js";

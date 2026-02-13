@@ -189,6 +189,64 @@ describe("AgentSpecSerializer", () => {
     });
   });
 
+  describe("dangerous key filtering", () => {
+    it("should strip constructor and prototype keys from serialized output", () => {
+      // constructor/prototype in object literals create own properties (unlike __proto__)
+      const serializer = new AgentSpecSerializer();
+      const agent = createAgent({
+        name: "test-agent",
+        llmConfig: makeLlmConfig(),
+        systemPrompt: "Hello",
+        metadata: {
+          constructor: { prototype: { polluted: true } },
+          prototype: { evil: true },
+          safe: "ok",
+        },
+      });
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
+      const meta = dict["metadata"] as Record<string, unknown>;
+      expect(meta["safe"]).toBe("ok");
+      expect(Object.getOwnPropertyNames(meta)).not.toContain("constructor");
+      expect(Object.getOwnPropertyNames(meta)).not.toContain("prototype");
+    });
+
+    it("should strip __proto__ keys from serialized output", () => {
+      // __proto__ in object literals is a prototype setter, so we use JSON.parse
+      // to create an object with __proto__ as an actual own data property
+      const serializer = new AgentSpecSerializer();
+      const metadata = JSON.parse('{"safe":"value","__proto__":{"isAdmin":true}}');
+      const agent = createAgent({
+        name: "test-agent",
+        llmConfig: makeLlmConfig(),
+        systemPrompt: "Hello",
+        metadata,
+      });
+      const json = serializer.toJson(agent) as string;
+      expect(json).not.toContain('"__proto__"');
+    });
+  });
+
+  describe("serialization depth limits", () => {
+    it("should throw for deeply nested plain objects", () => {
+      const serializer = new AgentSpecSerializer();
+      // Build a 150-level deep nested object
+      let nested: Record<string, unknown> = { value: "leaf" };
+      for (let i = 0; i < 150; i++) {
+        nested = { inner: nested };
+      }
+      const agent = createAgent({
+        name: "test-agent",
+        llmConfig: makeLlmConfig(),
+        systemPrompt: "Hello",
+        metadata: nested,
+      });
+      expect(() => serializer.toJson(agent)).toThrow(
+        "Serialization nesting depth exceeds maximum",
+      );
+    });
+  });
+
   describe("disaggregated components", () => {
     it("should return a tuple when exportDisaggregatedComponents=true", () => {
       const serializer = new AgentSpecSerializer();

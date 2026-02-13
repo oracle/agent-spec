@@ -23,7 +23,7 @@ export function getPlaceholdersFromJsonObject(obj: unknown): string[] {
     return getPlaceholdersFromString(obj);
   }
   if (obj instanceof Uint8Array) {
-    return getPlaceholdersFromJsonObject(obj.toString());
+    return [];
   }
   if (Array.isArray(obj)) {
     const all = new Set<string>();

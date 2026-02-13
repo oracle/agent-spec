@@ -12,7 +12,7 @@ import type { ComponentBase } from "../component.js";
 import { propertyFromJsonSchema, type Property } from "../property.js";
 import type { ComponentDeserializationPlugin } from "./deserialization-plugin.js";
 import type { DeserializationContext } from "./deserialization-context.js";
-import type { ComponentAsDict } from "./types.js";
+import { DANGEROUS_KEYS, type ComponentAsDict } from "./types.js";
 import { snakeToCamel } from "./serialization-context.js";
 
 /** Fields that should not be converted from snake_case */
@@ -25,9 +25,6 @@ const NEVER_TRANSFORM_FIELDS = new Set([
   "component_plugin_name",
   "component_plugin_version",
 ]);
-
-/** Keys that must be rejected to prevent prototype pollution */
-const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /** Fields that are metadata-only and should be stripped before calling the factory */
 const METADATA_FIELDS = new Set([

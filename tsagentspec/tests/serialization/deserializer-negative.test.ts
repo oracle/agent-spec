@@ -170,6 +170,123 @@ describe("AgentSpecDeserializer negative tests", () => {
     });
   });
 
+  describe("prototype pollution prevention", () => {
+    // Note: __proto__ in object literals is a prototype setter, not an own property,
+    // so JSON.stringify loses it. We construct JSON via string manipulation to test
+    // that __proto__ keys in untrusted input are properly stripped.
+
+    it("should strip __proto__ keys during deserialization", () => {
+      const baseJson = JSON.stringify({
+        component_type: "Agent",
+        name: "test-agent",
+        id: "00000000-0000-0000-0000-000000000001",
+        system_prompt: "hello",
+        llm_config: {
+          component_type: "OpenAiCompatibleConfig",
+          name: "llm",
+          id: "00000000-0000-0000-0000-000000000002",
+          url: "http://localhost",
+          model_id: "gpt-4",
+        },
+        metadata: { safe: "value" },
+      });
+      // Inject __proto__ into metadata via string manipulation
+      const json = baseJson.replace(
+        '"safe":"value"',
+        '"safe":"value","__proto__":{"isAdmin":true}',
+      );
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
+      const meta = result["metadata"] as Record<string, unknown>;
+      expect(meta["safe"]).toBe("value");
+      // Must use getOwnPropertyNames — meta["__proto__"] returns the inherited prototype
+      expect(Object.getOwnPropertyNames(meta)).not.toContain("__proto__");
+      expect(({} as Record<string, unknown>)["isAdmin"]).toBeUndefined();
+    });
+
+    it("should strip constructor and prototype keys during deserialization", () => {
+      // constructor/prototype in object literals DO create own properties (unlike __proto__)
+      const json = JSON.stringify({
+        component_type: "Agent",
+        name: "test-agent",
+        id: "00000000-0000-0000-0000-000000000001",
+        system_prompt: "hello",
+        llm_config: {
+          component_type: "OpenAiCompatibleConfig",
+          name: "llm",
+          id: "00000000-0000-0000-0000-000000000002",
+          url: "http://localhost",
+          model_id: "gpt-4",
+        },
+        metadata: {
+          constructor: { prototype: { polluted: true } },
+          prototype: { evil: true },
+          safe: "value",
+        },
+      });
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
+      const meta = result["metadata"] as Record<string, unknown>;
+      expect(meta["safe"]).toBe("value");
+      // Must use getOwnPropertyNames — meta["constructor"] returns inherited Object constructor
+      expect(Object.getOwnPropertyNames(meta)).not.toContain("constructor");
+      expect(Object.getOwnPropertyNames(meta)).not.toContain("prototype");
+    });
+
+    it("should strip dangerous keys in nested objects", () => {
+      const baseJson = JSON.stringify({
+        component_type: "Agent",
+        name: "test-agent",
+        id: "00000000-0000-0000-0000-000000000001",
+        system_prompt: "hello",
+        llm_config: {
+          component_type: "OpenAiCompatibleConfig",
+          name: "llm",
+          id: "00000000-0000-0000-0000-000000000002",
+          url: "http://localhost",
+          model_id: "gpt-4",
+        },
+        metadata: {
+          nested: { safe: "ok", prototype: { evil: true } },
+        },
+      });
+      // Also inject __proto__ into the nested object
+      const json = baseJson.replace(
+        '"safe":"ok"',
+        '"safe":"ok","__proto__":{"isAdmin":true}',
+      );
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
+      const meta = result["metadata"] as Record<string, unknown>;
+      const nested = meta["nested"] as Record<string, unknown>;
+      expect(nested["safe"]).toBe("ok");
+      expect(Object.getOwnPropertyNames(nested)).not.toContain("__proto__");
+      expect(Object.getOwnPropertyNames(nested)).not.toContain("prototype");
+    });
+  });
+
+  describe("circular reference detection", () => {
+    it("should throw for self-referencing $component_ref", () => {
+      const refId = "00000000-0000-0000-0000-000000000099";
+      const json = JSON.stringify({
+        component_type: "Agent",
+        name: "test-agent",
+        id: "00000000-0000-0000-0000-000000000001",
+        system_prompt: "hello",
+        llm_config: { $component_ref: refId },
+        $referenced_components: {
+          [refId]: {
+            component_type: "Agent",
+            name: "circular",
+            id: refId,
+            system_prompt: "loop",
+            llm_config: { $component_ref: refId },
+          },
+        },
+      });
+      expect(() => deserializer.fromJson(json)).toThrow(
+        "Circular dependency",
+      );
+    });
+  });
+
   describe("backwards-compatible constructor", () => {
     it("should accept no arguments", () => {
       const d = new AgentSpecDeserializer();

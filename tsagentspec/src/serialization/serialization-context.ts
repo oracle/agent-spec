@@ -11,9 +11,12 @@ import type { Property } from "../property.js";
 import { isSensitiveField } from "../sensitive-field.js";
 import { isBuiltinComponentType } from "../component-registry.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
-import type { ComponentAsDict } from "./types.js";
+import { DANGEROUS_KEYS, type ComponentAsDict } from "./types.js";
 import { computeReferencingStructure } from "./referencing.js";
 import { VERSION_GATED_FIELDS } from "./version-gates.js";
+
+/** Maximum recursion depth for serialization to prevent stack overflow */
+const MAX_SERIALIZATION_DEPTH = 100;
 
 /**
  * Convert camelCase to snake_case.
@@ -110,7 +113,12 @@ export class SerializationContext {
   }
 
   /** Serialize a field value. Handles nested components, properties, arrays, etc. */
-  dumpField(value: unknown): unknown {
+  dumpField(value: unknown, depth = 0): unknown {
+    if (depth > MAX_SERIALIZATION_DEPTH) {
+      throw new Error(
+        `Serialization nesting depth exceeds maximum of ${MAX_SERIALIZATION_DEPTH}`,
+      );
+    }
     if (value === null || value === undefined) {
       return null;
     }
@@ -121,14 +129,15 @@ export class SerializationContext {
       return value.jsonSchema;
     }
     if (Array.isArray(value)) {
-      return value.map((item) => this.dumpField(item));
+      return value.map((item) => this.dumpField(item, depth + 1));
     }
     if (typeof value === "object" && value !== null) {
       // Generic object - preserve keys as-is (user data, configuration, etc.)
       const obj = value as Record<string, unknown>;
       const result: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(obj)) {
-        result[k] = this.dumpField(v);
+        if (DANGEROUS_KEYS.has(k)) continue;
+        result[k] = this.dumpField(v, depth + 1);
       }
       return result;
     }
@@ -147,6 +156,7 @@ export class SerializationContext {
   ): Record<string, unknown> {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
+      if (DANGEROUS_KEYS.has(key)) continue;
       if (excludeNulls && (value === null || value === undefined)) continue;
       const outKey = this.camelCase ? key : camelToSnake(key);
       result[outKey] = this.dumpField(value);
@@ -212,7 +222,10 @@ export class SerializationContext {
   }
 
   /** Make output dict look nicer by ordering priority keys first */
-  makeOrderedDict(obj: unknown): unknown {
+  makeOrderedDict(obj: unknown, depth = 0): unknown {
+    if (depth > MAX_SERIALIZATION_DEPTH) {
+      return obj;
+    }
     if (typeof obj === "object" && obj !== null && !Array.isArray(obj)) {
       const dict = obj as Record<string, unknown>;
       const ordered: Record<string, unknown> = {};
@@ -220,19 +233,19 @@ export class SerializationContext {
       // Priority keys first (recurse values for consistency)
       for (const key of PRIORITY_KEYS) {
         if (key in dict) {
-          ordered[key] = this.makeOrderedDict(dict[key]);
+          ordered[key] = this.makeOrderedDict(dict[key], depth + 1);
         }
       }
       // Remaining keys
       for (const [key, value] of Object.entries(dict)) {
         if (!PRIORITY_KEYS.includes(key)) {
-          ordered[key] = this.makeOrderedDict(value);
+          ordered[key] = this.makeOrderedDict(value, depth + 1);
         }
       }
       return ordered;
     }
     if (Array.isArray(obj)) {
-      return obj.map((item) => this.makeOrderedDict(item));
+      return obj.map((item) => this.makeOrderedDict(item, depth + 1));
     }
     return obj;
   }

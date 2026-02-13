@@ -142,23 +142,41 @@ export class AgentSpecDeserializer {
     }
   }
 
-  /** Check that object nesting depth is within limits */
-  private checkDepth(value: unknown, depth = 0): void {
-    if (typeof value !== "object" || value === null) {
-      return;
-    }
-    if (depth > this.maxDepth) {
-      throw new Error(
-        `Object nesting depth exceeds maximum of ${this.maxDepth}`,
-      );
-    }
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        this.checkDepth(item, depth + 1);
+  /** Check that object nesting depth is within limits (iterative to avoid stack overflow) */
+  private checkDepth(value: unknown): void {
+    if (typeof value !== "object" || value === null) return;
+
+    const stack: Array<{ value: unknown; depth: number }> = [
+      { value, depth: 0 },
+    ];
+    const visited = new Set<unknown>();
+
+    while (stack.length > 0) {
+      const entry = stack.pop()!;
+      if (typeof entry.value !== "object" || entry.value === null) continue;
+      if (visited.has(entry.value)) continue;
+      visited.add(entry.value);
+
+      if (entry.depth > this.maxDepth) {
+        throw new Error(
+          `Object nesting depth exceeds maximum of ${this.maxDepth}`,
+        );
       }
-    } else {
-      for (const v of Object.values(value as Record<string, unknown>)) {
-        this.checkDepth(v, depth + 1);
+
+      if (Array.isArray(entry.value)) {
+        for (const item of entry.value) {
+          if (typeof item === "object" && item !== null) {
+            stack.push({ value: item, depth: entry.depth + 1 });
+          }
+        }
+      } else {
+        for (const v of Object.values(
+          entry.value as Record<string, unknown>,
+        )) {
+          if (typeof v === "object" && v !== null) {
+            stack.push({ value: v, depth: entry.depth + 1 });
+          }
+        }
       }
     }
   }

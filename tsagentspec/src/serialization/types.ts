@@ -15,6 +15,9 @@ export interface DisaggregatedComponentsConfig {
   referencedComponents: ComponentAsDict[];
 }
 
+/** Keys that must be rejected to prevent prototype pollution */
+export const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
 /** Marker used during deserialization to detect circular dependencies */
 export class DeserializationInProgressMarker {
   readonly __marker = "DESERIALIZATION_IN_PROGRESS";
