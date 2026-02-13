@@ -487,7 +487,7 @@ class AdapterAgnosticAgentSpecExporter(ABC):
             agentspec_disaggregated_components.append(
                 (agentspec_component, custom_id) if is_pair else agentspec_component
             )
-        return agentspec_disaggregated_components, referenced_components
+        return agentspec_disaggregated_components, referenced_components  # type: ignore
 
     def to_component(self, runtime_component: _RuntimeComponentT) -> AgentSpecComponent:
         """
