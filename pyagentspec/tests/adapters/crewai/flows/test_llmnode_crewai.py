@@ -4,8 +4,6 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-import os
-
 import pytest
 
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
@@ -13,6 +11,8 @@ from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.property import StringProperty
+
+from ...conftest import llama70bv33_api_url
 
 
 @pytest.mark.usefixtures("mute_crewai_console_prints")
@@ -26,7 +26,7 @@ def test_llmnode_can_be_imported_and_executed() -> None:
     llm_config = OpenAiCompatibleConfig(
         name="llm_config",
         model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.environ.get("LLAMA_API_URL"),
+        url=llama70bv33_api_url,
     )
     llm_node = LlmNode(
         name="llm_node",
