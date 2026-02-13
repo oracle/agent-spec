@@ -7,7 +7,6 @@
 import {
   createAgent,
   createVllmConfig,
-  createOpenAiConfig,
   createOllamaConfig,
   stringProperty,
   AgentSpecSerializer,
@@ -24,13 +23,6 @@ const vllmConfig = createVllmConfig({
     maxTokens: 2048,
     temperature: 0.7,
   },
-});
-
-// OpenAI
-const openAiConfig = createOpenAiConfig({
-  name: "gpt4",
-  modelId: "gpt-4o",
-  apiKey: "sk-...", // excluded from serialization for safety
 });
 
 // Ollama (local)

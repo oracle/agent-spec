@@ -7,7 +7,6 @@ import {
   createAgent,
   createOpenAiCompatibleConfig,
   createBuiltinTool,
-  createServerTool,
   stringProperty,
   CURRENT_VERSION,
   AgentSpecVersion,

@@ -7,7 +7,6 @@
 import { describe, it, expect } from "vitest";
 import {
   createAgent,
-  createOpenAiCompatibleConfig,
   createVllmConfig,
   createClientTool,
   createServerTool,

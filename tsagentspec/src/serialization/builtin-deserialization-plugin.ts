@@ -50,7 +50,7 @@ const MODEL_OBJECT_FIELDS = new Set(["defaultGenerationParameters"]);
 
 /** Check if a value looks like a serialized component dict */
 function isSerializedComponent(value: unknown): value is ComponentAsDict {
-  if (typeof value !== "object" || value === null || Array.isArray(value))
+  if (value === null || typeof value !== "object" || Array.isArray(value))
     return false;
   return "component_type" in (value as Record<string, unknown>);
 }
@@ -59,14 +59,14 @@ function isSerializedComponent(value: unknown): value is ComponentAsDict {
 function isComponentRef(
   value: unknown,
 ): value is { $component_ref: string } {
-  if (typeof value !== "object" || value === null || Array.isArray(value))
+  if (value === null || typeof value !== "object" || Array.isArray(value))
     return false;
   return "$component_ref" in (value as Record<string, unknown>);
 }
 
 /** Deserialize a jsonSchema dict into a Property */
 function deserializeProperty(value: unknown): Property {
-  if (typeof value !== "object" || value === null) {
+  if (value === null || typeof value !== "object") {
     throw new Error(
       `Expected property json schema dict, got ${typeof value}`,
     );
@@ -178,7 +178,7 @@ export class BuiltinsComponentDeserializationPlugin
     }
 
     // Plain objects - preserve keys (user data like data, headers, metadata, etc.)
-    if (typeof value === "object" && value !== null) {
+    if (value !== null && typeof value === "object") {
       const obj = value as Record<string, unknown>;
       const result: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(obj)) {

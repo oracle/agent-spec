@@ -6,7 +6,6 @@ import {
   createOpenAiCompatibleConfig,
   createServerTool,
   createBuiltinTool,
-  createSwarm,
   createMCPToolBox,
   createStdioTransport,
   stringProperty,

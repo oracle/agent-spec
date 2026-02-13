@@ -198,7 +198,6 @@ export const BUILTIN_SCHEMA_MAP: Record<string, z.ZodType> = {
 // `any` is required here: factory functions have heterogeneous signatures (each expects
 // different required fields) so no single concrete type can represent all of them.
 // The registry is only called from deserialization plugins which pass pre-validated dicts.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FactoryFn = (opts: any) => ComponentBase;
 
 /** Maps componentType string -> factory function */

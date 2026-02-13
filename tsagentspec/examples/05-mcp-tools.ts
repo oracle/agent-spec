@@ -11,8 +11,6 @@ import {
   createMCPToolSpec,
   createMCPToolBox,
   createStdioTransport,
-  createSSETransport,
-  createStreamableHTTPTransport,
   stringProperty,
   AgentSpecSerializer,
 } from "agentspec";
@@ -33,18 +31,6 @@ const stdioTransport = createStdioTransport({
   env: { HOME: "/home/user" },
 });
 
-// SSE transport (Server-Sent Events)
-const sseTransport = createSSETransport({
-  name: "sse-server",
-  url: "http://localhost:3001/sse",
-});
-
-// Streamable HTTP transport
-const httpTransport = createStreamableHTTPTransport({
-  name: "http-server",
-  url: "http://localhost:3002/mcp",
-});
-
 // --- MCP Tools ---
 
 // An individual MCP tool with explicit inputs/outputs
@@ -54,17 +40,6 @@ const fileReadTool = createMCPTool({
   clientTransport: stdioTransport,
   inputs: [stringProperty({ title: "path", description: "File path to read" })],
   outputs: [stringProperty({ title: "content" })],
-});
-
-// MCP tool spec (defines the tool shape without transport)
-const searchSpec = createMCPToolSpec({
-  name: "search_documents",
-  description: "Search through indexed documents",
-  inputs: [
-    stringProperty({ title: "query" }),
-    stringProperty({ title: "collection", default: "default" }),
-  ],
-  outputs: [stringProperty({ title: "results" })],
 });
 
 // --- MCP Toolbox ---

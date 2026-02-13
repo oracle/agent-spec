@@ -37,7 +37,7 @@
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit",
+    "lint": "tsc --noEmit && eslint src tests examples",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -45,10 +45,13 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^25.2.3",
     "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^9.39.2",
     "tsup": "^8.0.0",
     "typescript": "^5.5.0",
+    "typescript-eslint": "^8.55.0",
     "vitest": "^2.0.0"
   }
 }

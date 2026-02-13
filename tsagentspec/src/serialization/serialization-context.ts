@@ -62,7 +62,7 @@ const PRIORITY_KEYS = [
 
 /** Check if a value looks like a Property (has jsonSchema, title) */
 function isProperty(value: unknown): value is Property {
-  if (typeof value !== "object" || value === null) return false;
+  if (value === null || typeof value !== "object") return false;
   const obj = value as Record<string, unknown>;
   return (
     "jsonSchema" in obj &&
@@ -131,7 +131,7 @@ export class SerializationContext {
     if (Array.isArray(value)) {
       return value.map((item) => this.dumpField(item, depth + 1));
     }
-    if (typeof value === "object" && value !== null) {
+    if (value !== null && typeof value === "object") {
       // Generic object - preserve keys as-is (user data, configuration, etc.)
       const obj = value as Record<string, unknown>;
       const result: Record<string, unknown> = {};

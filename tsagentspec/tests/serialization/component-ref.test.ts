@@ -3,7 +3,6 @@ import {
   AgentSpecSerializer,
   AgentSpecDeserializer,
   createAgent,
-  createOpenAiCompatibleConfig,
   createVllmConfig,
   createServerTool,
   createStartNode,
@@ -24,29 +23,7 @@ describe("$component_ref", () => {
         inputs: [stringProperty({ title: "input" })],
       });
 
-      const agent1 = createAgent({
-        name: "agent1",
-        llmConfig: createOpenAiCompatibleConfig({
-          name: "llm1",
-          url: "http://localhost",
-          modelId: "gpt-4",
-        }),
-        systemPrompt: "Agent 1",
-        tools: [sharedTool],
-      });
-
-      const agent2 = createAgent({
-        name: "agent2",
-        llmConfig: createOpenAiCompatibleConfig({
-          name: "llm2",
-          url: "http://localhost",
-          modelId: "gpt-4",
-        }),
-        systemPrompt: "Agent 2",
-        tools: [sharedTool],
-      });
-
-      // Create a flow with both agents sharing the same tool
+      // Create a flow with both tool nodes sharing the same tool
       const start = createStartNode({ name: "start" });
       const end = createEndNode({ name: "end" });
       const toolNode1 = createToolNode({ name: "tool1", tool: sharedTool });

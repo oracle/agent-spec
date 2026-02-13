@@ -1,14 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
   AgentSpecDeserializer,
-  createOpenAiCompatibleConfig,
   createServerTool,
-  stringProperty,
   CURRENT_VERSION,
 } from "../../src/index.js";
 import { DeserializationContext } from "../../src/serialization/deserialization-context.js";
 import { BuiltinsComponentDeserializationPlugin } from "../../src/serialization/builtin-deserialization-plugin.js";
-import type { ComponentAsDict } from "../../src/serialization/types.js";
+import type { ComponentBase } from "../../src/component.js";
 
 function makeBuiltinPlugins() {
   return [new BuiltinsComponentDeserializationPlugin()];

@@ -109,7 +109,7 @@ export class DeserializationContext {
     }
 
     // Handle $component_ref
-    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
       const dict = value as Record<string, unknown>;
       if ("$component_ref" in dict) {
         return this.loadReference(dict["$component_ref"] as string);

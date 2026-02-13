@@ -4,8 +4,6 @@ import {
   createMCPToolSpec,
   createStdioTransport,
   createSSETransport,
-  createStreamableHTTPTransport,
-  createRemoteTransport,
   stringProperty,
 } from "../../src/index.js";
 

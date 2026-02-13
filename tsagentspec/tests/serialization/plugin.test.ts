@@ -28,7 +28,7 @@ class CustomSerializationPlugin implements ComponentSerializationPlugin {
 
   serialize(
     component: ComponentBase,
-    context: SerializationContext,
+    _context: SerializationContext,
   ): ComponentAsDict {
     const custom = component as unknown as CustomComponent;
     return {

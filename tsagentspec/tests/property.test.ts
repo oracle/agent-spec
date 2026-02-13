@@ -11,7 +11,6 @@ import {
   objectProperty,
   propertiesHaveSameType,
   propertyIsCastableTo,
-  deduplicatePropertiesByTitleAndType,
 } from "../src/index.js";
 
 describe("stringProperty", () => {
