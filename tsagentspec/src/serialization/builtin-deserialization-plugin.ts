@@ -26,6 +26,9 @@ const NEVER_TRANSFORM_FIELDS = new Set([
   "component_plugin_version",
 ]);
 
+/** Keys that must be rejected to prevent prototype pollution */
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
 /** Fields that are metadata-only and should be stripped before calling the factory */
 const METADATA_FIELDS = new Set([
   "component_type",
@@ -177,6 +180,7 @@ export class BuiltinsComponentDeserializationPlugin
       const obj = value as Record<string, unknown>;
       const result: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(obj)) {
+        if (DANGEROUS_KEYS.has(k)) continue;
         result[k] = this.resolveField(v, context);
       }
       return result;

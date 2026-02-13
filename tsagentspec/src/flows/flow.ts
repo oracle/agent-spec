@@ -7,6 +7,9 @@ import { ComponentWithIOSchema } from "../component.js";
 import { ControlFlowEdgeSchema, type ControlFlowEdge } from "./edges/control-flow-edge.js";
 import { DataFlowEdgeSchema, type DataFlowEdge } from "./edges/data-flow-edge.js";
 
+// z.record(z.unknown()) is used instead of NodeUnion to break a circular dependency
+// (Flow -> FlowNode -> Flow). Validation of individual nodes happens via their own
+// schemas when constructed through factory functions.
 const NodeRef = z.record(z.unknown());
 
 export const FlowSchema = ComponentWithIOSchema.extend({

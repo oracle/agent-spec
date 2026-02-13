@@ -16,8 +16,8 @@ export const MessageSummarizationTransformSchema = ComponentBaseSchema.extend({
   summarizedMessageTemplate: z
     .string()
     .default("Summarized message: {{summary}}"),
-  maxCacheSize: z.number().int().optional().default(10000),
-  maxCacheLifetime: z.number().int().optional().default(14400),
+  maxCacheSize: z.number().int().default(10000),
+  maxCacheLifetime: z.number().int().default(14400),
   cacheCollectionName: z
     .string()
     .default("summarized_messages_cache"),
@@ -41,8 +41,8 @@ export const ConversationSummarizationTransformSchema =
     summarizedConversationTemplate: z
       .string()
       .default("Summarized conversation: {{summary}}"),
-    maxCacheSize: z.number().int().optional().default(10000),
-    maxCacheLifetime: z.number().int().optional().default(14400),
+    maxCacheSize: z.number().int().default(10000),
+    maxCacheLifetime: z.number().int().default(14400),
     cacheCollectionName: z
       .string()
       .default("summarized_conversations_cache"),
@@ -97,10 +97,14 @@ export function createConversationSummarizationTransform(opts: {
   cacheCollectionName?: string;
   datastore?: Record<string, unknown>;
 }): ConversationSummarizationTransform {
-  return Object.freeze(
-    ConversationSummarizationTransformSchema.parse({
-      ...opts,
-      componentType: "ConversationSummarizationTransform" as const,
-    }),
-  );
+  const parsed = ConversationSummarizationTransformSchema.parse({
+    ...opts,
+    componentType: "ConversationSummarizationTransform" as const,
+  });
+  if (parsed.minNumMessages > parsed.maxNumMessages) {
+    throw new Error(
+      `minNumMessages (${parsed.minNumMessages}) must be <= maxNumMessages (${parsed.maxNumMessages})`,
+    );
+  }
+  return Object.freeze(parsed);
 }

@@ -18,6 +18,9 @@ import { DeserializationInProgressMarker } from "./types.js";
 /** Legacy field name for backwards compat */
 const LEGACY_VERSION_FIELD_NAME = "air_version";
 
+/** Keys that must be rejected to prevent prototype pollution */
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
 export class DeserializationContext {
   private componentTypesToPlugins: Map<
     string,
@@ -117,6 +120,7 @@ export class DeserializationContext {
       // Plain objects - preserve keys as-is (user data), recursively load values
       const result: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(dict)) {
+        if (DANGEROUS_KEYS.has(k)) continue;
         result[k] = this.loadField(v);
       }
       return result;

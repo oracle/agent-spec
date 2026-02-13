@@ -5,6 +5,9 @@ import { z } from "zod";
 import { ComponentWithIOSchema } from "../component.js";
 import type { Property } from "../property.js";
 
+// z.record(z.unknown()) is used instead of AgenticComponentUnion to break a circular
+// dependency (ManagerWorkers -> AgenticComponentUnion -> ManagerWorkers). Validation of
+// the nested agents is handled by the deserialization plugin at runtime.
 const AgenticComponentRef = z.lazy(() => z.record(z.unknown()));
 
 export const ManagerWorkersSchema = ComponentWithIOSchema.extend({

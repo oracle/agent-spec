@@ -14,7 +14,9 @@ export const HandoffMode = {
 
 export type HandoffMode = (typeof HandoffMode)[keyof typeof HandoffMode];
 
-// Use z.lazy() for AgenticComponent to avoid circular dependency
+// z.record(z.unknown()) is used instead of AgenticComponentUnion to break a circular
+// dependency (Swarm -> AgenticComponentUnion -> Swarm). Validation of the nested agents
+// is handled by the deserialization plugin at runtime.
 const AgenticComponentRef = z.lazy(() => z.record(z.unknown()));
 
 export const SwarmSchema = ComponentWithIOSchema.extend({

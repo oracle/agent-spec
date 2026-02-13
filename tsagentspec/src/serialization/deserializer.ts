@@ -51,6 +51,7 @@ export class AgentSpecDeserializer {
       importOnlyReferencedComponents?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
+    this.checkDepth(data);
     const opts = options ?? {};
     const importOnly = opts.importOnlyReferencedComponents ?? false;
     const allKeys = new Set(Object.keys(data));
@@ -123,7 +124,7 @@ export class AgentSpecDeserializer {
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(yamlStr.length);
-    const parsed = YAML.parse(yamlStr) as ComponentAsDict;
+    const parsed = YAML.parse(yamlStr, { schema: "core" }) as ComponentAsDict;
     this.checkDepth(parsed);
     return this.fromDict(parsed, options);
   }
@@ -139,6 +140,9 @@ export class AgentSpecDeserializer {
 
   /** Check that object nesting depth is within limits */
   private checkDepth(value: unknown, depth = 0): void {
+    if (typeof value !== "object" || value === null) {
+      return;
+    }
     if (depth > this.maxDepth) {
       throw new Error(
         `Object nesting depth exceeds maximum of ${this.maxDepth}`,
@@ -148,7 +152,7 @@ export class AgentSpecDeserializer {
       for (const item of value) {
         this.checkDepth(item, depth + 1);
       }
-    } else if (typeof value === "object" && value !== null) {
+    } else {
       for (const v of Object.values(value as Record<string, unknown>)) {
         this.checkDepth(v, depth + 1);
       }

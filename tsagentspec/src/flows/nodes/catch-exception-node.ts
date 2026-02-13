@@ -4,6 +4,7 @@
 import { z } from "zod";
 import type { Property } from "../../property.js";
 import { NodeBaseSchema } from "../node.js";
+import { getEndNodeBranches } from "./node-helpers.js";
 
 export const CAUGHT_EXCEPTION_BRANCH = "caught_exception_branch";
 export const DEFAULT_EXCEPTION_INFO_VALUE = "caught_exception_info";
@@ -30,19 +31,6 @@ function makeCaughtExceptionInfoProperty(): Property {
   };
 }
 
-function getEndNodeBranches(subflow: Record<string, unknown>): string[] {
-  const nodes = subflow["nodes"] as Record<string, unknown>[] | undefined;
-  if (!nodes) return [];
-  const branches = new Set<string>();
-  for (const node of nodes) {
-    if (node["componentType"] === "EndNode") {
-      const branchName = (node["branchName"] as string) ?? "next";
-      branches.add(branchName);
-    }
-  }
-  return [...branches].sort();
-}
-
 export function createCatchExceptionNode(opts: {
   name: string;
   subflow: Record<string, unknown>;
@@ -65,7 +53,7 @@ export function createCatchExceptionNode(opts: {
     outputs = [...subflowOutputs, makeCaughtExceptionInfoProperty()];
   }
 
-  const endNodeBranches = getEndNodeBranches(subflow);
+  const endNodeBranches = getEndNodeBranches(subflow, []);
   const branches = [CAUGHT_EXCEPTION_BRANCH, ...endNodeBranches];
 
   return Object.freeze(

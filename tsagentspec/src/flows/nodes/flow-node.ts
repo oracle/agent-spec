@@ -3,7 +3,8 @@
  */
 import { z } from "zod";
 import type { Property } from "../../property.js";
-import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
+import { NodeBaseSchema } from "../node.js";
+import { getEndNodeBranches } from "./node-helpers.js";
 
 export const FlowNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("FlowNode"),
@@ -11,20 +12,6 @@ export const FlowNodeSchema = NodeBaseSchema.extend({
 });
 
 export type FlowNode = z.infer<typeof FlowNodeSchema>;
-
-function getEndNodeBranches(subflow: Record<string, unknown>): string[] {
-  const nodes = subflow["nodes"] as Record<string, unknown>[] | undefined;
-  if (!nodes) return [DEFAULT_NEXT_BRANCH];
-  const branches = new Set<string>();
-  for (const node of nodes) {
-    if (node["componentType"] === "EndNode") {
-      const branchName =
-        (node["branchName"] as string) ?? DEFAULT_NEXT_BRANCH;
-      branches.add(branchName);
-    }
-  }
-  return branches.size > 0 ? [...branches].sort() : [DEFAULT_NEXT_BRANCH];
-}
 
 export function createFlowNode(opts: {
   name: string;

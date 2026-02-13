@@ -33,24 +33,22 @@ export function createInputMessageNode(opts: {
     inputs = [];
   }
 
-  const outputTitle =
+  const outputs: Property[] =
     opts.outputs && opts.outputs.length > 0
-      ? opts.outputs[0]!.title
-      : DEFAULT_INPUT_MESSAGE_OUTPUT;
-
-  const outputs: Property[] = [
-    {
-      jsonSchema: {
-        title: outputTitle,
-        type: "string",
-        description: "Input provided by the user",
-      },
-      title: outputTitle,
-      description: "Input provided by the user",
-      default: undefined,
-      type: "string",
-    },
-  ];
+      ? opts.outputs
+      : [
+          {
+            jsonSchema: {
+              title: DEFAULT_INPUT_MESSAGE_OUTPUT,
+              type: "string",
+              description: "Input provided by the user",
+            },
+            title: DEFAULT_INPUT_MESSAGE_OUTPUT,
+            description: "Input provided by the user",
+            default: undefined,
+            type: "string",
+          },
+        ];
 
   return Object.freeze(
     InputMessageNodeSchema.parse({

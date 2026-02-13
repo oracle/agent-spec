@@ -23,8 +23,8 @@ export function createAgentNode(opts: {
   outputs?: Property[];
   branches?: string[];
 }): AgentNode {
-  const inputs = opts.inputs ?? (opts.agent as Record<string, unknown>)["inputs"] as Property[] ?? [];
-  const outputs = opts.outputs ?? (opts.agent as Record<string, unknown>)["outputs"] as Property[] ?? [];
+  const inputs = opts.inputs ?? ((opts.agent as Record<string, unknown>)["inputs"] as Property[] | undefined) ?? [];
+  const outputs = opts.outputs ?? ((opts.agent as Record<string, unknown>)["outputs"] as Property[] | undefined) ?? [];
   const branches = opts.branches ?? [DEFAULT_NEXT_BRANCH];
   return Object.freeze(
     AgentNodeSchema.parse({

@@ -15,16 +15,23 @@ import type { ComponentAsDict } from "./types.js";
 import { computeReferencingStructure } from "./referencing.js";
 import { VERSION_GATED_FIELDS } from "./version-gates.js";
 
-/** Convert camelCase to snake_case */
+/**
+ * Convert camelCase to snake_case.
+ * Handles standard camelCase and common abbreviation patterns (e.g. "mTLS" -> "m_tls").
+ * Only designed for field names used in the Agent Spec schema — not a general-purpose converter.
+ */
 export function camelToSnake(str: string): string {
-  // Handle special abbreviation patterns like "mTLS" -> "m_tls"
   return str
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
     .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
     .toLowerCase();
 }
 
-/** Convert snake_case to camelCase */
+/**
+ * Convert snake_case to camelCase.
+ * Only handles standard lowercase snake_case (e.g. "some_field" -> "someField").
+ * Not a general-purpose converter — uppercase segments after underscores are not matched.
+ */
 export function snakeToCamel(str: string): string {
   return str.replace(/_([a-z0-9])/g, (_, letter: string) =>
     letter.toUpperCase(),
@@ -207,10 +214,10 @@ export class SerializationContext {
       const dict = obj as Record<string, unknown>;
       const ordered: Record<string, unknown> = {};
 
-      // Priority keys first
+      // Priority keys first (recurse values for consistency)
       for (const key of PRIORITY_KEYS) {
         if (key in dict) {
-          ordered[key] = dict[key];
+          ordered[key] = this.makeOrderedDict(dict[key]);
         }
       }
       // Remaining keys

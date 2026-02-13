@@ -22,8 +22,8 @@ export function getPlaceholdersFromJsonObject(obj: unknown): string[] {
   if (typeof obj === "string") {
     return getPlaceholdersFromString(obj);
   }
-  if (obj instanceof Uint8Array || Buffer.isBuffer(obj)) {
-    return getPlaceholdersFromJsonObject((obj as Uint8Array).toString());
+  if (obj instanceof Uint8Array) {
+    return getPlaceholdersFromJsonObject(obj.toString());
   }
   if (Array.isArray(obj)) {
     const all = new Set<string>();

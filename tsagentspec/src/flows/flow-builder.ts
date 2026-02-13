@@ -146,17 +146,21 @@ export class FlowBuilder {
     branchingNodeName?: string,
   ): this {
     const dataEdgeName = `DataEdgeForConditional_${this._conditionalEdgeCounter}`;
-    let conditionalNodeName: string;
-    if (branchingNodeName) {
-      conditionalNodeName = branchingNodeName;
-    } else {
-      conditionalNodeName = `ConditionalNode_${this._conditionalEdgeCounter}`;
-      this._conditionalEdgeCounter++;
-    }
+    const conditionalNodeName =
+      branchingNodeName ?? `ConditionalNode_${this._conditionalEdgeCounter}`;
+    this._conditionalEdgeCounter++;
 
     const destinationMapStr: Record<string, string> = {};
     for (const [k, v] of Object.entries(destinationMap)) {
       destinationMapStr[k] = typeof v === "string" ? v : (v["name"] as string);
+    }
+
+    // Prevent collision with default branch name (validate before mutating state)
+    if (Object.values(destinationMapStr).includes(DEFAULT_BRANCH)) {
+      throw new Error(
+        `destinationMap cannot contain reserved branch label '${DEFAULT_BRANCH}'. ` +
+          "Please use `defaultDestination` instead.",
+      );
     }
 
     this.addNode(
@@ -165,14 +169,6 @@ export class FlowBuilder {
         mapping: destinationMapStr,
       }),
     );
-
-    // Prevent collision with default branch name
-    if (Object.values(destinationMapStr).includes(DEFAULT_BRANCH)) {
-      throw new Error(
-        `destinationMap cannot contain reserved branch label '${DEFAULT_BRANCH}'. ` +
-          "Please use `defaultDestination` instead.",
-      );
-    }
 
     // Control flow edges
     this.addEdge(sourceNode, conditionalNodeName);
