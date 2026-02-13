@@ -21,13 +21,13 @@ from pyagentspec.llms.ociclientconfig import (
 )
 from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 
-# required env variables to run OCI tests here
-# as well as OCI_GENAI_API_KEY_CONFIG and OCI_GENAI_API_KEY_PEM
-OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL = os.getenv("INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL")
-OCI_COMPARTMENT_ID = os.getenv("COMPARTMENT_ID")
-OCI_SERVICE_ENDPOINT = "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"
-OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN = os.getenv("OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN")
-OCI_IS_INSTANCE_PRINCIPAL_MACHINE = os.getenv("IS_INSTANCE_PRINCIPAL_MACHINE")
+from .conftest import (
+    OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN,
+    OCI_COMPARTMENT_ID,
+    OCI_INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL,
+    OCI_IS_INSTANCE_PRINCIPAL_MACHINE,
+    OCI_SERVICE_ENDPOINT,
+)
 
 
 def _has_oci_api_key_setup() -> bool:
@@ -108,7 +108,7 @@ def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
     # gpt-5 does not support temperature and top_p
     del model.model_kwargs["temperature"]
     del model.model_kwargs["top_p"]
-    resp = model.invoke("Explain LangChain in 5 words")
+    resp = model.invoke("Explain LangChain in 5 words. Don't think, just answer straight away.")
     # empty string if max_tokens is too low, and the model did not yet generate answer tokens, as it only generated reasoning tokens
     assert resp.content or resp.content == ""
 
@@ -153,6 +153,7 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
     reason="Missing INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL or COMPARTMENT_ID",
 )
 def test_ocigenai_llm_conversion_instance_principal(default_generation_parameters, monkeypatch):
+    # this test passes in an instance principal machine, in which the `ChatOCIGenAI` object can be invoked
     model_id = "meta.llama-3.3-70b-instruct"
     for proxy_var_name in ["HTTP_PROXY", "http_proxy"]:
         # Do not raise if var is absent to keep test robust across envs
@@ -172,7 +173,6 @@ def test_ocigenai_llm_conversion_instance_principal(default_generation_parameter
     assert isinstance(model, ChatOCIGenAI)
     assert model.model_id == model_id
     assert model.model_kwargs["max_tokens"] == default_generation_parameters.max_tokens
-    # this test passes in an instance principal machine, in which the `ChatOCIGenAI` object can be invoked
 
 
 def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
@@ -204,12 +204,6 @@ def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
 
     from pyagentspec.adapters.langgraph import AgentSpecExporter
     from pyagentspec.agent import Agent
-    from pyagentspec.llms.ociclientconfig import (
-        OciClientConfigWithApiKey,
-        OciClientConfigWithInstancePrincipal,
-        OciClientConfigWithResourcePrincipal,
-        OciClientConfigWithSecurityToken,
-    )
     from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 
     model = langchain_oci.ChatOCIGenAI(
@@ -229,15 +223,7 @@ def test_reverse_convert_chatocigenai_to_agentspec(monkeypatch):
     assert component.llm_config.model_id == "openai.gpt-any"
     assert component.llm_config.compartment_id == "ocid1.compartment.oc1..dummy"
     client_cfg = component.llm_config.client_config
-    assert isinstance(
-        client_cfg,
-        (
-            OciClientConfigWithApiKey,
-            OciClientConfigWithSecurityToken,
-            OciClientConfigWithInstancePrincipal,
-            OciClientConfigWithResourcePrincipal,
-        ),
-    )
+    assert isinstance(client_cfg, OciClientConfigWithApiKey)
 
 
 @pytest.mark.skipif(
@@ -255,13 +241,6 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
 
     from pyagentspec.adapters.langgraph import AgentSpecExporter
     from pyagentspec.agent import Agent
-    from pyagentspec.llms.ociclientconfig import (
-        OciClientConfigWithApiKey,
-        OciClientConfigWithInstancePrincipal,
-        OciClientConfigWithResourcePrincipal,
-        OciClientConfigWithSecurityToken,
-    )
-    from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 
     model = ChatOCIGenAI(
         model_id="openai.gpt-5",
@@ -279,12 +258,4 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
     assert component.llm_config.model_id == "openai.gpt-5"
     assert component.llm_config.compartment_id == OCI_COMPARTMENT_ID
     client_cfg = component.llm_config.client_config
-    assert isinstance(
-        client_cfg,
-        (
-            OciClientConfigWithApiKey,
-            OciClientConfigWithSecurityToken,
-            OciClientConfigWithInstancePrincipal,
-            OciClientConfigWithResourcePrincipal,
-        ),
-    )
+    assert isinstance(client_cfg, OciClientConfigWithApiKey)

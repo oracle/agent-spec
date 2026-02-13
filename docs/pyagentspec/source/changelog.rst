@@ -33,6 +33,7 @@ Improvements
 
   The LangGraph adapter now supports loading/exporting OCI GenAI models.
   Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
+  Install with `pip install pyagentspec[langgraph-full]` to access this feature.
 
 
 New features
