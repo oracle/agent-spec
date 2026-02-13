@@ -1,7 +1,7 @@
 /**
  * AgentSpecDeserializer - main entry point for component deserialization.
  *
- * Provides fromDict, fromJson, and fromYaml methods.
+ * Provides fromJson and fromYaml methods.
  */
 import YAML from "yaml";
 
@@ -43,17 +43,19 @@ export class AgentSpecDeserializer {
     new DeserializationContext(this.plugins);
   }
 
-  /** Deserialize a component from a plain dict */
-  fromDict(
+  /** Deserialize a component from a plain dict (internal) */
+  private _fromDict(
     data: ComponentAsDict,
     options?: {
       componentsRegistry?: ComponentsRegistry;
       importOnlyReferencedComponents?: boolean;
+      camelCase?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkDepth(data);
     const opts = options ?? {};
     const importOnly = opts.importOnlyReferencedComponents ?? false;
+    const useCamelCase = opts.camelCase ?? false;
     const allKeys = new Set(Object.keys(data));
 
     if (!importOnly) {
@@ -67,7 +69,7 @@ export class AgentSpecDeserializer {
 
       this.checkMissingReferences(data, opts.componentsRegistry);
 
-      const ctx = new DeserializationContext(this.plugins);
+      const ctx = new DeserializationContext(this.plugins, undefined, useCamelCase);
       return ctx.loadConfigDict(data, opts.componentsRegistry);
     }
 
@@ -91,7 +93,7 @@ export class AgentSpecDeserializer {
     const result: Record<string, ComponentBase> = {};
 
     for (const [componentId, componentDict] of Object.entries(refs)) {
-      const ctx = new DeserializationContext(this.plugins);
+      const ctx = new DeserializationContext(this.plugins, undefined, useCamelCase);
       result[componentId] = ctx.loadConfigDict(
         componentDict,
         opts.componentsRegistry,
@@ -107,12 +109,13 @@ export class AgentSpecDeserializer {
     options?: {
       componentsRegistry?: ComponentsRegistry;
       importOnlyReferencedComponents?: boolean;
+      camelCase?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(json.length);
     const parsed = JSON.parse(json) as ComponentAsDict;
     this.checkDepth(parsed);
-    return this.fromDict(parsed, options);
+    return this._fromDict(parsed, options);
   }
 
   /** Deserialize a component from a YAML string */
@@ -121,12 +124,13 @@ export class AgentSpecDeserializer {
     options?: {
       componentsRegistry?: ComponentsRegistry;
       importOnlyReferencedComponents?: boolean;
+      camelCase?: boolean;
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(yamlStr.length);
     const parsed = YAML.parse(yamlStr, { schema: "core" }) as ComponentAsDict;
     this.checkDepth(parsed);
-    return this.fromDict(parsed, options);
+    return this._fromDict(parsed, options);
   }
 
   /** Check that input size is within limits */

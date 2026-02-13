@@ -19,8 +19,8 @@ function makeLlmConfig() {
 }
 
 describe("AgentSpecDeserializer", () => {
-  describe("fromDict", () => {
-    it("should deserialize a serialized Agent dict", () => {
+  describe("fromJson", () => {
+    it("should deserialize a serialized Agent", () => {
       const serializer = new AgentSpecSerializer();
       const deserializer = new AgentSpecDeserializer();
 
@@ -29,8 +29,8 @@ describe("AgentSpecDeserializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "You are helpful.",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
-      const result = deserializer.fromDict(dict) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
       expect(result["componentType"]).toBe("Agent");
       expect(result["name"]).toBe("test-agent");
       expect(result["systemPrompt"]).toBe("You are helpful.");
@@ -57,7 +57,7 @@ describe("AgentSpecDeserializer", () => {
         inputs: [],
         outputs: [],
       };
-      const result = deserializer.fromDict(dict) as Record<string, unknown>;
+      const result = deserializer.fromJson(JSON.stringify(dict)) as Record<string, unknown>;
       expect(result["systemPrompt"]).toBe("Hello");
       expect(result["humanInTheLoop"]).toBe(true);
     });
@@ -69,8 +69,8 @@ describe("AgentSpecDeserializer", () => {
         name: "my-tool",
         inputs: [stringProperty({ title: "query" })],
       });
-      const dict = serializer.toDict(tool) as Record<string, unknown>;
-      const result = deserializer.fromDict(dict) as Record<string, unknown>;
+      const json = serializer.toJson(tool) as string;
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
       expect(result["componentType"]).toBe("ServerTool");
       expect(result["name"]).toBe("my-tool");
     });
@@ -78,14 +78,12 @@ describe("AgentSpecDeserializer", () => {
     it("should throw on missing component_type", () => {
       const deserializer = new AgentSpecDeserializer();
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           name: "test",
-        }),
+        })),
       ).toThrow("component_type");
     });
-  });
 
-  describe("fromJson", () => {
     it("should deserialize from a JSON string", () => {
       const serializer = new AgentSpecSerializer();
       const deserializer = new AgentSpecDeserializer();
@@ -135,13 +133,13 @@ describe("AgentSpecDeserializer", () => {
         systemPrompt: "Hello",
       });
 
-      const [mainDict, disagDict] = serializer.toDict(agent, {
+      const [mainJson, disagJson] = serializer.toJson(agent, {
         disaggregatedComponents: [llmConfig],
         exportDisaggregatedComponents: true,
-      }) as [Record<string, unknown>, Record<string, unknown>];
+      }) as [string, string];
 
       // Load disaggregated components first
-      const loadedComponents = deserializer.fromDict(disagDict, {
+      const loadedComponents = deserializer.fromJson(disagJson, {
         importOnlyReferencedComponents: true,
       }) as Record<string, Record<string, unknown>>;
       expect(Object.keys(loadedComponents)).toHaveLength(1);
@@ -153,7 +151,7 @@ describe("AgentSpecDeserializer", () => {
       }
 
       // Load the main component with the registry
-      const result = deserializer.fromDict(mainDict, {
+      const result = deserializer.fromJson(mainJson, {
         componentsRegistry: registry as any,
       }) as Record<string, unknown>;
       expect(result["componentType"]).toBe("Agent");
@@ -163,9 +161,9 @@ describe("AgentSpecDeserializer", () => {
     it("should throw when loading disaggregated without flag", () => {
       const deserializer = new AgentSpecDeserializer();
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           $referenced_components: { "some-id": {} },
-        }),
+        })),
       ).toThrow("importOnlyReferencedComponents");
     });
   });

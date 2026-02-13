@@ -20,15 +20,16 @@ function makeLlmConfig() {
 }
 
 describe("AgentSpecSerializer", () => {
-  describe("toDict", () => {
-    it("should serialize an agent to a dict", () => {
+  describe("toJson", () => {
+    it("should serialize an agent to JSON with snake_case keys", () => {
       const serializer = new AgentSpecSerializer();
       const agent = createAgent({
         name: "test-agent",
         llmConfig: makeLlmConfig(),
         systemPrompt: "You are helpful.",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       expect(dict["component_type"]).toBe("Agent");
       expect(dict["name"]).toBe("test-agent");
       expect(dict["system_prompt"]).toBe("You are helpful.");
@@ -42,7 +43,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "Hello",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       expect(dict["component_type"]).toBe("Agent");
     });
 
@@ -53,7 +55,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "Hello",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       expect("system_prompt" in dict).toBe(true);
       expect("systemPrompt" in dict).toBe(false);
       expect("llm_config" in dict).toBe(true);
@@ -69,7 +72,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "Hello",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       const keys = Object.keys(dict);
       expect(keys[0]).toBe("component_type");
       expect(keys[1]).toBe("agentspec_version");
@@ -90,7 +94,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig,
         systemPrompt: "Hello",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       const llmDict = dict["llm_config"] as Record<string, unknown>;
       expect("api_key" in llmDict).toBe(false);
     });
@@ -102,7 +107,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "Help with {{topic}}",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       const inputs = dict["inputs"] as unknown[];
       expect(inputs).toHaveLength(1);
       expect((inputs[0] as Record<string, unknown>)["title"]).toBe("topic");
@@ -116,7 +122,8 @@ describe("AgentSpecSerializer", () => {
         llmConfig: makeLlmConfig(),
         systemPrompt: "Hello",
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       const llmDict = dict["llm_config"] as Record<string, unknown>;
       expect(llmDict["component_type"]).toBe("OpenAiCompatibleConfig");
       expect(llmDict["model_id"]).toBe("gpt-4");
@@ -134,15 +141,14 @@ describe("AgentSpecSerializer", () => {
         systemPrompt: "Hello",
         tools: [tool],
       });
-      const dict = serializer.toDict(agent) as Record<string, unknown>;
+      const json = serializer.toJson(agent) as string;
+      const dict = JSON.parse(json);
       const tools = dict["tools"] as unknown[];
       expect(tools).toHaveLength(1);
       const toolDict = tools[0] as Record<string, unknown>;
       expect(toolDict["component_type"]).toBe("ServerTool");
     });
-  });
 
-  describe("toJson", () => {
     it("should return a valid JSON string", () => {
       const serializer = new AgentSpecSerializer();
       const agent = createAgent({
@@ -196,23 +202,23 @@ describe("AgentSpecSerializer", () => {
         llmConfig,
         systemPrompt: "Hello",
       });
-      const result = serializer.toDict(agent, {
+      const [mainJson, disagJson] = serializer.toJson(agent, {
         disaggregatedComponents: [llmConfig],
         exportDisaggregatedComponents: true,
-      }) as [Record<string, unknown>, Record<string, unknown>];
+      }) as [string, string];
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toHaveLength(2);
+      const mainDict = JSON.parse(mainJson);
+      const disagDict = JSON.parse(disagJson);
 
-      const mainDict = result[0];
-      const disaggDict = result[1];
+      expect(mainDict).toBeDefined();
+      expect(disagDict).toBeDefined();
 
       // Main dict should have $component_ref for the llm config
       const llmField = mainDict["llm_config"] as Record<string, unknown>;
       expect(llmField["$component_ref"]).toBe(llmConfig.id);
 
       // Disaggregated dict should have $referenced_components
-      const refs = disaggDict["$referenced_components"] as Record<
+      const refs = disagDict["$referenced_components"] as Record<
         string,
         unknown
       >;

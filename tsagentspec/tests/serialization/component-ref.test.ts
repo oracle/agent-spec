@@ -96,10 +96,13 @@ describe("$component_ref", () => {
         systemPrompt: "Hello",
       });
 
-      const [mainDict, disagDict] = serializer.toDict(agent, {
+      const [mainJson, disagJson] = serializer.toJson(agent, {
         disaggregatedComponents: [llmConfig],
         exportDisaggregatedComponents: true,
-      }) as [Record<string, unknown>, Record<string, unknown>];
+      }) as [string, string];
+
+      const mainDict = JSON.parse(mainJson);
+      const disagDict = JSON.parse(disagJson);
 
       // Main dict should use $component_ref for llm_config
       const llmField = mainDict["llm_config"] as Record<string, unknown>;

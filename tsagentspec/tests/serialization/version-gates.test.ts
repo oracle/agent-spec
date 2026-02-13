@@ -29,9 +29,10 @@ describe("version-gated field serialization", () => {
       systemPrompt: "Hello",
       humanInTheLoop: false,
     });
-    const dict = serializer.toDict(agent, {
+    const json = serializer.toJson(agent, {
       agentspecVersion: AgentSpecVersion.V25_4_1,
-    }) as Record<string, unknown>;
+    }) as string;
+    const dict = JSON.parse(json);
     expect("human_in_the_loop" in dict).toBe(false);
   });
 
@@ -43,9 +44,10 @@ describe("version-gated field serialization", () => {
       systemPrompt: "Hello",
       humanInTheLoop: false,
     });
-    const dict = serializer.toDict(agent, {
+    const json = serializer.toJson(agent, {
       agentspecVersion: AgentSpecVersion.V25_4_2,
-    }) as Record<string, unknown>;
+    }) as string;
+    const dict = JSON.parse(json);
     expect("human_in_the_loop" in dict).toBe(true);
   });
 
@@ -64,9 +66,10 @@ describe("version-gated field serialization", () => {
       systemPrompt: "Hello",
       toolboxes: [toolbox],
     });
-    const dict = serializer.toDict(agent, {
+    const json = serializer.toJson(agent, {
       agentspecVersion: AgentSpecVersion.V25_4_1,
-    }) as Record<string, unknown>;
+    }) as string;
+    const dict = JSON.parse(json);
     expect("toolboxes" in dict).toBe(false);
   });
 
@@ -83,9 +86,10 @@ describe("version-gated field serialization", () => {
       systemPrompt: "Hello",
       tools: [tool],
     });
-    const dict = serializer.toDict(agent, {
+    const json = serializer.toJson(agent, {
       agentspecVersion: AgentSpecVersion.V25_4_1,
-    }) as Record<string, unknown>;
+    }) as string;
+    const dict = JSON.parse(json);
     const tools = dict["tools"] as Record<string, unknown>[];
     expect("requires_confirmation" in tools[0]!).toBe(false);
   });
@@ -105,7 +109,8 @@ describe("version-gated field serialization", () => {
     });
 
     // For current version, BuiltinTool should appear with all fields
-    const dictCurrent = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dictCurrent = JSON.parse(json);
     const toolsCurrent = dictCurrent["tools"] as Record<string, unknown>[];
     const btCurrent = toolsCurrent.find(
       (t) => t["component_type"] === "BuiltinTool",
@@ -128,7 +133,8 @@ describe("version-gated field serialization", () => {
       tools: [tool],
       humanInTheLoop: false,
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     expect("human_in_the_loop" in dict).toBe(true);
     const tools = dict["tools"] as Record<string, unknown>[];
     expect("requires_confirmation" in tools[0]!).toBe(true);

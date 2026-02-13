@@ -32,7 +32,8 @@ describe("sensitive field exclusion", () => {
       llmConfig: llm,
       systemPrompt: "Hello",
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect("api_key" in llmDict).toBe(false);
   });
@@ -50,7 +51,8 @@ describe("sensitive field exclusion", () => {
       llmConfig: llm,
       systemPrompt: "Hello",
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect("api_key" in llmDict).toBe(false);
   });
@@ -68,7 +70,8 @@ describe("sensitive field exclusion", () => {
       llmConfig: llm,
       systemPrompt: "Hello",
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect("api_key" in llmDict).toBe(false);
   });
@@ -85,7 +88,8 @@ describe("sensitive field exclusion", () => {
       llmConfig: llm,
       systemPrompt: "Hello",
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect("api_key" in llmDict).toBe(false);
   });
@@ -105,7 +109,8 @@ describe("sensitive field exclusion", () => {
       systemPrompt: "Hello",
       tools: [tool],
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const tools = dict["tools"] as Record<string, unknown>[];
     expect("sensitive_headers" in tools[0]!).toBe(false);
   });
@@ -123,7 +128,8 @@ describe("sensitive field exclusion", () => {
       llmConfig: llm,
       systemPrompt: "Hello",
     });
-    const dict = serializer.toDict(agent) as Record<string, unknown>;
+    const json = serializer.toJson(agent) as string;
+    const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect(llmDict["url"]).toBe("http://localhost");
     expect(llmDict["model_id"]).toBe("gpt-4");

@@ -71,6 +71,7 @@ function isProperty(value: unknown): value is Property {
 
 export class SerializationContext {
   agentspecVersion: AgentSpecVersion;
+  camelCase: boolean;
   private componentTypesToPlugins: Map<string, ComponentSerializationPlugin>;
   private resolvedComponents: Map<string, ComponentAsDict> = new Map();
   private referencingStructure: Record<string, string> = {};
@@ -81,8 +82,10 @@ export class SerializationContext {
     targetVersion?: AgentSpecVersion,
     resolvedComponents?: Map<string, ComponentAsDict>,
     componentsIdMapping?: Map<string, string>,
+    camelCase?: boolean,
   ) {
     this.agentspecVersion = targetVersion ?? CURRENT_VERSION;
+    this.camelCase = camelCase ?? false;
     this.componentTypesToPlugins = this.buildComponentTypesToPlugins(plugins);
     this.resolvedComponents = resolvedComponents ?? new Map();
     this.componentsIdMapping = componentsIdMapping ?? new Map();
@@ -145,8 +148,8 @@ export class SerializationContext {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
       if (excludeNulls && (value === null || value === undefined)) continue;
-      const snakeKey = camelToSnake(key);
-      result[snakeKey] = this.dumpField(value);
+      const outKey = this.camelCase ? key : camelToSnake(key);
+      result[outKey] = this.dumpField(value);
     }
     return result;
   }
@@ -269,8 +272,9 @@ export class SerializationContext {
     return isSensitiveField(componentType, fieldName);
   }
 
-  /** Convert a camelCase field name to snake_case for serialization */
+  /** Convert a camelCase field name to the appropriate serialized form */
   toSerializedFieldName(fieldName: string): string {
+    if (this.camelCase) return fieldName;
     if (NEVER_TRANSFORM_FIELDS.has(fieldName)) return fieldName;
     return camelToSnake(fieldName);
   }

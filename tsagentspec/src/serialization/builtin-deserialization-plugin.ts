@@ -112,12 +112,17 @@ export class BuiltinsComponentDeserializationPlugin
 
     // Convert all fields from snake_case to camelCase and resolve nested components
     const opts: Record<string, unknown> = {};
+    const useCamelCase = context.camelCase;
     for (const [key, value] of Object.entries(data)) {
       if (METADATA_FIELDS.has(key)) continue;
+      // In camelCase mode, skip the camelCase metadata keys too
+      if (useCamelCase && (key === "componentType" || key === "agentspecVersion" || key === "componentPluginName" || key === "componentPluginVersion")) continue;
 
-      const camelKey = NEVER_TRANSFORM_FIELDS.has(key)
+      const camelKey = useCamelCase
         ? key
-        : snakeToCamel(key);
+        : NEVER_TRANSFORM_FIELDS.has(key)
+          ? key
+          : snakeToCamel(key);
 
       // Handle Property array fields (inputs, outputs)
       if (PROPERTY_ARRAY_FIELDS.has(camelKey) && Array.isArray(value)) {
@@ -141,9 +146,9 @@ export class BuiltinsComponentDeserializationPlugin
         value !== null &&
         !Array.isArray(value)
       ) {
-        opts[camelKey] = convertObjectKeys(
-          value as Record<string, unknown>,
-        );
+        opts[camelKey] = useCamelCase
+          ? value
+          : convertObjectKeys(value as Record<string, unknown>);
         continue;
       }
 

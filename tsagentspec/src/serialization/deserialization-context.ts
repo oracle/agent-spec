@@ -27,6 +27,7 @@ export class DeserializationContext {
     ComponentDeserializationPlugin
   >;
   agentspecVersion: AgentSpecVersion | undefined;
+  camelCase: boolean;
   loadedReferences: Map<
     string,
     ComponentBase | DeserializationInProgressMarker
@@ -36,8 +37,10 @@ export class DeserializationContext {
   constructor(
     plugins: ComponentDeserializationPlugin[],
     sourceVersion?: AgentSpecVersion,
+    camelCase?: boolean,
   ) {
     this.agentspecVersion = sourceVersion;
+    this.camelCase = camelCase ?? false;
     this.componentTypesToPlugins =
       this.buildComponentTypesToPlugins(plugins);
   }
@@ -62,7 +65,8 @@ export class DeserializationContext {
 
   /** Get the component_type from a serialized dict */
   getComponentType(content: ComponentAsDict): string {
-    const componentType = content["component_type"];
+    const key = this.camelCase ? "componentType" : "component_type";
+    const componentType = content[key];
     if (componentType === undefined || componentType === null) {
       throw new Error(
         "Cannot deserialize: missing 'component_type' field in " +
@@ -184,8 +188,9 @@ export class DeserializationContext {
     componentsRegistry?: ComponentsRegistry,
   ): ComponentBase {
     // Extract agentspec_version
+    const versionKey = this.camelCase ? "agentspecVersion" : AGENTSPEC_VERSION_FIELD_NAME;
     const versionStr =
-      (content[AGENTSPEC_VERSION_FIELD_NAME] as string | undefined) ??
+      (content[versionKey] as string | undefined) ??
       (content[LEGACY_VERSION_FIELD_NAME] as string | undefined);
 
     if (!versionStr) {

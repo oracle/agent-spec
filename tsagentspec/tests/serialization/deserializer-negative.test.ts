@@ -5,16 +5,16 @@ describe("AgentSpecDeserializer negative tests", () => {
   const deserializer = new AgentSpecDeserializer();
 
   describe("missing component_type", () => {
-    it("should throw for dict without component_type", () => {
+    it("should throw for JSON without component_type", () => {
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           name: "test",
           id: "00000000-0000-0000-0000-000000000001",
-        }),
+        })),
       ).toThrow("missing 'component_type'");
     });
 
-    it("should throw for JSON without component_type", () => {
+    it("should throw for JSON string without component_type", () => {
       expect(() =>
         deserializer.fromJson(JSON.stringify({ name: "test" })),
       ).toThrow("missing 'component_type'");
@@ -30,20 +30,20 @@ describe("AgentSpecDeserializer negative tests", () => {
   describe("invalid component_type", () => {
     it("should throw for unknown component_type", () => {
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           component_type: "NonExistentType",
           name: "test",
           id: "00000000-0000-0000-0000-000000000001",
-        }),
+        })),
       ).toThrow('No plugin to deserialize component type "NonExistentType"');
     });
 
     it("should throw when component_type is not a string", () => {
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           component_type: 42,
           name: "test",
-        }),
+        })),
       ).toThrow("component_type is not a string");
     });
   });
@@ -51,7 +51,7 @@ describe("AgentSpecDeserializer negative tests", () => {
   describe("missing references", () => {
     it("should throw for unresolved $component_ref", () => {
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           component_type: "Agent",
           name: "test",
           id: "00000000-0000-0000-0000-000000000001",
@@ -59,7 +59,7 @@ describe("AgentSpecDeserializer negative tests", () => {
           llm_config: {
             $component_ref: "00000000-0000-0000-0000-999999999999",
           },
-        }),
+        })),
       ).toThrow("Missing component references");
     });
   });
@@ -67,24 +67,24 @@ describe("AgentSpecDeserializer negative tests", () => {
   describe("disaggregated component errors", () => {
     it("should throw when loading only $referenced_components without flag", () => {
       expect(() =>
-        deserializer.fromDict({
+        deserializer.fromJson(JSON.stringify({
           $referenced_components: {
             "id-1": {
               component_type: "Agent",
               name: "test",
             },
           },
-        }),
+        })),
       ).toThrow("Cannot deserialize: content only has '$referenced_components'");
     });
 
     it("should throw when importOnly but no $referenced_components", () => {
       expect(() =>
-        deserializer.fromDict(
-          {
+        deserializer.fromJson(
+          JSON.stringify({
             component_type: "Agent",
             name: "test",
-          },
+          }),
           { importOnlyReferencedComponents: true },
         ),
       ).toThrow("should have '$referenced_components' field");
@@ -92,12 +92,12 @@ describe("AgentSpecDeserializer negative tests", () => {
 
     it("should throw when importOnly but has extra fields", () => {
       expect(() =>
-        deserializer.fromDict(
-          {
+        deserializer.fromJson(
+          JSON.stringify({
             component_type: "Agent",
             name: "test",
             $referenced_components: {},
-          },
+          }),
           { importOnlyReferencedComponents: true },
         ),
       ).toThrow("should only have '$referenced_components' field");

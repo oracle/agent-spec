@@ -4,9 +4,7 @@
 
 // Type aliases
 export type {
-  ComponentAsDict,
   ComponentsRegistry,
-  DisaggregatedComponentsConfig,
 } from "./types.js";
 
 // Plugin interfaces

@@ -308,7 +308,5 @@ export {
   VERSION_GATED_FIELDS,
   type ComponentSerializationPlugin,
   type ComponentDeserializationPlugin,
-  type ComponentAsDict,
   type ComponentsRegistry,
-  type DisaggregatedComponentsConfig,
 } from "./serialization/index.js";

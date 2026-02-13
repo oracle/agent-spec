@@ -1,7 +1,7 @@
 /**
  * AgentSpecSerializer - main entry point for component serialization.
  *
- * Provides toDict, toJson, and toYaml methods.
+ * Provides toJson and toYaml methods.
  */
 import YAML from "yaml";
 
@@ -25,18 +25,20 @@ export class AgentSpecSerializer {
     new SerializationContext(this.plugins);
   }
 
-  /** Serialize a component to a plain dict */
-  toDict(
+  /** Serialize a component to a plain dict (internal) */
+  private _toDict(
     component: ComponentBase,
     options?: {
       agentspecVersion?: AgentSpecVersion;
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
+      camelCase?: boolean;
     },
   ): ComponentAsDict | [ComponentAsDict, ComponentAsDict] {
     const opts = options ?? {};
     const disaggregated = opts.disaggregatedComponents ?? [];
     const exportDisag = opts.exportDisaggregatedComponents ?? false;
+    const useCamelCase = opts.camelCase ?? false;
 
     // Build ID mapping for disaggregated components
     const componentsIdMapping = new Map<string, string>();
@@ -53,6 +55,9 @@ export class AgentSpecSerializer {
       const disagCtx = new SerializationContext(
         this.plugins,
         opts.agentspecVersion,
+        undefined,
+        undefined,
+        useCamelCase,
       );
       const dump = disagCtx.saveToDict(disag, opts.agentspecVersion);
       disaggregatedDict[disag.id] = dump;
@@ -68,6 +73,7 @@ export class AgentSpecSerializer {
       opts.agentspecVersion,
       resolvedComponents,
       componentsIdMapping,
+      useCamelCase,
     );
     const mainDump = mainCtx.saveToDict(component, opts.agentspecVersion);
 
@@ -89,10 +95,11 @@ export class AgentSpecSerializer {
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
       indent?: number;
+      camelCase?: boolean;
     },
   ): string | [string, string] {
     const indent = options?.indent ?? 2;
-    const result = this.toDict(component, options);
+    const result = this._toDict(component, options);
 
     if (Array.isArray(result)) {
       return [
@@ -110,9 +117,10 @@ export class AgentSpecSerializer {
       agentspecVersion?: AgentSpecVersion;
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
+      camelCase?: boolean;
     },
   ): string | [string, string] {
-    const result = this.toDict(component, options);
+    const result = this._toDict(component, options);
 
     if (Array.isArray(result)) {
       return [

@@ -4,9 +4,9 @@ import {
   AgentSpecDeserializer,
   type ComponentSerializationPlugin,
   type ComponentDeserializationPlugin,
-  type ComponentAsDict,
   CURRENT_VERSION,
 } from "../../src/index.js";
+import type { ComponentAsDict } from "../../src/serialization/types.js";
 import type { SerializationContext } from "../../src/serialization/serialization-context.js";
 import type { DeserializationContext } from "../../src/serialization/deserialization-context.js";
 import type { ComponentBase } from "../../src/component.js";
@@ -82,7 +82,8 @@ describe("Custom serialization plugins", () => {
       widgetSize: 42,
     };
 
-    const dict = serializer.toDict(widget as any) as Record<string, unknown>;
+    const json = serializer.toJson(widget as any) as string;
+    const dict = JSON.parse(json);
     expect(dict["component_type"]).toBe("CustomWidget");
     expect(dict["widget_color"]).toBe("red");
     expect(dict["widget_size"]).toBe(42);
@@ -107,7 +108,7 @@ describe("Custom serialization plugins", () => {
       widget_size: 99,
     };
 
-    const result = deserializer.fromDict(dict) as Record<string, unknown>;
+    const result = deserializer.fromJson(JSON.stringify(dict)) as Record<string, unknown>;
     expect(result["componentType"]).toBe("CustomWidget");
     expect(result["name"]).toBe("my-widget");
     expect(result["widgetColor"]).toBe("blue");
