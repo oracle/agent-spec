@@ -24,6 +24,7 @@ from typing import (
 
 from pydantic import BaseModel
 
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.crewai._types import (
     CrewAIAgent,
     CrewAIBaseTool,
@@ -70,10 +71,6 @@ def generate_id() -> str:
     return str(uuid.uuid4())
 
 
-def _get_obj_reference(obj: Any) -> str:
-    return f"{obj.__class__.__name__.lower()}/{id(obj)}"
-
-
 def _pydantic_model_to_properties_list(model: Type[BaseModel]) -> List[AgentSpecProperty]:
     json_schema = model.model_json_schema()
     for property_name, property_json_schema in json_schema["properties"].items():
@@ -118,8 +115,9 @@ class CrewAIToAgentSpecConverter:
 
     def convert(
         self,
-        crewai_component: Any,
+        runtime_component: Any,
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         """Convert the given CrewAI component object into the corresponding PyAgentSpec component"""
 
@@ -127,35 +125,35 @@ class CrewAIToAgentSpecConverter:
             referenced_objects = dict()
 
         # Reuse the same object multiple times in order to exploit the referencing system
-        object_reference = _get_obj_reference(crewai_component)
+        object_reference = _get_obj_reference(runtime_component)
         if object_reference in referenced_objects:
             return referenced_objects[object_reference]
 
         # If we did not find the object, we create it, and we record it in the referenced_objects registry
         agentspec_component: AgentSpecComponent
-        if isinstance(crewai_component, CrewAILlm):
+        if isinstance(runtime_component, CrewAILlm):
             agentspec_component = self._llm_convert_to_agentspec(
-                crewai_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(crewai_component, CrewAIAgent):
+        elif isinstance(runtime_component, CrewAIAgent):
             agentspec_component = self._agent_convert_to_agentspec(
-                crewai_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(crewai_component, CrewAIMCPClient):
+        elif isinstance(runtime_component, CrewAIMCPClient):
             agentspec_component = self._mcp_client_convert_to_agentspec(
-                crewai_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(crewai_component, CrewAIBaseTool):
+        elif isinstance(runtime_component, CrewAIBaseTool):
             agentspec_component = self._tool_convert_to_agentspec(
-                crewai_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(crewai_component, CrewAIFlow):
+        elif isinstance(runtime_component, CrewAIFlow):
             agentspec_component = self._flow_convert_to_agentspec(
-                crewai_component, referenced_objects
+                runtime_component, referenced_objects
             )
         else:
             raise NotImplementedError(
-                f"The crewai type '{crewai_component.__class__.__name__}' is not yet supported "
+                f"The crewai type '{runtime_component.__class__.__name__}' is not yet supported "
                 f"for conversion. Please contact the AgentSpec team."
             )
         referenced_objects[object_reference] = agentspec_component

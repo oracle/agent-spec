@@ -8,13 +8,13 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Protocol, Union, cast, overload
+from typing import Any, Callable, Dict, List, Optional, Protocol, TypeAlias, Union, cast, overload
 
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
 
-_RuntimeComponentT = Any
-_RuntimeRegistryT = Dict[str, Any]
+_RuntimeComponentT: TypeAlias = Any
+_RuntimeRegistryT: TypeAlias = Dict[str, Any]
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,12 @@ class AgentSpecToRuntimeConverter(Protocol):
 class RuntimeToAgentSpecConverter(Protocol):
     """Protocol for adapter-specific Runtime -> Agent Spec converters used by loaders."""
 
-    def convert(self, runtime_component: _RuntimeComponentT, **kwargs: Any) -> AgentSpecComponent:
+    def convert(
+        self,
+        runtime_component: _RuntimeComponentT,
+        referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
+    ) -> AgentSpecComponent:
         """Convert a runtime component into an Agent Spec component."""
 
 

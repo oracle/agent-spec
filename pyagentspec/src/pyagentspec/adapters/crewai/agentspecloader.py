@@ -4,85 +4,36 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+"""Provide the CrewAI adapter Agent Spec loader."""
 
-from typing import Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
-from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
-from pyagentspec.adapters.crewai._types import (
-    CrewAIComponent,
-    CrewAIServerToolType,
+from pyagentspec.adapters._agentspecloader import (
+    AdapterAgnosticAgentSpecLoader,
+    AgentSpecToRuntimeConverter,
+    RuntimeToAgentSpecConverter,
 )
-from pyagentspec.component import Component as AgentSpecComponent
-from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
+from pyagentspec.adapters.crewai._agentspecconverter import CrewAIToAgentSpecConverter
+from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
 
 
-class AgentSpecLoader:
+class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     """Helper class to convert Agent Spec configurations to CrewAI objects."""
 
     def __init__(
         self,
-        tool_registry: Optional[Dict[str, CrewAIServerToolType]] = None,
-        plugins: Optional[List[ComponentDeserializationPlugin]] = None,
-    ):
-        """
-        Parameters
-        ----------
+        tool_registry: Optional[Dict[str, Any]] = None,
+        plugins: Optional[List[Any]] = None,
+        *,
+        enable_agentspec_tracing: bool = True,
+    ) -> None:
+        super().__init__(tool_registry=tool_registry, plugins=plugins)
+        self._enable_agentspec_tracing = enable_agentspec_tracing
 
-        tool_registry:
-            Optional dictionary to enable converting/loading assistant configurations involving the
-            use of tools. Keys must be the tool names as specified in the serialized configuration, and
-            the values are the tool objects.
-        plugins:
-            Optional list of plugins to enable converting/loading assistant configurations involving
-            non-core Agent Spec components.
-        """
-        self.tool_registry = tool_registry or {}
-        self.plugins = plugins
-        self._enable_agentspec_tracing = True
+    @property
+    def agentspec_to_runtime_converter(self) -> AgentSpecToRuntimeConverter:
+        return AgentSpecToCrewAIConverter(enable_agentspec_tracing=self._enable_agentspec_tracing)
 
-    def load_yaml(self, serialized_assistant: str) -> CrewAIComponent:
-        """
-        Transform the given Agent Spec YAML representation into the respective CrewAI Component
-
-        Parameters
-        ----------
-
-        serialized_assistant:
-            Serialized Agent Spec configuration to be converted to a CrewAI Component.
-        """
-        agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_yaml(
-            serialized_assistant
-        )
-        return self.load_component(agentspec_assistant)
-
-    def load_json(self, serialized_assistant: str) -> CrewAIComponent:
-        """
-        Transform the given Agent Spec JSON representation into the respective CrewAI Component
-
-        Parameters
-        ----------
-
-        serialized_assistant:
-            Serialized Agent Spec configuration to be converted to a CrewAI Component.
-        """
-        agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_json(
-            serialized_assistant
-        )
-        return self.load_component(agentspec_assistant)
-
-    def load_component(self, agentspec_component: AgentSpecComponent) -> CrewAIComponent:
-        """
-        Transform the given PyAgentSpec Component into the respective CrewAI Component
-
-        Parameters
-        ----------
-
-        agentspec_component:
-            PyAgentSpec Component to be converted to a CrewAI Component.
-        """
-        return cast(
-            CrewAIComponent,
-            AgentSpecToCrewAIConverter(
-                enable_agentspec_tracing=self._enable_agentspec_tracing,
-            ).convert(agentspec_component, self.tool_registry),
-        )
+    @property
+    def runtime_to_agentspec_converter(self) -> RuntimeToAgentSpecConverter:
+        return CrewAIToAgentSpecConverter()

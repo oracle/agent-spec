@@ -51,6 +51,20 @@ def test_disaggregated_loading_yaml_roundtrip(agent: Agent, llm: VllmConfig) -> 
 
     assert isinstance(loaded, Agent)
 
+    from pyagentspec.adapters.openaiagents import AgentSpecExporter
+
+    exporter = AgentSpecExporter()
+    exported_main_yaml, exported_disag_yaml = exporter.to_yaml(
+        loaded,
+        disaggregated_components=[(loaded.model, "llm_config_id")],
+        export_disaggregated_components=True,
+    )
+    assert "component_type" in exported_main_yaml
+    assert "Agent" in exported_main_yaml
+    assert "llm_config_id" in exported_main_yaml
+    assert "$referenced_components" in exported_disag_yaml
+    assert "llm_config_id" in exported_disag_yaml
+
 
 def test_disaggregated_loading_json_roundtrip(agent: Agent, llm: VllmConfig) -> None:
 
@@ -74,6 +88,20 @@ def test_disaggregated_loading_json_roundtrip(agent: Agent, llm: VllmConfig) -> 
 
     assert isinstance(loaded, Agent)
 
+    from pyagentspec.adapters.openaiagents import AgentSpecExporter
+
+    exporter = AgentSpecExporter()
+    exported_main_json, exported_disag_json = exporter.to_json(
+        loaded,
+        disaggregated_components=[(loaded.model, "llm_config_id")],
+        export_disaggregated_components=True,
+    )
+    assert "component_type" in exported_main_json
+    assert "Agent" in exported_main_json
+    assert "llm_config_id" in exported_main_json
+    assert "$referenced_components" in exported_disag_json
+    assert "llm_config_id" in exported_disag_json
+
 
 def test_disaggregated_loading_dict_roundtrip(agent: Agent, llm: VllmConfig) -> None:
 
@@ -96,3 +124,18 @@ def test_disaggregated_loading_dict_roundtrip(agent: Agent, llm: VllmConfig) -> 
     from agents import Agent
 
     assert isinstance(loaded, Agent)
+
+    from pyagentspec.adapters.openaiagents import AgentSpecExporter
+
+    exporter = AgentSpecExporter()
+    exported_main_dict, exported_disag_dict = exporter.to_dict(
+        loaded,
+        disaggregated_components=[(loaded.model, "llm_config_id")],
+        export_disaggregated_components=True,
+    )
+    assert "component_type" in exported_main_dict
+    assert exported_main_dict["component_type"] == "Agent"
+    assert "llm_config" in exported_main_dict
+    assert exported_main_dict["llm_config"] == {"$component_ref": "llm_config_id"}
+    assert "$referenced_components" in exported_disag_dict
+    assert "llm_config_id" in exported_disag_dict["$referenced_components"]

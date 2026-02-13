@@ -8,6 +8,7 @@ import json
 import types
 from typing import Any, Dict, List, Optional, Union, cast, get_args, get_origin
 
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.autogen._types import (
     AutogenAssistantAgent,
     AutogenBaseAgent,
@@ -806,10 +807,6 @@ class AutogenToAgentSpecConverter:
                 outputs=[_untyped_text_property(_autogen_component.config["name"] + "_output")],
             )
         raise ValueError(f"Unsupported type of agent in AgentSpec: {type(autogen_agent)}")
-
-
-def _get_obj_reference(obj: Any) -> str:
-    return f"{obj.__class__.__name__.lower()}/{id(obj)}"
 
 
 def _untyped_text_property(title: str) -> AgentSpecProperty:

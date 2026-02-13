@@ -7,6 +7,7 @@
 import typing
 from typing import Any, Union, cast, get_args, get_origin, get_type_hints
 
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.agent_framework._types import (
     AgentFrameworkLlmConfig,
     AgentFrameworkMCPTool,
@@ -27,10 +28,6 @@ from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
-
-
-def _get_obj_reference(obj: Any) -> str:
-    return f"{obj.__class__.__name__.lower()}/{id(obj)}"
 
 
 def _python_type_to_jsonschema(py_type: Any) -> dict[str, Any]:

@@ -4,77 +4,24 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from __future__ import annotations
-
 from types import FunctionType
 
 from libcst._nodes.module import Module
 
+from pyagentspec.adapters._agentspecexporter import AdapterAgnosticAgentSpecExporter
+from pyagentspec.adapters._agentspecloader import RuntimeToAgentSpecConverter
 from pyagentspec.adapters.openaiagents._agentspecconverter import OpenAIToAgentSpecConverter
-from pyagentspec.adapters.openaiagents._types import OAAgent
-from pyagentspec.adapters.openaiagents._types import OAComponent as OpenAIComponent
-from pyagentspec.adapters.openaiagents._types import OAFunctionTool
 from pyagentspec.adapters.openaiagents.flows._rulepack_registry import resolve_rulepack
 from pyagentspec.adapters.openaiagents.flows.errors import FlowConversionError
 from pyagentspec.component import Component as AgentSpecComponent
-from pyagentspec.serialization import AgentSpecSerializer as PyAgentSpecSerializer
 
 
-class AgentSpecExporter:
+class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
     """Helper class to convert OpenAI Agents SDK objects to Agent Spec configurations."""
 
-    def to_yaml(self, openai_component: OpenAIComponent) -> str:
-        """
-        Transform the given OpenAI Agents component into the respective Agent Spec YAML representation.
-
-        Parameters:
-        - openai_component: OpenAI Agents component (Agent or Tool) to serialize to an Agent Spec configuration.
-
-        Returns:
-        -------
-        str
-            The Agent Spec YAML representation of the OpenAI component.
-        """
-        agentspec_component = self.to_component(openai_component)
-        return PyAgentSpecSerializer().to_yaml(agentspec_component)
-
-    def to_json(self, openai_component: OpenAIComponent) -> str:
-        """
-        Transform the given OpenAI Agents component into the respective Agent Spec JSON representation.
-
-        Parameters:
-        - openai_component: OpenAI Agents component (Agent or Tool) to serialize to an Agent Spec configuration.
-
-        Returns:
-        -------
-        str
-            The Agent Spec JSON representation of the OpenAI component.
-        """
-        agentspec_component = self.to_component(openai_component)
-        return PyAgentSpecSerializer().to_json(agentspec_component)
-
-    def to_component(self, openai_component: OpenAIComponent) -> AgentSpecComponent:
-        """
-        Transform the given OpenAI Agents component into the respective PyAgentSpec Component.
-
-        Parameters:
-        - openai_component: OpenAI Agents component to transform into a corresponding PyAgentSpec Component.
-
-        Returns:
-        -------
-        AgentSpecComponent
-            The PyAgentSpec Component corresponding to the OpenAI component.
-
-        Raises:
-        ------
-        TypeError
-            If the input is not an OpenAI Agent or supported Tool.
-        """
-        if not isinstance(openai_component, (OAAgent, OAFunctionTool)):
-            raise TypeError(
-                f"Expected an OpenAI Agents Agent or Tool, but got '{type(openai_component)}' instead"
-            )
-        return OpenAIToAgentSpecConverter().convert(openai_component)
+    @property
+    def runtime_to_agentspec_converter(self) -> RuntimeToAgentSpecConverter:
+        return OpenAIToAgentSpecConverter()
 
     # ---- Flows: Python (OpenAI Agents) -> Agent Spec Flow ----
     def _flow_src_to_module(self, py_src: str | FunctionType) -> Module:

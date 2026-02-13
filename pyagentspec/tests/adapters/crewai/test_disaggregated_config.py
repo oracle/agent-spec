@@ -38,7 +38,7 @@ def test_disaggregated_loading_yaml_roundtrip(agent: Agent, llm: VllmConfig) -> 
         export_disaggregated_components=True,
     )
 
-    from pyagentspec.adapters.autogen import AgentSpecLoader
+    from pyagentspec.adapters.crewai import AgentSpecLoader
 
     loader = AgentSpecLoader()
     referenced_components = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
@@ -47,16 +47,16 @@ def test_disaggregated_loading_yaml_roundtrip(agent: Agent, llm: VllmConfig) -> 
     referenced_components_runtime = {"llm_config": referenced_components["llm_config"]}
 
     loaded = loader.load_yaml(main_yaml, components_registry=referenced_components_runtime)
-    from autogen_agentchat.agents import AssistantAgent
+    from crewai import Agent
 
-    assert isinstance(loaded, AssistantAgent)
+    assert isinstance(loaded, Agent)
 
-    from pyagentspec.adapters.autogen import AgentSpecExporter
+    from pyagentspec.adapters.crewai import AgentSpecExporter
 
     exporter = AgentSpecExporter()
     exported_main_yaml, exported_disag_yaml = exporter.to_yaml(
         loaded,
-        disaggregated_components=[(loaded._model_client, "llm_config_id")],
+        disaggregated_components=[(loaded.llm, "llm_config_id")],
         export_disaggregated_components=True,
     )
     assert "component_type" in exported_main_yaml
@@ -75,7 +75,7 @@ def test_disaggregated_loading_json_roundtrip(agent: Agent, llm: VllmConfig) -> 
         export_disaggregated_components=True,
     )
 
-    from pyagentspec.adapters.autogen import AgentSpecLoader
+    from pyagentspec.adapters.crewai import AgentSpecLoader
 
     loader = AgentSpecLoader()
     referenced_components = loader.load_json(disag_json, import_only_referenced_components=True)
@@ -84,16 +84,16 @@ def test_disaggregated_loading_json_roundtrip(agent: Agent, llm: VllmConfig) -> 
     referenced_components_runtime = {"llm_config": referenced_components["llm_config"]}
 
     loaded = loader.load_json(main_json, components_registry=referenced_components_runtime)
-    from autogen_agentchat.agents import AssistantAgent
+    from crewai import Agent
 
-    assert isinstance(loaded, AssistantAgent)
+    assert isinstance(loaded, Agent)
 
-    from pyagentspec.adapters.autogen import AgentSpecExporter
+    from pyagentspec.adapters.crewai import AgentSpecExporter
 
     exporter = AgentSpecExporter()
     exported_main_json, exported_disag_json = exporter.to_json(
         loaded,
-        disaggregated_components=[(loaded._model_client, "llm_config_id")],
+        disaggregated_components=[(loaded.llm, "llm_config_id")],
         export_disaggregated_components=True,
     )
     assert "component_type" in exported_main_json
@@ -112,7 +112,7 @@ def test_disaggregated_loading_dict_roundtrip(agent: Agent, llm: VllmConfig) -> 
         export_disaggregated_components=True,
     )
 
-    from pyagentspec.adapters.autogen import AgentSpecLoader
+    from pyagentspec.adapters.crewai import AgentSpecLoader
 
     loader = AgentSpecLoader()
     referenced_components = loader.load_dict(disag_dict, import_only_referenced_components=True)
@@ -121,16 +121,16 @@ def test_disaggregated_loading_dict_roundtrip(agent: Agent, llm: VllmConfig) -> 
     referenced_components_runtime = {"llm_config": referenced_components["llm_config"]}
 
     loaded = loader.load_dict(main_dict, components_registry=referenced_components_runtime)
-    from autogen_agentchat.agents import AssistantAgent
+    from crewai import Agent
 
-    assert isinstance(loaded, AssistantAgent)
+    assert isinstance(loaded, Agent)
 
-    from pyagentspec.adapters.autogen import AgentSpecExporter
+    from pyagentspec.adapters.crewai import AgentSpecExporter
 
     exporter = AgentSpecExporter()
     exported_main_dict, exported_disag_dict = exporter.to_dict(
         loaded,
-        disaggregated_components=[(loaded._model_client, "llm_config_id")],
+        disaggregated_components=[(loaded.llm, "llm_config_id")],
         export_disaggregated_components=True,
     )
     assert "component_type" in exported_main_dict

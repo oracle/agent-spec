@@ -71,6 +71,7 @@ class AgentSpecToCrewAIConverter:
         agentspec_component: AgentSpecComponent,
         tool_registry: Dict[str, CrewAIServerToolType],
         converted_components: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> Any:
         """Convert the given PyAgentSpec component object into the corresponding CrewAI component"""
         if converted_components is None:

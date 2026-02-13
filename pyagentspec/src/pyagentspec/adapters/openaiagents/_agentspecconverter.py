@@ -9,6 +9,7 @@ from __future__ import annotations
 # OpenAI Agents SDK model classes for detection
 from typing import Any, Dict, Optional, Sequence, Union, cast, get_args
 
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.openaiagents._types import (
     OAAgent,
     OAChatCompletionsModel,
@@ -57,7 +58,7 @@ class OpenAIToAgentSpecConverter:
         if referenced_objects is None:
             referenced_objects = {}
 
-        ref = f"{runtime_component.__class__.__name__.lower()}/{id(runtime_component)}"
+        ref = _get_obj_reference(runtime_component)
         if ref in referenced_objects:
             return referenced_objects[ref]
 
