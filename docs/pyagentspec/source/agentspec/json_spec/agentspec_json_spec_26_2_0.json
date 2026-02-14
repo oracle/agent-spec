@@ -3019,16 +3019,9 @@
           "title": "Metadata"
         },
         "requires_confirmation": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Requires Confirmation"
+          "default": false,
+          "title": "Requires Confirmation",
+          "type": "boolean"
         },
         "client_transport": {
           "$ref": "#/$defs/ClientTransport"
