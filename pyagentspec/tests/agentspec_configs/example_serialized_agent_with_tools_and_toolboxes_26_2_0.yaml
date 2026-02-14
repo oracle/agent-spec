@@ -1,0 +1,79 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+component_type: Agent
+id: agent1
+name: Funny agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+transforms: []
+llm_config:
+  component_type: VllmConfig
+  api_key: null
+  id: agi1
+  name: agi1
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: http://some.where
+  model_id: agi_model1
+  api_type: chat_completions
+system_prompt: No matter what the user asks, don't reply but make a joke instead
+tools:
+- component_type: MCPTool
+  id: mcptool
+  name: my_mcp_tool
+  description: null
+  metadata: {}
+  inputs: []
+  outputs: []
+  client_transport:
+    $component_ref: mcp_transport
+  requires_confirmation: false
+toolboxes:
+- component_type: MCPToolBox
+  id: mcptoolbox_no_filter
+  name: MCP ToolBox
+  description: null
+  metadata: {}
+  client_transport:
+    $component_ref: mcp_transport
+  tool_filter: null
+  requires_confirmation: true
+- component_type: MCPToolBox
+  id: mcptoolbox_with_filter
+  name: MCP ToolBox
+  description: null
+  metadata: {}
+  client_transport:
+    $component_ref: mcp_transport
+  requires_confirmation: false
+  tool_filter:
+  - tool_name1
+  - component_type: MCPToolSpec
+    id: tool_id2
+    name: tool_name2
+    description: description for tool2
+    metadata: {}
+    inputs: []
+    outputs: []
+    requires_confirmation: true
+$referenced_components:
+  mcp_transport:
+    component_type: SSETransport
+    id: mcp_transport
+    name: mcp_transport
+    description: null
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60
+    url: https://some.where/sse
+    headers: null
+    sensitive_headers: null
+human_in_the_loop: true
+agentspec_version: 26.2.0

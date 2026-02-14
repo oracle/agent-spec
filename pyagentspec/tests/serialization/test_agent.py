@@ -147,7 +147,16 @@ def test_agent_with_human_in_the_loop(vllmconfig, tools):
         _ = serializer.to_yaml(agent, agentspec_version=AgentSpecVersionEnum.v25_4_1)
 
 
-def test_agent_with_toolbox_can_be_serialized() -> None:
+@pytest.mark.parametrize(
+    "require_confirmation,config_filename",
+    [
+        (False, "example_serialized_agent_with_tools_and_toolboxes_25_4_2.yaml"),
+        (True, "example_serialized_agent_with_tools_and_toolboxes_26_2_0.yaml"),
+    ],
+)
+def test_agent_with_toolbox_can_be_serialized(
+    require_confirmation: bool, config_filename: str
+) -> None:
     vllmconfig = VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
 
     _mcp_client = SSETransport(
@@ -158,7 +167,7 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
         id="mcptoolbox_no_filter",
         name="MCP ToolBox",
         client_transport=_mcp_client,
-        requires_confirmation=True,
+        requires_confirmation=require_confirmation,
     )
     mcp_toolbox_with_filters = MCPToolBox(
         id="mcptoolbox_with_filter",
@@ -173,7 +182,6 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
                 requires_confirmation=True,
             ),
         ],
-        requires_confirmation=False,
     )
 
     agent = Agent(
@@ -186,9 +194,7 @@ def test_agent_with_toolbox_can_be_serialized() -> None:
     )
     serializer = AgentSpecSerializer()
     serialized_agent = serializer.to_yaml(agent)
-    example_serialized_agent = read_agentspec_config_file(
-        "example_serialized_agent_with_tools_and_toolboxes.yaml"
-    )
+    example_serialized_agent = read_agentspec_config_file(config_filename)
     assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
 
 
