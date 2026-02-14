@@ -10,6 +10,7 @@ from pyagentspec.agent import Agent
 from pyagentspec.llms import LlmGenerationConfig, VllmConfig
 from pyagentspec.mcp import (
     MCPTool,
+    MCPToolBox,
     SSEmTLSTransport,
     SSETransport,
     StdioTransport,
@@ -19,6 +20,7 @@ from pyagentspec.mcp import (
 from pyagentspec.mcp.clienttransport import ClientTransport
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 def get_example_agent_with_mcp_tool(client_transport: ClientTransport) -> Agent:
@@ -101,3 +103,21 @@ def test_agent_with_mcp_tool_can_be_serialized_then_deserialized(
         },
     )
     assert example_agent_with_mcp_tool == new_agent
+
+
+def test_deserializing_mcp_tool_box_with_confirmation_raises_on_version_less_than_26_2():
+    mcp_server_url = f"http://localhost:8080/sse"
+    mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)
+    mcp_toolbox = MCPToolBox(
+        name="Payslip MCP ToolBox",
+        client_transport=mcp_client,
+        requires_confirmation=True,
+    )
+    mcp_toolbox_as_dict = AgentSpecSerializer().to_dict(mcp_toolbox)
+    assert (
+        AgentSpecVersionEnum(mcp_toolbox_as_dict["agentspec_version"])
+        >= AgentSpecVersionEnum.v26_2_0
+    )
+    mcp_toolbox_as_dict["agentspec_version"] = "26.1.0"
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecDeserializer().from_dict(mcp_toolbox_as_dict)

@@ -7,6 +7,7 @@
 """This module defines the base class for versioning in Agent Spec."""
 
 from enum import Enum
+from functools import total_ordering
 
 AGENTSPEC_VERSION_FIELD_NAME = "agentspec_version"
 """Name for the field storing the version information"""
@@ -23,6 +24,7 @@ def _version_lt(version1: str, version2: str) -> bool:
     return v1_parts < v2_parts
 
 
+@total_ordering
 class AgentSpecVersionEnum(Enum):
     """
     An Enumeration for different versions of Agent Spec.
@@ -39,3 +41,10 @@ class AgentSpecVersionEnum(Enum):
 
     def __lt__(self, other: "AgentSpecVersionEnum") -> bool:
         return _version_lt(self.value, other.value)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, AgentSpecVersionEnum):
+            raise TypeError(
+                f"Equality between AgentSpecVersionEnum and {type(other).__name__} is not supported"
+            )
+        return self.value == other.value
