@@ -121,3 +121,16 @@ def test_deserializing_mcp_tool_box_with_confirmation_raises_on_version_less_tha
     mcp_toolbox_as_dict["agentspec_version"] = "26.1.0"
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         AgentSpecDeserializer().from_dict(mcp_toolbox_as_dict)
+
+
+def test_mcp_tool_box_with_unspecified_confirmation_can_be_loaded():
+    mcp_server_url = f"http://localhost:8080/sse"
+    mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)
+    mcp_toolbox = MCPToolBox(
+        name="Payslip MCP ToolBox", client_transport=mcp_client, requires_confirmation=True
+    )
+    mcp_toolbox_as_dict = AgentSpecSerializer().to_dict(mcp_toolbox)
+    assert mcp_toolbox_as_dict.get("requires_confirmation") is True
+    del mcp_toolbox_as_dict["requires_confirmation"]
+    new_mcp_toolbox = AgentSpecDeserializer().from_dict(mcp_toolbox_as_dict)
+    assert new_mcp_toolbox.requires_confirmation is False
