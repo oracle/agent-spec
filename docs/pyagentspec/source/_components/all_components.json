@@ -298,6 +298,16 @@
         ]
     },
     {
+        "name": "Tracing",
+        "path": "tracing",
+        "classes": [
+            {"path": "pyagentspec.tracing.trace.Trace"},
+            {"path": "pyagentspec.tracing.spanprocessor.SpanProcessor"},
+            {"path": "pyagentspec.tracing.spans.span.Span", "name": "pyagentspec.tracing.spans.Span"},
+            {"path": "pyagentspec.tracing.events.event.Event", "name": "pyagentspec.tracing.events.Event"}
+        ]
+    },
+    {
         "name": "A2A",
         "path": "a2a",
         "classes": [

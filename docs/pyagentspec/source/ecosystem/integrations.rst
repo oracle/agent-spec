@@ -14,7 +14,7 @@ Agent Spec Integrations
 .. |wayflow-icon| image:: ../_static/icons/wayflow-icon.svg
    :width: 250px
 
-.. |crewai-icon| image:: ../_static/icons/crewai-icon.svg
+.. |crewai-icon| image:: ../_static/icons/crewai-icon.png
    :width: 250px
 
 

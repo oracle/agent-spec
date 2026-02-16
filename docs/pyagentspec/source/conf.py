@@ -212,6 +212,8 @@ nitpick_ignore_regex = [
     ("py:class", r"autogen_agentchat\..*"),
     ("py:class", r"agent_framework\..*"),
     ("py:class", r"wayflowcore\..*"),
+    ("py:class", r"agents\..*"),
+    ("py:class", r"crewai\..*"),
     # Purposely ignoring classes
     ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
     ("py:class", r"pyagentspec.serialization.serializationcontext.T"),
