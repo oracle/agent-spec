@@ -152,7 +152,7 @@ pair is a task that can run concurrently, and it is subject to concurrency contr
 
 - ``max_concurrency`` controls how many metric computations run at once.
   - ``-1`` means "auto" (no explicit limiter by the Evaluator).
-  - Use a positive integer to avoid rate-limit errors with LLM backends.
+  - Use a positive integer to avoid rate-limit errors with LLM providers when using LLM-as-a-Judge metrics.
 
 EvaluationResults
 -----------------
