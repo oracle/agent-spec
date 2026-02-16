@@ -38,5 +38,9 @@ class MeanAggregator(Aggregator[bool | float | int, float]):
         Users should not invoke :meth:`aggregate` directly. Call the aggregator instance itself,
         e.g. ``aggregator(values)``.
         """
+        if len(values) < 1:
+            raise ValueError(
+                "Expected at least one numeric value in MeanAggregator, but none was given"
+            )
         _values = [float(v) for v in values]
         return sum(_values) / len(_values)
