@@ -78,7 +78,6 @@ class Dataset(_DataSource):
     def __len__(self) -> int:
         """
         Synchronously get the number of available samples.
-        Usually wraps `alen()`.
 
         Returns
         -------
