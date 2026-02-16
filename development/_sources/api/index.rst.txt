@@ -316,6 +316,24 @@ Click on the components and section names to access the complete API documentati
 
 ================================================================== ======================================================================
 
+:doc:`Tracing <tracing>`
+------------------------
+
+**Classes**
+
+
+================================================================================== ============================================================
+
+:class:`pyagentspec.tracing.trace.Trace`                                           :docstring:`pyagentspec.tracing.trace.Trace`
+
+:class:`pyagentspec.tracing.spanprocessor.SpanProcessor`                           :docstring:`pyagentspec.tracing.spanprocessor.SpanProcessor`
+
+:class:`pyagentspec.tracing.spans.Span <pyagentspec.tracing.spans.span.Span>`      :docstring:`pyagentspec.tracing.spans.span.Span`
+
+:class:`pyagentspec.tracing.events.Event <pyagentspec.tracing.events.event.Event>` :docstring:`pyagentspec.tracing.events.event.Event`
+
+================================================================================== ============================================================
+
 :doc:`A2A <a2a>`
 ----------------
 
@@ -341,6 +359,10 @@ Click on the components and section names to access the complete API documentati
 :class:`pyagentspec.adapters.autogen.AgentSpecExporter`         :docstring:`pyagentspec.adapters.autogen.AgentSpecExporter`
 
 :class:`pyagentspec.adapters.autogen.AgentSpecLoader`           :docstring:`pyagentspec.adapters.autogen.AgentSpecLoader`
+
+:class:`pyagentspec.adapters.crewai.AgentSpecExporter`          :docstring:`pyagentspec.adapters.crewai.AgentSpecExporter`
+
+:class:`pyagentspec.adapters.crewai.AgentSpecLoader`            :docstring:`pyagentspec.adapters.crewai.AgentSpecLoader`
 
 :class:`pyagentspec.adapters.langgraph.AgentSpecExporter`       :docstring:`pyagentspec.adapters.langgraph.AgentSpecExporter`
 
@@ -386,6 +408,7 @@ Click on the components and section names to access the complete API documentati
    Agent Specialization <agent_specialization>
    Datastores <datastores>
    Transforms <transforms>
+   Tracing <tracing>
    A2A <a2a>
    Adapters <adapters>
    Version <version>

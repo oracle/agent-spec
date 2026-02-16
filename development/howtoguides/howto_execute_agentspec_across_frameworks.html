@@ -400,6 +400,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
@@ -416,6 +417,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -647,6 +653,7 @@ Additionally, we provide the adapter implementation for some of the most common 
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/langgraph">LangGraph</a></p></li>
 <li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/autogen">AutoGen</a></p></li>
+<li><p><a class="reference external" href="https://github.com/oracle/agent-spec/tree/main/pyagentspec/src/pyagentspec/adapters/crewai">CrewAI</a></p></li>
 </ul>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -825,7 +832,7 @@ to produce the corresponding WayFlow implementation.</p>
 <p>The execution of this section requires installing pyagentspec with the extension corresponding
 to the framework you want to use Agent Spec with.</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">LangGraph</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">AutoGen</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;langgraph&quot; extension.</span>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">LangGraph</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">CrewAI</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">AutoGen</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;langgraph&quot; extension.</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[langgraph]&quot;</span>
 </pre></div>
 </div>
@@ -836,7 +843,18 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
 <span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;autogen&quot; extension.</span>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;crewai&quot; extension.</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[crewai]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Agent Spec component into a CrewAI assistant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.adapters.crewai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecLoader</span> <span class="k">as</span> <span class="n">CrewAILoader</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">CrewAILoader</span><span class="p">(</span><span class="n">tool_registry</span><span class="o">=</span><span class="n">tool_registry</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_component</span><span class="p">(</span><span class="n">deserialized_agentspec_agent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To use this adapter, please install pyagentspec with the &quot;autogen&quot; extension.</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[autogen]&quot;</span>
 </pre></div>
 </div>

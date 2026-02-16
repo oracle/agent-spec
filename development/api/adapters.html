@@ -399,6 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
@@ -415,6 +416,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -713,6 +719,115 @@ used as the <code class="docutils literal notranslate"><span class="pre">compone
 <span class="gp">&gt;&gt;&gt; </span><span class="n">langgraph</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">main_yaml</span><span class="p">,</span> <span class="n">components_registry</span><span class="o">=</span><span class="n">referenced_components</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="crewai">
+<h2>CrewAI<a class="headerlink" href="#crewai" title="Permalink to this heading">#</a></h2>
+<span class="target" id="adapters-crewai-exporter"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.crewai.</span></span><span class="sig-name descname"><span class="pre">AgentSpecExporter</span></span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class to convert CrewAI objects to Agent Spec configurations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_component">
+<span class="sig-name descname"><span class="pre">to_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_component" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given CrewAI component into the respective PyAgentSpec Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to a corresponding PyAgentSpec Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given CrewAI component into the respective Agent Spec JSON representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to an Agent Spec configuration.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml">
+<span class="sig-name descname"><span class="pre">to_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crewai_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given CrewAI component into the respective Agent Spec YAML representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>crewai_component</strong> (<em>Agent</em><em> | </em><em>_FlowGeneric</em>) – CrewAI Component to serialize to an Agent Spec configuration.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="adapters-crewai-loader"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.adapters.crewai.</span></span><span class="sig-name descname"><span class="pre">AgentSpecLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class to convert Agent Spec configurations to CrewAI objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_registry</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Tool</em><em> | </em><em>Callable</em><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>plugins</strong> (<em>List</em><em>[</em><a class="reference internal" href="serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin" title="pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin"><em>ComponentDeserializationPlugin</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_component">
+<span class="sig-name descname"><span class="pre">load_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agentspec_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_component" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given PyAgentSpec Component into the respective CrewAI Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agentspec_component</strong> (<a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><em>Component</em></a>) – PyAgentSpec Component to be converted to a CrewAI Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_json">
+<span class="sig-name descname"><span class="pre">load_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given Agent Spec JSON representation into the respective CrewAI Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a CrewAI Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml">
+<span class="sig-name descname"><span class="pre">load_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_assistant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform the given Agent Spec YAML representation into the respective CrewAI Component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>serialized_assistant</strong> (<em>str</em>) – Serialized Agent Spec configuration to be converted to a CrewAI Component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Agent</em> | <em>_FlowGeneric</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1407,6 +1522,21 @@ in several phases, as follows.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.langgraph.AgentSpecLoader.load_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_component()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.langgraph.AgentSpecLoader.load_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_json()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.langgraph.AgentSpecLoader.load_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_yaml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#crewai">CrewAI</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_json()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecExporter.to_yaml()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_component"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_json"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_json()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml"><code class="docutils literal notranslate"><span class="pre">AgentSpecLoader.load_yaml()</span></code></a></li>
 </ul>
 </li>
 </ul>

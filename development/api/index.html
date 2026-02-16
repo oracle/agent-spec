@@ -399,6 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
@@ -415,6 +416,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -891,6 +897,27 @@
 </table>
 </div>
 </section>
+<section id="tracing">
+<h2><a class="reference internal" href="tracing.html"><span class="doc">Tracing</span></a><a class="headerlink" href="#tracing" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="tracing.html#pyagentspec.tracing.trace.Trace" title="pyagentspec.tracing.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.tracing.trace.Trace</span></code></a></p></td>
+<td><p>The root of a collection of Spans.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor" title="pyagentspec.tracing.spanprocessor.SpanProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.tracing.spanprocessor.SpanProcessor</span></code></a></p></td>
+<td><p>Interface which allows hooks for `Span` start and end method invocations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tracing.html#pyagentspec.tracing.spans.span.Span" title="pyagentspec.tracing.spans.span.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.tracing.spans.Span</span></code></a></p></td>
+<td><p>Create a new model by parsing and validating input data from keyword arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tracing.html#pyagentspec.tracing.events.event.Event" title="pyagentspec.tracing.events.event.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.tracing.events.Event</span></code></a></p></td>
+<td><p>Create a new model by parsing and validating input data from keyword arguments.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="a2a">
 <h2><a class="reference internal" href="a2a.html"><span class="doc">A2A</span></a><a class="headerlink" href="#a2a" title="Permalink to this heading">#</a></h2>
 <p><strong>Classes</strong></p>
@@ -916,6 +943,12 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader" title="pyagentspec.adapters.autogen.AgentSpecLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.autogen.AgentSpecLoader</span></code></a></p></td>
 <td><p>Helper class to convert Agent Spec configurations to AutoGen objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter" title="pyagentspec.adapters.crewai.AgentSpecExporter"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.crewai.AgentSpecExporter</span></code></a></p></td>
+<td><p>Helper class to convert CrewAI objects to Agent Spec configurations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader" title="pyagentspec.adapters.crewai.AgentSpecLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.crewai.AgentSpecLoader</span></code></a></p></td>
+<td><p>Helper class to convert Agent Spec configurations to CrewAI objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter" title="pyagentspec.adapters.langgraph.AgentSpecExporter"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.adapters.langgraph.AgentSpecExporter</span></code></a></p></td>
 <td><p>Helper class to convert LangGraph objects into Agent Spec configuration.</p></td>
@@ -991,6 +1024,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-specialization"><span class="xref std std-doc">Agent Specialization</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datastores"><span class="xref std std-doc">Datastores</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transforms"><span class="xref std std-doc">Transforms</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing"><span class="xref std std-doc">Tracing</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a2a"><span class="xref std std-doc">A2A</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapters"><span class="xref std std-doc">Adapters</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version"><span class="xref std std-doc">Version</span></a></li>

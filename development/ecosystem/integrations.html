@@ -395,6 +395,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
@@ -411,6 +412,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -504,7 +510,7 @@
                   
   <section id="agent-spec-integrations">
 <span id="integrations"></span><h1>Agent Spec Integrations<a class="headerlink" href="#agent-spec-integrations" title="Permalink to this heading">#</a></h1>
-<p>Open Agent Specification provides support for <strong>LangGraph</strong>, and <strong>WayFlow</strong>, as well as integrations
+<p>Open Agent Specification provides support for <strong>LangGraph</strong>, <strong>CrewAI</strong>, <strong>WayFlow</strong>, as well as integrations
 for a growing collection of AI Agents frameworks. Learn more in our guide on
 <a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html"><span class="doc">running Agent Spec configurations across frameworks</span></a></p>
 <div class="admonition seealso">
@@ -539,6 +545,17 @@ for a growing collection of AI Agents frameworks. Learn more in our guide on
 </div>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="../_images/crewai-icon.png"><img alt="crewai-icon" src="../_images/crewai-icon.png" style="width: 250px;" /></a></div>
+<p class="sd-card-text"><strong>CrewAI</strong></p>
+<p class="sd-card-text">Enables the design of collaborative AI agents and workflows, incorporating guardrails, memory, and observability for production-ready multi-agent systems.</p>
+<p class="sd-card-text"><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">available</span></p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://docs.crewai.com/"><span>CrewAI Docs</span></a></div>
+</div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
