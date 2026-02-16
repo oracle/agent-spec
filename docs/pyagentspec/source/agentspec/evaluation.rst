@@ -18,7 +18,7 @@ It defines a common semantic and minimal APIs for:
 Agent Spec Eval emphasizes
 - Separation of concerns (dataset vs. metrics vs. orchestration);
 - Evaluation transparency (details, timing, tokens, failed attempts);
-- Robustness to LLM non-determinism (retries, repetition, ensembles, exception handling);
+- Robustness to LLM non-determinism (retries, repetition, ensembles of judges, exception handling);
 - Parallelism controls to respect rate limits;
 - Portability across runtimes and agent frameworks.
 
@@ -191,7 +191,7 @@ Repeat: recompute a metric multiple times and aggregate. Useful for noisy LLM-ba
      aggregator: Aggregator[MetricValueType, AggregationType]
      num_repeats: int
 
-Ensemble: run semantically equivalent metrics and aggregate. Useful to sue different LLMs or prompts for the same metric.
+Ensemble: run semantically equivalent metrics and aggregate. Useful to use different LLMs or prompts for the same metric.
 
 .. code-block:: python
 
@@ -202,8 +202,8 @@ Ensemble: run semantically equivalent metrics and aggregate. Useful to sue diffe
 Intermediates
 -------------
 
-Some metrics depend on shared intermediate values (e.g., a list of facts extracted from a response).
-Intermediates enable:
+Some metrics need similar intermediate values in order to be computed (e.g., a list of facts extracted from a response).
+Intermediates enable computing them once, and re-using them for all the different metrics that need them, leading to:
 
 - Decomposition of complex metrics into simpler steps (Single Responsibility Principle).
 - Caching and reuse across metrics and repetitions to reduce token and compute usage.
