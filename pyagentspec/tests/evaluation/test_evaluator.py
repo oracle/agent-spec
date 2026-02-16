@@ -6,7 +6,6 @@
 
 """Tests covering the public evaluator API surface."""
 
-import json
 from typing import Any, Dict, Tuple
 
 import pytest
@@ -53,17 +52,13 @@ async def test_evaluator_success_paths(dataset: Dataset) -> None:
     assert results.sample_ids == [0, 1, 2]
     assert results.metric_names == ["echo", "decorated_metric"]
 
-    results_json = results.to_json()
-    assert results_json["0"]["echo"]["value"] == 1
-    assert results_json["0"]["decorated_metric"]["value"] == 2
-    assert results_json["1"]["echo"]["value"] == 2
-    assert results_json["1"]["decorated_metric"]["value"] == 4
-    details = results_json["2"]["decorated_metric"]["details"]
+    results_dict = results.to_dict()
+    assert results_dict["0"]["echo"]["value"] == 1
+    assert results_dict["0"]["decorated_metric"]["value"] == 2
+    assert results_dict["1"]["echo"]["value"] == 2
+    assert results_dict["1"]["decorated_metric"]["value"] == 4
+    details = results_dict["2"]["decorated_metric"]["details"]
     assert details["doubled"] is True
-
-    # Ensure the exported form can be encoded as JSON.
-    encoded = json.dumps(results_json)
-    assert isinstance(encoded, str)
 
     df = results.to_df()
     pd.testing.assert_frame_equal(
@@ -86,22 +81,18 @@ async def test_evaluator_handles_failures_with_strategy(dataset: Dataset) -> Non
 
 
 @pytest.mark.anyio
-async def test_evaluator_exports_failures_to_json(dataset: Dataset) -> None:
+async def test_evaluator_exports_failures_to_dict(dataset: Dataset) -> None:
     evaluator = Evaluator(metrics=[_FailingMetric(on_failure="set_zero", num_retries=1)])
     results = await evaluator.evaluate(dataset)
 
-    results_json = results.to_json()
-    assert set(results_json.keys()) == {"0", "1", "2"}
+    results_dict = results.to_dict()
+    assert set(results_dict.keys()) == {"0", "1", "2"}
 
-    for sample_id in results_json:
-        failing = results_json[sample_id]["failing"]
+    for sample_id in results_dict:
+        failing = results_dict[sample_id]["failing"]
         assert failing["value"] == 0
         assert failing["details"]["__computation_details"]["status"] == "failed"
         assert len(failing["details"]["__failed_attempts"]) == 2
-
-    # Ensure the exported form can be encoded as JSON.
-    encoded = json.dumps(results_json)
-    assert isinstance(encoded, str)
 
 
 def test_evaluator_validation_errors(dataset: Dataset) -> None:

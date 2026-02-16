@@ -72,7 +72,7 @@ def _get_llm_config_as_litellm_dict(llm: LlmConfig) -> Dict[str, Any]:
         return {"model": "openai/" + llm.model_id, "api_base": url}
     raise NotImplementedError(
         f"LlmConfig type not supported: {type(llm)}. Supported types are "
-        "OciGenAiConfig, OpenAiConfig, and OpenAiCompatibleConfig.
+        "OciGenAiConfig, OpenAiConfig, and OpenAiCompatibleConfig."
     )
 
 

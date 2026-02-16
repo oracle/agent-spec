@@ -12,7 +12,7 @@ The helpers are considered internal, hence the leading underscore prefixes.
 """
 
 import json
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Generic, Tuple, TypeVar
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Generic, Hashable, Tuple, TypeVar
 
 import anyio
 
@@ -93,7 +93,7 @@ class _AsyncCallablesComputer(Generic[T]):
         return self._registry.store
 
 
-def _try_to_json_or_str(value: Any) -> Any:
+def _try_to_dict_or_str(value: Any) -> Any:
     """
     Return a serializable object:
     - if it is a base type (int, string, float, bool), return as-is
@@ -107,19 +107,19 @@ def _try_to_json_or_str(value: Any) -> Any:
     if isinstance(value, np.generic):
         return value.item()
     if isinstance(value, (list, tuple, set)):
-        return type(value)(_try_to_json_or_str(v) for v in value)
+        return type(value)(_try_to_dict_or_str(v) for v in value)
     if isinstance(value, dict):
-        return {_try_to_json_or_str(k): _try_to_json_or_str(v) for k, v in value.items()}
+        return {_try_to_dict_or_str(k): _try_to_dict_or_str(v) for k, v in value.items()}
     try:
         return json.dumps(value)
     except TypeError:
         return str(value)
 
 
-def _result_to_dict(result: Tuple[Any, Dict[str, Any]]) -> Dict[str, Any]:
+def _result_to_dict(result: Tuple[Any, Dict[Hashable, Any]]) -> Dict[str, Any]:
     """Normalise a metric result tuple into a serializable dictionary."""
     value, details = result
     return {
-        "value": _try_to_json_or_str(value),
-        "details": _try_to_json_or_str(details),
+        "value": _try_to_dict_or_str(value),
+        "details": _try_to_dict_or_str(details),
     }

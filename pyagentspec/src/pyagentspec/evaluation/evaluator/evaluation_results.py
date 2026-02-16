@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Hashable, List, Tuple
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.evaluation._computers import _result_to_dict
@@ -41,7 +41,7 @@ class EvaluationResults:
 
     def __init__(
         self,
-        results: Dict[Tuple[str, str], Tuple[Any, Dict[str, Any]]],
+        results: Dict[Tuple[str, str], Tuple[Any, Dict[Hashable, Any]]],
         sample_ids: List[str] | None = None,
         metric_names: List[str] | None = None,
     ) -> None:
@@ -50,7 +50,7 @@ class EvaluationResults:
 
         Parameters
         ----------
-        results : Dict[Tuple[str, str], Tuple[Any, Dict[str, Any]]]
+        results : Dict[Tuple[str, str], Tuple[Any, Dict[Hashable, Any]]]
             Dictionary mapping (sample_id, metric_name) pairs to result tuples,
             where each tuple consists of a primary value and a details dictionary.
 
@@ -66,8 +66,8 @@ class EvaluationResults:
         self.sample_ids = sample_ids or list({sample_id for sample_id, _ in self.results.keys()})
         self.metric_names = metric_names or list({m_name for _, m_name in self.results.keys()})
 
-    def to_json(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
-        """Return the results keyed by sample and metric in JSON-friendly form.
+    def to_dict(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
+        """Return the results keyed by sample and metric in dictionary form.
 
         Returns
         -------
