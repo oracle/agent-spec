@@ -56,7 +56,7 @@ def _get_llm_config_as_dict(llm: LlmConfig) -> Dict[str, Any]:
     """Convert an ``LlmConfig`` instance into provider-specific invocation kwargs."""
     if isinstance(llm, OciGenAiConfig):
         return {
-            "model": llm.model_id,
+            "model": "oci/" + llm.model_id,
             "oci_compartment_id": llm.compartment_id,
             "oci_serving_mode": llm.serving_mode,
             **_get_oci_client_config(llm.client_config),

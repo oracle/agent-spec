@@ -13,7 +13,7 @@ from pyagentspec.evaluation._llm.invocation import complete_conversation
 from pyagentspec.llms import OciGenAiConfig
 from pyagentspec.llms.ociclientconfig import OciClientConfigWithApiKey
 
-model_id = "oci/meta.llama-4-maverick-17b-128e-instruct-fp8"
+model_id = "meta.llama-4-maverick-17b-128e-instruct-fp8"
 COMPARTMENT_ID = os.environ["COMPARTMENT_ID"]
 SERVICE_ENDPOINT = os.environ["SERVICE_ENDPOINT"]
 

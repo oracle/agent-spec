@@ -41,9 +41,9 @@ test_cases = [
 
 async def main() -> None:
     llms = {
-        "llama_3": "oci/meta.llama-3.3-70b-instruct",
-        "llama_scout": "oci/meta.llama-4-scout-17b-16e-instruct",
-        "llama_maverick": "oci/meta.llama-4-maverick-17b-128e-instruct-fp8",
+        "llama_3": "meta.llama-3.3-70b-instruct",
+        "llama_scout": "meta.llama-4-scout-17b-16e-instruct",
+        "llama_maverick": "meta.llama-4-maverick-17b-128e-instruct-fp8",
     }
 
     metrics = [
