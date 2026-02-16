@@ -2232,6 +2232,194 @@ but it should not be done in patch releases, unless required for security reason
 
 In any case, removed features must be announced in the release notes.
 
+
+.. _agentspecauthspec_nightly:
+
+
+Authentication
+~~~~~~~~~~~~~~
+
+Authentication configurations are used by components that communicate with remote services requiring
+credentials (this may include tools, nodes, remote agents, and other components). In order to make
+these tools usable in a secure and portable way, Agent Spec needs a standardized way for users to
+declare the authentication method and the information required by the execution runtime to apply it
+(for example, running an OAuth authorization flow to connect to a protected MCP Server).
+
+We define a new Component called ``AuthConfig`` that acts as the base type for all authentication configurations:
+
+.. code-block:: python
+
+    class AuthConfig(Component):
+        pass
+
+
+Concrete authentication mechanisms are represented as subclasses of ``AuthConfig``. Runtimes are
+responsible for interpreting these configurations, enforcing security best practices (such as treating
+secrets as sensitive fields), and performing any interactive steps required to obtain credentials.
+
+
+OAuth Authentication (``OAuthConfig``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+OAuth authentication enables components to obtain and refresh access tokens via an OAuth 2.x authorization
+server. ``OAuthConfig`` is intentionally generic so it can be used for MCP servers (per MCP authorization
+requirements) and for non-MCP tools and other compnoents (e.g., ``ApiNode``) that call standard OAuth-protected
+APIs.
+
+.. code-block:: python
+
+    class OAuthConfig(AuthConfig):
+        issuer: Optional[str]
+        endpoints: Optional[OAuthEndpoints]
+        client: OAuthClientConfig
+
+        redirect_uri: str
+        scopes: Optional[Union[str, List[str]]]
+        scope_policy: Optional[Literal["use_challenge_or_supported", "fixed"]]
+
+        pkce: Optional[PKCEPolicy]
+        resource: Optional[str]
+
+
+* ``issuer`` is the authorization server issuer URL used for discovery (e.g., OpenID Connect
+  (OIDC) discovery or RFC 8414). If provided, runtimes should discover endpoints and server
+  capabilities from this issuer.
+* ``endpoints`` provides explicit OAuth endpoints (authorization, token, refresh, etc.).
+  If provided, runtimes should use these endpoints directly instead of discovery.
+* ``client`` defines how the OAuth client identity is established (pre-registered client, client-id
+  metadata document, or dynamic client registration).
+
+* ``redirect_uri`` is the callback URI where the authorization server redirects the user agent
+  after consent (authorization code flow).
+* ``scopes`` optionally defines requested scopes as a space-delimited string or list of strings.
+* ``scope_policy`` specifies how the runtime selects scopes:
+
+  * ``"use_challenge_or_supported"`` means the runtime should prefer scopes indicated by runtime
+    challenges/metadata (for MCP, this aligns with using ``WWW-Authenticate`` scope when present,
+    otherwise metadata-supported scopes).
+  * ``"fixed"`` means the runtime should request exactly the provided ``scopes``.
+
+* ``pkce`` configures Proof Key for Code Exchange (PKCE) behavior. For MCP authorization code flows,
+  runtimes should require PKCE and should use ``S256`` when technically capable.
+* ``resource`` optionally sets a resource indicator (RFC 8707). For MCP this is typically derived
+  from the MCP server URL / protected resource metadata, but exposing it here allows explicit
+  configuration for non-MCP integrations or constrained environments.
+
+
+OAuth Client Configuration (``OAuthClientConfig``)
+''''''''''''''''''''''''''''''''''''''''''''''''''
+
+OAuth client configuration specifies how the runtime identifies itself to the authorization server
+and (optionally) how it registers as a client. This is used by ``OAuthConfig.client``.
+
+.. code-block:: python
+
+    class OAuthClientConfig(Component):
+        type: Literal["pre_registered", "client_id_metadata_document", "dynamic_registration"]
+
+        client_id: Optional[str]
+        client_secret: Optional[SensitiveField[str]]
+        token_endpoint_auth_method: Optional[str]
+
+        client_id_metadata_url: Optional[str]
+
+        registration_endpoint: Optional[str]
+
+* ``type`` selects the client identity / registration approach:
+
+  * ``"pre_registered"`` uses client credentials that were registered out-of-band with the authorization server.
+  * ``"client_id_metadata_document"`` uses a URL-formatted ``client_id`` pointing to a hosted client metadata
+    JSON document (Client ID Metadata Document approach).
+  * ``"dynamic_registration"`` uses OAuth dynamic client registration (RFC 7591) to obtain a client id at runtime.
+
+* ``client_id`` is the OAuth client identifier (used for ``"pre_registered"``).
+* ``client_secret`` is the client secret (used for confidential ``"pre_registered"`` clients). It SHOULD be omitted
+  for public clients.
+* ``token_endpoint_auth_method`` specifies how the client authenticates to the token endpoint (e.g., ``"client_secret_basic"``,
+  ``"client_secret_post"``, ``"private_key_jwt"``, or ``"none"``).
+
+* ``client_id_metadata_url`` is the HTTPS URL used as the OAuth ``client_id`` when ``type="client_id_metadata_document"``.
+  This URL points to the client metadata JSON document.
+
+* ``registration_endpoint`` optionally specifies the dynamic client registration endpoint when ``type="dynamic_registration"``.
+  If omitted, runtimes SHOULD obtain it from authorization server discovery metadata when available.
+
+
+OAuth Endpoints
+'''''''''''''''
+
+OAuth-based tools sometimes need explicit endpoints (manual configuration) instead of discovery. ``OAuthEndpoints``
+groups these URLs so ``OAuthConfig`` stays readable and reusable across MCP tools and non-MCP tools.
+
+.. code-block:: python
+
+   class OAuthEndpoints:
+     authorization_endpoint: str
+     token_endpoint: str
+     refresh_endpoint: Optional[str]
+     revocation_endpoint: Optional[str]
+     userinfo_endpoint: Optional[str]
+
+* ``authorization_endpoint`` is the authorization URL where the user agent is redirected to authenticate and grant consent.
+* ``token_endpoint`` is the endpoint where the client exchanges an authorization code (or a refresh token) for access
+  (and optionally refresh) tokens.
+* ``refresh_endpoint`` optionally overrides where refresh token requests are sent. If not provided, runtimes typically
+  reuse ``token_endpoint`` for refresh.
+* ``revocation_endpoint`` optionally specifies where tokens can be revoked.
+* ``userinfo_endpoint`` optionally specifies an OpenID Connect UserInfo endpoint when OIDC claims are needed.
+
+
+PKCE Policy
+'''''''''''
+
+The MCP authorization spec requires PKCE for authorization-code flows, and the reference ``OAuthClientProvider``
+enforces PKCE via server metadata (``code_challenge_methods_supported``).
+``PKCEPolicy`` makes that behavior explicit and reusable for non-MCP tools.
+
+.. code-block:: python
+
+   class PKCEPolicy:
+     required: bool
+     method: Literal["plain", "S256"]
+
+* ``required`` indicates whether the runtime must refuse to proceed if PKCE cannot be used/verified
+  via discovery metadata. Defaults to ``True``.
+* ``method`` identifies the PKCE code challenge method.
+
+  * with ``"plain"`` the code challenge is equal to code verifier.
+  * with ``"S256"`` the code verifier is hashed using SHA-256.
+
+  Runtimes SHOULD use ``"S256"`` when technically capable. Defaults to ``"S256"``.
+
+
+Token handling and session scope
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Runtimes that use ``AuthConfig`` (including ``OAuthConfig``) are responsible for obtaining, using,
+and protecting credentials (e.g., access/refresh tokens).
+
+To keep configurations portable and safe (find more information in the
+:ref:`security guidelines <securityconsiderations>`):
+
+- **Treat tokens as secrets**: never expose tokens in exported configurations, UI output, tool traces,
+  prompts, or error messages.
+- **Avoid URL-derived trust**: do not rely solely on a conversation/response identifier (especially
+  one that appears in a URL) as the "authentication" mechanism for accessing cached OAuth tokens.
+- **Bind tokens to an authenticated principal**: in non-development deployments, token caches **should**
+  be scoped to an authenticated end-user and protected by server-side authorization checks.
+- **Prefer short-lived access tokens** and use refresh tokens only when necessary; apply least-privilege
+  scopes and audience/resource restrictions.
+- **Support safe interactive flows**: enforce PKCE for authorization-code flows when applicable, validate
+  ``state``, and restrict/validate redirect URIs.
+- **Require user confirmation for discovered/auth-server trust & dynamic registration**: when using
+  discovery-based configuration (``issuer``) and/or ``client.type="dynamic_registration"``, runtimes/clients
+  **should** require an explicit user confirmation step. The prompt should clearly display the **authorization
+  server domain** and the **target resource/MCP server URL**, and warn when dynamic registration will create/modify
+  client state on the authorization server. Runtimes should also verify that discovered metadata corresponds to
+  the originally requested protected resource/server to reduce impersonation/phishing risk.
+
+
+
 .. _agentspecmcpspec_nightly:
 
 MCP (Model Context Protocol)
@@ -2288,17 +2476,21 @@ Remote MCP transports
 
 Another category of MCP client transports rely on remote connections to MCP servers.
 Those components should extend the ``RemoteTransport`` component and should support
-the ``url`` and ``headers`` fields.
+the ``url``, ``auth`` and ``headers`` fields.
 
 .. code-block:: python
 
    class RemoteTransport(ClientTransport):
      url: str
+     auth: Optional[AuthConfig]
      headers: Dict[str, str]
      sensitive_headers: SensitiveField[Dict[str, str]]
 
 
 - ``url`` is a string representing the URL to send the request.
+- ``auth`` optionally specifies an ``AuthConfig`` to authenticate requests sent to the remote
+  MCP server. When set, runtime should use this configuration to attach credentials to requests
+  and/or to initiate interactive authentication flows as required.
 - ``headers`` is a dictionary of additional headers to use in the client.
 - ``sensitive_headers`` are additional headers that should be merged with the ``headers`` provided
   when executing the request, but these headers are excluded from exported configuration thus they

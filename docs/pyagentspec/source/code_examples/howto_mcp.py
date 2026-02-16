@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -89,11 +89,25 @@ from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
+from pyagentspec.auth import OAuthClientConfig, OAuthConfig, PKCEMethod, PKCEPolicy
 from pyagentspec.mcp import MCPTool, MCPToolBox, SSETransport
 from pyagentspec.property import StringProperty
 
 mcp_server_url = f"http://localhost:8080/sse" # change to your own URL
 # .. end-##_Imports_for_this_guide
+
+# .. start-##_OAuth_in_MCP_Tools
+# If your MCP server requires OAuth, specify an OAuthConfig on the remote transport.
+oauth = OAuthConfig(
+    name="MCP OAuth",
+    client=OAuthClientConfig(name="client", type="dynamic_registration"),
+    redirect_uri="https://127.0.0.1:8003/callback",
+    pkce=PKCEPolicy(name="pkce", required=True, method=PKCEMethod.S256),
+    scope_policy="use_challenge_or_supported",
+)
+mcp_client_with_oauth = SSETransport(name="MCP Client", url=mcp_server_url, auth=oauth)
+# .. end-##_OAuth_in_MCP_Tools
+
 # .. start-##_Connecting_an_agent_to_the_MCP_server
 mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)
 

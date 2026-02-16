@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 from typing_extensions import Self
 
+from pyagentspec.auth import AuthConfig
 from pyagentspec.component import Component
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
@@ -67,6 +68,10 @@ class RemoteTransport(ClientTransport, abstract=True):
 
     url: str
     """The URL of the server."""
+    auth: Optional[AuthConfig] = None
+    """Specifies an AuthConfig to authenticate requests sent to the remote MCP server.
+       When specified, it is used to attach credentials to requests and/or to initiate
+       interactive authentication flows as required."""
     headers: Optional[Dict[str, str]] = None
     """The headers to send to the server."""
     sensitive_headers: SensitiveField[Optional[Dict[str, str]]] = None
@@ -80,6 +85,8 @@ class RemoteTransport(ClientTransport, abstract=True):
         fields_to_exclude = set()
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("auth")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -88,6 +95,9 @@ class RemoteTransport(ClientTransport, abstract=True):
         if self.sensitive_headers:
             # `api_key` is only introduced starting from 25.4.2
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        if self.auth is not None:
+            # `auth` is only introduced starting from 26.2.0
+            current_object_min_version = AgentSpecVersionEnum.v26_2_0
         return max(parent_min_version, current_object_min_version)
 
     @model_validator_with_error_accumulation
