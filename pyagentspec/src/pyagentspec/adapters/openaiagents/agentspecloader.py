@@ -109,7 +109,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     def load_yaml(
         self,
         serialized_assistant: str,
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
         import_only_referenced_components: bool = False,
         output_path: str | None = None,
         module_name: str | None = None,
@@ -138,6 +138,42 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         -----
         - If the YAML represents an Agent Spec component (e.g., Agent), returns an OpenAI Agent.
         - If the YAML represents an Agent Spec Flow, returns the generated Python source as a string.
+
+        Examples
+        --------
+        Load an Agent Spec agent as an OpenAI Agents SDK Agent:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agentspec_agent = Agent(
+        ...     id="agent_id",
+        ...     name="A",
+        ...     system_prompt="You are helpful.",
+        ...     llm_config=OllamaConfig(name="m", model_id="llama3.1", url="http://localhost:11434"),
+        ... )
+        >>> yaml_str = AgentSpecSerializer().to_yaml(agentspec_agent)
+        >>> from pyagentspec.adapters.openaiagents import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> oa_agent = loader.load_yaml(yaml_str)
+
+        Generate Python source for an Agent Spec Flow:
+
+        >>> from pyagentspec.adapters.openaiagents import AgentSpecLoader
+        >>> from pyagentspec.flows.nodes import StartNode, EndNode
+        >>> from pyagentspec.flows.flow import Flow
+        >>> from pyagentspec.flows.edges import ControlFlowEdge
+        >>> start_node = StartNode(name="start")
+        >>> end_node = EndNode(name="end")
+        >>> flow = Flow(
+        ...     name="F",
+        ...     start_node=start_node,
+        ...     nodes=[start_node, end_node],
+        ...     control_flow_connections=[ControlFlowEdge(name="c", from_node=start_node, to_node=end_node)],
+        ... )
+        >>> flow_yaml = AgentSpecSerializer().to_yaml(flow)
+        >>> source = AgentSpecLoader().load_yaml(flow_yaml, module_name="my_flow")
+
         """
         # mypy: this adapter intentionally extends the base `load_yaml` signature
         # with codegen-only params (output_path/module_name/rulepack_version).
@@ -180,7 +216,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
     ) -> _OAComponent: ...
 
     @overload
@@ -195,14 +231,14 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
         import_only_referenced_components: bool = False,
     ) -> Union[_OAComponent, Dict[str, _OAComponent]]: ...
 
     def load_json(
         self,
         serialized_assistant: str,
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
         import_only_referenced_components: bool = False,
         output_path: str | None = None,
         module_name: str | None = None,
@@ -231,6 +267,39 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         -----
         - If the JSON represents an Agent Spec component (e.g., Agent), returns an OpenAI Agent.
         - If the JSON represents an Agent Spec Flow, returns the generated Python source as a string.
+
+        Examples
+        --------
+        Load an Agent Spec agent as an OpenAI Agents SDK Agent:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agentspec_agent = Agent(
+        ...     id="agent_id",
+        ...     name="A",
+        ...     system_prompt="You are helpful.",
+        ...     llm_config=OllamaConfig(id="llm_id", name="m", model_id="llama3.1", url="http://localhost:11434"),
+        ... )
+        >>> json_str = AgentSpecSerializer().to_json(agentspec_agent)
+        >>> from pyagentspec.adapters.openaiagents import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> oa_agent = loader.load_json(json_str)
+
+        Generate Python source for an Agent Spec Flow:
+
+        >>> from pyagentspec.flows.edges import ControlFlowEdge
+        >>> start_node = StartNode(name="start")
+        >>> end_node = EndNode(name="end")
+        >>> flow = Flow(
+        ...     name="F",
+        ...     start_node=start_node,
+        ...     nodes=[start_node, end_node],
+        ...     control_flow_connections=[ControlFlowEdge(name="c", from_node=start_node, to_node=end_node)],
+        ... )
+        >>> flow_json = AgentSpecSerializer().to_json(flow)
+        >>> source = AgentSpecLoader().load_json(flow_json, module_name="my_flow")
+
         """
         if output_path is None and module_name is None and rulepack_version is None:
             return cast(
@@ -268,7 +337,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     def load_dict(
         self,
         serialized_assistant: Dict[str, Any],
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
     ) -> _OAComponent: ...
 
     @overload
@@ -283,14 +352,14 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     def load_dict(
         self,
         serialized_assistant: Dict[str, Any],
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
         import_only_referenced_components: bool = False,
     ) -> Union[_OAComponent, Dict[str, _OAComponent]]: ...
 
     def load_dict(
         self,
         serialized_assistant: Dict[str, Any],
-        components_registry: Dict[str, object] | None = None,
+        components_registry: Dict[str, Any] | None = None,
         import_only_referenced_components: bool = False,
         output_path: str | None = None,
         module_name: str | None = None,
@@ -319,6 +388,42 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         -----
         - If the dict represents an Agent Spec component (e.g., Agent), returns an OpenAI Agent.
         - If the dict represents an Agent Spec Flow, returns the generated Python source as a string.
+
+        Examples
+        --------
+        Load an Agent Spec agent as an OpenAI Agents SDK Agent:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> agentspec_agent = Agent(
+        ...     id="agent_id",
+        ...     name="A",
+        ...     system_prompt="You are helpful.",
+        ...     llm_config=OllamaConfig(id="llm_id", name="m", model_id="llama3.1", url="http://localhost:11434"),
+        ... )
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agentspec_dict = AgentSpecSerializer().to_dict(agentspec_agent)
+        >>> from pyagentspec.adapters.openaiagents import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> oa_agent = loader.load_dict(agentspec_dict)
+
+        Generate Python source for an Agent Spec Flow:
+
+        >>> from pyagentspec.adapters.openaiagents import AgentSpecLoader
+        >>> from pyagentspec.flows.nodes import StartNode, EndNode
+        >>> from pyagentspec.flows.flow import Flow
+        >>> from pyagentspec.flows.edges import ControlFlowEdge
+        >>> start_node = StartNode(name="start")
+        >>> end_node = EndNode(name="end")
+        >>> flow = Flow(
+        ...     name="F",
+        ...     start_node=start_node,
+        ...     nodes=[start_node, end_node],
+        ...     control_flow_connections=[ControlFlowEdge(name="c", from_node=start_node, to_node=end_node)],
+        ... )
+        >>> flow_dict = AgentSpecSerializer().to_dict(flow)
+        >>> source = AgentSpecLoader().load_dict(flow_dict, module_name="my_flow")
+
         """
         if output_path is None and module_name is None and rulepack_version is None:
             return cast(

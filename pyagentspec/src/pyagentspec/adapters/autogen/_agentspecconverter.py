@@ -234,7 +234,7 @@ class AutogenToAgentSpecConverter:
             edges = getattr(digraph_node, "edges", []) or []
 
             # edges with callable conditions
-            callable_conditional_edges: list[dict[str, object]] = []
+            callable_conditional_edges: list[dict[str, Any]] = []
             # edges with string conditions
             string_conditional_edges: list[dict[str, str]] = []
             # edges without conditions
