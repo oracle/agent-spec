@@ -42,8 +42,12 @@ class HarmonicMeanAggregator(Aggregator[bool | float | int, float]):
         """
         _values = [float(v) for v in values]
 
+        if len(_values) < 1:
+            raise ValueError(
+                "Expected at least one numeric value in HarmonicMeanAggregator, but none was given"
+            )
         if any(v < 0 for v in _values):
-            raise RuntimeError(
+            raise ValueError(
                 f"Harmonic mean can only aggregate non-negative values. Found: {_values}."
             )
 

@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import TYPE_CHECKING, Any, AsyncIterator, Collection, Dict, List, Literal
+from typing import TYPE_CHECKING, Any, AsyncIterator, Collection, Dict, Hashable, List, Literal
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.evaluation.datasets._data_source import _DataSource
@@ -89,7 +89,7 @@ class Dataset(_DataSource):
 
     @staticmethod
     def from_dict(
-        data: Dict[Any, Dict[str, Any]] | List[Dict[str, Any]],
+        data: Dict[Hashable, Dict[str, Any]] | List[Dict[str, Any]],
         features_consistency: Literal["strict", "relaxed", "bypass"] = "strict",
     ) -> "Dataset":
         """
@@ -97,7 +97,7 @@ class Dataset(_DataSource):
 
         Parameters
         ----------
-        data : Dict[Any, Dict[str, Any]] or List[Dict[str, Any]]
+        data : Dict[Hashable, Dict[str, Any]] or List[Dict[str, Any]]
             The dataset. If a dictionary, keys are sample identifiers and values are feature dictionaries.
             If a list, each item is a feature dictionary and sample identifiers are assigned as sequential indices.
 

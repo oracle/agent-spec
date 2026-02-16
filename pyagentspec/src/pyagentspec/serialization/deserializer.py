@@ -566,7 +566,7 @@ class AgentSpecDeserializer:
         """
         used_references, defined_references = set(), set()
         visited = {id(value)}
-        exploration_stack: List[Dict[Any, Any] | List[Any]] = [value]
+        exploration_stack: List[Dict[str, Any] | List[Any]] = [value]
         while exploration_stack:
             current_value = exploration_stack.pop()
             if isinstance(current_value, dict) and "$component_ref" in current_value:

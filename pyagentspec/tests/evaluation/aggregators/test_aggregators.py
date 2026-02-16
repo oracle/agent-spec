@@ -30,7 +30,7 @@ def test_mean_aggregator(values: Sequence[Any], expected_aggregated_value: int |
 
 def test_mean_aggregator_fails_when_empty() -> None:
     aggregator = MeanAggregator()
-    with pytest.raises(ZeroDivisionError):
+    with pytest.raises(ValueError, match="Expected at least one numeric value"):
         aggregator([])
 
 
@@ -53,5 +53,11 @@ def test_harmonic_mean_aggregator(values: Sequence[Any], expected_aggregated_val
 
 def test_harmonic_mean_aggregator_fails_when_empty() -> None:
     aggregator = HarmonicMeanAggregator()
-    with pytest.raises(ZeroDivisionError):
+    with pytest.raises(ValueError, match="Expected at least one numeric value"):
         aggregator([])
+
+
+def test_harmonic_mean_aggregator_fails_when_negative_value_present() -> None:
+    aggregator = HarmonicMeanAggregator()
+    with pytest.raises(ValueError, match="non-negative"):
+        aggregator([1, -1, 2])

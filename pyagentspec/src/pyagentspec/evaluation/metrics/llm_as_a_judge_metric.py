@@ -140,7 +140,7 @@ class LlmAsAJudgeMetric(LlmBasedMetric[MetricValueType]):
     ) -> Tuple[MetricValueType, Dict[str, Any]]:
         """Ask the LLM to judge the sample and parse the response into value/details."""
         if args:
-            raise RuntimeError(
+            raise ValueError(
                 f"All arguments to `LlmAsAJudgeMetric.compute_metric` must be passed as keyword arguments. "
                 f"However, an instance of '{self.name}' was called with positional arguments: {args}. "
                 "Please use keyword arguments corresponding to placeholders in the user prompt template."

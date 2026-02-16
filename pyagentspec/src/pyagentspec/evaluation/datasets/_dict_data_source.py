@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, AsyncIterator, Collection, Dict, List, Literal, Set
+from typing import Any, AsyncIterator, Collection, Dict, Hashable, List, Literal, Set
 
 from pyagentspec.evaluation.datasets._data_source import _DataSource
 
@@ -14,7 +14,7 @@ class _DictDataSource(_DataSource):
 
     def __init__(
         self,
-        data: Dict[Any, Dict[str, Any]] | List[Dict[str, Any]],
+        data: Dict[Hashable, Dict[str, Any]] | List[Dict[str, Any]],
         features_consistency: Literal["strict", "relaxed", "bypass"] = "strict",
     ) -> None:
         """
@@ -22,7 +22,7 @@ class _DictDataSource(_DataSource):
 
         Parameters
         ----------
-        data : Dict[Any, Dict[str, Any]] or List[Dict[str, Any]]
+        data : Dict[Hashable, Dict[str, Any]] or List[Dict[str, Any]]
             The dataset. If a dictionary, keys are sample identifiers and values are feature dictionaries.
             If a list, each item is a feature dictionary and sample identifiers are assigned as sequential indices.
 
@@ -65,7 +65,7 @@ class _DictDataSource(_DataSource):
 
     def _require_features(
         self,
-        data: Dict[Any, Dict[str, Any]],
+        data: Dict[Hashable, Dict[str, Any]],
         features_consistency: Literal["strict", "relaxed", "bypass"],
     ) -> Set[str]:
         try:
