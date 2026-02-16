@@ -45,8 +45,14 @@ if TYPE_CHECKING:
     from crewai.flow.flow import listen as CrewAIListenNode
     from crewai.flow.flow import or_ as CrewAIOrOperator
     from crewai.flow.flow import start as CrewAIStartNode
+    from crewai.mcp.client import MCPClient as CrewAIMCPClient
+    from crewai.mcp.transports import BaseTransport as CrewAITransport
+    from crewai.mcp.transports import HTTPTransport as CrewAIHTTPTransport
+    from crewai.mcp.transports import SSETransport as CrewAISSETransport
+    from crewai.mcp.transports import StdioTransport as CrewAIStdioTransport
     from crewai.tools import BaseTool as CrewAIBaseTool
     from crewai.tools.base_tool import Tool as CrewAITool
+    from crewai.tools.mcp_native_tool import MCPNativeTool as CrewAIMCPNativeTool
     from crewai.tools.structured_tool import CrewStructuredTool as CrewAIStructuredTool
 else:
     crewai = LazyLoader("crewai")
@@ -54,13 +60,18 @@ else:
     CrewAILlm = crewai.LLM
     CrewAIAgent = crewai.Agent
     CrewAIFlow = crewai.Flow
+    CrewAIMCPClient = LazyLoader("crewai.mcp.client").MCPClient
+    CrewAITransport = LazyLoader("crewai.mcp.transports").BaseTransport
+    CrewAIHTTPTransport = LazyLoader("crewai.mcp.transports").HTTPTransport
+    CrewAISSETransport = LazyLoader("crewai.mcp.transports").SSETransport
+    CrewAIStdioTransport = LazyLoader("crewai.mcp.transports").StdioTransport
     CrewAIBaseTool = LazyLoader("crewai.tools").BaseTool
     CrewAITool = LazyLoader("crewai.tools.base_tool").Tool
+    CrewAIMCPNativeTool = LazyLoader("crewai.tools.mcp_native_tool").MCPNativeTool
     CrewAIStructuredTool = LazyLoader("crewai.tools.structured_tool").CrewStructuredTool
     CrewAIBaseEventListener = LazyLoader("crewai.events.base_event_listener").BaseEventListener
     CrewAIEventsBus = LazyLoader("crewai.events.event_bus").CrewAIEventsBus
     crewai_event_bus = LazyLoader("crewai.events.event_bus").crewai_event_bus
-    crewai = LazyLoader("crewai")
     CrewAIAgentExecutionStartedEvent = LazyLoader(
         "crewai.events.types.agent_events"
     ).AgentExecutionStartedEvent
@@ -106,6 +117,11 @@ __all__ = [
     "CrewAILlm",
     "CrewAIAgent",
     "CrewAIFlow",
+    "CrewAIMCPClient",
+    "CrewAITransport",
+    "CrewAIHTTPTransport",
+    "CrewAISSETransport",
+    "CrewAIStdioTransport",
     "CrewAIBaseTool",
     "CrewAITool",
     "CrewAIStructuredTool",
@@ -113,6 +129,7 @@ __all__ = [
     "CrewAIListenNode",
     "CrewAIOrOperator",
     "CrewAIComponent",
+    "CrewAIMCPNativeTool",
     "CrewAIServerToolType",
     "CrewAIBaseEvent",
     "CrewAIBaseEventListener",

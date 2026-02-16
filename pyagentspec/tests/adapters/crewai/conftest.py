@@ -13,7 +13,10 @@ from urllib.parse import urljoin
 import pytest
 import requests
 
-from ..conftest import skip_tests_if_dependency_not_installed
+from ..conftest import (
+    should_skip_llm_test,
+    skip_tests_if_dependency_not_installed,
+)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any):
@@ -65,3 +68,21 @@ def mute_crewai_console_prints():
         return
 
     default_listener.formatter = ConsoleFormatter(verbose=False)
+
+
+@pytest.fixture
+def crewai_llama():
+    from crewai import LLM
+
+    llama_endpoint = os.environ.get("LLAMA_API_URL")
+    if not llama_endpoint:
+        if should_skip_llm_test():
+            pytest.skip(
+                "Skipping LLM-dependent test: LLAMA_API_URL is not set and SKIP_LLM_TESTS is enabled"
+            )
+        pytest.fail("LLAMA_API_URL is not set in the environment")
+
+    return LLM(
+        model="hosted_vllm/meta-llama/Meta-Llama-3.1-8B-Instruct",
+        api_base=llama_endpoint,
+    )

@@ -28,7 +28,12 @@ from pyagentspec.adapters.crewai._types import (
     CrewAIAgent,
     CrewAIBaseTool,
     CrewAIFlow,
+    CrewAIHTTPTransport,
     CrewAILlm,
+    CrewAIMCPClient,
+    CrewAIMCPNativeTool,
+    CrewAISSETransport,
+    CrewAIStdioTransport,
     CrewAIStructuredTool,
     CrewAITool,
     FlowState,
@@ -49,6 +54,13 @@ from pyagentspec.llms.openaicompatibleconfig import (
 )
 from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
+from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
+from pyagentspec.mcp.clienttransport import SSETransport as AgentSpecSSETransport
+from pyagentspec.mcp.clienttransport import StdioTransport as AgentSpecStdioTransport
+from pyagentspec.mcp.clienttransport import (
+    StreamableHTTPTransport as AgentSpecStreamableHTTPTransport,
+)
+from pyagentspec.mcp.tools import MCPTool as AgentSpecMCPTool
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
@@ -129,6 +141,10 @@ class CrewAIToAgentSpecConverter:
             agentspec_component = self._agent_convert_to_agentspec(
                 crewai_component, referenced_objects
             )
+        elif isinstance(crewai_component, CrewAIMCPClient):
+            agentspec_component = self._mcp_client_convert_to_agentspec(
+                crewai_component, referenced_objects
+            )
         elif isinstance(crewai_component, CrewAIBaseTool):
             agentspec_component = self._tool_convert_to_agentspec(
                 crewai_component, referenced_objects
@@ -189,6 +205,35 @@ class CrewAIToAgentSpecConverter:
 
         raise ValueError(f"Unsupported type of LLM in Agent Spec: {model_provider}")
 
+    def _mcp_client_convert_to_agentspec(
+        self, crewai_mcp_client: CrewAIMCPClient, referenced_objects: Dict[str, Any]
+    ) -> AgentSpecClientTransport:
+        crewai_transport = crewai_mcp_client.transport
+        server_name, server_url, _ = crewai_mcp_client._get_server_info()
+        if isinstance(crewai_transport, CrewAIStdioTransport):
+            return AgentSpecStdioTransport(
+                name=server_name,
+                command=crewai_transport.command,
+                args=crewai_transport.args,
+                env=crewai_transport.env,
+            )
+        elif isinstance(crewai_transport, CrewAIHTTPTransport):
+            return AgentSpecStreamableHTTPTransport(
+                name=server_name,
+                url=server_url or "",
+                headers=crewai_transport.headers,
+            )
+        elif isinstance(crewai_transport, CrewAISSETransport):
+            return AgentSpecSSETransport(
+                name=server_name,
+                url=server_url or "",
+                headers=crewai_transport.headers,
+            )
+
+        raise ValueError(
+            f"Transports of type {type(crewai_transport)} are not yet supported for translation to AgentSpec"
+        )
+
     def _tool_convert_to_agentspec(
         self, crewai_tool: CrewAIBaseTool, referenced_objects: Dict[str, Any]
     ) -> AgentSpecTool:
@@ -203,17 +248,35 @@ class CrewAIToAgentSpecConverter:
             output_json_schema = _get_return_type_json_schema_from_function_reference(
                 crewai_tool._run
             )
-        # There seem to be no counterparts for client tools and remote tools in CrewAI at the moment
-        return AgentSpecServerTool(
-            name=crewai_tool.name,
-            description=crewai_tool.description,
-            inputs=_pydantic_model_to_properties_list(crewai_tool.args_schema),
-            outputs=[AgentSpecProperty(title="result", json_schema=output_json_schema)],
-        )
+        if isinstance(crewai_tool, CrewAIMCPNativeTool):
+            return AgentSpecMCPTool(
+                name=crewai_tool.original_tool_name,
+                description=crewai_tool.description.split("Tool Description: ")[1],
+                inputs=_pydantic_model_to_properties_list(crewai_tool.args_schema),
+                outputs=[AgentSpecProperty(title="result", json_schema=output_json_schema)],
+                client_transport=cast(
+                    AgentSpecClientTransport,
+                    self.convert(
+                        crewai_tool.mcp_client,
+                        referenced_objects=referenced_objects,
+                    ),
+                ),
+            )
+        else:
+            # There seem to be no counterparts for client tools and remote tools in CrewAI at the moment
+            return AgentSpecServerTool(
+                name=crewai_tool.name,
+                description=crewai_tool.description,
+                inputs=_pydantic_model_to_properties_list(crewai_tool.args_schema),
+                outputs=[AgentSpecProperty(title="result", json_schema=output_json_schema)],
+            )
 
     def _agent_convert_to_agentspec(
         self, crewai_agent: CrewAIAgent, referenced_objects: Dict[str, Any]
     ) -> AgentSpecAgent:
+        tools = crewai_agent.tools or []
+        if crewai_agent.mcps:
+            tools += crewai_agent.get_mcp_tools(crewai_agent.mcps)
         return AgentSpecAgent(
             id=str(crewai_agent.id),
             name=crewai_agent.role,
@@ -228,7 +291,7 @@ class CrewAIToAgentSpecConverter:
             ),
             tools=[
                 cast(AgentSpecTool, self.convert(tool, referenced_objects=referenced_objects))
-                for tool in (crewai_agent.tools or [])
+                for tool in tools
             ],
         )
 

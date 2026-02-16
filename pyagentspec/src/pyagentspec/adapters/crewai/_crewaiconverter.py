@@ -15,12 +15,18 @@ from pyagentspec.adapters.crewai._types import (
     CrewAIAgent,
     CrewAIBaseTool,
     CrewAIFlow,
+    CrewAIHTTPTransport,
     CrewAIListenNode,
     CrewAILlm,
+    CrewAIMCPClient,
+    CrewAIMCPNativeTool,
     CrewAIOrOperator,
     CrewAIServerToolType,
+    CrewAISSETransport,
     CrewAIStartNode,
+    CrewAIStdioTransport,
     CrewAITool,
+    CrewAITransport,
     FlowState,
 )
 from pyagentspec.adapters.crewai.tracing import CrewAIAgentWithTracing
@@ -39,6 +45,14 @@ from pyagentspec.llms import OllamaConfig as AgentSpecOllamaModel
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
 from pyagentspec.llms import OpenAiConfig as AgentSpecOpenAiConfig
 from pyagentspec.llms import VllmConfig as AgentSpecVllmModel
+from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
+from pyagentspec.mcp.clienttransport import SSETransport as AgentSpecSSETransport
+from pyagentspec.mcp.clienttransport import StdioTransport as AgentSpecStdioTransport
+from pyagentspec.mcp.clienttransport import (
+    StreamableHTTPTransport as AgentSpecStreamableHTTPTransport,
+)
+from pyagentspec.mcp.tools import MCPTool as AgentSpecMCPTool
+from pyagentspec.mcp.tools import MCPToolBox as AgentSpecMCPToolBox
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
 from pyagentspec.tools import RemoteTool as AgentSpecRemoteTool
 from pyagentspec.tools import ServerTool as AgentSpecServerTool
@@ -82,6 +96,10 @@ class AgentSpecToCrewAIConverter:
                 )
             elif isinstance(agentspec_component, AgentSpecTool):
                 crewai_component = self._tool_convert_to_crewai(
+                    agentspec_component, tool_registry, converted_components
+                )
+            elif isinstance(agentspec_component, AgentSpecClientTransport):
+                crewai_component = self._client_transport_convert_to_crewai(
                     agentspec_component, tool_registry, converted_components
                 )
             elif isinstance(agentspec_component, AgentSpecFlow):
@@ -365,6 +383,14 @@ class AgentSpecToCrewAIConverter:
             )
         elif isinstance(agentspec_tool, AgentSpecRemoteTool):
             return self._remote_tool_convert_to_crewai(agentspec_tool)
+        elif isinstance(agentspec_tool, AgentSpecMCPTool):
+            return self._mcp_tool_convert_to_crewai(
+                agentspec_tool, tool_registry, converted_components
+            )
+        elif isinstance(agentspec_tool, AgentSpecMCPToolBox):
+            raise NotImplementedError(
+                "Conversion of AgentSpec MCPToolBox objects is not yet implemented"
+            )
         raise ValueError(
             f"Tools of type {type(agentspec_tool)} are not yet supported for translation to CrewAI"
         )
@@ -380,6 +406,57 @@ class AgentSpecToCrewAIConverter:
                 remote_tool.name.title() + "InputSchema", remote_tool.inputs or []
             ),
             func=_remote_tool,
+        )
+
+    def _mcp_tool_convert_to_crewai(
+        self,
+        mcp_tool: AgentSpecMCPTool,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> CrewAIMCPNativeTool:
+        return CrewAIMCPNativeTool(
+            mcp_client=self.convert(mcp_tool.client_transport, tool_registry, converted_components),
+            tool_name=mcp_tool.name,
+            tool_schema={
+                "description": mcp_tool.description or "",
+                "args_schema": create_pydantic_model_from_properties(
+                    mcp_tool.name.title() + "InputSchema", mcp_tool.inputs or []
+                ),
+            },
+            server_name=mcp_tool.client_transport.name,
+        )
+
+    def _client_transport_convert_to_crewai(
+        self,
+        agentspec_transport: AgentSpecClientTransport,
+        tool_registry: Dict[str, CrewAIServerToolType],
+        converted_components: Optional[Dict[str, Any]] = None,
+    ) -> CrewAIMCPClient:
+        transport: Optional[CrewAITransport] = None
+        if isinstance(agentspec_transport, AgentSpecStdioTransport):
+            transport = CrewAIStdioTransport(
+                command=agentspec_transport.command,
+                args=agentspec_transport.args,
+                env=agentspec_transport.env,
+            )
+        elif isinstance(agentspec_transport, AgentSpecSSETransport):
+            transport = CrewAISSETransport(
+                url=agentspec_transport.url,
+                headers=agentspec_transport.headers,
+            )
+        elif isinstance(agentspec_transport, AgentSpecStreamableHTTPTransport):
+            transport = CrewAIHTTPTransport(
+                url=agentspec_transport.url,
+                headers=agentspec_transport.headers,
+                streamable=True,
+            )
+        else:
+            raise ValueError(
+                f"Transports of type {type(agentspec_transport)} are not yet supported for translation to CrewAI"
+            )
+        return CrewAIMCPClient(
+            transport=transport,
+            cache_tools_list=True,
         )
 
     def _agent_convert_to_crewai(
