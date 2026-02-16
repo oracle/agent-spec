@@ -11,11 +11,18 @@ pairs, respect concurrency constraints, and collect results in a thread-safe way
 The helpers are considered internal, hence the leading underscore prefixes.
 """
 
-from typing import Any, Awaitable, Callable, Dict, Generic, Tuple, TypeVar
+import json
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Generic, Tuple, TypeVar
 
 import anyio
 
+from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.evaluation.datasets.dataset import Dataset
+
+if TYPE_CHECKING:
+    import numpy as np
+else:
+    np = LazyLoader("numpy")
 
 T = TypeVar("T")
 K = TypeVar("K")
@@ -86,7 +93,33 @@ class _AsyncCallablesComputer(Generic[T]):
         return self._registry.store
 
 
+def _try_to_json_or_str(value: Any) -> Any:
+    """
+    Return a serializable object:
+    - if it is a base type (int, string, float, bool), return as-is
+    - if it is a numpy value (used by pandas), return its `item` call (i.e., the python respective)
+    - if it is a list, tuple, or set, return a same type where each element is a serializable object (recursive call)
+    - if it is a dict, return a dict where each key and element are serializable objects (recursive call)
+    - otherwise, try to json-serialize to string and, if it fails, return the str(object) value
+    """
+    if isinstance(value, (int, str, float, bool)):
+        return value
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, (list, tuple, set)):
+        return type(value)(_try_to_json_or_str(v) for v in value)
+    if isinstance(value, dict):
+        return {_try_to_json_or_str(k): _try_to_json_or_str(v) for k, v in value.items()}
+    try:
+        return json.dumps(value)
+    except TypeError:
+        return str(value)
+
+
 def _result_to_dict(result: Tuple[Any, Dict[str, Any]]) -> Dict[str, Any]:
     """Normalise a metric result tuple into a serializable dictionary."""
     value, details = result
-    return {"value": value, "details": details}
+    return {
+        "value": _try_to_json_or_str(value),
+        "details": _try_to_json_or_str(details),
+    }

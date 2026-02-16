@@ -6,6 +6,7 @@
 
 """Tests covering the public evaluator API surface."""
 
+import json
 from typing import Any, Dict, Tuple
 
 import pytest
@@ -60,6 +61,10 @@ async def test_evaluator_success_paths(dataset: Dataset) -> None:
     details = results_json["2"]["decorated_metric"]["details"]
     assert details["doubled"] is True
 
+    # Ensure the exported form can be encoded as JSON.
+    encoded = json.dumps(results_json)
+    assert isinstance(encoded, str)
+
     df = results.to_df()
     pd.testing.assert_frame_equal(
         df,
@@ -78,6 +83,25 @@ async def test_evaluator_handles_failures_with_strategy(dataset: Dataset) -> Non
         assert "__failed_attempts" in details and "__computation_details" in details
         assert details["__computation_details"]["status"] == "failed"
         assert len(details["__failed_attempts"]) == 2
+
+
+@pytest.mark.anyio
+async def test_evaluator_exports_failures_to_json(dataset: Dataset) -> None:
+    evaluator = Evaluator(metrics=[_FailingMetric(on_failure="set_zero", num_retries=1)])
+    results = await evaluator.evaluate(dataset)
+
+    results_json = results.to_json()
+    assert set(results_json.keys()) == {"0", "1", "2"}
+
+    for sample_id in results_json:
+        failing = results_json[sample_id]["failing"]
+        assert failing["value"] == 0
+        assert failing["details"]["__computation_details"]["status"] == "failed"
+        assert len(failing["details"]["__failed_attempts"]) == 2
+
+    # Ensure the exported form can be encoded as JSON.
+    encoded = json.dumps(results_json)
+    assert isinstance(encoded, str)
 
 
 def test_evaluator_validation_errors(dataset: Dataset) -> None:

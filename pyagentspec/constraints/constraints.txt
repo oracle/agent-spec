@@ -36,3 +36,5 @@ libcst==1.8.5
 pandas==2.2.3
 oci==2.167.0
 litellm==1.79.3
+numpy==2.2.6; python_version<"3.14"
+numpy==2.4.2; python_version>="3.14"
