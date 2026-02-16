@@ -70,7 +70,10 @@ def _get_llm_config_as_litellm_dict(llm: LlmConfig) -> Dict[str, Any]:
         if not url.endswith("v1"):
             url += "/v1"
         return {"model": "openai/" + llm.model_id, "api_base": url}
-    raise NotImplementedError(f"LlmConfig type not supported: {type(llm)}")
+    raise NotImplementedError(
+        f"LlmConfig type not supported: {type(llm)}. Supported types are "
+        "OciGenAiConfig, OpenAiConfig, and OpenAiCompatibleConfig.
+    )
 
 
 async def complete_conversation(
