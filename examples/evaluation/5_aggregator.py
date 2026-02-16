@@ -4,21 +4,19 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Collection
+from typing import Any, Collection
 
 from pyagentspec.evaluation.aggregators import Aggregator
 
 
-class MyMeanAboveThresholdAggregator(Aggregator[float | int | bool, bool]):
-    def __init__(
-        self,
-        threshold: float,
-    ) -> None:
+class MyMeanAboveThresholdAggregator(Aggregator[Any, bool]):
+
+    def __init__(self, threshold: float) -> None:
         super().__init__()
         self.threshold = threshold
 
-    def aggregate(self, values: Collection[float | int | bool]) -> bool:
-        return (sum(values) / len(values)) >= self.threshold
+    def aggregate(self, values: Collection[Any]) -> bool:
+        return bool((sum(values) / len(values)) >= self.threshold)
 
 
 if __name__ == "__main__":

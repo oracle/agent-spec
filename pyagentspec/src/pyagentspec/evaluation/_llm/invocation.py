@@ -52,7 +52,7 @@ def _get_oci_client_config(client_config: OciClientConfig) -> Dict[str, Any]:
     raise NotImplementedError(f"OciClientConfig type not supported: {type(client_config)}")
 
 
-def _get_llm_config_as_dict(llm: LlmConfig) -> Dict[str, Any]:
+def _get_llm_config_as_litellm_dict(llm: LlmConfig) -> Dict[str, Any]:
     """Convert an ``LlmConfig`` instance into provider-specific invocation kwargs."""
     if isinstance(llm, OciGenAiConfig):
         return {
@@ -85,7 +85,7 @@ async def complete_conversation(
 
     response = await acompletion(
         messages=messages,
-        **_get_llm_config_as_dict(llm_config),
+        **_get_llm_config_as_litellm_dict(llm_config),
     )
 
     if not isinstance(response, ModelResponse):

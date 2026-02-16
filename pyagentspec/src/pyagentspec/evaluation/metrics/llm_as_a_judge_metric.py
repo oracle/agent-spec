@@ -61,6 +61,7 @@ class LlmAsAJudgeMetric(LlmBasedMetric[MetricValueType]):
             a literal alias or a custom ``ExceptionHandlingStrategy``.
         llm_config
             Configuration for the LLM deployment used to score samples.
+            The ``litellm`` package is used for LLM calls.
         system_prompt
             Instruction block sent as the system message.
             Must not contain template placeholders.
