@@ -13,6 +13,21 @@ from pyagentspec.evaluation.metrics.metrics import Metric, MetricValueType
 
 
 class WithIntermediatesMetric(Metric[MetricValueType | None]):
+    """Compute a metric after injecting intermediate values.
+
+    This wrapper runs one or more ``Intermediate`` callables first, merges their outputs into
+    the keyword arguments passed to the wrapped metric, and then executes the wrapped metric.
+
+    Intermediate values are only computed if their ``name`` is not already present in ``kwargs``.
+    The returned ``details`` dictionary is augmented with an ``"__intermediates"``
+    entry containing the computed intermediate values.
+
+    .. note::
+        - Intermediate names must be unique; duplicates raise ``ValueError``.
+        - The wrapper is typed as ``Metric[MetricValueType | None]`` to accommodate failure
+          strategies that may set the value to ``None``.
+
+    """
 
     def __init__(
         self,

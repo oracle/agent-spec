@@ -174,8 +174,7 @@ class Metric(ABC, Generic[MetricValueType]):
                 val, val_details = await self.compute_metric(*bound_args.args, **bound_args.kwargs)
                 time_attempt_end = time.time()
 
-                logger.log(
-                    logging.INFO,
+                logger.info(
                     f"Computing {self.name} was successful in {1 + attempt_id}/{1 + self.num_retries} attempt.",
                 )
 
@@ -199,8 +198,7 @@ class Metric(ABC, Generic[MetricValueType]):
                 )
                 failed_attempts.append(e)
 
-        logger.log(
-            logging.ERROR,
+        logger.error(
             f"Computing {self.name} failed after {1 + self.num_retries} attempts.",
         )
 

@@ -98,7 +98,10 @@ class _DictDataSource(_DataSource):
         return features
 
     async def get_sample(self, id: Any) -> Dict[str, Any]:
-        return self.data[id]
+        try:
+            return self.data[id]
+        except KeyError:
+            raise KeyError(f"No sample with id {id} found in the dataset.")
 
     def features(self) -> Collection[str]:
         return self._features

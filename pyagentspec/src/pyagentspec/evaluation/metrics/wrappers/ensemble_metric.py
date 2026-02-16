@@ -28,17 +28,18 @@ class EnsembleMetric(Metric[AggregatedValueType]):
     of metric results (e.g., multiple perspectives on a single evaluation) and then aggregate them
     into a single summary value.
 
-    EnsembleMetric itself is a ``Metric`[U]`: it returns results of type ``U`` as produced by the
-    aggregator, even if the underlying metrics produce a different type ``T``.
+    EnsembleMetric itself is a ``Metric[AggregatedValueType]``: it returns results of type
+    ``AggregatedValueType`` as produced by the aggregator, even if the underlying metrics produce
+    a different type ``MetricToAggregateValueType``.
 
     Notes
     -----
-    - ``metrics`` should be a collection of objects following the ``Metric[T]`` interface, each
-      returning a tuple ``(value: T, details: dict)``.
-    - ``aggregator`` should be a callable or object that takes an iterable of ``T`` values and
-      returns a summary value of type ``U``.
-    - EnsembleMetric is parameterized as ``Metric[U]``, with ``U`` being the return type after
-      aggregation.
+    - ``metrics`` should be a collection of objects following the ``Metric[MetricToAggregateValueType]``
+      interface, each returning a tuple ``(value: MetricToAggregateValueType, details: dict)``.
+    - ``aggregator`` should be a callable or object that takes an iterable of ``MetricToAggregateValueType``
+      values and returns a summary value of type ``AggregatedValueType``.
+    - EnsembleMetric is parameterized as ``Metric[AggregatedValueType]``,
+      with ``AggregatedValueType`` being the return type after aggregation.
 
     """
 
@@ -56,10 +57,10 @@ class EnsembleMetric(Metric[AggregatedValueType]):
         name : str
             The name for this ensemble metric.
 
-        metrics : Collection[Metric[T]]
+        metrics : Collection[Metric[MetricToAggregateValueType]]
             A collection of metrics to compute for each input. Each must implement the Metric[T] interface.
 
-        aggregator : Aggregator[T, U]
+        aggregator : Aggregator[MetricToAggregateValueType, AggregatedValueType]
             Function or object that aggregates the values returned by the ensemble of metrics into a single result.
 
         Raises

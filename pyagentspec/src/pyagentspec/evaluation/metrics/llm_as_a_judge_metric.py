@@ -4,7 +4,6 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-import logging
 import re
 import warnings
 from typing import Any, Callable, Collection, Dict, List, Literal, Tuple, cast
@@ -16,9 +15,6 @@ from pyagentspec.evaluation.metrics.llm_based_metric import LlmBasedMetric
 from pyagentspec.evaluation.metrics.metrics import MetricValueType
 from pyagentspec.llms import LlmConfig
 from pyagentspec.templating import get_placeholders_from_string
-
-logger = logging.getLogger(__name__)
-
 
 RESULT_PATTERN = r"<result>(.*?)</result>"
 JUSTIFICATION_PATTERN = r"<justification>(.*?)</justification>"

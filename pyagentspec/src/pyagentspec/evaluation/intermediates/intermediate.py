@@ -32,7 +32,7 @@ class Intermediate(ABC, Generic[IntermediateValueType]):
         Parameters
         ----------
         name
-            The name of the metric.
+            The name of the intermediate.
 
         input_mapping
             A mapping from dataset feature names (external) to the names expected by the metric.

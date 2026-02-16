@@ -38,6 +38,29 @@ async def add_intermediates(
     intermediates: Sequence[Intermediate[Any]],
     max_concurrency: int = -1,
 ) -> Dataset:
+    """Return a dataset augmented with computed intermediate fields.
+
+    For each sample in ``dataset``, this function computes each provided
+    ``Intermediate`` and merges the resulting values into the sample dictionary
+    under the intermediate's ``name``.
+
+    Parameters
+    ----------
+    dataset : Dataset
+        Source dataset.
+
+    intermediates : Sequence[Intermediate[Any]]
+        Intermediates to compute for each sample.
+
+    max_concurrency : int
+        Maximum number of concurrent computations. Use ``-1`` to indicate no explicit limit.
+
+    Returns
+    -------
+    Dataset
+        A new dataset with intermediate results added to each sample.
+
+    """
     intermediates_data = await _compute_intermediates(
         dataset=dataset,
         intermediates=intermediates,

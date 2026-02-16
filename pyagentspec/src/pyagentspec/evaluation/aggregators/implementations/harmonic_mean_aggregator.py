@@ -16,7 +16,7 @@ class HarmonicMeanAggregator(Aggregator[bool | float | int, float]):
     Call an instance of this class with a sequence of non-negative numbers (bool, int, or float) to obtain their harmonic mean.
 
     If any value is zero, the result is zero.
-    Negative values will raise a RuntimeError.
+    Negative values will raise a ValueError.
 
     .. note::
         Call the aggregator instance directly (e.g., ``aggregator(values)``) rather than calling method ``aggregate`` externally.

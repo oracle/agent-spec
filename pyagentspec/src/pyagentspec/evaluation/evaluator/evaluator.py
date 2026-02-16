@@ -29,7 +29,7 @@ class Evaluator:
 
         Parameters
         ----------
-        metrics : Sequence[Metric[Any]])
+        metrics : Sequence[Metric[Any]]
             Sequence of metric instances to be used for evaluation.
 
         max_concurrency : int, default -1
