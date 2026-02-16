@@ -122,6 +122,46 @@ async def test_unlimited_concurrency() -> None:
 
 
 @pytest.mark.anyio
+async def test_run_does_not_spawn_one_task_per_item() -> None:
+    """
+    Ensure ``_AsyncCallablesComputer.run`` does not create O(N) tasks.
+    This is a regression test for memory blow-ups when datasets are large.
+    """
+
+    class CountingTaskGroup:
+        def __init__(self, max_allowed: int) -> None:
+            self.max_allowed = max_allowed
+            self.started = 0
+
+        async def __aenter__(self) -> "CountingTaskGroup":
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def start_soon(self, func, *args) -> None:
+            self.started += 1
+            assert self.started <= self.max_allowed
+
+    dataset = Dataset.from_dict([{"dummy_arg": i} for i in range(10000)])
+    callables = {"dummy_callable": (lambda **kwargs: asyncio.sleep(0))}
+    computer = _AsyncCallablesComputer(
+        dataset=dataset,
+        callables=callables,
+        max_concurrency=10,
+    )
+
+    import anyio  # imported here to keep the patch localized to this test
+
+    original = anyio.create_task_group
+    try:
+        anyio.create_task_group = lambda: CountingTaskGroup(max_allowed=1 + 10)
+        await computer.run()
+    finally:
+        anyio.create_task_group = original
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize("max_concurrency", [5, 10, 20])
 async def test_firsts_begin_together(max_concurrency: int) -> None:
     dataset = Dataset.from_dict([{"dummy_arg": i} for i in range(max_concurrency * 2)])

@@ -48,6 +48,8 @@ class _AsyncRegistry(Generic[K, V]):
 class _AsyncCallablesComputer(Generic[T]):
     """Evaluate a set of async callables across every sample in a dataset."""
 
+    _QUEUE_BUFFER_FACTOR = 3
+
     def __init__(
         self,
         dataset: Dataset,
@@ -57,6 +59,7 @@ class _AsyncCallablesComputer(Generic[T]):
         """Configure the computer with the dataset, callables, and concurrency cap."""
         self.dataset = dataset
         self.callables = callables
+        self.max_concurrency = max_concurrency
         if max_concurrency == -1:
             self.semaphore = None
         else:
@@ -80,16 +83,55 @@ class _AsyncCallablesComputer(Generic[T]):
 
     async def run(self) -> Dict[Tuple[Any, str], T]:
         """Kick off all pending computations and return the populated registry."""
-        # Materialise identifiers up-front to avoid holding async generators open
-        # while scheduling the computation fan-out.
-        sample_ids = [sample_id async for sample_id in self.dataset.ids()]
+
         metrics_names = list(self.callables.keys())
-        # ``anyio`` drives every (sample, metric) pair while respecting
-        # the concurrency limit enforced by ``_queue``.
+        if not metrics_names:
+            return {}
+
+        # For "unlimited" concurrency we still spawn one task per work item since callers
+        # explicitly opted out of concurrency caps. The producer/worker pattern below
+        # is primarily meant to prevent memory blow-ups when a bounded concurrency limit is used.
+        if self.semaphore is None:
+            sample_ids = [sample_id async for sample_id in self.dataset.ids()]
+            async with anyio.create_task_group() as tg:
+                for sample_id in sample_ids:
+                    for metric_name in metrics_names:
+                        tg.start_soon(self._queue, sample_id, metric_name)
+            return self._registry.store
+
+        # Avoid spawning one task per (sample, metric) pair: for large datasets
+        # that can create millions of tasks and consume large amounts of memory.
+        #
+        # Instead, use a producer/worker pattern:
+        # - one producer enumerates dataset sample ids and enqueues work items
+        # - N workers consume items from the queue and run computations
+
+        num_workers = max(1, self.max_concurrency)
+        queue_max_size = max(1, num_workers * self._QUEUE_BUFFER_FACTOR)
+        work_queue: anyio.abc.ObjectSendStream[Tuple[Any, str]]
+        receive_stream: anyio.abc.ObjectReceiveStream[Tuple[Any, str]]
+        work_queue, receive_stream = anyio.create_memory_object_stream(queue_max_size)
+
+        async def producer() -> None:
+            async with work_queue:
+                async for sample_id in self.dataset.ids():
+                    for metric_name in metrics_names:
+                        await work_queue.send((sample_id, metric_name))
+
+        async def worker(worker_id: int) -> None:
+            del worker_id
+            while True:
+                try:
+                    sample_id, metric_name = await receive_stream.receive()
+                except anyio.EndOfStream:
+                    return
+                await self._queue(sample_id, metric_name)
+
         async with anyio.create_task_group() as tg:
-            for sample_id in sample_ids:
-                for metric_name in metrics_names:
-                    tg.start_soon(self._queue, sample_id, metric_name)
+            tg.start_soon(producer)
+            for i in range(num_workers):
+                tg.start_soon(worker, i)
+
         return self._registry.store
 
 
