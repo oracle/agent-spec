@@ -26,11 +26,13 @@ def read(file_name):
 
 
 LANGGRAPH_DEPS = [
+    # 3rd party dependencies (imported in code)
     "langgraph>=1.0.5",
     "langchain>=1.2.0",
     "langchain-openai>=1.1.7",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
+    # 4rth party dependencies
     "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
 ]
 
@@ -62,11 +64,14 @@ setup(
     packages=find_packages("src"),
     python_requires=">=3.10",
     install_requires=[
+
+        # 3rd party dependencies (imported in code)
         "jsonschema>=4.23.0,<5",
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
         "httpx>0.28.0",
         "urllib3>=2.5.0",  # needed to avoid a CVE present on earlier versions
+        # 4rth party dependencies
     ],
     test_suite="tests",
     entry_points={
@@ -75,28 +80,52 @@ setup(
     include_package_data=True,
     extras_require={
         "autogen": [
+            # 3rd party dependencies (imported in code)
             "autogen-core>=0.5.6; python_version < '3.13'",
             "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
+            # 4rth party dependencies
         ],
         "openai-agents": [
+            # 3rd party dependencies (imported in code)
             "openai-agents>=0.6.9",
             "libcst>=1.5,<2",
+            # 4rth party dependencies
         ],
         "crewai": [
+            # 3rd party dependencies (imported in code)
             "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            # 4rth party dependencies
             # litellm is included to fix CVEs
             "litellm>=1.79.0; python_version < '3.14'",
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
-        "wayflow": ["wayflowcore>=25.4.3; python_version < '3.14'"],
-        "wayflow_oci": ["wayflowcore[oci]>=25.4.3; python_version < '3.14'"],
-        "wayflow_a2a": ["wayflowcore[a2a]>=25.4.3; python_version < '3.14'"],
-        "wayflow_datastore": ["wayflowcore[datastore]>=25.4.3; python_version < '3.14'"],
+        "wayflow": [
+            # 3rd party dependencies (imported in code)
+            "wayflowcore>=25.4.3; python_version < '3.14'"
+            # 4rth party dependencies
+        ],
+        "wayflow_oci": [
+            # 3rd party dependencies (imported in code)
+            "wayflowcore[oci]>=25.4.3; python_version < '3.14'"
+            # 4rth party dependencies
+        ],
+        "wayflow_a2a": [
+            # 3rd party dependencies (imported in code)
+            "wayflowcore[a2a]>=25.4.3; python_version < '3.14'"
+            # 4rth party dependencies
+        ],
+        "wayflow_datastore": [
+            # 3rd party dependencies (imported in code)
+            "wayflowcore[datastore]>=25.4.3; python_version < '3.14'"
+            # 4rth party dependencies
+            ],
         "agent-framework": [
+            # 3rd party dependencies (imported in code)
             "agent-framework>=1.0.0b260130; python_version < '3.14'",
             "agent-framework-core>=1.0.0b260130; python_version < '3.14'",
+            # 4rth party dependencies
         ],
     },
 )
