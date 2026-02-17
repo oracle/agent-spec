@@ -64,7 +64,6 @@ setup(
     packages=find_packages("src"),
     python_requires=">=3.10",
     install_requires=[
-
         # 3rd party dependencies (imported in code)
         "jsonschema>=4.23.0,<5",
         "pydantic>=2.10,<2.13",
@@ -120,7 +119,7 @@ setup(
             # 3rd party dependencies (imported in code)
             "wayflowcore[datastore]>=25.4.3; python_version < '3.14'"
             # 4rth party dependencies
-            ],
+        ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
             "agent-framework>=1.0.0b260130; python_version < '3.14'",
