@@ -992,7 +992,7 @@ class AgentSpecToLangGraphConverter:
             # Note that the fact that we called `cast` before does not change the actual type of the agent
             if not isinstance(agent, AgentSpecAgent):
                 raise ValueError(
-                    f"Only Swarm of Agents is supported in LangGraph adapter, received {type(agent)} instead."
+                    f"Only Agents are supported as part of a Swarm in the LangGraph adapter, received {type(agent)} instead."
                 )
             # We convert the agents event though we do not use them in langgraph, since we have to append
             # the handoff tools, but at least this way the agents will be created and stored in the registry
