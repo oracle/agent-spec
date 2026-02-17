@@ -230,105 +230,26 @@ Examples
 End-to-end evaluation
 ---------------------
 
-.. code-block:: python
-
-    import asyncio
-    from pyagentspec.evaluation import Dataset, Evaluator
-    from pyagentspec.evaluation.metrics.implementations import ExactBinaryMatchMetric
-
-    data = [
-     {"query": "Where is the largest city of CH?", "reference": "Zürich", "response": "Zurich"},
-     {"query": "Where is the capital of Switzerland?", "reference": "Bern", "response": "Bern"},
-     {"query": "Where is the UN European HQ?", "reference": "Geneva", "response": "Genève"},
-    ]
-    dataset = Dataset.from_dict(data)
-
-    async def main() -> None:
-     evaluator = Evaluator(
-       metrics=[
-         ExactBinaryMatchMetric(name="ExactBinaryMatchStrict"),
-         ExactBinaryMatchMetric(name="ExactBinaryMatchRelaxed", ignore_glyph=True),
-       ]
-     )
-     results = await evaluator.evaluate(dataset)
-     print(results.to_df())
-
-    asyncio.run(main())
+.. literalinclude:: ../code_examples/agentspec_eval_end_to_end_example.py
+    :language: python
+    :start-after: .. start-snippet
+    :end-before: .. end-snippet
 
 Standalone LLM-based metric
 ---------------------------
 
-.. code-block:: python
-
-    import asyncio, os
-    from pyagentspec.evaluation.metrics.implementations import SemanticBinaryMatchMetric
-    from pyagentspec.llms import OpenAiConfig
-    from pyagentspec.llms.ociclientconfig import OciClientConfigWithApiKey
-
-    llm_config = OpenAiConfig(name="gpt-5-mini-config", model_id="gpt-5-mini")
-
-    async def main() -> None:
-      metric = SemanticBinaryMatchMetric(llm_config)
-      for reference, response in [("Zeurich", "Zurich"), ("Beijing", "Peking")]:
-        value, details = await metric(reference=reference, response=response)
-        print((value, details))
-
-    asyncio.run(main())
+.. literalinclude:: ../code_examples/agentspec_eval_standalone_llm_metric_example.py
+    :language: python
+    :start-after: .. start-snippet
+    :end-before: .. end-snippet
 
 Repeating and ensembles
 -----------------------
 
-.. code-block:: python
-
-    import asyncio, os
-    from pyagentspec.evaluation.aggregators import MeanAggregator
-    from pyagentspec.evaluation.metrics.implementations import SemanticBinaryMatchMetric
-    from pyagentspec.evaluation.metrics.wrappers import RepeatMetric, EnsembleMetric
-    from pyagentspec.llms import LlmConfig, OciGenAiConfig
-    from pyagentspec.llms.ociclientconfig import OciClientConfigWithApiKey
-
-    def get_llm_model(model_id: str) -> LlmConfig:
-      return OciGenAiConfig(
-        name="llama-config",
-        model_id=model_id,
-        compartment_id="COMPARTMENT-ID",
-        client_config=OciClientConfigWithApiKey(
-          name="llama-client-config",
-          auth_file_location="~/.oci/config",
-          auth_profile="DEFAULT",
-          service_endpoint="service-endpoint",
-        ),
-      )
-
-    async def main() -> None:
-      repeat_metric = RepeatMetric(
-        metric=SemanticBinaryMatchMetric(get_llm_model("oci/meta.llama-4-maverick-17b-128e-instruct-fp8")),
-        aggregator=MeanAggregator(),
-        num_repeats=3,
-      )
-
-      llms = {
-        "llama_3": "meta.llama-3.3-70b-instruct",
-        "llama_scout": "meta.llama-4-scout-17b-16e-instruct",
-        "llama_maverick": "meta.llama-4-maverick-17b-128e-instruct-fp8",
-      }
-      metrics = [
-        SemanticBinaryMatchMetric(name=f"SemanticBinaryMatch-{k}", llm_config=get_llm_model(v))
-        for k, v in llms.items()
-      ]
-      ensemble_metric = EnsembleMetric(
-        name="SemanticBinaryMatch",
-        metrics=metrics,
-        aggregator=MeanAggregator(),
-      )
-
-      for reference, response in [("Zeurich", "Zurich"), ("Beijing", "Peking")]:
-        print("repeat:")
-        print(await repeat_metric(reference=reference, response=response))
-        print("ensemble:")
-        print(await ensemble_metric(reference=reference, response=response))
-
-    asyncio.run(main())
+.. literalinclude:: ../code_examples/agentspec_eval_repeat_ensemble_example.py
+    :language: python
+    :start-after: .. start-snippet
+    :end-before: .. end-snippet
 
 Security Considerations
 =======================
