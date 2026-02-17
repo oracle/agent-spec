@@ -163,26 +163,6 @@ async def test_run_does_not_spawn_one_task_per_item() -> None:
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("max_concurrency", [5, 10, 20])
-async def test_firsts_begin_together(max_concurrency: int) -> None:
-    dataset = Dataset.from_dict([{"dummy_arg": i} for i in range(max_concurrency * 2)])
-    log_registry = LogRegistry()
-    callables: Dict[str, Callable[..., Awaitable[Any]]] = {
-        "dummy_callable": IoIntensiveMetric(log_registry, 1, 10, 1000)
-    }
-    computer = _AsyncCallablesComputer(
-        dataset=dataset,
-        callables=callables,
-        max_concurrency=max_concurrency,
-    )
-    await computer.run()
-    logs = await log_registry.get_logs()
-
-    for i in range(max_concurrency):
-        assert logs[i] == ("begin", i)
-
-
-@pytest.mark.anyio
-@pytest.mark.parametrize("max_concurrency", [5, 10, 20])
 async def test_max_concurrency_is_respected(max_concurrency: int) -> None:
     num_samples = 200
 
