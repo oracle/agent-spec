@@ -103,22 +103,22 @@ setup(
         "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=25.4.3; python_version < '3.14'"
+            "wayflowcore>=26.1.0"
             # 4rth party dependencies
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=25.4.3; python_version < '3.14'"
+            "wayflowcore[oci]>=26.1.0"
             # 4rth party dependencies
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=25.4.3; python_version < '3.14'"
+            "wayflowcore[a2a]>=26.1.0"
             # 4rth party dependencies
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=25.4.3; python_version < '3.14'"
+            "wayflowcore[datastore]>=26.1.0"
             # 4rth party dependencies
         ],
         "agent-framework": [
@@ -128,11 +128,13 @@ setup(
             # 4rth party dependencies
         ],
         "evaluation": [
+            # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
             "litellm>=1.79.0",
-            "pandas>=2.0.3,<3.0.0",
+            "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",
+            # 4rth party dependencies
         ],
     },
 )
