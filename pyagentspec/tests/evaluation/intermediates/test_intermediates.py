@@ -60,9 +60,7 @@ async def test_intermediate_call_respects_mapping() -> None:
     augmented_sample = await augmented.get_sample(0)
 
     assert augmented_sample["external_value"] == 1
-    assert augmented_sample["echo"]["value"] == 1
-    assert augmented_sample["echo"]["details"]["idx"] == 0
-    assert augmented_sample["echo"]["details"]["intermediate"] is True
+    assert augmented_sample["echo"] == 1
 
 
 @pytest.mark.anyio
@@ -75,18 +73,12 @@ async def test_add_multiple_intermediates_merges_samples(dataset: Dataset) -> No
     second = await augmented.get_sample(2)
 
     assert first["value"] == 1
-    assert first["echo"]["value"] == 1
-    assert first["echo"]["details"]["idx"] == 0
-    assert first["echo"]["details"]["intermediate"] is True
-    assert first["stateful"]["value"] == "intermediate-0"
-    assert first["stateful"]["details"] == {"idx": 0}
+    assert first["echo"] == 1
+    assert first["stateful"] == "intermediate-0"
 
     assert second["value"] == 3
-    assert second["echo"]["value"] == 3
-    assert second["echo"]["details"]["idx"] == 2
-    assert second["echo"]["details"]["intermediate"] is True
-    assert second["stateful"]["value"] == "intermediate-2"
-    assert second["stateful"]["details"] == {"idx": 2}
+    assert second["echo"] == 3
+    assert second["stateful"] == "intermediate-2"
 
 
 @pytest.mark.anyio
@@ -103,4 +95,4 @@ async def test_intermediate_call_argument_binding(dataset: Dataset) -> None:
     augmented = await add_intermediates(dataset, [intermediate])
 
     sample = await augmented.get_sample(0)
-    assert sample["kw_only"]["value"] == 11
+    assert sample["kw_only"] == 11

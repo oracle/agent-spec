@@ -25,7 +25,7 @@ async def _compute_intermediates(
     return Dataset.from_dict(
         data={
             sample_id: {
-                intermediate.name: _result_to_dict(results[(sample_id, intermediate.name)])
+                intermediate.name: _result_to_dict(results[(sample_id, intermediate.name)])["value"]  # type: ignore
                 for intermediate in intermediates
             }
             async for sample_id in dataset.ids()
