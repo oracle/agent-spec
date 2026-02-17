@@ -39,8 +39,8 @@ async def main() -> None:
     )
     results = await evaluator.evaluate(dataset)
 
-    print("as JSON:")
-    pprint.pp(results.to_json())
+    print("as DICT:")
+    pprint.pp(results.to_dict())
 
     print("as DF:")
     print(results.to_df())

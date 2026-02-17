@@ -84,9 +84,9 @@ class Evaluator:
 
         Notes
         -----
-        Metrics run concurrently whenever ``max_concurrency`` permits. Any
-        :class:`pyagentspec.evaluation.exceptions.EvaluationException` raised by an underlying
-        metric propagates to the caller.
+        Metrics run concurrently whenever ``max_concurrency`` permits.
+        Any :class:`pyagentspec.evaluation.exceptions.EvaluationException` raised by an underlying
+        metric propagates to the caller if the metric ``on_failure`` behavior requires to raise.
         """
         computer = _AsyncCallablesComputer[Tuple[Any, Dict[str, Any]]](
             dataset=dataset,
@@ -95,7 +95,7 @@ class Evaluator:
         )
         results = await computer.run()
         return EvaluationResults(
-            results=results,
+            results=results,  # type: ignore
             sample_ids=[id_ async for id_ in dataset.ids()],
             metric_names=[metric.name for metric in self.metrics],
         )

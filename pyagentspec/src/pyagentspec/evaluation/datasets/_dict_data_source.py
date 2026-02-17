@@ -97,7 +97,7 @@ class _DictDataSource(_DataSource):
 
         return features
 
-    async def get_sample(self, id: Any) -> Dict[str, Any]:
+    async def get_sample(self, id: Hashable) -> Dict[str, Any]:
         try:
             return self.data[id]
         except KeyError:
@@ -106,7 +106,7 @@ class _DictDataSource(_DataSource):
     def features(self) -> Collection[str]:
         return self._features
 
-    async def ids(self) -> AsyncIterator[Any]:
+    async def ids(self) -> AsyncIterator[Hashable]:
         for key in self.data:
             yield key
 

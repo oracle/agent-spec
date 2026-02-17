@@ -5,20 +5,20 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator, Collection, Dict
+from typing import Any, AsyncIterator, Collection, Dict, Hashable
 
 
 class _DataSource(ABC):
     """Interface for asynchronous feature stores powering evaluation datasets."""
 
     @abstractmethod
-    async def get_sample(self, id: Any) -> Dict[str, Any]:
+    async def get_sample(self, id: Hashable) -> Dict[str, Any]:
         """
         Asynchronously fetch a data sample given its identifier.
 
         Parameters
         ----------
-        id : Any
+        id : Hashable
             Unique identifier for the sample to fetch.
 
         Returns
@@ -39,13 +39,13 @@ class _DataSource(ABC):
         """
 
     @abstractmethod
-    def ids(self) -> AsyncIterator[Any]:
+    def ids(self) -> AsyncIterator[Hashable]:
         """
         Asynchronously yield all available sample identifiers.
 
         Yields
         ------
-        Any
+        Hashable
             Unique identifier for a sample.
         """
 

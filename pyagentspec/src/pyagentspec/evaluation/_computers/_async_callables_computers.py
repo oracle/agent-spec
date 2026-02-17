@@ -81,7 +81,7 @@ class _AsyncCallablesComputer(Generic[T]):
         else:
             await self._compute(sample_id, callable_id)
 
-    async def run(self) -> Dict[Tuple[Any, str], T]:
+    async def run(self) -> Dict[Tuple[Hashable, str], T]:
         """Kick off all pending computations and return the populated registry."""
 
         metrics_names = list(self.callables.keys())
@@ -92,9 +92,8 @@ class _AsyncCallablesComputer(Generic[T]):
         # explicitly opted out of concurrency caps. The producer/worker pattern below
         # is primarily meant to prevent memory blow-ups when a bounded concurrency limit is used.
         if self.semaphore is None:
-            sample_ids = [sample_id async for sample_id in self.dataset.ids()]
             async with anyio.create_task_group() as tg:
-                for sample_id in sample_ids:
+                async for sample_id in self.dataset.ids():
                     for metric_name in metrics_names:
                         tg.start_soon(self._queue, sample_id, metric_name)
             return self._registry.store

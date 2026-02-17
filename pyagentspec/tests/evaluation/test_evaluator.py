@@ -53,11 +53,11 @@ async def test_evaluator_success_paths(dataset: Dataset) -> None:
     assert results.metric_names == ["echo", "decorated_metric"]
 
     results_dict = results.to_dict()
-    assert results_dict["0"]["echo"]["value"] == 1
-    assert results_dict["0"]["decorated_metric"]["value"] == 2
-    assert results_dict["1"]["echo"]["value"] == 2
-    assert results_dict["1"]["decorated_metric"]["value"] == 4
-    details = results_dict["2"]["decorated_metric"]["details"]
+    assert results_dict[0]["echo"]["value"] == 1
+    assert results_dict[0]["decorated_metric"]["value"] == 2
+    assert results_dict[1]["echo"]["value"] == 2
+    assert results_dict[1]["decorated_metric"]["value"] == 4
+    details = results_dict[2]["decorated_metric"]["details"]
     assert details["doubled"] is True
 
     df = results.to_df()
@@ -86,7 +86,7 @@ async def test_evaluator_exports_failures_to_dict(dataset: Dataset) -> None:
     results = await evaluator.evaluate(dataset)
 
     results_dict = results.to_dict()
-    assert set(results_dict.keys()) == {"0", "1", "2"}
+    assert set(results_dict.keys()) == {0, 1, 2}
 
     for sample_id in results_dict:
         failing = results_dict[sample_id]["failing"]

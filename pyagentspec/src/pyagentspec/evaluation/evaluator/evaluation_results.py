@@ -28,10 +28,10 @@ class EvaluationResults:
 
     Attributes
     ----------
-    results : Dict[Tuple[str, str], Tuple[Any, Dict[str, Any]]]
+    results : Dict[Tuple[Hashable, str], Tuple[Any, Dict[str, Any]]]
         Dictionary mapping (sample_id, metric_name) pairs to their metric result and related details.
 
-    sample_ids : List[str]
+    sample_ids : List[Hashable]
         List of sample identifiers present in the results.
 
     metric_names : List[str]
@@ -41,8 +41,8 @@ class EvaluationResults:
 
     def __init__(
         self,
-        results: Dict[Tuple[str, str], Tuple[Any, Dict[Hashable, Any]]],
-        sample_ids: List[str] | None = None,
+        results: Dict[Tuple[Hashable, str], Tuple[Any, Dict[Hashable, Any]]],
+        sample_ids: List[Hashable] | None = None,
         metric_names: List[str] | None = None,
     ) -> None:
         """
@@ -50,11 +50,11 @@ class EvaluationResults:
 
         Parameters
         ----------
-        results : Dict[Tuple[str, str], Tuple[Any, Dict[Hashable, Any]]]
+        results : Dict[Tuple[Hashable, str], Tuple[Any, Dict[Hashable, Any]]]
             Dictionary mapping (sample_id, metric_name) pairs to result tuples,
             where each tuple consists of a primary value and a details dictionary.
 
-        sample_ids : List[str], optional
+        sample_ids : List[Hashable], optional
             List of sample identifiers. If not provided, inferred from the sample IDs present in the results dictionary.
 
         metric_names : List[str], optional
@@ -66,18 +66,18 @@ class EvaluationResults:
         self.sample_ids = sample_ids or list({sample_id for sample_id, _ in self.results.keys()})
         self.metric_names = metric_names or list({m_name for _, m_name in self.results.keys()})
 
-    def to_dict(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
+    def to_dict(self) -> Dict[Hashable, Dict[str, Dict[str, Any]]]:
         """Return the results keyed by sample and metric in dictionary form.
 
         Returns
         -------
-        Dict[str, Dict[str, Dict[str, Any]]]
+        Dict[Hashable, Dict[str, Dict[str, Any]]]
             Nested mapping of the form {sample_id: {metric_name: result_dict, ...}, ...},
             where each result_dict has keys 'value' and 'details'.
         """
 
         return {
-            str(sample_id): {
+            sample_id: {
                 metric_name: _result_to_dict(self.results[(sample_id, metric_name)])
                 for metric_name in self.metric_names
             }

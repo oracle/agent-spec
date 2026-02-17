@@ -34,13 +34,13 @@ class Dataset(_DataSource):
         super().__init__()
         self._data_source = _data_source
 
-    async def get_sample(self, id: Any) -> Dict[str, Any]:
+    async def get_sample(self, id: Hashable) -> Dict[str, Any]:
         """
         Asynchronously fetch a data sample given its identifier.
 
         Parameters
         ----------
-        id : Any
+        id : Hashable
             Unique identifier for the sample to fetch.
 
         Returns
@@ -63,13 +63,13 @@ class Dataset(_DataSource):
 
         return self._data_source.features()
 
-    def ids(self) -> AsyncIterator[Any]:
+    def ids(self) -> AsyncIterator[Hashable]:
         """
         Asynchronously yield all available sample identifiers.
 
         Yields
         ------
-        Any
+        Hashable
             Unique identifier for a sample.
         """
 
