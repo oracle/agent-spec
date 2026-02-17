@@ -52,9 +52,11 @@ class Intermediate(ABC, Generic[IntermediateValueType]):
             "Method `compute_value` must be implemented for any subclass of `Intermediate`."
         )
 
-    async def __call__(self, **kwargs: Any) -> Tuple[IntermediateValueType, Dict[str, Any]]:
+    async def __call__(
+        self, *args: Any, **kwargs: Any
+    ) -> Tuple[IntermediateValueType, Dict[str, Any]]:
         """Execute ``compute_value`` after applying the configured name mapping."""
         if self.input_mapping is not None:
             kwargs = _map_names(kwargs, self.input_mapping)
-        bound_args = _bind_kwargs_to_func(self.compute_value, **kwargs)
+        bound_args = _bind_kwargs_to_func(self.compute_value, *args, **kwargs)
         return await self.compute_value(*bound_args.args, **bound_args.kwargs)
