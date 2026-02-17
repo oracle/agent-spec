@@ -406,6 +406,10 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_edge">add_edge() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.add_event">add_event() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.add_event_async">add_event_async() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_node">add_node() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.add_sequence">add_sequence() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
@@ -417,10 +421,24 @@
       <li><a href="api/agent.html#pyagentspec.agent.Agent">Agent (class in pyagentspec.agent)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.agentnode.AgentNode.agent">agent (pyagentspec.flows.nodes.agentnode.AgentNode attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionEnd.agent">(pyagentspec.tracing.events.agent.AgentExecutionEnd attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionStart.agent">(pyagentspec.tracing.events.agent.AgentExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.agent.AgentExecutionSpan.agent">(pyagentspec.tracing.spans.agent.AgentExecutionSpan attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/remoteagent.html#pyagentspec.ociagent.OciAgent.agent_endpoint_id">agent_endpoint_id (pyagentspec.ociagent.OciAgent attribute)</a>
 </li>
       <li><a href="api/remoteagent.html#pyagentspec.a2aagent.A2AAgent.agent_url">agent_url (pyagentspec.a2aagent.A2AAgent attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionEnd">AgentExecutionEnd (class in pyagentspec.tracing.events.agent)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.agent.AgentExecutionSpan">AgentExecutionSpan (class in pyagentspec.tracing.spans.agent)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionStart">AgentExecutionStart (class in pyagentspec.tracing.events.agent)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.agenticcomponent.AgenticComponent">AgenticComponent (class in pyagentspec.agenticcomponent)</a>
 </li>
@@ -435,6 +453,8 @@
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter">(class in pyagentspec.adapters.autogen)</a>
 </li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter">(class in pyagentspec.adapters.crewai)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter">(class in pyagentspec.adapters.langgraph)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter">(class in pyagentspec.adapters.wayflow)</a>
@@ -447,11 +467,15 @@
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader">(class in pyagentspec.adapters.autogen)</a>
 </li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader">(class in pyagentspec.adapters.crewai)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader">(class in pyagentspec.adapters.langgraph)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader">(class in pyagentspec.adapters.wayflow)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer">AgentSpecSerializer (class in pyagentspec.serialization.serializer)</a>
 </li>
       <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum">AgentSpecVersionEnum (class in pyagentspec.versioning)</a>
@@ -470,8 +494,6 @@
         <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.api_key">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     api_key:
 
@@ -509,6 +531,8 @@
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.APPEND">APPEND (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.args">args (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall.arguments">arguments (pyagentspec.tracing.events.llmgeneration.ToolCall attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey.auth_file_location">auth_file_location (pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey attribute)</a>
 
@@ -567,16 +591,22 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.endnode.EndNode.branch_name">branch_name (pyagentspec.flows.nodes.endnode.EndNode attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionEnd.branch_selected">branch_selected (pyagentspec.tracing.events.flow.FlowExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionEnd.branch_selected">(pyagentspec.tracing.events.node.NodeExecutionEnd attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.node.Node.branches">branches (pyagentspec.flows.node.Node attribute)</a>
 
       <ul>
         <li><a href="api/flows.html#pyagentspec.flows.nodes.startnode.StartNode.branches">(pyagentspec.flows.nodes.startnode.StartNode attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode">BranchingNode (class in pyagentspec.flows.nodes.branchingnode)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.branchingnode.BranchingNode">BranchingNode (class in pyagentspec.flows.nodes.branchingnode)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.build">build() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.component.Component.build_from_partial_config">build_from_partial_config() (pyagentspec.component.Component class method)</a>
@@ -605,6 +635,8 @@
         <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.cache_collection_name">(pyagentspec.transforms.MessageSummarizationTransform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall.call_id">call_id (pyagentspec.tracing.events.llmgeneration.ToolCall attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode">CatchExceptionNode (class in pyagentspec.flows.nodes.catchexceptionnode)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH">CAUGHT_EXCEPTION_BRANCH (pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode attribute)</a>
@@ -686,6 +718,12 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-compartment_id">command line option</a>
 </li>
       </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.completion_id">completion_id (pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.completion_id">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/components.html#pyagentspec.component.Component">Component (class in pyagentspec.component)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.component.Component.component_type">component_type (pyagentspec.component.Component property)</a>
@@ -706,6 +744,18 @@
         <li><a href="api/datastores.html#pyagentspec.datastores.oracle.OracleDatabaseDatastore.connection_config">(pyagentspec.datastores.oracle.OracleDatabaseDatastore attribute)</a>
 </li>
         <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore.connection_config">(pyagentspec.datastores.postgres.PostgresDatabaseDatastore attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest.content">content (pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse.content">(pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.content">(pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.content">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.content">(pyagentspec.tracing.messages.message.Message attribute)</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge">ControlFlowEdge (class in pyagentspec.flows.edges.controlflowedge)</a>
@@ -779,6 +829,14 @@
         <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.DEFAULT_OUTPUT">(pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event.description">description (pyagentspec.tracing.events.event.Event attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.description">(pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.description">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext">DeserializationContext (class in pyagentspec.serialization.deserializationcontext)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin.deserialize">deserialize() (pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin method)</a>
@@ -805,11 +863,39 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.Property.empty_default">empty_default (pyagentspec.property.Property attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.end">end() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.end_async">end_async() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.end_time">end_time (pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.end_time">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.endnode.EndNode">EndNode (class in pyagentspec.flows.nodes.endnode)</a>
+</li>
+      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.env">env (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event">Event (class in pyagentspec.tracing.events.event)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.env">env (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.events">events (pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.events">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.exception.ExceptionRaised.exception_message">exception_message (pyagentspec.tracing.events.exception.ExceptionRaised attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.exception.ExceptionRaised.exception_stacktrace">exception_stacktrace (pyagentspec.tracing.events.exception.ExceptionRaised attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.exception.ExceptionRaised.exception_type">exception_type (pyagentspec.tracing.events.exception.ExceptionRaised attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.exception.ExceptionRaised">ExceptionRaised (class in pyagentspec.tracing.events.exception)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse.execution_confirmed">execution_confirmed (pyagentspec.tracing.events.tool.ToolConfirmationResponse attribute)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool.executor_name">executor_name (pyagentspec.tools.builtintool.BuiltinTool attribute)</a>
 </li>
@@ -823,14 +909,28 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flow.Flow">Flow (class in pyagentspec.flows.flow)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionEnd.flow">flow (pyagentspec.tracing.events.flow.FlowExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionStart.flow">(pyagentspec.tracing.events.flow.FlowExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.flow.FlowExecutionSpan.flow">(pyagentspec.tracing.spans.flow.FlowExecutionSpan attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder">FlowBuilder (class in pyagentspec.flows.flowbuilder)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionEnd">FlowExecutionEnd (class in pyagentspec.tracing.events.flow)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.flow.FlowExecutionSpan">FlowExecutionSpan (class in pyagentspec.tracing.spans.flow)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionStart">FlowExecutionStart (class in pyagentspec.tracing.events.flow)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.flownode.FlowNode">FlowNode (class in pyagentspec.flows.nodes.flownode)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.from_branch">from_branch (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_dict">from_dict() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_json">from_json() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
@@ -897,6 +997,10 @@
       </ul></li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.AgentSpecializationParameters.human_in_the_loop">human_in_the_loop (pyagentspec.specialized_agent.AgentSpecializationParameters attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest">HumanInTheLoopRequest (class in pyagentspec.tracing.events.humanintheloop)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse">HumanInTheLoopResponse (class in pyagentspec.tracing.events.humanintheloop)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -905,6 +1009,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/datastores.html#pyagentspec.datastores.InMemoryCollectionDatastore">InMemoryCollectionDatastore (class in pyagentspec.datastores)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.input_tokens">input_tokens (pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode">InputMessageNode (class in pyagentspec.flows.nodes.inputmessagenode)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.agenticcomponent.AgenticComponent.inputs">inputs (pyagentspec.agenticcomponent.AgenticComponent attribute)</a>
@@ -912,10 +1018,24 @@
       <ul>
         <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.inputs">(pyagentspec.component.ComponentWithIO attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionStart.inputs">(pyagentspec.tracing.events.agent.AgentExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionStart.inputs">(pyagentspec.tracing.events.flow.FlowExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart.inputs">(pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionStart.inputs">(pyagentspec.tracing.events.node.NodeExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart.inputs">(pyagentspec.tracing.events.swarm.SwarmExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest.inputs">(pyagentspec.tracing.events.tool.ToolExecutionRequest attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.IntegerProperty">IntegerProperty (class in pyagentspec.property)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.trace.Trace.is_async_mode_active">is_async_mode_active() (pyagentspec.tracing.trace.Trace method)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.ListProperty.item_type">item_type (pyagentspec.property.ListProperty attribute)</a>
 </li>
@@ -954,10 +1074,30 @@
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.llm_config">llm_config (pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.llm_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.llm_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.llm_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.llm.LlmGenerationSpan.llm_config">(pyagentspec.tracing.spans.llm.LlmGenerationSpan attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.llm_generation_config">llm_generation_config (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig">LlmConfig (class in pyagentspec.llms.llmconfig)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived">LlmGenerationChunkReceived (class in pyagentspec.tracing.events.llmgeneration)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig">LlmGenerationConfig (class in pyagentspec.llms.llmgenerationconfig)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest">LlmGenerationRequest (class in pyagentspec.tracing.events.llmgeneration)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse">LlmGenerationResponse (class in pyagentspec.tracing.events.llmgeneration)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.llm.LlmGenerationSpan">LlmGenerationSpan (class in pyagentspec.tracing.spans.llm)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode">LlmNode (class in pyagentspec.flows.nodes.llmnode)</a>
 </li>
@@ -965,6 +1105,8 @@
 
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_component">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.load_component">(pyagentspec.adapters.crewai.AgentSpecLoader method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_component">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
 </li>
@@ -982,6 +1124,8 @@
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_json">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
 </li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.load_json">(pyagentspec.adapters.crewai.AgentSpecLoader method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_json">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader.load_json">(pyagentspec.adapters.wayflow.AgentSpecLoader method)</a>
@@ -991,6 +1135,8 @@
 
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_yaml">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.load_yaml">(pyagentspec.adapters.crewai.AgentSpecLoader method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_yaml">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
 </li>
@@ -1006,6 +1152,20 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/agenticpatterns.html#pyagentspec.managerworkers.ManagerWorkers">ManagerWorkers (class in pyagentspec.managerworkers)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd.managerworkers">managerworkers (pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart.managerworkers">(pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan.managerworkers">(pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd">ManagerWorkersExecutionEnd (class in pyagentspec.tracing.events.managerworkers)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan">ManagerWorkersExecutionSpan (class in pyagentspec.tracing.spans.managerworkers)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart">ManagerWorkersExecutionStart (class in pyagentspec.tracing.events.managerworkers)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.MapNode">MapNode (class in pyagentspec.flows.nodes.mapnode)</a>
 </li>
@@ -1039,24 +1199,100 @@
 </li>
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPToolSpec">MCPToolSpec (class in pyagentspec.mcp.tools)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message">Message (class in pyagentspec.tracing.messages.message)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.inputmessagenode.InputMessageNode.message">message (pyagentspec.flows.nodes.inputmessagenode.InputMessageNode attribute)</a>
 
       <ul>
         <li><a href="api/flows.html#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode.message">(pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform">MessageSummarizationTransform (class in pyagentspec.transforms)</a>
 </li>
       <li><a href="api/transforms.html#pyagentspec.transforms.MessageTransform">MessageTransform (class in pyagentspec.transforms)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.META">META (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event.metadata">metadata (pyagentspec.tracing.events.event.Event attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.metadata">(pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.metadata">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN">MIN (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.min_num_messages">min_num_messages (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionEnd.model_config">model_config (pyagentspec.tracing.events.agent.AgentExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionStart.model_config">(pyagentspec.tracing.events.agent.AgentExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event.model_config">(pyagentspec.tracing.events.event.Event attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.exception.ExceptionRaised.model_config">(pyagentspec.tracing.events.exception.ExceptionRaised attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionEnd.model_config">(pyagentspec.tracing.events.flow.FlowExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionStart.model_config">(pyagentspec.tracing.events.flow.FlowExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest.model_config">(pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse.model_config">(pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.model_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.model_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.model_config">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall.model_config">(pyagentspec.tracing.events.llmgeneration.ToolCall attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd.model_config">(pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart.model_config">(pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionEnd.model_config">(pyagentspec.tracing.events.node.NodeExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionStart.model_config">(pyagentspec.tracing.events.node.NodeExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.model_config">(pyagentspec.tracing.events.swarm.SwarmExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart.model_config">(pyagentspec.tracing.events.swarm.SwarmExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationRequest.model_config">(pyagentspec.tracing.events.tool.ToolConfirmationRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse.model_config">(pyagentspec.tracing.events.tool.ToolConfirmationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest.model_config">(pyagentspec.tracing.events.tool.ToolExecutionRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.model_config">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.model_config">(pyagentspec.tracing.messages.message.Message attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.agent.AgentExecutionSpan.model_config">(pyagentspec.tracing.spans.agent.AgentExecutionSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.flow.FlowExecutionSpan.model_config">(pyagentspec.tracing.spans.flow.FlowExecutionSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.llm.LlmGenerationSpan.model_config">(pyagentspec.tracing.spans.llm.LlmGenerationSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan.model_config">(pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.node.NodeExecutionSpan.model_config">(pyagentspec.tracing.spans.node.NodeExecutionSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.model_config">(pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.model_config">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.swarm.SwarmExecutionSpan.model_config">(pyagentspec.tracing.spans.swarm.SwarmExecutionSpan attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan.model_config">(pyagentspec.tracing.spans.tool.ToolExecutionSpan attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/components.html#pyagentspec.component.Component.model_fields_set">model_fields_set (pyagentspec.component.Component property)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id">model_id (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
@@ -1080,6 +1316,28 @@
       </ul></li>
       <li><a href="api/components.html#pyagentspec.component.Component.model_json_schema">model_json_schema() (pyagentspec.component.Component class method)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event.model_post_init">model_post_init() (pyagentspec.tracing.events.event.Event method)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.agent.AgentExecutionSpan.model_post_init">(pyagentspec.tracing.spans.agent.AgentExecutionSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.flow.FlowExecutionSpan.model_post_init">(pyagentspec.tracing.spans.flow.FlowExecutionSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.llm.LlmGenerationSpan.model_post_init">(pyagentspec.tracing.spans.llm.LlmGenerationSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan.model_post_init">(pyagentspec.tracing.spans.managerworkers.ManagerWorkersExecutionSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.node.NodeExecutionSpan.model_post_init">(pyagentspec.tracing.spans.node.NodeExecutionSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.model_post_init">(pyagentspec.tracing.spans.root.RootSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.model_post_init">(pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.swarm.SwarmExecutionSpan.model_post_init">(pyagentspec.tracing.spans.swarm.SwarmExecutionSpan method)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan.model_post_init">(pyagentspec.tracing.spans.tool.ToolExecutionSpan method)</a>
+</li>
+      </ul></li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider">ModelProvider (class in pyagentspec.llms.ocigenaiconfig)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.msg">msg (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
@@ -1096,6 +1354,22 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.node.Node">Node (class in pyagentspec.flows.node)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionEnd.node">node (pyagentspec.tracing.events.node.NodeExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionStart.node">(pyagentspec.tracing.events.node.NodeExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.node.NodeExecutionSpan.node">(pyagentspec.tracing.spans.node.NodeExecutionSpan attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionEnd">NodeExecutionEnd (class in pyagentspec.tracing.events.node)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.node.NodeExecutionSpan">NodeExecutionSpan (class in pyagentspec.tracing.spans.node)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionStart">NodeExecutionStart (class in pyagentspec.tracing.events.node)</a>
+</li>
       <li>
     null
 
@@ -1103,8 +1377,6 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[5]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[6]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[7]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">[8]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[9]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.NullProperty">NullProperty (class in pyagentspec.property)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.NumberProperty">NumberProperty (class in pyagentspec.property)</a>
@@ -1139,10 +1411,22 @@
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ServingMode.ON_DEMAND">ON_DEMAND (pyagentspec.llms.ocigenaiconfig.ServingMode attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_end">on_end() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_end_async">on_end_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_event">on_event() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_event_async">on_event_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_start">on_start() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_start_async">on_start_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS">OPENAI_CHAT_COMPLETIONS (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES">OPENAI_RESPONSES (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType">OpenAIAPIType (class in pyagentspec.llms.openaicompatibleconfig)</a>
@@ -1159,12 +1443,30 @@
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.OTHER">OTHER (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.output_tokens">output_tokens (pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.output_tokens">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.outputmessagenode.OutputMessageNode">OutputMessageNode (class in pyagentspec.flows.nodes.outputmessagenode)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.agenticcomponent.AgenticComponent.outputs">outputs (pyagentspec.agenticcomponent.AgenticComponent attribute)</a>
 
       <ul>
         <li><a href="api/components.html#pyagentspec.component.ComponentWithIO.outputs">(pyagentspec.component.ComponentWithIO attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.agent.AgentExecutionEnd.outputs">(pyagentspec.tracing.events.agent.AgentExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionEnd.outputs">(pyagentspec.tracing.events.flow.FlowExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd.outputs">(pyagentspec.tracing.events.managerworkers.ManagerWorkersExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionEnd.outputs">(pyagentspec.tracing.events.node.NodeExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.outputs">(pyagentspec.tracing.events.swarm.SwarmExecutionEnd attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.outputs">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1211,6 +1513,8 @@
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore">PostgresDatabaseDatastore (class in pyagentspec.datastores.postgres)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.prompt">prompt (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.prompt_template">prompt_template (pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.ObjectProperty.properties">properties (pyagentspec.property.ObjectProperty attribute)</a>
@@ -1255,15 +1559,39 @@
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.RelationalDatastore">RelationalDatastore (class in pyagentspec.datastores)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/remoteagent.html#pyagentspec.remoteagent.RemoteAgent">RemoteAgent (class in pyagentspec.remoteagent)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool">RemoteTool (class in pyagentspec.tools.remotetool)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport">RemoteTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest.request_id">request_id (pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse.request_id">(pyagentspec.tracing.events.humanintheloop.HumanInTheLoopResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.request_id">(pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.request_id">(pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.request_id">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationRequest.request_id">(pyagentspec.tracing.events.tool.ToolConfirmationRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse.request_id">(pyagentspec.tracing.events.tool.ToolConfirmationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest.request_id">(pyagentspec.tracing.events.tool.ToolExecutionRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.request_id">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES">RESPONSES (pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.role">role (pyagentspec.tracing.messages.message.Message attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan">RootSpan (class in pyagentspec.tracing.spans.root)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1271,6 +1599,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.sender">sender (pyagentspec.tracing.messages.message.Message attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.sensitive_headers">sensitive_headers (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
       <ul>
@@ -1327,29 +1657,51 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flowbuilder.FlowBuilder.set_finish_points">set_finish_points() (pyagentspec.flows.flowbuilder.FlowBuilder method)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.shutdown">shutdown() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.shutdown_async">shutdown_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge.source_node">source_node (pyagentspec.flows.edges.dataflowedge.DataFlowEdge attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge.source_output">source_output (pyagentspec.flows.edges.dataflowedge.DataFlowEdge attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span">Span (class in pyagentspec.tracing.spans.span)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor">SpanProcessor (class in pyagentspec.tracing.spanprocessor)</a>
 </li>
       <li><a href="api/agent_specialization.html#pyagentspec.specialized_agent.SpecializedAgent">SpecializedAgent (class in pyagentspec.specialized_agent)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport">SSEmTLSTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport">SSETransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcert">sslcert (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcrl">sslcrl (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslkey">sslkey (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslmode">sslmode (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslrootcert">sslrootcert (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.start">start() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.start_async">start_async() (pyagentspec.tracing.spans.span.Span method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.start_time">start_time (pyagentspec.tracing.spans.root.RootSpan attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.start_time">(pyagentspec.tracing.spans.span.Span attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.startnode.StartNode">StartNode (class in pyagentspec.flows.nodes.startnode)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.startup">startup() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.startup_async">startup_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport">StdioTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
@@ -1395,6 +1747,20 @@
       </ul></li>
       <li><a href="api/agenticpatterns.html#pyagentspec.swarm.Swarm">Swarm (class in pyagentspec.swarm)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.swarm">swarm (pyagentspec.tracing.events.swarm.SwarmExecutionEnd attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart.swarm">(pyagentspec.tracing.events.swarm.SwarmExecutionStart attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.swarm.SwarmExecutionSpan.swarm">(pyagentspec.tracing.spans.swarm.SwarmExecutionSpan attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionEnd">SwarmExecutionEnd (class in pyagentspec.tracing.events.swarm)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.swarm.SwarmExecutionSpan">SwarmExecutionSpan (class in pyagentspec.tracing.spans.swarm)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart">SwarmExecutionStart (class in pyagentspec.tracing.events.swarm)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1402,6 +1768,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig.temperature">temperature (pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event.timestamp">timestamp (pyagentspec.tracing.events.event.Event attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig">TlsOracleDatabaseConnectionConfig (class in pyagentspec.datastores.oracle)</a>
 </li>
@@ -1411,6 +1779,8 @@
 
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_component">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.to_component">(pyagentspec.adapters.crewai.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_component">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
 </li>
@@ -1424,6 +1794,8 @@
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_json">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
 </li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.to_json">(pyagentspec.adapters.crewai.AgentSpecExporter method)</a>
+</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_json">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_json">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
@@ -1433,12 +1805,12 @@
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.to_node">to_node (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_yaml">to_yaml() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
         <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_yaml">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.to_yaml">(pyagentspec.adapters.crewai.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_yaml">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
 </li>
@@ -1450,8 +1822,36 @@
       <li><a href="api/tools.html#pyagentspec.tools.tool.Tool">Tool (class in pyagentspec.tools.tool)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.toolnode.ToolNode.tool">tool (pyagentspec.flows.nodes.toolnode.ToolNode attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationRequest.tool">(pyagentspec.tracing.events.tool.ToolConfirmationRequest attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse.tool">(pyagentspec.tracing.events.tool.ToolConfirmationResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest.tool">(pyagentspec.tracing.events.tool.ToolExecutionRequest attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.tool">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan.tool">(pyagentspec.tracing.spans.tool.ToolExecutionSpan attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.tool_calls">tool_calls (pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.tool_calls">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationRequest.tool_execution_request_id">tool_execution_request_id (pyagentspec.tracing.events.tool.ToolConfirmationRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse.tool_execution_request_id">(pyagentspec.tracing.events.tool.ToolConfirmationResponse attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPToolBox.tool_filter">tool_filter (pyagentspec.mcp.tools.MCPToolBox attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall.tool_name">tool_name (pyagentspec.tracing.events.llmgeneration.ToolCall attribute)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool.tool_type">tool_type (pyagentspec.tools.builtintool.BuiltinTool attribute)</a>
 </li>
@@ -1459,9 +1859,25 @@
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.toolbox.ToolBox">ToolBox (class in pyagentspec.tools.toolbox)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall">ToolCall (class in pyagentspec.tracing.events.llmgeneration)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationRequest">ToolConfirmationRequest (class in pyagentspec.tracing.events.tool)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolConfirmationResponse">ToolConfirmationResponse (class in pyagentspec.tracing.events.tool)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest">ToolExecutionRequest (class in pyagentspec.tracing.events.tool)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse">ToolExecutionResponse (class in pyagentspec.tracing.events.tool)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan">ToolExecutionSpan (class in pyagentspec.tracing.spans.tool)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.toolnode.ToolNode">ToolNode (class in pyagentspec.flows.nodes.toolnode)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.tools">tools (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig.top_p">top_p (pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.trace.Trace">Trace (class in pyagentspec.tracing.trace)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.type">type (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
 </li>

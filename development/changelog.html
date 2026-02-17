@@ -398,6 +398,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/version.html">Version</a></li>
@@ -414,6 +415,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -530,6 +536,11 @@ It also adds tracing support for async APIs of LangGraph (e.g. <cite>ainvoke</ci
 Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
 span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.</p>
 </li>
+<li><p><strong>OCI GenAI model support in LangGraph adapter</strong></p>
+<p>The LangGraph adapter now supports loading/exporting OCI GenAI models.
+Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
+Install with <cite>pip install pyagentspec[langgraph-full]</cite> to access this feature.</p>
+</li>
 </ul>
 </section>
 <section id="new-features">
@@ -586,6 +597,12 @@ We provide <a class="reference internal" href="api/transforms.html#id2"><span cl
 <section id="id1">
 <h3>New features<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <ul>
+<li><p><strong>Added CrewAI adapter to pyagentspec:</strong></p>
+<p>The CrewAI adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+You can access its functionality through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.adapters.crewai</span></code> subpackage.
+It requires the <code class="docutils literal notranslate"><span class="pre">crewai</span></code> extra dependency to be installed.</p>
+<p>For more information read the <a class="reference internal" href="api/adapters.html"><span class="doc">API Reference</span></a>.</p>
+</li>
 <li><p><strong>MCP tools support in LangGraph adapter:</strong></p>
 <p>The LangGraph adapter now supports Model Context Protocol (MCP) tools.</p>
 <p>To use this, install the optional extra <code class="docutils literal notranslate"><span class="pre">pyagentspec[langgraph_mcp]</span></code> and invoke the loaded graph/agent asynchronously via <code class="docutils literal notranslate"><span class="pre">.ainvoke</span></code> within an async context.</p>

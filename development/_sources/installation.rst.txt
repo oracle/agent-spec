@@ -73,6 +73,7 @@ Extra dependencies
 * The ``langgraph``, ``langgraph_mcp`` extra dependencies give access to the LangGraph runtime adapter.
 * The ``wayflow``, ``wayflow_oci``, ``wayflow_a2a``, ``wayflow_datastore`` extra dependency gives access to the WayFlow runtime adapter.
 * The ``agent-framework`` extra dependency gives access to the Microsoft Agent Framework runtime adapter.
+* The ``crewai`` extra dependency gives access to the CrewAI runtime adapter. Note that this adapter might be incompatible with other adapters if installed in the same virtual environment due to conflicting dependencies.
 
 To install extra dependencies, run the following command specifying the list of dependencies you want to install:
 
