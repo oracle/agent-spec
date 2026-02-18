@@ -87,8 +87,19 @@ def test_langgraph_swarm_is_converted() -> None:
 
     loader = AgentSpecLoader(tool_registry={"add": add, "multiply": multiply})
     loaded_swarm = loader.load_component(agentspec_swarm)
-    loaded_swarm = loaded_swarm.get_graph()
+
     # Isolated agent is not in the swarm anymore, since it was isolated, and therefore useless
-    assert all(agent_name in loaded_swarm.nodes for agent_name in ("sum_agent", "multiply_agent"))
-    start_node = loaded_swarm.nodes["__start__"].data
-    assert getattr(start_node, "destinations", [None])[0] == "sum_agent"  # First agent name check
+    assert all(
+        agent_name in loaded_swarm.builder.nodes for agent_name in ("sum_agent", "multiply_agent")
+    )
+
+    # Verify that each agent got the right handoff tool injected by the adapter.
+    # In LangGraph 1.x, the agent nodes in the swarm builder reference compiled agent graphs.
+    sum_agent_graph = loaded_swarm.builder.nodes["sum_agent"].runnable
+    multiply_agent_graph = loaded_swarm.builder.nodes["multiply_agent"].runnable
+
+    sum_tools_node = sum_agent_graph.builder.nodes["tools"].runnable
+    multiply_tools_node = multiply_agent_graph.builder.nodes["tools"].runnable
+
+    assert "transfer_to_multiply_agent" in sum_tools_node.tools_by_name
+    assert "transfer_to_sum_agent" in multiply_tools_node.tools_by_name

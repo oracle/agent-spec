@@ -1032,7 +1032,7 @@ class AgentSpecToLangGraphConverter:
         return langgraph_swarm.create_swarm(
             agents=langgraph_agents,  # type: ignore
             default_active_agent=agentspec_component.first_agent.name,
-        ).compile(checkpointer=checkpointer)
+        ).compile(name=agentspec_component.name, checkpointer=checkpointer)
 
     def _create_react_agent_with_given_info(
         self,

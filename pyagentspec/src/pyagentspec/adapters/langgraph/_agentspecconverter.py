@@ -328,11 +328,9 @@ class LangGraphToAgentSpecConverter:
         if "__start__" not in graph.nodes:
             raise ValueError("LangGraph swarm graph does not contain a start node")
 
-        start_node = graph.nodes["__start__"].data
-        swarm_state_schema = compiled_swarm.builder.state_schema
-
         # The state schema includes an annotation describing the set of possible active agents.
         # We rely on that typing information to recover all swarm agent names.
+        swarm_state_schema = compiled_swarm.builder.state_schema
         active_agent_annotation = getattr(swarm_state_schema, "__annotations__", {}).get(
             "active_agent"
         )
@@ -370,7 +368,8 @@ class LangGraphToAgentSpecConverter:
             # AgentSpec components as standalone conversions.
             agents[agent_name] = self.convert(agent_graph, referenced_objects)  # type: ignore
             # Agent is converted, we can remove the entry, if any
-            self._tools_to_ignore.pop(tool_node_id, None)
+            if "tools" in agent_graph_builder.nodes:
+                self._tools_to_ignore.pop(tool_node_id, None)
 
         # Build the relationship edges by walking the compiled graph edges originating from
         # each agent node. Only real agent targets (not internal helpers) are recorded.
@@ -382,11 +381,10 @@ class LangGraphToAgentSpecConverter:
                     continue
                 relationships.append((agents[agent_name], agents[destination]))
 
-        # The start node points to the agent invoked first. Fall back to the first declared
-        # agent name if the start node lacks destinations to keep the conversion resilient.
-        first_agent_name = getattr(start_node, "destinations", [None])[0]
-        if first_agent_name is None and agent_names:
-            first_agent_name = agent_names[0]
+        first_agent_name = self._extract_first_agent_name_from_swarm(
+            compiled_swarm=compiled_swarm,
+            agent_names=agent_names,
+        )
 
         if first_agent_name is None:
             raise ValueError("Unable to determine first agent for LangGraph swarm")
@@ -404,6 +402,37 @@ class LangGraphToAgentSpecConverter:
             relationships=relationships,
             handoff=AgentSpecHandoffMode.OPTIONAL,
         )
+
+    def _extract_first_agent_name_from_swarm(
+        self,
+        compiled_swarm: CompiledStateGraph[Any, Any, Any],
+        agent_names: List[str],
+    ) -> Optional[str]:
+        """Extract the initial agent name for a LangGraph swarm.
+
+        This code path targets LangGraph >= 1.0.
+
+        LangGraph swarms route `__start__` to a `route_to_active_agent` branch whose
+        closure captures the configured `default_active_agent`. That value is the
+        most reliable source of truth for the initial agent.
+        """
+        builder = compiled_swarm.builder
+        branches = getattr(builder, "branches", {})
+        start_branches = branches.get(langgraph_graph.START, {})
+        for branch_spec in start_branches.values():
+            path = getattr(branch_spec, "path", None)
+            func = getattr(path, "func", None)
+            if getattr(func, "__name__", "") != "route_to_active_agent":
+                continue
+            closure = getattr(func, "__closure__", None)
+            if not closure:
+                continue
+            for cell in closure:
+                cell_value = getattr(cell, "cell_contents", None)
+                if isinstance(cell_value, str) and cell_value in agent_names:
+                    return cell_value
+
+        return agent_names[0] if agent_names else None
 
     def _extract_agent_names_from_annotation(self, annotation: Any) -> List[str]:
         # LangGraph encodes the "active agent" field in the swarm state schema as a type annotation.
