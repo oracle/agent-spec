@@ -134,6 +134,52 @@ describe("dictProperty", () => {
     });
     expect(p.jsonSchema["properties"]).toEqual({});
   });
+
+  it("should support complex value types (object values)", () => {
+    const valueType = objectProperty({
+      title: "entry",
+      properties: {
+        score: numberProperty({ title: "score" }),
+        label: stringProperty({ title: "label" }),
+      },
+    });
+    const p = dictProperty({ title: "results", valueType });
+    expect(p.type).toBe("object");
+    expect(p.jsonSchema["additionalProperties"]).toEqual({
+      title: "entry",
+      type: "object",
+      properties: {
+        score: { title: "score", type: "number" },
+        label: { title: "label", type: "string" },
+      },
+    });
+  });
+
+  it("should support list value types", () => {
+    const valueType = listProperty({
+      title: "tags",
+      itemType: stringProperty({ title: "tag" }),
+    });
+    const p = dictProperty({ title: "tag_groups", valueType });
+    expect(p.type).toBe("object");
+    expect(p.jsonSchema["additionalProperties"]).toEqual({
+      title: "tags",
+      type: "array",
+      items: { title: "tag", type: "string" },
+    });
+  });
+
+  it("should reject value types with invalid titles via recursive validation", () => {
+    expect(() =>
+      dictProperty({
+        title: "bad_dict",
+        valueType: objectProperty({
+          title: "has spaces",
+          properties: { x: stringProperty({ title: "x" }) },
+        }),
+      }),
+    ).toThrow();
+  });
 });
 
 describe("objectProperty", () => {
@@ -150,6 +196,47 @@ describe("objectProperty", () => {
       name: { title: "name", type: "string" },
       age: { title: "age", type: "integer" },
     });
+  });
+
+  it("should support nested object schemas and validate titles recursively", () => {
+    const address = objectProperty({
+      title: "address",
+      properties: {
+        street: stringProperty({ title: "street" }),
+        city: stringProperty({ title: "city" }),
+      },
+    });
+    const p = objectProperty({
+      title: "person",
+      properties: {
+        name: stringProperty({ title: "name" }),
+        home: address,
+      },
+    });
+    expect(p.type).toBe("object");
+    const props = p.jsonSchema["properties"] as Record<string, unknown>;
+    expect(props["home"]).toEqual({
+      title: "address",
+      type: "object",
+      properties: {
+        street: { title: "street", type: "string" },
+        city: { title: "city", type: "string" },
+      },
+    });
+  });
+
+  it("should reject nested object property with invalid title", () => {
+    expect(() =>
+      objectProperty({
+        title: "outer",
+        properties: {
+          nested: objectProperty({
+            title: "invalid title",
+            properties: { x: stringProperty({ title: "x" }) },
+          }),
+        },
+      }),
+    ).toThrow();
   });
 });
 

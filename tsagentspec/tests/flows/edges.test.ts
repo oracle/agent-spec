@@ -126,4 +126,83 @@ describe("DataFlowEdge", () => {
     });
     expect(Object.isFrozen(edge)).toBe(true);
   });
+
+  it("should throw when sourceOutput does not exist on sourceNode outputs", () => {
+    const llm = createLlmNode({
+      name: "llm",
+      llmConfig: makeLlmConfig(),
+      promptTemplate: "Say hello",
+    });
+    const end = createEndNode({
+      name: "end",
+      inputs: [stringProperty({ title: "generated_text" })],
+    });
+    expect(() =>
+      createDataFlowEdge({
+        name: "bad-edge",
+        sourceNode: llm,
+        sourceOutput: "nonexistent_output",
+        destinationNode: end,
+        destinationInput: "generated_text",
+      }),
+    ).toThrow(/nonexistent_output.*source node.*llm/);
+  });
+
+  it("should throw when destinationInput does not exist on destinationNode inputs", () => {
+    const llm = createLlmNode({
+      name: "llm",
+      llmConfig: makeLlmConfig(),
+      promptTemplate: "Say hello",
+    });
+    const end = createEndNode({
+      name: "end",
+      inputs: [stringProperty({ title: "generated_text" })],
+    });
+    expect(() =>
+      createDataFlowEdge({
+        name: "bad-edge",
+        sourceNode: llm,
+        sourceOutput: "generated_text",
+        destinationNode: end,
+        destinationInput: "nonexistent_input",
+      }),
+    ).toThrow(/nonexistent_input.*destination node.*end/);
+  });
+
+  it("should throw when source and destination property types are incompatible", () => {
+    const source = createLlmNode({
+      name: "llm",
+      llmConfig: makeLlmConfig(),
+      promptTemplate: "Say hello",
+    });
+    const dest = createEndNode({
+      name: "end",
+      inputs: [
+        { jsonSchema: { title: "generated_text", type: "null" }, title: "generated_text", type: "null" },
+      ],
+    });
+    expect(() =>
+      createDataFlowEdge({
+        name: "type-mismatch",
+        sourceNode: source,
+        sourceOutput: "generated_text",
+        destinationNode: dest,
+        destinationInput: "generated_text",
+      }),
+    ).toThrow(/incompatible types/);
+  });
+
+  it("should allow edges when nodes have no inputs/outputs defined", () => {
+    const start = createStartNode({ name: "start" });
+    const end = createEndNode({ name: "end" });
+    // No outputs on start, no inputs on end — validation is skipped
+    const edge = createDataFlowEdge({
+      name: "loose-edge",
+      sourceNode: start,
+      sourceOutput: "anything",
+      destinationNode: end,
+      destinationInput: "anything",
+    });
+    expect(edge.componentType).toBe("DataFlowEdge");
+  });
 });

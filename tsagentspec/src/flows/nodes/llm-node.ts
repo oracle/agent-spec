@@ -2,7 +2,7 @@
  * LlmNode - invoke an LLM with a prompt template.
  */
 import { z } from "zod";
-import type { Property } from "../../property.js";
+import { stringProperty, type Property } from "../../property.js";
 import { getPlaceholderPropertiesFromJsonObject } from "../../templating.js";
 import { LlmConfigUnion, type LlmConfig } from "../../llms/index.js";
 import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
@@ -32,13 +32,7 @@ export function createLlmNode(opts: {
     getPlaceholderPropertiesFromJsonObject(opts.promptTemplate);
 
   const outputs = opts.outputs ?? [
-    {
-      jsonSchema: { title: DEFAULT_LLM_OUTPUT, type: "string" },
-      title: DEFAULT_LLM_OUTPUT,
-      description: undefined,
-      default: undefined,
-      type: "string",
-    },
+    stringProperty({ title: DEFAULT_LLM_OUTPUT }),
   ];
 
   return Object.freeze(
