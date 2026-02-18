@@ -7,8 +7,6 @@
 """This module defines the base class for toolboxes."""
 
 
-from typing import Optional
-
 from pyagentspec.component import Component
 from pyagentspec.versioning import AgentSpecVersionEnum
 
