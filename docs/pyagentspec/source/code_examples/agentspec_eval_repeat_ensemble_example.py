@@ -11,7 +11,6 @@
 """Repeat and ensemble wrappers example for Agent Spec Eval."""
 
 # .. start-snippet
-import asyncio
 
 from pyagentspec.evaluation.aggregators import MeanAggregator
 from pyagentspec.evaluation.metrics.implementations import SemanticBinaryMatchMetric
@@ -65,5 +64,5 @@ async def main() -> None:
         print(await ensemble_metric(reference=reference, response=response))
 
 
-asyncio.run(main())
+# asyncio.run(main())
 # .. end-snippet

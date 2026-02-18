@@ -11,21 +11,18 @@
 """Standalone LLM-based metric example for Agent Spec Eval."""
 
 # .. start-snippet
-import asyncio
 
 from pyagentspec.evaluation.metrics.implementations import SemanticBinaryMatchMetric
 from pyagentspec.llms import OpenAiConfig
 
 
-llm_config = OpenAiConfig(name="gpt-5-mini-config", model_id="gpt-5-mini")
-
-
 async def main() -> None:
+    llm_config = OpenAiConfig(name="gpt-5-mini-config", model_id="gpt-5-mini")
     metric = SemanticBinaryMatchMetric(llm_config)
     for reference, response in [("Zeurich", "Zurich"), ("Beijing", "Peking")]:
         value, details = await metric(reference=reference, response=response)
         print((value, details))
 
 
-asyncio.run(main())
+# asyncio.run(main())
 # .. end-snippet
