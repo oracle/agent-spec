@@ -330,6 +330,23 @@ def test_dict_serialization_and_deserialization(simplest_flow: Flow) -> None:
     deserialized_flow = deserializer.from_dict(serialized_flow)
     assert deserialized_flow == simplest_flow
 
+def test_direct_component_serialization_dict(simplest_flow: Flow) -> None:
+    serialized_flow = simplest_flow.to_dict(simplest_flow)
+    deserializer = AgentSpecDeserializer()
+    deserialized_flow = deserializer.from_dict(serialized_flow)
+    assert deserialized_flow == simplest_flow
+
+def test_direct_component_serialization_json(simplest_flow: Flow) -> None:
+    serialized_flow = simplest_flow.to_json(simplest_flow)
+    deserializer = AgentSpecDeserializer()
+    deserialized_flow = deserializer.from_json(serialized_flow)
+    assert deserialized_flow == simplest_flow
+
+def test_direct_component_serialization_yaml(simplest_flow: Flow) -> None:
+    serialized_flow = simplest_flow.to_yaml(simplest_flow)
+    deserializer = AgentSpecDeserializer()
+    deserialized_flow = deserializer.from_yaml(serialized_flow)
+    assert deserialized_flow == simplest_flow
 
 def test_json_and_yaml_serializations_have_the_right_order(
     outer_flow_with_complex_nested_structure: Agent,
