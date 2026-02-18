@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=78.1.1",
+    "setuptools>=78.1.1,<82.0.0",
     "wheel",
     # setuptools-scm lets us include all necessary files (e.g. .pyx files) in the source
     # distribution (sdist) without needing a MANIFEST.in file.
