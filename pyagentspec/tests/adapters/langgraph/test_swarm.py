@@ -84,6 +84,9 @@ def test_langgraph_swarm_is_converted() -> None:
     assert isinstance(agentspec_swarm.first_agent, AgentSpecAgent)
     assert agentspec_swarm.first_agent.name == "sum_agent"
     assert agentspec_swarm.handoff == HandoffMode.OPTIONAL
+    assert len(agentspec_swarm.first_agent.tools) == 1
+    assert agentspec_swarm.first_agent.tools[0].name == "add"
+    assert "ask the `multiply_agent`" in agentspec_swarm.first_agent.system_prompt
 
     loader = AgentSpecLoader(tool_registry={"add": add, "multiply": multiply})
     loaded_swarm = loader.load_component(agentspec_swarm)
