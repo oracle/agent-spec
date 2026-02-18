@@ -2,7 +2,7 @@
  * DataFlowEdge - defines data flow between node outputs and inputs.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../../component.js";
+import { ComponentBaseSchema, type ComponentWithIO } from "../../component.js";
 import { propertyIsCastableTo, type Property } from "../../property.js";
 
 const NodeRef = z.record(z.unknown());
@@ -18,27 +18,25 @@ export const DataFlowEdgeSchema = ComponentBaseSchema.extend({
 export type DataFlowEdge = z.infer<typeof DataFlowEdgeSchema>;
 
 function findPropertyByTitle(
-  properties: unknown[] | undefined,
+  properties: Property[] | undefined,
   title: string,
 ): Property | undefined {
-  if (!Array.isArray(properties)) return undefined;
-  return (properties as Property[]).find((p) => p.title === title);
+  return properties?.find((p) => p.title === title);
 }
 
 export function createDataFlowEdge(opts: {
   name: string;
-  sourceNode: Record<string, unknown>;
+  sourceNode: ComponentWithIO;
   sourceOutput: string;
-  destinationNode: Record<string, unknown>;
+  destinationNode: ComponentWithIO;
   destinationInput: string;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
 }): DataFlowEdge {
-  const sourceOutputs = opts.sourceNode["outputs"] as unknown[] | undefined;
+  const { outputs: sourceOutputs, name: sourceName } = opts.sourceNode;
   const sourceProperty = findPropertyByTitle(sourceOutputs, opts.sourceOutput);
   if (sourceOutputs && sourceOutputs.length > 0 && !sourceProperty) {
-    const sourceName = (opts.sourceNode["name"] as string) ?? "unknown";
     throw new Error(
       `Flow data connection named \`${opts.name}\` is connected to a property ` +
         `named \`${opts.sourceOutput}\` of the source node \`${sourceName}\`, ` +
@@ -46,10 +44,9 @@ export function createDataFlowEdge(opts: {
     );
   }
 
-  const destInputs = opts.destinationNode["inputs"] as unknown[] | undefined;
+  const { inputs: destInputs, name: destName } = opts.destinationNode;
   const destProperty = findPropertyByTitle(destInputs, opts.destinationInput);
   if (destInputs && destInputs.length > 0 && !destProperty) {
-    const destName = (opts.destinationNode["name"] as string) ?? "unknown";
     throw new Error(
       `Flow data connection named \`${opts.name}\` is connected to a property ` +
         `named \`${opts.destinationInput}\` of the destination node \`${destName}\`, ` +
