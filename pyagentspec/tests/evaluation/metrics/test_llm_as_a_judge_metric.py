@@ -34,13 +34,13 @@ def patch_metric_complete_conversation(metric: LlmAsAJudgeMetric, response: str)
 
 
 @pytest.fixture()
-def llm_as_judge_metric(default_llm_config) -> LlmAsAJudgeMetric:
+def llm_as_judge_metric(big_llm_config) -> LlmAsAJudgeMetric:
     return LlmAsAJudgeMetric(
         name="dummy",
         input_mapping=None,
         num_retries=0,
         on_failure="raise",
-        llm_config=default_llm_config,
+        llm_config=big_llm_config,
         system_prompt="You judge stuff.",
         user_prompt_template="Score: {{ score }}",
         value_pattern=r"<result>(.*?)</result>",
@@ -82,8 +82,8 @@ async def test_multiple_pattern_matches_raise_evaluation_exception(llm_as_judge_
 
 
 @pytest.mark.anyio
-async def test_semantic_binary_match_metric_parses_boolean_and_metadata(default_llm_config):
-    metric = SemanticBinaryMatchMetric(llm_config=default_llm_config)
+async def test_semantic_binary_match_metric_parses_boolean_and_metadata(big_llm_config):
+    metric = SemanticBinaryMatchMetric(llm_config=big_llm_config)
 
     response_payload = (
         "<justification>Names match ignoring accent.</justification>" "<result>Yes</result>"
@@ -95,3 +95,11 @@ async def test_semantic_binary_match_metric_parses_boolean_and_metadata(default_
     assert value is True
     assert details["justification"] == "Names match ignoring accent."
     assert details["tokens"] == {"prompt_tokens": 1, "completion_tokens": 2}
+
+
+@pytest.mark.anyio
+async def test_semantic_binary_match_metric_runs_with_real_llm(big_llm_config):
+    metric = SemanticBinaryMatchMetric(llm_config=big_llm_config)
+    value, details = await metric(reference="Geneva", response="Genf")
+    assert isinstance(value, bool)
+    assert isinstance(details, dict)

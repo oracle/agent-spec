@@ -97,7 +97,7 @@ setup(
             "crewai[litellm]>=1.6.1; python_version < '3.14'",
             # 4rth party dependencies
             # litellm is included to fix CVEs
-            "litellm>=1.79.0; python_version < '3.14'",
+            "litellm>=1.80.15; python_version < '3.14'",
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
@@ -130,7 +130,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
-            "litellm>=1.79.0",
+            "litellm>=1.80.15",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",

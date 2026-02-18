@@ -37,7 +37,7 @@ with an ``Evaluator``.
 
 The returned ``EvaluationResults`` can be exported as:
 
-- JSON via ``results.to_json()`` (includes the metric ``value`` and its ``details``)
+- Dictionary via ``results.to_dict()`` (includes the metric ``value`` and its ``details``)
 - a pandas DataFrame via ``results.to_df()`` (only the main metric values)
 
 

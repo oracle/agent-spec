@@ -45,7 +45,7 @@ async def evaluator_example() -> None:
     results = await evaluator.evaluate(dataset)
 
     print("as JSON:")
-    print(results.to_json())
+    print(results.to_dict())
 
     print("as DF:")
     print(results.to_df())

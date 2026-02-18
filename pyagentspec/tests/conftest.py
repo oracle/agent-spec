@@ -103,6 +103,22 @@ def default_llm_config() -> VllmConfig:
     )
 
 
+@pytest.fixture
+def big_llm_config() -> VllmConfig:
+    llama_endpoint = os.environ.get("LLAMA70BV33_API_URL")
+    if not llama_endpoint:
+        if should_skip_llm_test():
+            pytest.skip(
+                "Skipping LLM-dependent test: LLAMA70BV33_API_URL is not set and SKIP_LLM_TESTS is enabled"
+            )
+        pytest.fail("LLAMA70BV33_API_URL is not set in the environment")
+    return VllmConfig(
+        name="Llama 3.3 70B instruct",
+        url=llama_endpoint,
+        model_id="/storage/models/Llama-3.3-70B-Instruct",
+    )
+
+
 @pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"

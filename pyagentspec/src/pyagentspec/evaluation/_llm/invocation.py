@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from typing import TYPE_CHECKING, Any, Dict, List
+from urllib.parse import urlparse, urlunparse
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.llms import (
@@ -29,6 +30,31 @@ else:
     oci = LazyLoader("oci")
     acompletion = LazyLoader("litellm").acompletion
     ModelResponse = LazyLoader("litellm.types.utils").ModelResponse
+
+
+def _prepare_openai_compatible_url(url: str) -> str:
+    """Normalize an OpenAI-compatible server URL.
+
+    This ensures:
+    - a scheme (defaults to http)
+    - a canonical ``/v1`` base path, regardless of any existing path
+
+    Examples
+    --------
+    >>> _prepare_openai_compatible_url("localhost:8000")
+    'http://localhost:8000/v1'
+    >>> _prepare_openai_compatible_url("http://localhost:8000/")
+    'http://localhost:8000/v1'
+    >>> _prepare_openai_compatible_url("http://localhost:8000/v1/")
+    'http://localhost:8000/v1'
+    """
+
+    url = url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = f"http://{url}"
+    parsed = urlparse(url)
+    normalized = parsed._replace(path="/v1", params="", query="", fragment="")
+    return str(urlunparse(normalized))
 
 
 def _get_oci_client_config(client_config: OciClientConfig) -> Dict[str, Any]:
@@ -64,12 +90,10 @@ def _get_llm_config_as_litellm_dict(llm: LlmConfig) -> Dict[str, Any]:
     if isinstance(llm, OpenAiConfig):
         return {"model": llm.model_id}
     if isinstance(llm, OpenAiCompatibleConfig):
-        url = llm.url
-        if not url.startswith("http"):
-            url = f"http://{url}"
-        if not url.endswith("v1"):
-            url += "/v1"
-        return {"model": "openai/" + llm.model_id, "api_base": url}
+        return {
+            "model": "openai/" + llm.model_id,
+            "api_base": _prepare_openai_compatible_url(llm.url),
+        }
     raise NotImplementedError(
         f"LlmConfig type not supported: {type(llm)}. Supported types are "
         "OciGenAiConfig, OpenAiConfig, and OpenAiCompatibleConfig."
