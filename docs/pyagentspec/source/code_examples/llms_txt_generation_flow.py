@@ -333,7 +333,7 @@ def concat_compact_docs(
 
 
 def _resolve_default_src_path() -> str:
-    return str((Path(__file__).parent / "../../pyagentspec/src/").resolve())
+    return str((Path(__file__).parent.parent.parent.parent.parent / "pyagentspec/src/").resolve())
 
 
 def run_and_write_with_wayflow() -> Path:
