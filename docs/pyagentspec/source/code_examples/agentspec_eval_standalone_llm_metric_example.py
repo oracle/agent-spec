@@ -11,7 +11,6 @@
 """Standalone LLM-based metric example for Agent Spec Eval."""
 
 # .. start-snippet
-
 from pyagentspec.evaluation.metrics.implementations import SemanticBinaryMatchMetric
 from pyagentspec.llms import OpenAiConfig
 
@@ -24,5 +23,6 @@ async def main() -> None:
         print((value, details))
 
 
+# import asyncio
 # asyncio.run(main())
 # .. end-snippet
