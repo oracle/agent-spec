@@ -985,7 +985,7 @@ class AgentSpecToLangGraphConverter:
             # We also assume to get only agents in relationships.
             agent.name: cast(AgentSpecAgent, agent)
             # Relationships are tuples of (from_agent, to_agent)
-            for agent in [e for r in agentspec_component.relationships for e in r]
+            for agent in (e for r in agentspec_component.relationships for e in r)
         }
         for agent in agents.values():
             # Since handoff is performed with tools, we can only support agents in relationships for now

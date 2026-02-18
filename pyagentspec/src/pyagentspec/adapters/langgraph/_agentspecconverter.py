@@ -13,6 +13,7 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Set,
     Tuple,
     Union,
     cast,
@@ -83,6 +84,11 @@ if TYPE_CHECKING:
 
 
 class LangGraphToAgentSpecConverter:
+
+    def __init__(self) -> None:
+        # Dictionary of Agent Tool Node object ID -> set of tool names to ignore used by conversion
+        self._tools_to_ignore: Dict[int, Set[str]] = {}
+
     def convert(
         self,
         langgraph_component: LangGraphRuntimeComponent,
@@ -348,9 +354,23 @@ class LangGraphToAgentSpecConverter:
             if not isinstance(agent_graph, CompiledStateGraph):
                 raise ValueError(f"Swarm node '{agent_name}' is not a CompiledStateGraph")
 
+            # Swarm adds tools for the handoff that we should not translate
+            # The name of these tools is `transfer_to_{agent_name}`, we tell the converter
+            # to ignore them by adding an attribute`_tools_to_ignore` containing all the
+            # tool names with this type of format that should be ignored
+            agent_graph_builder = agent_graph.builder
+            if "tools" in agent_graph_builder.nodes:
+                tool_node = agent_graph_builder.nodes["tools"]
+                tool_node_id = id(tool_node)
+                if tool_node_id not in self._tools_to_ignore:
+                    self._tools_to_ignore[tool_node_id] = set()
+                self._tools_to_ignore[tool_node_id].update(f"transfer_to_{a}" for a in agent_names)
+
             # Recursively convert each agent graph so the resulting Swarm references the same
             # AgentSpec components as standalone conversions.
             agents[agent_name] = self.convert(agent_graph, referenced_objects)  # type: ignore
+            # Agent is converted, we can remove the entry, if any
+            self._tools_to_ignore.pop(tool_node_id, None)
 
         # Build the relationship edges by walking the compiled graph edges originating from
         # each agent node. Only real agent targets (not internal helpers) are recorded.
@@ -440,11 +460,13 @@ class LangGraphToAgentSpecConverter:
         self, langgraph_component: StateNodeSpec[Any, Any]
     ) -> List[AgentSpecTool]:
         tools = []
+        tools_to_ignore = self._tools_to_ignore.get(id(langgraph_component), set())
         if hasattr(langgraph_component, "runnable") and hasattr(
             langgraph_component.runnable, "tools_by_name"
         ):
             for tool_name, tool in langgraph_component.runnable.tools_by_name.items():
-                tools.append(self._langgraph_any_tool_to_agentspec_tool(tool))
+                if tool_name not in tools_to_ignore:
+                    tools.append(self._langgraph_any_tool_to_agentspec_tool(tool))
         return tools
 
     def _langgraph_any_tool_to_agentspec_tool(self, tool: StructuredTool) -> AgentSpecTool:

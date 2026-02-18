@@ -16,7 +16,7 @@ def test_langgraph_swarm_is_converted() -> None:
     from langgraph.checkpoint.memory import InMemorySaver
     from langgraph_swarm import create_handoff_tool, create_swarm
 
-    from pyagentspec.adapters.langgraph import AgentSpecExporter
+    from pyagentspec.adapters.langgraph import AgentSpecExporter, AgentSpecLoader
     from pyagentspec.agent import Agent as AgentSpecAgent
     from pyagentspec.swarm import HandoffMode
     from pyagentspec.swarm import Swarm as AgentSpecSwarm
@@ -73,7 +73,6 @@ def test_langgraph_swarm_is_converted() -> None:
         [sum_agent, multiply_agent, isolated_agent],
         default_active_agent="sum_agent",
     ).compile(name="SwarmCalculator", checkpointer=checkpointer)
-
     exporter = AgentSpecExporter()
     agentspec_swarm = exporter.to_component(workflow)
     assert isinstance(agentspec_swarm, AgentSpecSwarm)
@@ -85,3 +84,11 @@ def test_langgraph_swarm_is_converted() -> None:
     assert isinstance(agentspec_swarm.first_agent, AgentSpecAgent)
     assert agentspec_swarm.first_agent.name == "sum_agent"
     assert agentspec_swarm.handoff == HandoffMode.OPTIONAL
+
+    loader = AgentSpecLoader(tool_registry={"add": add, "multiply": multiply})
+    loaded_swarm = loader.load_component(agentspec_swarm)
+    loaded_swarm = loaded_swarm.get_graph()
+    # Isolated agent is not in the swarm anymore, since it was isolated, and therefore useless
+    assert all(agent_name in loaded_swarm.nodes for agent_name in ("sum_agent", "multiply_agent"))
+    start_node = loaded_swarm.nodes["__start__"].data
+    assert getattr(start_node, "destinations", [None])[0] == "sum_agent"  # First agent name check
