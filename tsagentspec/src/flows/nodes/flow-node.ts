@@ -5,10 +5,11 @@ import { z } from "zod";
 import type { Property } from "../../property.js";
 import { NodeBaseSchema } from "../node.js";
 import { getEndNodeBranches } from "./node-helpers.js";
+import { LazyFlowRef } from "../lazy-schemas.js";
 
 export const FlowNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("FlowNode"),
-  subflow: z.lazy(() => z.record(z.unknown())),
+  subflow: LazyFlowRef,
 });
 
 export type FlowNode = z.infer<typeof FlowNodeSchema>;

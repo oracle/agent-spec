@@ -16,6 +16,7 @@ import { ApiNodeSchema } from "./api-node.js";
 import { InputMessageNodeSchema } from "./input-message-node.js";
 import { OutputMessageNodeSchema } from "./output-message-node.js";
 import { CatchExceptionNodeSchema } from "./catch-exception-node.js";
+import { registerNodeUnionSchema } from "../lazy-schemas.js";
 
 /** Discriminated union of all node types */
 export const NodeUnion = z.discriminatedUnion("componentType", [
@@ -34,6 +35,8 @@ export const NodeUnion = z.discriminatedUnion("componentType", [
   OutputMessageNodeSchema,
   CatchExceptionNodeSchema,
 ]);
+
+registerNodeUnionSchema(NodeUnion);
 
 export type Node = z.infer<typeof NodeUnion>;
 

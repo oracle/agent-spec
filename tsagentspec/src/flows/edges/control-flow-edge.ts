@@ -3,14 +3,13 @@
  */
 import { z } from "zod";
 import { ComponentBaseSchema } from "../../component.js";
-
-const NodeRef = z.record(z.unknown());
+import { LazyNodeRef } from "../lazy-schemas.js";
 
 export const ControlFlowEdgeSchema = ComponentBaseSchema.extend({
   componentType: z.literal("ControlFlowEdge"),
-  fromNode: NodeRef,
+  fromNode: LazyNodeRef,
   fromBranch: z.string().optional(),
-  toNode: NodeRef,
+  toNode: LazyNodeRef,
 });
 
 export type ControlFlowEdge = z.infer<typeof ControlFlowEdgeSchema>;

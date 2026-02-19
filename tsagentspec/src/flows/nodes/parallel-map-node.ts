@@ -10,10 +10,11 @@ import {
   getDefaultReducers,
   inferMapOutputs,
 } from "./map-helpers.js";
+import { LazyFlowRef } from "../lazy-schemas.js";
 
 export const ParallelMapNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("ParallelMapNode"),
-  subflow: z.lazy(() => z.record(z.unknown())),
+  subflow: LazyFlowRef,
   reducers: z
     .record(
       z.enum([

@@ -5,13 +5,14 @@ import { z } from "zod";
 import type { Property } from "../../property.js";
 import { NodeBaseSchema } from "../node.js";
 import { getEndNodeBranches } from "./node-helpers.js";
+import { LazyFlowRef } from "../lazy-schemas.js";
 
 export const CAUGHT_EXCEPTION_BRANCH = "caught_exception_branch";
 export const DEFAULT_EXCEPTION_INFO_VALUE = "caught_exception_info";
 
 export const CatchExceptionNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("CatchExceptionNode"),
-  subflow: z.lazy(() => z.record(z.unknown())),
+  subflow: LazyFlowRef,
 });
 
 export type CatchExceptionNode = z.infer<typeof CatchExceptionNodeSchema>;

@@ -5,10 +5,11 @@ import { z } from "zod";
 import type { Property } from "../../property.js";
 import { deduplicatePropertiesByTitleAndType } from "../../property.js";
 import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
+import { LazyFlowRef } from "../lazy-schemas.js";
 
 export const ParallelFlowNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("ParallelFlowNode"),
-  subflows: z.array(z.lazy(() => z.record(z.unknown()))).default([]),
+  subflows: z.array(LazyFlowRef).default([]),
 });
 
 export type ParallelFlowNode = z.infer<typeof ParallelFlowNodeSchema>;

@@ -4,14 +4,13 @@
 import { z } from "zod";
 import { ComponentBaseSchema, type ComponentWithIO } from "../../component.js";
 import { propertyIsCastableTo, type Property } from "../../property.js";
-
-const NodeRef = z.record(z.unknown());
+import { LazyNodeRef } from "../lazy-schemas.js";
 
 export const DataFlowEdgeSchema = ComponentBaseSchema.extend({
   componentType: z.literal("DataFlowEdge"),
-  sourceNode: NodeRef,
+  sourceNode: LazyNodeRef,
   sourceOutput: z.string(),
-  destinationNode: NodeRef,
+  destinationNode: LazyNodeRef,
   destinationInput: z.string(),
 });
 

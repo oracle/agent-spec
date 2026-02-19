@@ -6,19 +6,17 @@ import type { Property } from "../property.js";
 import { ComponentWithIOSchema } from "../component.js";
 import { ControlFlowEdgeSchema, type ControlFlowEdge } from "./edges/control-flow-edge.js";
 import { DataFlowEdgeSchema, type DataFlowEdge } from "./edges/data-flow-edge.js";
-
-// z.record(z.unknown()) is used instead of NodeUnion to break a circular dependency
-// (Flow -> FlowNode -> Flow). Validation of individual nodes happens via their own
-// schemas when constructed through factory functions.
-const NodeRef = z.record(z.unknown());
+import { LazyNodeRef, registerFlowSchema } from "./lazy-schemas.js";
 
 export const FlowSchema = ComponentWithIOSchema.extend({
   componentType: z.literal("Flow"),
-  startNode: NodeRef,
-  nodes: z.array(NodeRef),
+  startNode: LazyNodeRef,
+  nodes: z.array(LazyNodeRef),
   controlFlowConnections: z.array(ControlFlowEdgeSchema),
   dataFlowConnections: z.array(DataFlowEdgeSchema).optional(),
 });
+
+registerFlowSchema(FlowSchema);
 
 export type Flow = z.infer<typeof FlowSchema>;
 
