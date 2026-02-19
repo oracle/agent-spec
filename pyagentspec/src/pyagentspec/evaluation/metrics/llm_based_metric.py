@@ -47,6 +47,10 @@ class LlmBasedMetric(Metric[MetricValueType]):
     async def ask_llm(self, conversation: List[Dict[str, str]]) -> Tuple[str, Tuple[int, int]]:
         """Return the assistant message text and token usage from the LLM provider."""
         response = await self._complete_conversation(conversation)
+        if "choices" not in response or len(response["choices"]) == 0:
+            raise RuntimeError(
+                f"LLM returned an empty response during the computation of {self.name}"
+            )
         return (
             response["choices"][0]["message"]["content"],
             (response["usage"]["prompt_tokens"], response["usage"]["completion_tokens"]),
