@@ -62,8 +62,14 @@ function validateSchemaTitle(jsonSchema: JsonSchemaValue): void {
 
 /** Base property Zod schema */
 export const PropertySchema = z.object({
-  jsonSchema: z.record(z.unknown()).default({}),
-  title: z.string().min(1).default("property"),
+  jsonSchema: z.record(z.unknown()).refine(
+    (schema) => typeof schema["title"] === "string" && (schema["title"] as string).length > 0,
+    { message: "jsonSchema must contain a non-empty 'title' string" },
+  ).refine(
+    (schema) => "type" in schema || "anyOf" in schema,
+    { message: "jsonSchema must contain a 'type' or 'anyOf' field" },
+  ),
+  title: z.string().min(1),
   description: z.string().optional(),
   default: z.unknown().optional(),
   type: z.union([z.string(), z.array(z.string())]).optional(),
@@ -228,7 +234,13 @@ export function objectProperty(opts: {
 
 /** Create a property from a raw JSON schema dict */
 export function propertyFromJsonSchema(jsonSchema: JsonSchemaValue): Property {
-  const title = (jsonSchema["title"] as string) || "property";
+  if (typeof jsonSchema["title"] !== "string" || jsonSchema["title"].length === 0) {
+    throw new Error("jsonSchema must contain a non-empty 'title' string");
+  }
+  if (!("type" in jsonSchema) && !("anyOf" in jsonSchema)) {
+    throw new Error("jsonSchema must contain a 'type' or 'anyOf' field");
+  }
+  const title = jsonSchema["title"] as string;
   const description = jsonSchema["description"] as string | undefined;
   const defaultValue = jsonSchema["default"];
   return makeProperty(jsonSchema, title, description, defaultValue);

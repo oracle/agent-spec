@@ -300,9 +300,10 @@ describe("DeserializationContext", () => {
 });
 
 describe("BuiltinsComponentDeserializationPlugin edge cases", () => {
-  it("should skip property items without title in inputs array", () => {
-    // Line 134: when an item in inputs/outputs doesn't have "title",
-    // it should be passed through as-is (not deserialized as Property)
+  it("should reject property items without title in inputs array", () => {
+    // Items without "title" are passed through as-is by the plugin (not
+    // deserialized as Property), but the stricter PropertySchema now
+    // rejects them at the factory level since title is required.
     const ctx = new DeserializationContext(makeBuiltinPlugins());
     const plugin = new BuiltinsComponentDeserializationPlugin();
     const data = {
@@ -313,11 +314,7 @@ describe("BuiltinsComponentDeserializationPlugin edge cases", () => {
       inputs: [{ type: "string", description: "no title here" }],
       outputs: [],
     };
-    // Call plugin.deserialize directly - at the plugin level, items without
-    // title are passed through as-is (line 134)
-    // The factory will then handle them according to the Zod schema
-    const result = plugin.deserialize(data, ctx);
-    expect(result.componentType).toBe("ServerTool");
+    expect(() => plugin.deserialize(data, ctx)).toThrow();
   });
 
   it("should preserve camelCase model object keys in camelCase mode", () => {

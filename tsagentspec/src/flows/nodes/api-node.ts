@@ -57,11 +57,11 @@ export function createApiNode(opts: {
   const inputs = opts.inputs ?? inferApiNodeInputs(opts);
   const outputs = opts.outputs ?? [
     {
-      jsonSchema: { title: DEFAULT_API_OUTPUT },
+      jsonSchema: { title: DEFAULT_API_OUTPUT, type: "string" },
       title: DEFAULT_API_OUTPUT,
       description: undefined,
       default: undefined,
-      type: undefined,
+      type: "string",
     },
   ];
 
