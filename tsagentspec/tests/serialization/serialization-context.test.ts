@@ -341,6 +341,65 @@ describe("AgentSpecSerializer camelCase mode", () => {
     expect(yaml).toContain("systemPrompt:");
     expect(yaml).not.toContain("system_prompt:");
   });
+
+  it("should use componentType key instead of component_type in camelCase mode", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "test-agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, { camelCase: true }) as string;
+    const dict = JSON.parse(json);
+    expect("componentType" in dict).toBe(true);
+    expect("component_type" in dict).toBe(false);
+    expect(dict["componentType"]).toBe("Agent");
+  });
+
+  it("should use agentspecVersion key instead of agentspec_version in camelCase mode", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "test-agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, { camelCase: true }) as string;
+    const dict = JSON.parse(json);
+    expect("agentspecVersion" in dict).toBe(true);
+    expect("agentspec_version" in dict).toBe(false);
+    expect(dict["agentspecVersion"]).toBe(CURRENT_VERSION);
+  });
+
+  it("should use componentType on nested components in camelCase mode", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "test-agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, { camelCase: true }) as string;
+    const dict = JSON.parse(json);
+    const llmDict = dict["llmConfig"] as Record<string, unknown>;
+    expect("componentType" in llmDict).toBe(true);
+    expect("component_type" in llmDict).toBe(false);
+    expect(llmDict["componentType"]).toBe("OpenAiCompatibleConfig");
+  });
+
+  it("should order componentType and agentspecVersion first in camelCase mode", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "test-agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, { camelCase: true }) as string;
+    const dict = JSON.parse(json);
+    const keys = Object.keys(dict);
+    expect(keys[0]).toBe("componentType");
+    expect(keys[1]).toBe("agentspecVersion");
+    expect(keys[2]).toBe("id");
+    expect(keys[3]).toBe("name");
+  });
 });
 
 describe("AgentSpecSerializer version gating", () => {

@@ -9,7 +9,7 @@ import type { ComponentBase } from "../component.js";
 import type { ComponentDeserializationPlugin } from "./deserialization-plugin.js";
 import { DeserializationContext } from "./deserialization-context.js";
 import { BuiltinsComponentDeserializationPlugin } from "./builtin-deserialization-plugin.js";
-import type { ComponentAsDict, ComponentsRegistry } from "./types.js";
+import type { SerializedDict, DisaggregatedComponentsDict, ComponentsRegistry } from "./types.js";
 
 /** Default limits for deserialization to prevent resource exhaustion */
 const DEFAULT_MAX_INPUT_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -45,7 +45,7 @@ export class AgentSpecDeserializer {
 
   /** Deserialize a component from a plain dict (internal) */
   private _fromDict(
-    data: ComponentAsDict,
+    data: SerializedDict | DisaggregatedComponentsDict,
     options?: {
       componentsRegistry?: ComponentsRegistry;
       importOnlyReferencedComponents?: boolean;
@@ -67,10 +67,10 @@ export class AgentSpecDeserializer {
         );
       }
 
-      this.checkMissingReferences(data, opts.componentsRegistry);
+      this.checkMissingReferences(data as SerializedDict, opts.componentsRegistry);
 
       const ctx = new DeserializationContext(this.plugins, undefined, useCamelCase);
-      return ctx.loadConfigDict(data, opts.componentsRegistry);
+      return ctx.loadConfigDict(data as SerializedDict, opts.componentsRegistry);
     }
 
     // Loading disaggregated components only
@@ -86,10 +86,7 @@ export class AgentSpecDeserializer {
       );
     }
 
-    const refs = data["$referenced_components"] as Record<
-      string,
-      ComponentAsDict
-    >;
+    const refs = (data as DisaggregatedComponentsDict)["$referenced_components"];
     const result: Record<string, ComponentBase> = {};
 
     for (const [componentId, componentDict] of Object.entries(refs)) {
@@ -113,7 +110,7 @@ export class AgentSpecDeserializer {
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(json.length);
-    const parsed = JSON.parse(json) as ComponentAsDict;
+    const parsed = JSON.parse(json) as SerializedDict | DisaggregatedComponentsDict;
     this.checkDepth(parsed);
     return this._fromDict(parsed, options);
   }
@@ -128,7 +125,7 @@ export class AgentSpecDeserializer {
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(yamlStr.length);
-    const parsed = YAML.parse(yamlStr, { schema: "core" }) as ComponentAsDict;
+    const parsed = YAML.parse(yamlStr, { schema: "core" }) as SerializedDict | DisaggregatedComponentsDict;
     this.checkDepth(parsed);
     return this._fromDict(parsed, options);
   }
@@ -183,7 +180,7 @@ export class AgentSpecDeserializer {
 
   /** Check that all $component_ref references can be resolved */
   private checkMissingReferences(
-    data: ComponentAsDict,
+    data: SerializedDict,
     registry?: ComponentsRegistry,
   ): void {
     const [usedRefs, definedRefs] =

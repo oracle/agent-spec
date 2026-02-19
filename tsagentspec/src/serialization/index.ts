@@ -4,9 +4,22 @@
 
 // Type aliases and constants
 export type {
+  SerializedComponent,
+  CamelCaseSerializedComponent,
+  ComponentRef,
+  SerializedDict,
+  SerializedFields,
+  DisaggregatedComponentsDict,
   ComponentsRegistry,
 } from "./types.js";
-export { DANGEROUS_KEYS } from "./types.js";
+export {
+  PROTOCOL_KEYS,
+  getProtocolKeys,
+  ALL_PROTOCOL_FIELDS,
+  isSerializedComponent,
+  isComponentRef,
+  DANGEROUS_KEYS,
+} from "./types.js";
 
 // Plugin interfaces
 export type { ComponentSerializationPlugin } from "./serialization-plugin.js";

@@ -5,7 +5,7 @@
  */
 import type { ComponentBase } from "../component.js";
 import type { SerializationContext } from "./serialization-context.js";
-import type { ComponentAsDict } from "./types.js";
+import type { SerializedFields } from "./types.js";
 
 export interface ComponentSerializationPlugin {
   readonly pluginName: string;
@@ -14,9 +14,9 @@ export interface ComponentSerializationPlugin {
   /** Return the component type strings this plugin can serialize */
   supportedComponentTypes(): string[];
 
-  /** Serialize a component to a plain dict */
+  /** Serialize a component's fields (the context adds the protocol envelope) */
   serialize(
     component: ComponentBase,
     context: SerializationContext,
-  ): ComponentAsDict;
+  ): SerializedFields;
 }

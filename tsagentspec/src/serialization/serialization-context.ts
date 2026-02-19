@@ -5,13 +5,19 @@
  * sensitive field exclusion, version-gated field exclusion, and key ordering.
  */
 import type { AgentSpecVersion } from "../versioning.js";
-import { AGENTSPEC_VERSION_FIELD_NAME, CURRENT_VERSION, versionLt } from "../versioning.js";
+import { CURRENT_VERSION, versionLt } from "../versioning.js";
 import { isComponent, type ComponentBase } from "../component.js";
 import type { Property } from "../property.js";
 import { isSensitiveField } from "../sensitive-field.js";
 import { isBuiltinComponentType } from "../component-registry.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
-import { DANGEROUS_KEYS, type ComponentAsDict } from "./types.js";
+import {
+  DANGEROUS_KEYS,
+  ALL_PROTOCOL_FIELDS,
+  getProtocolKeys,
+  type SerializedDict,
+  type SerializedFields,
+} from "./types.js";
 import { computeReferencingStructure } from "./referencing.js";
 import { VERSION_GATED_FIELDS } from "./version-gates.js";
 
@@ -41,25 +47,6 @@ export function snakeToCamel(str: string): string {
   );
 }
 
-/** Fields that should never be transformed between camelCase/snake_case */
-const NEVER_TRANSFORM_FIELDS = new Set([
-  "$component_ref",
-  "$referenced_components",
-  "component_type",
-  "agentspec_version",
-  "component_plugin_name",
-  "component_plugin_version",
-]);
-
-/** Priority keys for ordering serialized output */
-const PRIORITY_KEYS = [
-  "component_type",
-  AGENTSPEC_VERSION_FIELD_NAME,
-  "id",
-  "name",
-  "description",
-];
-
 /** Check if a value looks like a Property (has jsonSchema, title) */
 function isProperty(value: unknown): value is Property {
   if (value === null || typeof value !== "object") return false;
@@ -76,14 +63,14 @@ export class SerializationContext {
   agentspecVersion: AgentSpecVersion;
   camelCase: boolean;
   private componentTypesToPlugins: Map<string, ComponentSerializationPlugin>;
-  private resolvedComponents: Map<string, ComponentAsDict> = new Map();
+  private resolvedComponents: Map<string, SerializedDict> = new Map();
   private referencingStructure: Record<string, string> = {};
   private componentsIdMapping: Map<string, string>;
 
   constructor(
     plugins: ComponentSerializationPlugin[],
     targetVersion?: AgentSpecVersion,
-    resolvedComponents?: Map<string, ComponentAsDict>,
+    resolvedComponents?: Map<string, SerializedDict>,
     componentsIdMapping?: Map<string, string>,
     camelCase?: boolean,
   ) {
@@ -165,7 +152,7 @@ export class SerializationContext {
   }
 
   /** Serialize a component to a dict, handling referencing */
-  dumpComponentToDict(component: ComponentBase): ComponentAsDict {
+  dumpComponentToDict(component: ComponentBase): SerializedDict {
     const componentId = component.id;
     const mappedId =
       this.componentsIdMapping.get(componentId) ?? componentId;
@@ -179,12 +166,13 @@ export class SerializationContext {
         );
       }
 
-      const componentDump = plugin.serialize(component, this);
-      componentDump["component_type"] = component.componentType;
+      const keys = getProtocolKeys(this.camelCase);
+      const componentDump: SerializedFields = plugin.serialize(component, this);
+      componentDump[keys.componentType] = component.componentType;
 
       if (!isBuiltinComponentType(componentType)) {
-        componentDump["component_plugin_name"] = plugin.pluginName;
-        componentDump["component_plugin_version"] = plugin.pluginVersion;
+        componentDump[keys.componentPluginName] = plugin.pluginName;
+        componentDump[keys.componentPluginVersion] = plugin.pluginVersion;
       }
 
       // Attach $referenced_components for children that should be referenced at this level
@@ -197,7 +185,7 @@ export class SerializationContext {
         }
       }
       if (referencedComponentIds.length > 0) {
-        const refs: Record<string, ComponentAsDict> = {};
+        const refs: Record<string, SerializedDict> = {};
         for (const refId of referencedComponentIds) {
           const resolved = this.resolvedComponents.get(refId);
           if (resolved) {
@@ -207,7 +195,7 @@ export class SerializationContext {
         componentDump["$referenced_components"] = refs;
       }
 
-      this.resolvedComponents.set(componentId, componentDump);
+      this.resolvedComponents.set(componentId, componentDump as SerializedDict);
     }
 
     // If this component should be referenced (used in multiple places) or
@@ -229,16 +217,18 @@ export class SerializationContext {
     if (typeof obj === "object" && obj !== null && !Array.isArray(obj)) {
       const dict = obj as Record<string, unknown>;
       const ordered: Record<string, unknown> = {};
+      const keys = getProtocolKeys(this.camelCase);
+      const priorityKeys = [keys.componentType, keys.agentspecVersion, "id", "name", "description"];
 
       // Priority keys first (recurse values for consistency)
-      for (const key of PRIORITY_KEYS) {
+      for (const key of priorityKeys) {
         if (key in dict) {
           ordered[key] = this.makeOrderedDict(dict[key], depth + 1);
         }
       }
       // Remaining keys
       for (const [key, value] of Object.entries(dict)) {
-        if (!PRIORITY_KEYS.includes(key)) {
+        if (!priorityKeys.includes(key)) {
           ordered[key] = this.makeOrderedDict(value, depth + 1);
         }
       }
@@ -254,14 +244,15 @@ export class SerializationContext {
   saveToDict(
     component: ComponentBase,
     agentspecVersion?: AgentSpecVersion,
-  ): ComponentAsDict {
+  ): SerializedDict {
     this.agentspecVersion = agentspecVersion ?? CURRENT_VERSION;
     this.referencingStructure = computeReferencingStructure(component);
 
-    const modelDump = this.dumpField(component) as ComponentAsDict;
-    modelDump[AGENTSPEC_VERSION_FIELD_NAME] = this.agentspecVersion;
+    const keys = getProtocolKeys(this.camelCase);
+    const modelDump = this.dumpField(component) as SerializedFields;
+    modelDump[keys.agentspecVersion] = this.agentspecVersion;
 
-    return this.makeOrderedDict(modelDump) as ComponentAsDict;
+    return this.makeOrderedDict(modelDump) as SerializedDict;
   }
 
   /** Check if a field should be excluded for the current version */
@@ -288,7 +279,7 @@ export class SerializationContext {
   /** Convert a camelCase field name to the appropriate serialized form */
   toSerializedFieldName(fieldName: string): string {
     if (this.camelCase) return fieldName;
-    if (NEVER_TRANSFORM_FIELDS.has(fieldName)) return fieldName;
+    if (ALL_PROTOCOL_FIELDS.has(fieldName)) return fieldName;
     return camelToSnake(fieldName);
   }
 }

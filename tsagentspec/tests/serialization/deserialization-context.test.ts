@@ -129,6 +129,18 @@ describe("DeserializationContext", () => {
       }) as Record<string, unknown>;
       expect(result["componentType"]).toBe("ServerTool");
     });
+
+    it("should detect nested components with componentType key in camelCase mode", () => {
+      const ctx = new DeserializationContext(makeBuiltinPlugins(), undefined, true);
+      const result = ctx.loadField({
+        componentType: "ServerTool",
+        name: "my-tool",
+        id: "550e8400-e29b-41d4-a716-446655440001",
+        metadata: {},
+      }) as Record<string, unknown>;
+      expect(result["componentType"]).toBe("ServerTool");
+      expect(result["name"]).toBe("my-tool");
+    });
   });
 
   describe("loadReference", () => {

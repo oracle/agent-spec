@@ -8,7 +8,7 @@ import { BUILTIN_SCHEMA_MAP } from "../component-registry.js";
 import type { ComponentBase } from "../component.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
 import type { SerializationContext } from "./serialization-context.js";
-import type { ComponentAsDict } from "./types.js";
+import type { SerializedFields } from "./types.js";
 
 /** Fields that are internal and should not appear in serialized output */
 const EXCLUDED_FIELDS = new Set(["componentType"]);
@@ -34,8 +34,8 @@ export class BuiltinsComponentSerializationPlugin
   serialize(
     component: ComponentBase,
     context: SerializationContext,
-  ): ComponentAsDict {
-    const serialized: ComponentAsDict = {};
+  ): SerializedFields {
+    const serialized: SerializedFields = {};
     const componentType = component.componentType;
     const obj = component as unknown as Record<string, unknown>;
 

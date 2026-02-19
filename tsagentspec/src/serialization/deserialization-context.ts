@@ -6,14 +6,20 @@
  */
 import type { AgentSpecVersion } from "../versioning.js";
 import {
-  AGENTSPEC_VERSION_FIELD_NAME,
   CURRENT_VERSION,
   PRERELEASE_AGENTSPEC_VERSIONS,
 } from "../versioning.js";
 import type { ComponentBase } from "../component.js";
 import type { ComponentDeserializationPlugin } from "./deserialization-plugin.js";
-import type { ComponentAsDict, ComponentsRegistry } from "./types.js";
-import { DANGEROUS_KEYS, DeserializationInProgressMarker } from "./types.js";
+import {
+  DANGEROUS_KEYS,
+  DeserializationInProgressMarker,
+  getProtocolKeys,
+  isComponentRef,
+  isSerializedComponent,
+  type ComponentsRegistry,
+  type SerializedDict,
+} from "./types.js";
 
 /** Legacy field name for backwards compat */
 const LEGACY_VERSION_FIELD_NAME = "air_version";
@@ -29,7 +35,7 @@ export class DeserializationContext {
     string,
     ComponentBase | DeserializationInProgressMarker
   > = new Map();
-  referencedComponents: Map<string, ComponentAsDict> = new Map();
+  referencedComponents: Map<string, SerializedDict> = new Map();
 
   constructor(
     plugins: ComponentDeserializationPlugin[],
@@ -61,9 +67,10 @@ export class DeserializationContext {
   }
 
   /** Get the component_type from a serialized dict */
-  getComponentType(content: ComponentAsDict): string {
-    const key = this.camelCase ? "componentType" : "component_type";
-    const componentType = content[key];
+  getComponentType(content: SerializedDict): string {
+    const keys = getProtocolKeys(this.camelCase);
+    const dict = content as Record<string, unknown>;
+    const componentType = dict[keys.componentType];
     if (componentType === undefined || componentType === null) {
       throw new Error(
         "Cannot deserialize: missing 'component_type' field in " +
@@ -108,17 +115,17 @@ export class DeserializationContext {
       return undefined;
     }
 
-    // Handle $component_ref
     if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      const dict = value as Record<string, unknown>;
-      if ("$component_ref" in dict) {
-        return this.loadReference(dict["$component_ref"] as string);
+      // Handle $component_ref
+      if (isComponentRef(value)) {
+        return this.loadReference(value["$component_ref"]);
       }
-      // Handle nested component (has component_type)
-      if ("component_type" in dict) {
-        return this.loadComponentFromDict(dict as ComponentAsDict);
+      // Handle nested component (has component_type or componentType)
+      if (isSerializedComponent(value)) {
+        return this.loadComponentFromDict(value);
       }
       // Plain objects - preserve keys as-is (user data), recursively load values
+      const dict = value as Record<string, unknown>;
       const result: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(dict)) {
         if (DANGEROUS_KEYS.has(k)) continue;
@@ -136,12 +143,14 @@ export class DeserializationContext {
   }
 
   /** Deserialize a full component from a dict */
-  loadComponentFromDict(content: ComponentAsDict): ComponentBase {
+  loadComponentFromDict(content: SerializedDict): ComponentBase {
+    const dict = content as Record<string, unknown>;
+
     // Merge any $referenced_components into our registry
-    if ("$referenced_components" in content) {
-      const newRefs = content["$referenced_components"] as Record<
+    if ("$referenced_components" in dict) {
+      const newRefs = dict["$referenced_components"] as Record<
         string,
-        ComponentAsDict
+        SerializedDict
       >;
       for (const [id, refContent] of Object.entries(newRefs)) {
         if (this.referencedComponents.has(id)) {
@@ -154,8 +163,8 @@ export class DeserializationContext {
     }
 
     // Handle $component_ref at the top level
-    if ("$component_ref" in content) {
-      return this.loadReference(content["$component_ref"] as string);
+    if (isComponentRef(content)) {
+      return this.loadReference(content["$component_ref"]);
     }
 
     const componentType = this.getComponentType(content);
@@ -181,14 +190,16 @@ export class DeserializationContext {
 
   /** Top-level entry point for deserialization */
   loadConfigDict(
-    content: ComponentAsDict,
+    content: SerializedDict,
     componentsRegistry?: ComponentsRegistry,
   ): ComponentBase {
+    const dict = content as Record<string, unknown>;
+    const keys = getProtocolKeys(this.camelCase);
+
     // Extract agentspec_version
-    const versionKey = this.camelCase ? "agentspecVersion" : AGENTSPEC_VERSION_FIELD_NAME;
     const versionStr =
-      (content[versionKey] as string | undefined) ??
-      (content[LEGACY_VERSION_FIELD_NAME] as string | undefined);
+      (dict[keys.agentspecVersion] as string | undefined) ??
+      (dict[LEGACY_VERSION_FIELD_NAME] as string | undefined);
 
     if (!versionStr) {
       this.agentspecVersion = CURRENT_VERSION;

@@ -6,7 +6,7 @@ import {
   type ComponentDeserializationPlugin,
   CURRENT_VERSION,
 } from "../../src/index.js";
-import type { ComponentAsDict } from "../../src/serialization/types.js";
+import type { SerializedFields, SerializedDict } from "../../src/serialization/types.js";
 import type { SerializationContext } from "../../src/serialization/serialization-context.js";
 import type { DeserializationContext } from "../../src/serialization/deserialization-context.js";
 import type { ComponentBase } from "../../src/component.js";
@@ -29,7 +29,7 @@ class CustomSerializationPlugin implements ComponentSerializationPlugin {
   serialize(
     component: ComponentBase,
     _context: SerializationContext,
-  ): ComponentAsDict {
+  ): SerializedFields {
     const custom = component as unknown as CustomComponent;
     return {
       id: custom.id,
@@ -51,7 +51,7 @@ class CustomDeserializationPlugin implements ComponentDeserializationPlugin {
   }
 
   deserialize(
-    data: ComponentAsDict,
+    data: SerializedDict,
     _context: DeserializationContext,
   ): ComponentBase {
     return {

@@ -10,7 +10,7 @@ import type { ComponentBase } from "../component.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
 import { SerializationContext } from "./serialization-context.js";
 import { BuiltinsComponentSerializationPlugin } from "./builtin-serialization-plugin.js";
-import type { ComponentAsDict } from "./types.js";
+import type { SerializedDict, DisaggregatedComponentsDict } from "./types.js";
 
 export class AgentSpecSerializer {
   private plugins: ComponentSerializationPlugin[];
@@ -34,7 +34,7 @@ export class AgentSpecSerializer {
       exportDisaggregatedComponents?: boolean;
       camelCase?: boolean;
     },
-  ): ComponentAsDict | [ComponentAsDict, ComponentAsDict] {
+  ): SerializedDict | [SerializedDict, DisaggregatedComponentsDict] {
     const opts = options ?? {};
     const disaggregated = opts.disaggregatedComponents ?? [];
     const exportDisag = opts.exportDisaggregatedComponents ?? false;
@@ -47,7 +47,7 @@ export class AgentSpecSerializer {
     }
 
     // Serialize disaggregated components separately
-    const disaggregatedDict: Record<string, ComponentAsDict> = {};
+    const disaggregatedDict: Record<string, SerializedDict> = {};
     for (const disag of disaggregated) {
       if (disag === component) {
         throw new Error("Cannot disaggregate the root component");
@@ -64,7 +64,7 @@ export class AgentSpecSerializer {
     }
 
     // Serialize the main component
-    const resolvedComponents = new Map<string, ComponentAsDict>();
+    const resolvedComponents = new Map<string, SerializedDict>();
     for (const [id, dump] of Object.entries(disaggregatedDict)) {
       resolvedComponents.set(id, dump);
     }

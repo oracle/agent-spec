@@ -167,4 +167,38 @@ describe("AgentSpecDeserializer", () => {
       ).toThrow("importOnlyReferencedComponents");
     });
   });
+
+  describe("camelCase round-trip", () => {
+    it("should round-trip an Agent with nested components in camelCase mode", () => {
+      const serializer = new AgentSpecSerializer();
+      const deserializer = new AgentSpecDeserializer();
+
+      const agent = createAgent({
+        name: "camel-agent",
+        llmConfig: createOpenAiCompatibleConfig({
+          name: "llm",
+          url: "http://localhost:8000",
+          modelId: "gpt-4",
+        }),
+        systemPrompt: "You are a {{role}} assistant.",
+        tools: [createServerTool({ name: "tool1", inputs: [stringProperty({ title: "query" })] })],
+      });
+
+      const json = serializer.toJson(agent, { camelCase: true }) as string;
+      const result = deserializer.fromJson(json, { camelCase: true }) as Record<string, unknown>;
+
+      expect(result["componentType"]).toBe("Agent");
+      expect(result["name"]).toBe("camel-agent");
+      expect(result["systemPrompt"]).toBe("You are a {{role}} assistant.");
+
+      const llm = result["llmConfig"] as Record<string, unknown>;
+      expect(llm["componentType"]).toBe("OpenAiCompatibleConfig");
+      expect(llm["modelId"]).toBe("gpt-4");
+
+      const tools = result["tools"] as Record<string, unknown>[];
+      expect(tools).toHaveLength(1);
+      expect(tools[0]!["componentType"]).toBe("ServerTool");
+      expect(tools[0]!["name"]).toBe("tool1");
+    });
+  });
 });

@@ -12,29 +12,14 @@ import type { ComponentBase } from "../component.js";
 import { propertyFromJsonSchema, type Property } from "../property.js";
 import type { ComponentDeserializationPlugin } from "./deserialization-plugin.js";
 import type { DeserializationContext } from "./deserialization-context.js";
-import { DANGEROUS_KEYS, type ComponentAsDict } from "./types.js";
+import {
+  DANGEROUS_KEYS,
+  ALL_PROTOCOL_FIELDS,
+  isSerializedComponent,
+  isComponentRef,
+  type SerializedDict,
+} from "./types.js";
 import { snakeToCamel } from "./serialization-context.js";
-
-/** Fields that should not be converted from snake_case */
-const NEVER_TRANSFORM_FIELDS = new Set([
-  "$component_ref",
-  "$referenced_components",
-  "component_type",
-  "agentspec_version",
-  "air_version",
-  "component_plugin_name",
-  "component_plugin_version",
-]);
-
-/** Fields that are metadata-only and should be stripped before calling the factory */
-const METADATA_FIELDS = new Set([
-  "component_type",
-  "agentspec_version",
-  "air_version",
-  "component_plugin_name",
-  "component_plugin_version",
-  "$referenced_components",
-]);
 
 /**
  * Fields that hold Property[] values.
@@ -47,22 +32,6 @@ const PROPERTY_ARRAY_FIELDS = new Set(["inputs", "outputs"]);
  * that need conversion. All other object values are user data with preserved keys.
  */
 const MODEL_OBJECT_FIELDS = new Set(["defaultGenerationParameters"]);
-
-/** Check if a value looks like a serialized component dict */
-function isSerializedComponent(value: unknown): value is ComponentAsDict {
-  if (value === null || typeof value !== "object" || Array.isArray(value))
-    return false;
-  return "component_type" in (value as Record<string, unknown>);
-}
-
-/** Check if a value looks like a $component_ref pointer */
-function isComponentRef(
-  value: unknown,
-): value is { $component_ref: string } {
-  if (value === null || typeof value !== "object" || Array.isArray(value))
-    return false;
-  return "$component_ref" in (value as Record<string, unknown>);
-}
 
 /** Deserialize a jsonSchema dict into a Property */
 function deserializeProperty(value: unknown): Property {
@@ -96,7 +65,7 @@ export class BuiltinsComponentDeserializationPlugin
   }
 
   deserialize(
-    data: ComponentAsDict,
+    data: SerializedDict,
     context: DeserializationContext,
   ): ComponentBase {
     const componentType = context.getComponentType(data);
@@ -111,15 +80,12 @@ export class BuiltinsComponentDeserializationPlugin
     const opts: Record<string, unknown> = {};
     const useCamelCase = context.camelCase;
     for (const [key, value] of Object.entries(data)) {
-      if (METADATA_FIELDS.has(key)) continue;
-      // In camelCase mode, skip the camelCase metadata keys too
-      if (useCamelCase && (key === "componentType" || key === "agentspecVersion" || key === "componentPluginName" || key === "componentPluginVersion")) continue;
+      // Skip all protocol fields (both snake_case and camelCase forms)
+      if (ALL_PROTOCOL_FIELDS.has(key)) continue;
 
       const camelKey = useCamelCase
         ? key
-        : NEVER_TRANSFORM_FIELDS.has(key)
-          ? key
-          : snakeToCamel(key);
+        : snakeToCamel(key);
 
       // Handle Property array fields (inputs, outputs)
       if (PROPERTY_ARRAY_FIELDS.has(camelKey) && Array.isArray(value)) {

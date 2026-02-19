@@ -5,7 +5,7 @@
  */
 import type { ComponentBase } from "../component.js";
 import type { DeserializationContext } from "./deserialization-context.js";
-import type { ComponentAsDict } from "./types.js";
+import type { SerializedDict } from "./types.js";
 
 export interface ComponentDeserializationPlugin {
   readonly pluginName: string;
@@ -14,9 +14,9 @@ export interface ComponentDeserializationPlugin {
   /** Return the component type strings this plugin can deserialize */
   supportedComponentTypes(): string[];
 
-  /** Deserialize a plain dict to a component */
+  /** Deserialize a serialized component dict to a component */
   deserialize(
-    data: ComponentAsDict,
+    data: SerializedDict,
     context: DeserializationContext,
   ): ComponentBase;
 }
