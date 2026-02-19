@@ -7,6 +7,10 @@ import {
   createCatchExceptionNode,
   createAgent,
   createOpenAiCompatibleConfig,
+  createFlow,
+  createStartNode,
+  createEndNode,
+  createControlFlowEdge,
   stringProperty,
   integerProperty,
   DEFAULT_INPUT_MESSAGE_OUTPUT,
@@ -29,6 +33,53 @@ function makeAgent() {
     systemPrompt: "Hello",
     inputs: [stringProperty({ title: "query" })],
     outputs: [stringProperty({ title: "answer" })],
+  });
+}
+
+/** Create a minimal valid Flow with the given inputs and outputs. */
+function makeTestFlow(opts?: {
+  inputs?: ReturnType<typeof stringProperty>[];
+  outputs?: ReturnType<typeof stringProperty>[];
+}) {
+  const start = createStartNode({
+    name: "start",
+    inputs: opts?.inputs,
+  });
+  const end = createEndNode({
+    name: "end",
+    outputs: opts?.outputs,
+  });
+  const edge = createControlFlowEdge({
+    name: "edge",
+    fromNode: start,
+    toNode: end,
+  });
+  return createFlow({
+    name: "test-flow",
+    startNode: start,
+    nodes: [start, end],
+    controlFlowConnections: [edge],
+  });
+}
+
+/** Create a minimal Flow whose EndNodes have the given branch names. */
+function makeTestFlowWithBranches(branchNames: string[]) {
+  const start = createStartNode({ name: "start" });
+  const endNodes = branchNames.map((bn, i) =>
+    createEndNode({ name: `end-${i}`, branchName: bn }),
+  );
+  const edges = endNodes.map((end, i) =>
+    createControlFlowEdge({
+      name: `edge-${i}`,
+      fromNode: start,
+      toNode: end,
+    }),
+  );
+  return createFlow({
+    name: "test-flow",
+    startNode: start,
+    nodes: [start, ...endNodes],
+    controlFlowConnections: edges,
   });
 }
 
@@ -73,11 +124,10 @@ describe("AgentNode input/output inference", () => {
 
 describe("FlowNode input/output inference", () => {
   it("should infer inputs/outputs from subflow", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       inputs: [stringProperty({ title: "flow_in" })],
       outputs: [stringProperty({ title: "flow_out" })],
-      nodes: [],
-    };
+    });
     const node = createFlowNode({ name: "flow-node", subflow });
     expect(node.inputs).toHaveLength(1);
     expect(node.inputs![0]!.title).toBe("flow_in");
@@ -86,11 +136,10 @@ describe("FlowNode input/output inference", () => {
   });
 
   it("should use provided inputs/outputs over subflow's", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       inputs: [stringProperty({ title: "flow_in" })],
       outputs: [stringProperty({ title: "flow_out" })],
-      nodes: [],
-    };
+    });
     const customInput = integerProperty({ title: "custom" });
     const node = createFlowNode({
       name: "flow-node",
@@ -104,19 +153,14 @@ describe("FlowNode input/output inference", () => {
   });
 
   it("should default to empty when subflow has no inputs/outputs", () => {
-    const subflow = { nodes: [] };
+    const subflow = makeTestFlow();
     const node = createFlowNode({ name: "flow-node", subflow });
     expect(node.inputs).toEqual([]);
     expect(node.outputs).toEqual([]);
   });
 
   it("should extract branches from EndNodes in subflow", () => {
-    const subflow = {
-      nodes: [
-        { componentType: "EndNode", branchName: "success" },
-        { componentType: "EndNode", branchName: "failure" },
-      ],
-    };
+    const subflow = makeTestFlowWithBranches(["success", "failure"]);
     const node = createFlowNode({ name: "flow-node", subflow });
     expect(node.branches).toContain("success");
     expect(node.branches).toContain("failure");
@@ -168,14 +212,14 @@ describe("InputMessageNode", () => {
 
 describe("ParallelFlowNode", () => {
   it("should aggregate inputs from multiple subflows", () => {
-    const subflow1 = {
+    const subflow1 = makeTestFlow({
       inputs: [stringProperty({ title: "input_a" })],
       outputs: [stringProperty({ title: "output_a" })],
-    };
-    const subflow2 = {
+    });
+    const subflow2 = makeTestFlow({
       inputs: [stringProperty({ title: "input_b" })],
       outputs: [stringProperty({ title: "output_b" })],
-    };
+    });
     const node = createParallelFlowNode({
       name: "parallel-node",
       subflows: [subflow1, subflow2],
@@ -185,10 +229,10 @@ describe("ParallelFlowNode", () => {
   });
 
   it("should use provided inputs/outputs over inferred ones", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       inputs: [stringProperty({ title: "sub_in" })],
       outputs: [stringProperty({ title: "sub_out" })],
-    };
+    });
     const node = createParallelFlowNode({
       name: "parallel-node",
       subflows: [subflow],
@@ -211,11 +255,10 @@ describe("ParallelFlowNode", () => {
 
 describe("CatchExceptionNode", () => {
   it("should infer inputs from subflow", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       inputs: [stringProperty({ title: "sub_in" })],
       outputs: [stringProperty({ title: "sub_out" })],
-      nodes: [],
-    };
+    });
     const node = createCatchExceptionNode({
       name: "catch-node",
       subflow,
@@ -225,10 +268,9 @@ describe("CatchExceptionNode", () => {
   });
 
   it("should append caught_exception_info to subflow outputs", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       outputs: [stringProperty({ title: "sub_out" })],
-      nodes: [],
-    };
+    });
     const node = createCatchExceptionNode({
       name: "catch-node",
       subflow,
@@ -239,10 +281,9 @@ describe("CatchExceptionNode", () => {
   });
 
   it("should use provided outputs over inferred ones", () => {
-    const subflow = {
+    const subflow = makeTestFlow({
       outputs: [stringProperty({ title: "sub_out" })],
-      nodes: [],
-    };
+    });
     const node = createCatchExceptionNode({
       name: "catch-node",
       subflow,
@@ -253,7 +294,7 @@ describe("CatchExceptionNode", () => {
   });
 
   it("should include caught_exception_branch in branches", () => {
-    const subflow = { nodes: [] };
+    const subflow = makeTestFlow();
     const node = createCatchExceptionNode({
       name: "catch-node",
       subflow,
@@ -262,11 +303,7 @@ describe("CatchExceptionNode", () => {
   });
 
   it("should include EndNode branches from subflow", () => {
-    const subflow = {
-      nodes: [
-        { componentType: "EndNode", branchName: "done" },
-      ],
-    };
+    const subflow = makeTestFlowWithBranches(["done"]);
     const node = createCatchExceptionNode({
       name: "catch-node",
       subflow,

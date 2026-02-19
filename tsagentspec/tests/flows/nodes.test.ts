@@ -73,24 +73,24 @@ describe("StartNode", () => {
     expect(node.branches).toEqual([DEFAULT_NEXT_BRANCH]);
   });
 
-  it("should copy inputs from outputs when only outputs provided", () => {
+  it("should not mirror inputs from outputs", () => {
     const node = createStartNode({
       name: "start",
       outputs: [stringProperty({ title: "x" })],
     });
-    expect(node.inputs).toHaveLength(1);
-    expect(node.inputs![0]!.title).toBe("x");
+    expect(node.inputs).toEqual([]);
     expect(node.outputs).toHaveLength(1);
     expect(node.outputs![0]!.title).toBe("x");
   });
 
-  it("should copy outputs from inputs when only inputs provided", () => {
+  it("should not mirror outputs from inputs", () => {
     const node = createStartNode({
       name: "start",
       inputs: [stringProperty({ title: "y" })],
     });
-    expect(node.outputs).toHaveLength(1);
-    expect(node.outputs![0]!.title).toBe("y");
+    expect(node.inputs).toHaveLength(1);
+    expect(node.inputs![0]!.title).toBe("y");
+    expect(node.outputs).toEqual([]);
   });
 
   it("should default inputs and outputs to empty when neither provided", () => {
@@ -126,13 +126,14 @@ describe("EndNode", () => {
     expect(node.branchName).toBe("success");
   });
 
-  it("should copy inputs from outputs (copy semantics)", () => {
+  it("should not mirror inputs from outputs", () => {
     const node = createEndNode({
       name: "end",
       outputs: [stringProperty({ title: "result" })],
     });
-    expect(node.inputs).toHaveLength(1);
-    expect(node.inputs![0]!.title).toBe("result");
+    expect(node.inputs).toEqual([]);
+    expect(node.outputs).toHaveLength(1);
+    expect(node.outputs![0]!.title).toBe("result");
   });
 });
 
