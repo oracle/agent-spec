@@ -40,5 +40,5 @@ export function isSensitiveField(
   componentType: string,
   fieldName: string,
 ): boolean {
-  return SENSITIVE_FIELDS[componentType]?.has(fieldName) ?? false;
+  return (SENSITIVE_FIELDS as Record<string, Set<string> | undefined>)[componentType]?.has(fieldName) ?? false;
 }

@@ -1,6 +1,7 @@
 /**
  * FlowBuilder - builder pattern for constructing Agent Spec Flows.
  */
+import type { ComponentWithIO } from "../component.js";
 import type { Property } from "../property.js";
 import { createStartNode } from "./nodes/start-node.js";
 import { createEndNode } from "./nodes/end-node.js";
@@ -115,9 +116,9 @@ export class FlowBuilder {
     this.dataFlowConnections.push(
       createDataFlowEdge({
         name: edgeName ?? "data_flow_edge",
-        sourceNode: src,
+        sourceNode: src as ComponentWithIO,
         sourceOutput,
-        destinationNode: dst,
+        destinationNode: dst as ComponentWithIO,
         destinationInput: destInput,
       }),
     );

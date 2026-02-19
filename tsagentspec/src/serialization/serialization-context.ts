@@ -257,7 +257,7 @@ export class SerializationContext {
 
   /** Check if a field should be excluded for the current version */
   isFieldVersionGated(componentType: string, fieldName: string): boolean {
-    const gatedFields = VERSION_GATED_FIELDS[componentType];
+    const gatedFields = (VERSION_GATED_FIELDS as Record<string, Record<string, AgentSpecVersion> | undefined>)[componentType];
     if (!gatedFields) return false;
 
     // Check if the entire component is version-gated
