@@ -38,15 +38,6 @@ def _prepare_openai_compatible_url(url: str) -> str:
     This ensures:
     - a scheme (defaults to http)
     - a canonical ``/v1`` base path, regardless of any existing path
-
-    Examples
-    --------
-    >>> _prepare_openai_compatible_url("localhost:8000")
-    'http://localhost:8000/v1'
-    >>> _prepare_openai_compatible_url("http://localhost:8000/")
-    'http://localhost:8000/v1'
-    >>> _prepare_openai_compatible_url("http://localhost:8000/v1/")
-    'http://localhost:8000/v1'
     """
 
     url = url.strip()
