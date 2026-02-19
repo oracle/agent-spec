@@ -19,8 +19,8 @@ export function createStartNode(opts: {
   inputs?: Property[];
   outputs?: Property[];
 }): StartNode {
-  const inputs = opts.inputs ?? opts.outputs ?? [];
-  const outputs = opts.outputs ?? opts.inputs ?? [];
+  const inputs = opts.inputs ?? [];
+  const outputs = opts.outputs ?? [];
   return Object.freeze(
     StartNodeSchema.parse({
       ...opts,

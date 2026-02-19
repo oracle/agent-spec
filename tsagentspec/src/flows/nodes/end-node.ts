@@ -21,8 +21,8 @@ export function createEndNode(opts: {
   inputs?: Property[];
   outputs?: Property[];
 }): EndNode {
-  const inputs = opts.inputs ?? opts.outputs ?? [];
-  const outputs = opts.outputs ?? opts.inputs ?? [];
+  const inputs = opts.inputs ?? [];
+  const outputs = opts.outputs ?? [];
   return Object.freeze(
     EndNodeSchema.parse({
       ...opts,

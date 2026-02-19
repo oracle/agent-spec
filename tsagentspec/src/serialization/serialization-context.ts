@@ -195,7 +195,7 @@ export class SerializationContext {
         componentDump["$referenced_components"] = refs;
       }
 
-      this.resolvedComponents.set(componentId, componentDump as SerializedDict);
+      this.resolvedComponents.set(mappedId, componentDump as SerializedDict);
     }
 
     // If this component should be referenced (used in multiple places) or
