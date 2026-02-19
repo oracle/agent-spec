@@ -5,15 +5,13 @@
  * When serializing for an older version, these fields are excluded.
  */
 import { AgentSpecVersion } from "../versioning.js";
+import type { ComponentTypeName } from "../component.js";
 
 /**
  * Maps componentType -> { fieldName -> minimum AgentSpecVersion }
  * Special key "_self" means the entire component requires that version.
  */
-export const VERSION_GATED_FIELDS: Record<
-  string,
-  Record<string, AgentSpecVersion>
-> = {
+export const VERSION_GATED_FIELDS = {
   Agent: {
     toolboxes: AgentSpecVersion.V25_4_2,
     humanInTheLoop: AgentSpecVersion.V25_4_2,
@@ -52,4 +50,4 @@ export const VERSION_GATED_FIELDS: Record<
   MCPToolBox: {
     _self: AgentSpecVersion.V25_4_2,
   },
-};
+} satisfies Partial<Record<ComponentTypeName, Record<string, AgentSpecVersion>>>;

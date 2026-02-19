@@ -1,11 +1,12 @@
 /**
  * Sensitive field tracking for serialization exclusion.
  */
+import type { ComponentTypeName } from "./component.js";
 
 export const SENSITIVE_FIELD_MARKER = "SENSITIVE_FIELD_MARKER" as const;
 
 /** Maps componentType -> set of field names that are sensitive */
-export const SENSITIVE_FIELDS: Record<string, Set<string>> = {
+export const SENSITIVE_FIELDS = {
   OpenAiCompatibleConfig: new Set(["apiKey"]),
   OllamaConfig: new Set(["apiKey"]),
   VllmConfig: new Set(["apiKey"]),
@@ -32,7 +33,7 @@ export const SENSITIVE_FIELDS: Record<string, Set<string>> = {
     "password",
     "sslkey",
   ]),
-};
+} satisfies Partial<Record<ComponentTypeName, Set<string>>>;
 
 /** Check if a field on a component type is sensitive */
 export function isSensitiveField(

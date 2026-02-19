@@ -110,9 +110,13 @@ export class AgentSpecDeserializer {
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(json.length);
-    const parsed = JSON.parse(json) as SerializedDict | DisaggregatedComponentsDict;
-    this.checkDepth(parsed);
-    return this._fromDict(parsed, options);
+    const parsed: unknown = JSON.parse(json);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      throw new Error(
+        `Expected a JSON object, got ${Array.isArray(parsed) ? "array" : typeof parsed}`,
+      );
+    }
+    return this._fromDict(parsed as SerializedDict | DisaggregatedComponentsDict, options);
   }
 
   /** Deserialize a component from a YAML string */
@@ -125,16 +129,20 @@ export class AgentSpecDeserializer {
     },
   ): ComponentBase | Record<string, ComponentBase> {
     this.checkInputSize(yamlStr.length);
-    const parsed = YAML.parse(yamlStr, { schema: "core" }) as SerializedDict | DisaggregatedComponentsDict;
-    this.checkDepth(parsed);
-    return this._fromDict(parsed, options);
+    const parsed: unknown = YAML.parse(yamlStr, { schema: "core" });
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      throw new Error(
+        `Expected a YAML mapping, got ${Array.isArray(parsed) ? "array" : typeof parsed}`,
+      );
+    }
+    return this._fromDict(parsed as SerializedDict | DisaggregatedComponentsDict, options);
   }
 
   /** Check that input size is within limits */
   private checkInputSize(size: number): void {
     if (size > this.maxInputSize) {
       throw new Error(
-        `Input size ${size} bytes exceeds maximum of ${this.maxInputSize} bytes`,
+        `Input size ${size} characters exceeds maximum of ${this.maxInputSize} characters`,
       );
     }
   }
