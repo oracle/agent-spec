@@ -33,6 +33,7 @@ openai-agents==0.6.9
 libcst==1.8.5
 
 # Evaluation
+anyio==4.11.0
 pandas==2.3.3
 oci==2.167.0
 litellm==1.81.13
