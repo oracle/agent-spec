@@ -1,0 +1,152 @@
+component_type: Flow
+id: 3b6a0c5e-1c2d-4f3a-9b5d-7a8c9d0e1f2a
+name: ApiNode flow with JSON array data
+description: Flow that calls an ApiNode posting a JSON array body
+metadata: {}
+inputs:
+- title: city
+  type: string
+- title: temp
+  type: string
+- title: user
+  type: string
+outputs:
+- title: processed_city
+  type: string
+start_node:
+  $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+nodes:
+- $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+- $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+- $component_ref: 33333333-4444-4555-8666-cccccccccccc
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: d1111111-2222-4333-8444-555555555555
+  name: start_to_api
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  from_branch: null
+  to_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+- component_type: ControlFlowEdge
+  id: d2222222-3333-4444-8555-666666666666
+  name: api_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  from_branch: null
+  to_node:
+    $component_ref: 33333333-4444-4555-8666-cccccccccccc
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: e1111111-2222-4333-8444-777777777777
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  source_output: city
+  destination_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  destination_input: city
+- component_type: DataFlowEdge
+  id: e2222222-3333-4444-8555-888888888888
+  name: temp_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  source_output: temp
+  destination_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  destination_input: temp
+- component_type: DataFlowEdge
+  id: e3333333-4444-4555-8666-999999999999
+  name: user_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  source_output: user
+  destination_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  destination_input: user
+- component_type: DataFlowEdge
+  id: e4444444-5555-4666-8777-000000000000
+  name: processed_city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  source_output: processed_city
+  destination_node:
+    $component_ref: 33333333-4444-4555-8666-cccccccccccc
+  destination_input: processed_city
+$referenced_components:
+  11111111-2222-4333-8444-aaaaaaaaaaaa:
+    component_type: StartNode
+    id: 11111111-2222-4333-8444-aaaaaaaaaaaa
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: temp
+      type: string
+    - title: user
+      type: string
+    outputs:
+    - title: city
+      type: string
+    - title: temp
+      type: string
+    - title: user
+      type: string
+    branches:
+    - next
+  22222222-3333-4444-8555-bbbbbbbbbbbb:
+    component_type: ApiNode
+    id: 22222222-3333-4444-8555-bbbbbbbbbbbb
+    name: Process array (json)
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: temp
+      type: string
+    - title: user
+      type: string
+    outputs:
+    - title: processed_city
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/array/process_json
+    http_method: POST
+    api_spec_uri: null
+    data:
+      - 'forecast'
+      - { location: '{{ city }}', temp: '{{ temp }}' }
+    query_params: {}
+    headers:
+      X-Caller: '{{ user }}'
+  33333333-4444-4555-8666-cccccccccccc:
+    component_type: EndNode
+    id: 33333333-4444-4555-8666-cccccccccccc
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: processed_city
+      type: string
+    outputs:
+    - title: processed_city
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

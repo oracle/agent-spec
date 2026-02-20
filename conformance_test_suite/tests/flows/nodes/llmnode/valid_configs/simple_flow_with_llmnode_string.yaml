@@ -1,0 +1,115 @@
+component_type: Flow
+id: 07b7bcbd-8653-492f-b67c-6d31405663ae
+name: Animal weight comparison flow
+description: null
+metadata: {}
+inputs:
+- title: input_animal
+  type: string
+outputs:
+- title: heavier_animal
+  type: string
+start_node:
+  $component_ref: d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3
+nodes:
+- $component_ref: d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3
+- $component_ref: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+- $component_ref: 32fcb8a1-17b8-4436-940f-802dbeff5aa4
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 9dc1174d-6b9f-412e-8c4a-cae26ace7f85
+  name: start_to_comparator_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3
+  from_branch: null
+  to_node:
+    $component_ref: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+- component_type: ControlFlowEdge
+  id: af94a200-9c22-4a9b-97a2-fbcc3f763b96
+  name: comparator_to_end_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+  from_branch: null
+  to_node:
+    $component_ref: 32fcb8a1-17b8-4436-940f-802dbeff5aa4
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: f3744303-adaf-4506-ba8e-2a1efc38a0a8
+  name: start_to_comparator_input_animal_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3
+  source_output: input_animal
+  destination_node:
+    $component_ref: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+  destination_input: input_animal
+- component_type: DataFlowEdge
+  id: 5418b870-3f8c-4b11-91e6-f7d555c5e899
+  name: comparator_to_end_heavier_animal_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+  source_output: heavier_animal
+  destination_node:
+    $component_ref: 32fcb8a1-17b8-4436-940f-802dbeff5aa4
+  destination_input: heavier_animal
+$referenced_components:
+  48d8da39-3b0b-4b3b-9b37-32365f672e34:
+    component_type: LlmNode
+    id: 48d8da39-3b0b-4b3b-9b37-32365f672e34
+    name: Comparator node
+    description: null
+    metadata: {}
+    inputs:
+    - title: input_animal
+      type: string
+    outputs:
+    - title: heavier_animal
+      type: string
+    branches:
+    - next
+    llm_config:
+      component_type: OpenAiCompatibleConfig
+      id: a8c9677c-6dcd-4133-9255-bd8c1c184707
+      name: Llama-3.1-70B-Instruct
+      description: null
+      metadata: {}
+      default_generation_parameters: null
+      url: http://localhost:5006
+      model_id: /storage/models/Llama-3.1-70B-Instruct
+    prompt_template: "You are a weight comparison agent.\n    Which is likely heavier, a dog or {{input_animal}}?\n    Your answer should be a single word: the name of the heavier animal.\n    Return only the result.\n    Do not include any reasoning or extra text."
+  d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3:
+    component_type: StartNode
+    id: d5cddf6b-a66e-4db3-8e7c-4e285e09b5c3
+    name: Start node
+    description: null
+    metadata: {}
+    inputs:
+    - title: input_animal
+      type: string
+    outputs:
+    - title: input_animal
+      type: string
+    branches:
+    - next
+  32fcb8a1-17b8-4436-940f-802dbeff5aa4:
+    component_type: EndNode
+    id: 32fcb8a1-17b8-4436-940f-802dbeff5aa4
+    name: End node
+    description: null
+    metadata: {}
+    inputs:
+    - title: heavier_animal
+      type: string
+    outputs:
+    - title: heavier_animal
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

@@ -1,0 +1,91 @@
+$referenced_components:
+  collatz_tool:
+    component_type: ServerTool
+    description: Tool that computes the next number of the Collatz sequence
+    id: collatz_tool
+    inputs:
+    - title: sequence_element
+      type: integer
+      default: 44
+    name: Collatz Tool
+    outputs:
+    - title: sequence_element
+      type: integer
+  starttotool:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: start_node
+    id: starttotool
+    metadata: {}
+    name: start->tool
+    to_node:
+      $component_ref: collatz_tool_node
+  tooltoself:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: collatz_tool_node
+    id: tooltoself
+    metadata: {}
+    name: tool->tool
+    to_node:
+      $component_ref: collatz_tool_node
+  tooltoend:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: collatz_tool_node
+    id: tooltoend
+    metadata: {}
+    name: tool->end
+    to_node:
+      $component_ref: end_node
+  start_node:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: start_node
+    inputs: []
+    metadata: {}
+    name: start_node
+    outputs: []
+  collatz_tool_node:
+    component_type: ToolNode
+    id: collatz_tool_node
+    name: Executed the tool collatz_tool
+    tool: {$component_ref: collatz_tool}
+  end_node:
+    branches: []
+    branch_name: next
+    component_type: EndNode
+    description: null
+    id: end_node
+    inputs: []
+    metadata: {}
+    name: end_node
+    outputs: []
+component_type: Flow
+name: Compute the Collatz sequence starting from 44
+control_flow_connections:
+- $component_ref: starttotool
+- $component_ref: tooltoself
+- $component_ref: tooltoend
+data_flow_connections:
+- component_type: DataFlowEdge
+  destination_input: sequence_element
+  destination_node: {$component_ref: collatz_tool_node}
+  name: data_edge
+  source_node: {$component_ref: collatz_tool_node}
+  source_output: sequence_element
+nodes:
+- $component_ref: start_node
+- $component_ref: end_node
+- $component_ref: collatz_tool_node
+start_node:
+  $component_ref: start_node
+agentspec_version: 25.4.1

@@ -1,0 +1,31 @@
+component_type: Agent
+id: 69cd549e-baef-4f51-b148-1371a9d97142
+name: my_agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: cfd9b174-04c3-4408-81ef-828a059fcb44
+  name: vllm
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: [[LLAMA70BV33_API_URL]]
+  model_id: /storage/models/Llama-3.3-70B-Instruct
+system_prompt: Be helpful
+tools:
+- component_type: ServerTool
+  id: bb7cd70d-62a7-4348-b5e1-49283ac753c8
+  name: unlock_safe
+  metadata: {}
+  description: Use the password 'ZOTTFFSSEN'
+  inputs:
+  - title: password
+    type: string
+    description: The password needed to unlock
+  outputs:
+  - title: status
+    type: string
+agentspec_version: 25.4.1

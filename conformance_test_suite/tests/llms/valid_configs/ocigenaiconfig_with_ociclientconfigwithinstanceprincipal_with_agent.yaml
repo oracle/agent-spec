@@ -1,0 +1,33 @@
+component_type: Agent
+description: null
+id: 6ebf2731-c9ed-4550-b3ce-0a5e6f5bef74
+inputs: []
+llm_config:
+  client_config:
+    auth_type: INSTANCE_PRINCIPAL
+    component_type: OciClientConfigWithInstancePrincipal
+    description: null
+    id: fec4b0a8-38dd-4417-9670-332ff518d24c
+    metadata: {}
+    name: ocigenai
+    service_endpoint: my_llm_endpoint
+  compartment_id: my_compartment
+  component_type: OciGenAiConfig
+  default_generation_parameters: null
+  description: my remote oci llm
+  id: 6bf79b24-b69f-423e-9a1e-5bc4d9ff62f7
+  metadata: {}
+  model_id: meta.llama-3.3-70b-instruct
+  name: config.name
+metadata: {}
+name: Calculator agent
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: "You are a math calculating agent.\n    Your answer should be a single\
+  \ string. If it is a mathematical expression then return its calculation result\
+  \ only.\n    Example: if 5x2, return 10 (not 5x2 = 10).\n    Do not include any\
+  \ units, reasoning, or extra text."
+tools: []
+agentspec_version: 25.4.1

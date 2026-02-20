@@ -1,0 +1,44 @@
+component_type: Agent
+id: 77777777-7777-4777-8777-777777777777
+name: Agent with RemoteTool top-level city JSON
+description: Agent calling a RemoteTool that posts a simple JSON object with city
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: VllmConfig
+  id: 88888888-8888-4888-8888-888888888888
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: |
+  You are a helpful weather agent.
+  Your duty is to compute the result of the given operation using tools, and to output the result.
+  It's important that you reply with the result only.
+tools:
+- component_type: RemoteTool
+  id: 99999999-9999-4999-8999-999999999999
+  name: forecast_weather_simple
+  description: Returns a forecast of the weather for the chosen city (top-level city)
+  metadata: {}
+  inputs:
+  - title: city
+    type: string
+  outputs:
+  - title: weather
+    type: string
+  url: http://localhost:5008/weather/forecast_top_json
+  http_method: POST
+  api_spec_uri: null
+  data:
+    city: '{{city}}'
+  query_params: {}
+  headers: {}
+agentspec_version: 25.4.2

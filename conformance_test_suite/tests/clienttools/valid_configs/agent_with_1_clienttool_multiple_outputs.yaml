@@ -1,0 +1,47 @@
+component_type: Agent
+description: An agent that provides assistance with tool usage.
+id: 7dd4abde-e548-4244-9d51-9652d88562f6
+inputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  default_generation_parameters:
+    max_tokens: null
+    temperature: 0.1
+    top_p: null
+  description: null
+  id: 7af1d8f3-a8e4-471f-82f2-6e351a7b50cf
+  metadata: {}
+  model_id: Llama-4-Maverick
+  name: llama-maverick
+  url: http://localhost:5006
+metadata: {}
+name: Calculator agent with a tool
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: 'You are a helpful calculator agent.
+
+  Your duty is to compute the result of the given operations using tools, and to output
+  the result.
+
+  It''s important that you reply with the result only.
+
+  '
+tools:
+- component_type: ClientTool
+  description: Sum and product of two numbers
+  id: 8b6ecc4e-5400-421c-9079-db3a2e8b0da8
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: sum_product_tool
+  outputs:
+  - title: sum
+    type: number
+  - title: product
+    type: number
+agentspec_version: 25.4.1
