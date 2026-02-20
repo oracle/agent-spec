@@ -70,9 +70,9 @@ setup(
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
         "httpx>0.28.0",
+        # 4rth party dependencies
         "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
         "urllib3>=2.5.0",  # needed to avoid a CVE present in earlier versions
-        # 4rth party dependencies
     ],
     test_suite="tests",
     entry_points={
