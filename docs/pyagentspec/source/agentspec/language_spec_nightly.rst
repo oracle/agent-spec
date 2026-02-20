@@ -2656,9 +2656,7 @@ discussions, and included in future versions.
 Among them, we can highlight:
 
 - Memory
-- Data sources & search support (e.g., for easy RAG setup)
 - Planning
-- Multi-agent systems
 
 These topics will be covered in future versions of Agent Spec.
 
