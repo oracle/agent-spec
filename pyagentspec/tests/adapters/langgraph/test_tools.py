@@ -698,3 +698,44 @@ def test_invalid_confirmation_resume_payload_raises() -> None:
         ),
     ):
         app.invoke(bad, config=config)
+
+
+def test_remote_tool_timeout_is_forwarded_to_httpx() -> None:
+    """Verify that the timeout field on RemoteTool is forwarded to httpx.request."""
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    remote_tool = RemoteTool(
+        name="slow_service",
+        description="A slow remote service",
+        url="https://example.com/api",
+        http_method="GET",
+        timeout=300.0,
+    )
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
+        mock_request.return_value = DummyResponse({"result": "ok"})
+        lang_tool.func()
+        _, called_kwargs = mock_request.call_args
+        assert called_kwargs["timeout"] == 300.0
+
+
+def test_remote_tool_default_timeout_is_none() -> None:
+    """Verify that timeout defaults to None when not set on RemoteTool."""
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    remote_tool = RemoteTool(
+        name="default_service",
+        description="A remote service with default timeout",
+        url="https://example.com/api",
+        http_method="GET",
+    )
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
+        mock_request.return_value = DummyResponse({"result": "ok"})
+        lang_tool.func()
+        _, called_kwargs = mock_request.call_args
+        assert called_kwargs["timeout"] is None

@@ -54,6 +54,10 @@ class RemoteTool(Tool):
     """Additional headers for the API call.
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
+    timeout: Optional[float] = None
+    """Timeout in seconds for the HTTP request.
+       Defaults to None, which uses the httpx default timeout (5 seconds).
+       Set to a higher value for slow endpoints (e.g. transcription, inference)."""
 
     def _get_inferred_inputs(self) -> List["Property"]:
         return get_placeholder_properties_from_json_object(
