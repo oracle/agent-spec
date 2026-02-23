@@ -24,6 +24,28 @@ llm_config = VllmConfig(
 )
 # .. end-vllm_config
 
+# .. llm_retry_policy:
+from pyagentspec import RetryPolicy
+from pyagentspec.llms import LlmGenerationConfig, VllmConfig
+
+retry_policy = RetryPolicy(
+    max_attempts=4,
+    request_timeout=30.0,
+    initial_retry_delay=0.5,
+    max_retry_delay=8.0,
+)
+
+llm_config_with_retry_policy = VllmConfig(
+    name="vllm-llama-4-maverick-with-retries",
+    model_id="llama-4-maverick",
+    url="http://url.to.my.vllm.server/llama4mav",
+    default_generation_parameters=LlmGenerationConfig(
+        max_tokens=512, temperature=1.0, top_p=1.0
+    ),
+    retry_policy=retry_policy,
+)
+# .. end-llm_retry_policy
+
 # .. agent:
 from pyagentspec import Agent
 
@@ -86,6 +108,25 @@ llm_config = VllmConfig(
     model_id="llama-4-maverick",
     url="http://url.to.my.vllm.server/llama4mav",
     default_generation_parameters=generation_config,
+)
+
+from pyagentspec import RetryPolicy
+
+retry_policy = RetryPolicy(
+    max_attempts=4,
+    request_timeout=30.0,
+    initial_retry_delay=0.5,
+    max_retry_delay=8.0,
+)
+
+llm_config_with_retry_policy = VllmConfig(
+    name="vllm-llama-4-maverick-with-retries",
+    model_id="llama-4-maverick",
+    url="http://url.to.my.vllm.server/llama4mav",
+    default_generation_parameters=LlmGenerationConfig(
+        max_tokens=512, temperature=1.0, top_p=1.0
+    ),
+    retry_policy=retry_policy,
 )
 
 from pyagentspec import Agent

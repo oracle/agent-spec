@@ -273,8 +273,8 @@
         ]
     },
     {
-        "name": "Authentication",
-        "path": "auth",
+        "name": "Connectivity & Resilience",
+        "path": "connectivity_and_resilience",
         "classes": [
             {"path": "pyagentspec.auth.AuthConfig"},
             {"path": "pyagentspec.auth.OAuthEndpoints"},
@@ -282,7 +282,8 @@
             {"path": "pyagentspec.auth.PKCEPolicy"},
             {"path": "pyagentspec.auth.OAuthClientConfig"},
             {"path": "pyagentspec.auth.ScopePolicy"},
-            {"path": "pyagentspec.auth.OAuthConfig"}
+            {"path": "pyagentspec.auth.OAuthConfig"},
+            {"path": "pyagentspec.retrypolicy.RetryPolicy"}
         ]
     },
     {

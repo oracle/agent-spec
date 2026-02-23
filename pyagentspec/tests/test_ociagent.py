@@ -9,7 +9,9 @@ import pytest
 from pyagentspec.flows.nodes import AgentNode
 from pyagentspec.llms.ociclientconfig import OciClientConfigWithInstancePrincipal
 from pyagentspec.ociagent import OciAgent
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .conftest import read_agentspec_config_file
 
@@ -24,6 +26,20 @@ def oci_agent() -> OciAgent:
             service_endpoint="my_service_endpoint", name="my_oci_config"
         ),
         agent_endpoint_id="my_agent_endpoint",
+    )
+
+
+@pytest.fixture
+def oci_agent_with_retry_policy() -> OciAgent:
+    return OciAgent(
+        name="oci_agent",
+        description="my remote oci agent",
+        id="agent_123",
+        client_config=OciClientConfigWithInstancePrincipal(
+            service_endpoint="my_service_endpoint", name="my_oci_config"
+        ),
+        agent_endpoint_id="my_agent_endpoint",
+        retry_policy=RetryPolicy(max_attempts=3, request_timeout=1.5, initial_retry_delay=0.25),
     )
 
 
@@ -52,6 +68,29 @@ def test_can_serialize_and_deserialize_oci_agent(oci_agent: OciAgent) -> None:
     deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_assistant)
     assert isinstance(deserialized_assistant, OciAgent)
     assert deserialized_assistant == oci_agent
+
+
+def test_can_serialize_and_deserialize_oci_agent_with_retry_policy(
+    oci_agent_with_retry_policy: OciAgent,
+) -> None:
+    dumped_agent = AgentSpecSerializer().to_dict(oci_agent_with_retry_policy)
+
+    assert dumped_agent["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert "retry_policy" in dumped_agent
+
+    loaded_agent = AgentSpecDeserializer().from_dict(dumped_agent)
+
+    assert isinstance(loaded_agent, OciAgent)
+    assert AgentSpecSerializer().to_dict(loaded_agent) == dumped_agent
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecSerializer().to_dict(
+            oci_agent_with_retry_policy, agentspec_version=AgentSpecVersionEnum.v26_1_0
+        )
+
+    dumped_agent["agentspec_version"] = AgentSpecVersionEnum.v26_1_0.value
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecDeserializer().from_dict(dumped_agent)
 
 
 def test_deserialize_oci_agent_from_file(oci_agent: OciAgent) -> None:

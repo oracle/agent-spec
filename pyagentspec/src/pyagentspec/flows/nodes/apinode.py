@@ -13,6 +13,7 @@ from typing_extensions import Self
 
 from pyagentspec.flows.node import Node
 from pyagentspec.property import Property
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.remotetool import JSONSerializable
@@ -132,6 +133,9 @@ class ApiNode(Node):
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
 
+    retry_policy: Optional[RetryPolicy] = None
+    """Optional retry configuration for the API call performed by this node."""
+
     DEFAULT_OUTPUT: ClassVar[str] = "response"
     """Default output name"""
 
@@ -159,6 +163,8 @@ class ApiNode(Node):
         fields_to_exclude = set()
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("retry_policy")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -167,6 +173,8 @@ class ApiNode(Node):
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
         if self.sensitive_headers:
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
+        if self.retry_policy is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
         return min_version
 
     @model_validator_with_error_accumulation

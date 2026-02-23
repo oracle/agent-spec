@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeAlias, Union
 from pydantic import Field
 from typing_extensions import Self
 
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.templating import get_placeholder_properties_from_json_object
 from pyagentspec.tools.tool import Tool
@@ -55,6 +56,9 @@ class RemoteTool(Tool):
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
 
+    retry_policy: Optional[RetryPolicy] = None
+    """Optional retry configuration for the HTTP call performed by this tool."""
+
     def _get_inferred_inputs(self) -> List["Property"]:
         return get_placeholder_properties_from_json_object(
             [
@@ -73,6 +77,8 @@ class RemoteTool(Tool):
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("retry_policy")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -81,6 +87,8 @@ class RemoteTool(Tool):
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
         if self.sensitive_headers:
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
+        if self.retry_policy is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
         return min_version
 
     @model_validator_with_error_accumulation

@@ -13,6 +13,7 @@ from typing_extensions import Self
 
 from pyagentspec.auth import AuthConfig
 from pyagentspec.component import Component
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -78,6 +79,8 @@ class RemoteTransport(ClientTransport, abstract=True):
     """Additional headers to send to the server.
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
+    retry_policy: Optional[RetryPolicy] = None
+    """Optional retry configuration for requests sent through this remote transport."""
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
@@ -87,6 +90,7 @@ class RemoteTransport(ClientTransport, abstract=True):
             fields_to_exclude.add("sensitive_headers")
         if agentspec_version < AgentSpecVersionEnum.v26_2_0:
             fields_to_exclude.add("auth")
+            fields_to_exclude.add("retry_policy")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -97,6 +101,9 @@ class RemoteTransport(ClientTransport, abstract=True):
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
         if self.auth is not None:
             # `auth` is only introduced starting from 26.2.0
+            current_object_min_version = AgentSpecVersionEnum.v26_2_0
+        if self.retry_policy is not None:
+            # `retry_policy` is only introduced starting from 26.2.0
             current_object_min_version = AgentSpecVersionEnum.v26_2_0
         return max(parent_min_version, current_object_min_version)
 
