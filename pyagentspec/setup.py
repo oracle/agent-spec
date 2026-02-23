@@ -126,6 +126,8 @@ setup(
             "agent-framework>=1.0.0b260130; python_version < '3.14'",
             "agent-framework-core>=1.0.0b260130; python_version < '3.14'",
             # 4rth party dependencies
+            # including otel-semconv-ai to address internal agent-framework bug
+            "opentelemetry-semantic-conventions-ai<0.4.14",
         ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
