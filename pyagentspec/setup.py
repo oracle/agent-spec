@@ -29,6 +29,7 @@ LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
     "langgraph>=1.0.5",
     "langchain>=1.2.0",
+    "langchain-core>=1.2.7",
     "langchain-openai>=1.1.7",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
@@ -72,7 +73,7 @@ setup(
         "httpx>0.28.0",
         # 4rth party dependencies
         "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-        "urllib3>=2.5.0",  # needed to avoid a CVE present in earlier versions
+        "urllib3>=2.6.3",  # needed to avoid a CVE present in earlier versions
     ],
     test_suite="tests",
     entry_points={
