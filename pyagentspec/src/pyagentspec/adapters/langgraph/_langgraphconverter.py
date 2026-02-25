@@ -372,7 +372,7 @@ class AgentSpecToLangGraphConverter:
             # Provide both sync and async entrypoints natively. LangGraph will use
             # the appropriate one based on invoke/stream vs ainvoke/astream.
             runnable = RunnableLambda(
-                func=lambda state, _exec=node_executor: _exec(state),  # type: ignore
+                func=lambda state, _exec=node_executor: _exec(state),
                 afunc=lambda state, _exec=node_executor: _exec.__acall__(state),
                 name=node_id,
             )
