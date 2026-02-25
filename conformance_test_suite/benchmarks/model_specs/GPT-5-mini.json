@@ -1,0 +1,10 @@
+{
+  "component_type": "OpenAiConfig",
+  "id": "c41af825-9b5f-419a-a353-0f05cb4dd27b",
+  "name": "openai-gpt-5-mini",
+  "description": null,
+  "metadata": {},
+  "default_generation_parameters": null,
+  "model_id": "gpt-5-mini",
+  "agentspec_version": "25.4.1"
+}
