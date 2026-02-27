@@ -64,3 +64,16 @@ class ToolConfirmationResponse(Event):
 
     tool_execution_request_id: Optional[str] = None
     "Identifier of the tool execution request this confirmation relates to"
+
+
+class ToolExecutionStreamingChunkReceived(Event):
+    """A tool streams a portion of the output during its execution."""
+
+    tool: Tool
+    "The Tool being executed"
+
+    request_id: str
+    "Identifier of the tool execution request"
+
+    content: SensitiveField[str]
+    "A streamed portion of the tool's output emitted during execution"

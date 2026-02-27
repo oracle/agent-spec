@@ -33,6 +33,7 @@ from pyagentspec.tracing.events import (
     ToolConfirmationResponse,
     ToolExecutionRequest,
     ToolExecutionResponse,
+    ToolExecutionStreamingChunkReceived,
 )
 from pyagentspec.tracing.messages.message import Message
 
@@ -317,6 +318,20 @@ def test_tool_execution_response_creation(dummy_tool: Tool):
     assert unmasked["outputs"] == {"y": 2}
     assert unmasked["request_id"] == "t1"
     assert masked["type"] == "ToolExecutionResponse"
+
+
+def test_tool_execution_streaming_chunk_received_creation(dummy_tool: Tool):
+    ev = ToolExecutionStreamingChunkReceived(tool=dummy_tool, request_id="t1", content="piece")
+    assert ev.tool is dummy_tool
+    assert str(ev.content) == "piece"
+    assert ev.request_id == "t1"
+    # Masking behavior
+    masked = ev.model_dump(mask_sensitive_information=True)
+    unmasked = ev.model_dump(mask_sensitive_information=False)
+    assert masked["content"] == _PII_MASK
+    assert unmasked["content"] == "piece"
+    assert unmasked["request_id"] == "t1"
+    assert masked["type"] == "ToolExecutionStreamingChunkReceived"
 
 
 def test_tool_confirmation_request_creation(dummy_tool: Tool):

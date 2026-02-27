@@ -575,6 +575,48 @@ A tool execution finishes and a result is received. Emitted when a ToolExecution
       - -
       - yes
 
+
+
+ToolExecutionStreamingChunkReceived
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A streamed chunk was received during Tool execution.
+
+This event is emitted only for streaming-capable tools (e.g., tools implemented as async
+generators or tools whose runtime supports progressive updates). One event is emitted per
+chunk produced during execution. The authoritative final tool output is not sent via
+streaming chunks; it is returned in the ``ToolExecutionResponse`` event.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 22 48 18 12 10
+
+    * - Name
+      - Description
+      - Type
+      - Default/Optional
+      - Sensitive
+    * - tool
+      - The Tool being executed
+      - Tool
+      - -
+      - no
+    * - request_id
+      - Identifier of the tool execution request
+      - str
+      - -
+      - no
+    * - content
+      - A streamed portion of the tool's output emitted during execution.
+        Each event carries one chunk as produced by the tool (e.g., text
+        segment or partial structured data). Chunks are not guaranteed to
+        be deltas or directly mergeable; the final tool result is provided
+        in ToolExecutionResponse.
+      - str
+      - -
+      - yes
+
+
 ToolConfirmationRequest
 ^^^^^^^^^^^^^^^^^^^^^^^
 
