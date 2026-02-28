@@ -24,7 +24,7 @@ def test_agentspec_converts_to_agent_framework_with_server_tool(
 
     agent_component = AgentSpecDeserializer().from_yaml(weather_agent_server_tool)
     assert isinstance(agent_component, Agent)
-    loader = AgentSpecLoader({"get_weather": get_weather})
+    loader = AgentSpecLoader(tool_registry={"get_weather": get_weather})
     agent = loader.load_yaml(weather_agent_server_tool)
     assert isinstance(agent, ChatAgent)
 
@@ -60,7 +60,7 @@ def test_agent_with_server_tool_runs_after_config_load(weather_agent_server_tool
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
-    loader = AgentSpecLoader({"get_weather": get_weather})
+    loader = AgentSpecLoader(tool_registry={"get_weather": get_weather})
     agent = loader.load_yaml(weather_agent_server_tool)
     assert isinstance(agent, ChatAgent)
     result = anyio.run(agent.run, "What is the weather like in Agadir?")
@@ -93,7 +93,7 @@ def test_server_tool_requires_confirmation_with_agent(
 
     from pyagentspec.adapters.agent_framework import AgentSpecLoader
 
-    loader = AgentSpecLoader({"get_weather": get_weather})
+    loader = AgentSpecLoader(tool_registry={"get_weather": get_weather})
     agent = loader.load_yaml(weather_agent_server_tool_confirmation)
     assert isinstance(agent, ChatAgent)
 

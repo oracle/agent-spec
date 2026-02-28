@@ -86,6 +86,7 @@ class AgentSpecToAgentFrameworkConverter:
         agentspec_component: AgentSpecComponent,
         tool_registry: dict[str, AgentFrameworkTool],
         converted_components: dict[str, AgentFrameworkComponent] | None = None,
+        **kwargs: Any,
     ) -> AgentFrameworkComponent:
         """Convert the given PyAgentSpec component object into the corresponding Microsoft Agent Framework component"""
         if converted_components is None:

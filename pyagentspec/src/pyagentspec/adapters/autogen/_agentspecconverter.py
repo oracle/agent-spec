@@ -8,6 +8,7 @@ import json
 import types
 from typing import Any, Dict, List, Optional, Union, cast, get_args, get_origin
 
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.autogen._types import (
     AutogenAssistantAgent,
     AutogenBaseAgent,
@@ -54,7 +55,7 @@ class AutogenToAgentSpecConverter:
 
     def convert(
         self,
-        autogen_component: Union[
+        runtime_component: Union[
             AutogenComponent[Any],
             AutogenBaseTool[Any, Any],
             AutogenChatCompletionClient,
@@ -62,12 +63,13 @@ class AutogenToAgentSpecConverter:
             AutogenBaseAgent,
         ],
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         """
         Convert an Autogen component to its corresponding PyAgentSpec component.
 
         Parameters:
-        - autogen_component: The Autogen component to be converted.
+        - runtime_component: The Autogen component to be converted.
         - referenced_objects: A dictionary to keep track of already converted objects.
 
         Returns:
@@ -80,31 +82,31 @@ class AutogenToAgentSpecConverter:
             referenced_objects = dict()
 
         # Reuse the same object multiple times in order to exploit the referencing system
-        object_reference = _get_obj_reference(autogen_component)
+        object_reference = _get_obj_reference(runtime_component)
         if object_reference in referenced_objects:
             return referenced_objects[object_reference]
 
         # If we did not find the object, we create it, and we record it in the referenced_objects registry
         agentspec_component: AgentSpecComponent
-        if isinstance(autogen_component, AutogenChatCompletionClient):
+        if isinstance(runtime_component, AutogenChatCompletionClient):
             agentspec_component = self._llm_convert_to_agentspec(
-                autogen_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(autogen_component, AutogenBaseAgent):
+        elif isinstance(runtime_component, AutogenBaseAgent):
             agentspec_component = self._agent_convert_to_agentspec(
-                autogen_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(autogen_component, AutogenBaseTool):
+        elif isinstance(runtime_component, AutogenBaseTool):
             agentspec_component = self._tool_convert_to_agentspec(
-                autogen_component, referenced_objects
+                runtime_component, referenced_objects
             )
-        elif isinstance(autogen_component, AutogenGraphFlow):
+        elif isinstance(runtime_component, AutogenGraphFlow):
             agentspec_component = self._flow_convert_to_agentspec(
-                autogen_component, referenced_objects
+                runtime_component, referenced_objects
             )
         else:
             raise NotImplementedError(
-                f"The autogen type '{autogen_component.__class__.__name__}' is not yet supported "
+                f"The autogen type '{runtime_component.__class__.__name__}' is not yet supported "
                 f"for conversion. It is very easy to add support, you should do it!"
             )
         referenced_objects[object_reference] = agentspec_component
@@ -232,7 +234,7 @@ class AutogenToAgentSpecConverter:
             edges = getattr(digraph_node, "edges", []) or []
 
             # edges with callable conditions
-            callable_conditional_edges: list[dict[str, object]] = []
+            callable_conditional_edges: list[dict[str, Any]] = []
             # edges with string conditions
             string_conditional_edges: list[dict[str, str]] = []
             # edges without conditions
@@ -805,10 +807,6 @@ class AutogenToAgentSpecConverter:
                 outputs=[_untyped_text_property(_autogen_component.config["name"] + "_output")],
             )
         raise ValueError(f"Unsupported type of agent in AgentSpec: {type(autogen_agent)}")
-
-
-def _get_obj_reference(obj: Any) -> str:
-    return f"{obj.__class__.__name__.lower()}/{id(obj)}"
 
 
 def _untyped_text_property(title: str) -> AgentSpecProperty:

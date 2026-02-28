@@ -896,9 +896,7 @@ class FlowASTParser:
                         )
                         outs: list[dict] | None = None  # type: ignore
                         if last_node and (last_node.meta or {}).get("agent_spec_yaml"):
-                            from pyagentspec.serialization.deserializer import (
-                                AgentSpecDeserializer,
-                            )
+                            from pyagentspec.serialization.deserializer import AgentSpecDeserializer
                             from pyagentspec.serialization.serializer import AgentSpecSerializer
 
                             comp = AgentSpecDeserializer().from_yaml(

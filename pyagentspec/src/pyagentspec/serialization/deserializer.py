@@ -33,9 +33,8 @@ class AgentSpecDeserializer:
         plugins:
             List of plugins to serialize additional components.
         """
-        _DeserializationContextImpl(
-            plugins=plugins
-        )  # for early failure when using incorrect plugins
+        # for early failure when using incorrect plugins
+        _DeserializationContextImpl(plugins=plugins)
         self.plugins = plugins
 
     @overload

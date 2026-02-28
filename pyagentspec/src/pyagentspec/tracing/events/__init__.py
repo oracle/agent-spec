@@ -9,11 +9,7 @@ from .event import Event
 from .exception import ExceptionRaised
 from .flow import FlowExecutionEnd, FlowExecutionStart
 from .humanintheloop import HumanInTheLoopRequest, HumanInTheLoopResponse
-from .llmgeneration import (
-    LlmGenerationChunkReceived,
-    LlmGenerationRequest,
-    LlmGenerationResponse,
-)
+from .llmgeneration import LlmGenerationChunkReceived, LlmGenerationRequest, LlmGenerationResponse
 from .managerworkers import ManagerWorkersExecutionEnd, ManagerWorkersExecutionStart
 from .node import NodeExecutionEnd, NodeExecutionStart
 from .swarm import SwarmExecutionEnd, SwarmExecutionStart
