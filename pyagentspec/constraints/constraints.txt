@@ -2,7 +2,7 @@ jsonschema==4.23.0
 pydantic==2.12.4
 pyyaml==6.0.3
 httpx==0.28.1
-urllib3==2.6.2
+typing-extensions==4.15.0
 
 # AutoGen adapter
 autogen-core==0.7.4
@@ -15,6 +15,7 @@ crewai==1.6.1
 # LangGraph adapter
 langgraph==1.0.5
 langchain==1.2.0
+langchain-core==1.2.7
 langchain-openai==1.1.7
 langchain-ollama==1.0.1
 langchain-oci==0.2.3
@@ -26,13 +27,13 @@ wayflowcore==26.1.0
 
 # AgentFramework adapter
 agent-framework==1.0.0b260130
-agent-framework-core==1.0.0b260130
 
 # OpenAI Agents adapter
 openai-agents==0.6.9
 libcst==1.8.5
 
 # Evaluation
+anyio==4.11.0
 pandas==2.3.3
 oci==2.167.0
 litellm==1.81.13
