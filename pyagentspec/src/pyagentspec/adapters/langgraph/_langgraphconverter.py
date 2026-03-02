@@ -372,8 +372,8 @@ class AgentSpecToLangGraphConverter:
             # Provide both sync and async entrypoints natively. LangGraph will use
             # the appropriate one based on invoke/stream vs ainvoke/astream.
             runnable = RunnableLambda(
-                func=lambda state, _exec=node_executor: _exec(state),
-                afunc=lambda state, _exec=node_executor: _exec.__acall__(state),
+                func=node_executor,
+                afunc=node_executor.__acall__,
                 name=node_id,
             )
             graph_builder.add_node(node_id, runnable)
@@ -1227,6 +1227,10 @@ class AgentSpecToLangGraphConverter:
         ]
 
         if isinstance(llm_config, VllmConfig):
+            # if llm_config.api_key is None, ChatOpenAI constructor will attempt to read from the env
+            # OPENAI_API_KEY and raise an error if missing
+            # as local vLLM servers are not typically set up with API keys, we use the "EMPTY" as the default
+            # for ease of use
             return _create_chat_openai_model(
                 model_id=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
