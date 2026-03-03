@@ -4,18 +4,19 @@
 RFC: Generic LLM Configuration
 ==================================
 
-This RFC proposes a ``GenericLlmConfig`` component for
-`Open Agent Spec <https://github.com/oracle/agent-spec>`_ that provides a
-provider-agnostic way to configure LLM connections using a string-based
-provider discriminator and an open-ended provider configuration object.
+This RFC proposes making ``LlmConfig`` non-abstract and adding flat,
+provider-agnostic fields (``provider``, ``api_provider``, ``api_type``) so
+that any LLM connection can be described without requiring a dedicated
+subclass per provider.
 
 Summary
 -------
 
-Add a ``GenericLlmConfig`` component that can describe any LLM provider
-through a ``provider.type`` string discriminator and a flexible
-``ProviderConfig`` object, without requiring a new ``LlmConfig`` subclass per
-provider.
+Make ``LlmConfig`` a concrete, directly instantiable class by removing its
+``abstract=True`` marker and adding three optional string fields --
+``provider``, ``api_provider``, and ``api_type`` -- that together describe
+the model origin, API host, and wire protocol.  Existing subclasses continue
+to work unchanged, freezing these fields where appropriate.
 
 Motivation
 ----------
@@ -52,620 +53,318 @@ design creates several practical problems:
 Proposal
 --------
 
-The proposal introduces a new ``GenericLlmConfig`` component with its
-supporting ``ProviderConfig`` model.
+Instead of introducing a new ``GenericLlmConfig`` component, the proposal
+makes ``LlmConfig`` itself non-abstract and adds three optional string fields
+directly to it.  This avoids fragmenting the config hierarchy and keeps the
+surface area small.
 
-``ProviderConfig``
-^^^^^^^^^^^^^^^^^^
+``LlmConfig`` changes
+^^^^^^^^^^^^^^^^^^^^^
 
-Identifies the provider and optionally overrides the endpoint, wire protocol,
-and API version.  The schema is open-ended: authors can pass provider-specific
-keys (e.g. ``region``, ``project_id``, ``deployment_name``) without a schema
-change.
+Remove the ``abstract=True`` marker so that ``LlmConfig`` can be instantiated
+directly, and add the following fields:
 
-.. code-block:: yaml
+.. code-block:: python
 
-   provider:
-     type: <string>              # required — e.g. "openai", "anthropic", "aws_bedrock"
-     endpoint: <string>          # optional — base URL override
-     api_protocol: <string>      # optional — e.g. "openai_chat_completions"
-     api_version: <string>       # optional — API version string
-     # additional provider-specific fields are permitted
+   class LlmConfig(Component):  # no longer abstract
+       """A generic, provider-agnostic LLM configuration."""
 
-See `Well-known provider configs`_ for typed subclasses that declare explicit
-fields per provider type.
+       model_id: str
+       """Primary model identifier."""
 
-``AuthConfig``
-^^^^^^^^^^^^^^
+       provider: Optional[str] = None
+       """Model provider (e.g. "meta", "openai", "anthropic", "cohere")."""
 
-Different providers require different authentication mechanisms.
-``AuthConfig`` uses a ``type`` discriminator to select the mechanism and an
-open-ended schema for mechanism-specific fields.  ``AuthConfig`` handles
-**credentials only** -- routing fields (``endpoint``, ``region``,
-``project_id``) belong in ``ProviderConfig``.
+       api_provider: Optional[str] = None
+       """API provider (e.g. "oci", "openai", "vertex_ai", "aws_bedrock",
+       "azure_openai")."""
 
-.. code-block:: yaml
+       api_type: Optional[str] = None
+       """API protocol to use (e.g. "chat_completions", "responses")."""
 
-   auth:
-     type: <string>       # required — one of the well-known types below
-     # ... mechanism-specific fields
+       default_generation_parameters: Optional[LlmGenerationConfig] = None
+       """Parameters used for the generation call of this LLM."""
 
-Well-known auth types
-"""""""""""""""""""""
+The three new fields are **independent axes**:
 
-**1. api_key** -- for providers that use static API keys (OpenAI, Anthropic,
-Mistral, Cohere, etc.).
+- ``provider`` identifies **who made the model** (Meta, OpenAI, Anthropic,
+  Cohere, ...).
+- ``api_provider`` identifies **who serves the API** (OCI, OpenAI, Vertex AI,
+  AWS Bedrock, Azure OpenAI, ...).
+- ``api_type`` identifies **the wire protocol** (``chat_completions``,
+  ``responses``, ...).
 
-.. code-block:: yaml
+All three are optional strings.  The spec documents well-known values for
+each (see `Well-known values`_), but users are free to use any string to
+support new models, providers, and APIs without waiting for a spec update.
 
-   auth:
-     type: api_key
-     value: <string>              # required — the API key
-     header_name: <string>        # optional — override the HTTP header
-                                  #   default: "Authorization" with "Bearer {value}"
-                                  #   e.g. "x-api-key", "api-key"
+YAML schema
+^^^^^^^^^^^
 
 .. code-block:: yaml
 
-   # OpenAI
-   auth:
-     type: api_key
-     value: "OPENAI_API_KEY"
-
-   # Anthropic (custom header)
-   auth:
-     type: api_key
-     value: "ANTHROPIC_API_KEY"
-     header_name: "x-api-key"
-
-**2. aws** -- for AWS Bedrock.  All credential fields are optional; omitting
-them delegates to the default AWS credential chain
-(env -> file -> instance profile).
-
-.. code-block:: yaml
-
-   auth:
-     type: aws
-     access_key_id: <string>           # optional — static credentials
-     secret_access_key: <string>       # optional — static credentials
-     session_token: <string>           # optional — for temporary credentials
-     role_arn: <string>                # optional — assume this role via STS
-     external_id: <string>             # optional — for cross-account role assumption
-     profile: <string>                 # optional — named profile from ~/.aws/credentials
-
-.. code-block:: yaml
-
-   # Production on AWS (instance profile / task role — no explicit credentials)
-   auth:
-     type: aws
-
-   # Local dev with named profile
-   auth:
-     type: aws
-     profile: bedrock-dev
-
-   # Cross-account role assumption
-   auth:
-     type: aws
-     role_arn: "arn:aws:iam::123456789012:role/bedrock-access"
-     external_id: "my-external-id"
-
-   # Explicit static credentials (CI/testing)
-   auth:
-     type: aws
-     access_key_id: "AWS_ACCESS_KEY_ID"
-     secret_access_key: "AWS_SECRET_ACCESS_KEY"
-
-**3. gcp** -- for Google Vertex AI.  All credential fields are optional;
-omitting them delegates to Application Default Credentials (ADC).
-
-.. code-block:: yaml
-
-   auth:
-     type: gcp
-     credentials_file: <string>                 # optional — path to service account JSON
-     credentials_json: <string>                 # optional — inline service account JSON
-     impersonate_service_account: <string>      # optional — SA email to impersonate
-     workforce_pool_provider: <string>          # optional — workload identity federation
-
-.. code-block:: yaml
-
-   # Production on GCP (attached service account / ADC — no explicit credentials)
-   auth:
-     type: gcp
-
-   # Local dev with explicit key file
-   auth:
-     type: gcp
-     credentials_file: "/path/to/service-account.json"
-
-   # CI with inline credentials from env
-   auth:
-     type: gcp
-     credentials_json: "GCP_SERVICE_ACCOUNT_JSON"
-
-   # Service account impersonation
-   auth:
-     type: gcp
-     impersonate_service_account: "vertex-sa@my-project.iam.gserviceaccount.com"
-
-**4. azure** -- for Azure OpenAI.  Supports managed identity, service
-principal, or API key.  Omitting all credential fields delegates to
-``DefaultAzureCredential``.
-
-.. code-block:: yaml
-
-   auth:
-     type: azure
-     api_key: <string>                 # optional — Azure-issued API key
-     client_id: <string>               # optional — managed identity or service principal
-     client_secret: <string>           # optional — service principal secret
-     tenant_id: <string>               # optional — AAD tenant for service principal
-     use_managed_identity: <bool>      # optional — explicitly use managed identity
-
-.. code-block:: yaml
-
-   # DefaultAzureCredential (no explicit credentials)
-   auth:
-     type: azure
-
-   # Managed identity on Azure compute
-   auth:
-     type: azure
-     use_managed_identity: true
-
-   # Azure API key
-   auth:
-     type: azure
-     api_key: "AZURE_OPENAI_API_KEY"
-
-   # Service principal (CI/CD)
-   auth:
-     type: azure
-     tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-     client_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-     client_secret: "AZURE_CLIENT_SECRET"
-
-**5. oauth2** -- for providers requiring OAuth2 client credentials or token
-exchange flows.
-
-.. code-block:: yaml
-
-   auth:
-     type: oauth2
-     token_url: <string>              # required — token endpoint
-     client_id: <string>              # required
-     client_secret: <string>          # required
-     scopes: [<string>]               # optional — list of scopes
-     audience: <string>               # optional — token audience
-
-.. code-block:: yaml
-
-   auth:
-     type: oauth2
-     token_url: "https://auth.example.com/oauth/token"
-     client_id: "OAUTH_CLIENT_ID"
-     client_secret: "OAUTH_CLIENT_SECRET"
-     scopes: ["inference.run"]
-
-Validation rules
-""""""""""""""""
-
-1. ``type`` is always required.
-2. Each type has its own required/optional fields as documented above.
-3. For ``aws``/``gcp``/``azure``: if no explicit credentials are provided,
-   the runtime delegates to the platform SDK's default credential chain.
-   This is the recommended approach for production.
-4. Mutually exclusive fields (e.g. ``azure.api_key`` vs.
-   ``azure.client_id``) should raise a validation error if both are set.
-
-Like ``ProviderConfig``, the schema is open-ended so new auth mechanisms can
-be introduced without a spec change.  SDKs and adapters **should** validate
-the well-known auth types and surface clear errors for missing fields.
-
-``GenericLlmConfig``
-^^^^^^^^^^^^^^^^^^^^
-
-The new component is a separate top-level Agent Spec component (not a
-subclass of ``LlmConfig``) and declares a minimum spec version of ``v26.2.0``.
-
-.. code-block:: yaml
-
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    spec:
-     model_id: <string>            # required — e.g. "gpt-4o", "claude-sonnet-4-20250514"
-     provider: <ProviderConfig>    # required — provider configuration (see above)
-     auth: <AuthConfig>            # optional — authentication configuration (see above)
-     provider_extensions:          # optional — non-portable escape hatch
-       <string>: <any>
+     model_id: <string>                    # required
+     provider: <string>                    # optional — model provider
+     api_provider: <string>                # optional — API provider
+     api_type: <string>                    # optional — wire protocol
+     default_generation_parameters:        # optional
+       ...
 
-``provider_extensions`` provides a non-portable escape hatch for
-provider-specific options that do not belong in ``ProviderConfig``.
+Existing subclass integration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Relationship to existing configs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Existing ``LlmConfig`` subclasses freeze the new fields where the value is
+known a priori.  Frozen fields are excluded from serialization for brevity.
 
-``GenericLlmConfig`` exists alongside the existing ``LlmConfig`` subclasses.
-The following table shows how existing configs map conceptually to
-``GenericLlmConfig``:
+.. code-block:: python
+
+   class OpenAiConfig(LlmConfig):
+       provider: str = "openai"
+       api_provider: str = "openai"
+       # api_type already exists on this class
+       ...
+
+   class OciGenAiConfig(LlmConfig):
+       # provider already exists on this class (ModelProvider enum)
+       api_provider: str = "oci"
+       # api_type already exists on this class (OciAPIType enum)
+       ...
+
+   class OpenAiCompatibleConfig(LlmConfig):
+       # provider and api_provider are unknown — left as None
+       # api_type already exists on this class
+       ...
+
+The following table summarizes how each existing subclass maps to the new
+fields:
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 20 50
+   :widths: 25 20 20 20
 
    * - Existing config
-     - provider.type
-     - Notes
+     - ``provider``
+     - ``api_provider``
+     - ``api_type``
    * - ``OpenAiConfig``
      - ``"openai"``
-     - Fixed provider; ``model_id`` maps directly, ``api_key`` maps to
-       ``auth: {type: api_key, value: ...}``
+     - ``"openai"``
+     - (existing field)
+   * - ``OciGenAiConfig``
+     - (existing field)
+     - ``"oci"``
+     - (existing field)
    * - ``OpenAiCompatibleConfig``
-     - (varies)
-     - ``url`` maps to ``provider.endpoint``; ``api_type`` maps to
-       ``provider.api_protocol``
+     - (unknown)
+     - (unknown)
+     - (existing field)
    * - ``VllmConfig``
+     - (unknown)
      - ``"vllm"``
-     - Inherits from ``OpenAiCompatibleConfig``; no additional fields
+     - (inherited)
    * - ``OllamaConfig``
+     - (unknown)
      - ``"ollama"``
-     - Inherits from ``OpenAiCompatibleConfig``; no additional fields
+     - (inherited)
 
-Users can choose either the provider-specific config or ``GenericLlmConfig``
-to describe the same LLM connection.  Adapters handle both paths
-independently.
+Well-known values
+^^^^^^^^^^^^^^^^^
+
+The spec documents recommended string values for each field.  These are not
+enforced at the schema level -- they serve as conventions that adapters and
+documentation can rely on.
+
+**provider** (model provider)
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Value
+     - Description
+   * - ``"openai"``
+     - OpenAI models (GPT-4o, o1, etc.)
+   * - ``"anthropic"``
+     - Anthropic models (Claude family)
+   * - ``"meta"``
+     - Meta models (Llama family)
+   * - ``"cohere"``
+     - Cohere models (Command family)
+   * - ``"google"``
+     - Google models (Gemini family)
+   * - ``"mistral"``
+     - Mistral AI models
+
+**api_provider** (API provider)
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Value
+     - Description
+   * - ``"openai"``
+     - OpenAI platform API
+   * - ``"oci"``
+     - OCI Generative AI service
+   * - ``"aws_bedrock"``
+     - AWS Bedrock
+   * - ``"vertex_ai"``
+     - Google Vertex AI
+   * - ``"azure_openai"``
+     - Azure OpenAI Service
+   * - ``"vllm"``
+     - vLLM self-hosted deployment
+   * - ``"ollama"``
+     - Ollama local deployment
+
+**api_type** (wire protocol)
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Value
+     - Description
+   * - ``"chat_completions"``
+     - OpenAI Chat Completions API
+   * - ``"responses"``
+     - OpenAI Responses API
+
+Adapter dispatch strategy
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Framework adapters dispatch on the ``api_provider`` string (and optionally
+``api_type``) to select the appropriate client configuration.  This is a
+plain string match -- no provider registry or class hierarchy is required.
+
+When a ``LlmConfig`` subclass is used (e.g. ``OpenAiConfig``), the adapter
+handles it through the existing class-based dispatch.  When a bare
+``LlmConfig`` instance is used, the adapter falls back to string-based
+dispatch on ``api_provider``.  Each adapter should raise a clear error for
+unsupported ``api_provider`` values.
 
 YAML examples
 ^^^^^^^^^^^^^
 
-**OpenAI**
+**OpenAI (bare LlmConfig)**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
      name: openai-gpt4o
    spec:
      model_id: gpt-4o
-     provider:
-       type: openai
-     auth:
-       type: api_key
-       value: "OPENAI_API_KEY"
+     provider: openai
+     api_provider: openai
+     api_type: chat_completions
 
-**Anthropic**
+**Meta model on AWS Bedrock**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
-     name: claude-sonnet
+     name: bedrock-llama
    spec:
-     model_id: claude-sonnet-4-20250514
-     provider:
-       type: anthropic
-     auth:
-       type: api_key
-       value: "ANTHROPIC_API_KEY"
+     model_id: meta.llama3-1-70b-instruct-v1:0
+     provider: meta
+     api_provider: aws_bedrock
 
-**Azure OpenAI (API key)**
+**Anthropic model on AWS Bedrock**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
-   apiVersion: v26.2.0
-   metadata:
-     name: azure-gpt4o
-   spec:
-     model_id: gpt-4o
-     provider:
-       type: azure_openai
-       endpoint: https://my-resource.openai.azure.com
-       api_version: "2024-06-01"
-       deployment_name: gpt4o-deploy
-     auth:
-       type: azure
-       api_key: "AZURE_OPENAI_API_KEY"
-
-**Azure OpenAI (managed identity)**
-
-.. code-block:: yaml
-
-   kind: GenericLlmConfig
-   apiVersion: v26.2.0
-   metadata:
-     name: azure-gpt4o-mi
-   spec:
-     model_id: gpt-4o
-     provider:
-       type: azure_openai
-       endpoint: https://my-resource.openai.azure.com
-       api_version: "2024-06-01"
-       deployment_name: gpt4o-deploy
-     auth:
-       type: azure
-       use_managed_identity: true
-
-**AWS Bedrock (default credential chain)**
-
-.. code-block:: yaml
-
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
      name: bedrock-claude
    spec:
      model_id: anthropic.claude-sonnet-4-20250514-v1:0
-     provider:
-       type: aws_bedrock
-       region: us-east-1
-     auth:
-       type: aws
+     provider: anthropic
+     api_provider: aws_bedrock
 
-**AWS Bedrock (cross-account role)**
+**Google model on Vertex AI**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
-   apiVersion: v26.2.0
-   metadata:
-     name: bedrock-claude-xacct
-   spec:
-     model_id: anthropic.claude-sonnet-4-20250514-v1:0
-     provider:
-       type: aws_bedrock
-       region: us-east-1
-     auth:
-       type: aws
-       role_arn: "arn:aws:iam::123456789012:role/bedrock-access"
-
-**Google Vertex AI (ADC)**
-
-.. code-block:: yaml
-
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
      name: vertex-gemini
    spec:
      model_id: gemini-2.0-flash
-     provider:
-       type: gcp_vertex_ai
-       project_id: my-gcp-project
-       region: us-central1
-     auth:
-       type: gcp
+     provider: google
+     api_provider: vertex_ai
 
-**Google Vertex AI (service account)**
+**Cohere model on OCI GenAI via OpenAI protocol**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
-     name: vertex-gemini-sa
+     name: oci-cohere
    spec:
-     model_id: gemini-2.0-flash
-     provider:
-       type: gcp_vertex_ai
-       project_id: my-gcp-project
-       region: us-central1
-     auth:
-       type: gcp
-       credentials_file: "/path/to/service-account.json"
+     model_id: cohere.command-r-plus
+     provider: cohere
+     api_provider: oci
+     api_type: chat_completions
 
 **vLLM (self-hosted)**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
      name: vllm-llama
    spec:
      model_id: meta-llama/Llama-3.1-70B-Instruct
-     provider:
-       type: vllm
-       endpoint: http://localhost:8000
+     provider: meta
+     api_provider: vllm
+     api_type: chat_completions
 
 **Ollama (local)**
 
 .. code-block:: yaml
 
-   kind: GenericLlmConfig
+   kind: LlmConfig
    apiVersion: v26.2.0
    metadata:
      name: ollama-llama
    spec:
      model_id: llama3.1
-     provider:
-       type: ollama
-       endpoint: http://localhost:11434
-
-Adapter dispatch strategy
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Framework adapters dispatch on the ``provider.type`` string to select the
-appropriate client configuration.  This is a plain string match -- no provider
-registry or class hierarchy is required.  Each adapter (LangGraph, OpenAI
-Agents SDK, AutoGen, Agent Framework) implements this dispatch independently
-and should raise a clear error for unsupported provider types.
-
-Well-known provider configs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Because ``ProviderConfig`` uses ``extra="allow"``, provider-specific fields
-(e.g. ``deployment_name``, ``region``) are accepted but not validated or
-discoverable through the schema.  To address this, the spec defines
-**well-known provider config subclasses** that inherit from ``ProviderConfig``
-and declare explicit, typed fields for each major provider.
-
-Design
-""""""
-
-Each well-known provider config is a Pydantic model that:
-
-1. **Inherits from** ``ProviderConfig`` -- it gets ``type``, ``endpoint``,
-   ``api_protocol``, and ``api_version`` for free.
-2. **Fixes** ``type`` to a literal value (e.g. ``Literal["aws_bedrock"]``) so
-   it cannot be mis-set.
-3. **Declares** provider-specific fields with proper types, defaults, and
-   descriptions -- enabling schema validation, IDE auto-completion, and
-   documentation generation.
-4. **Retains** ``extra="allow"`` so forward-compatible fields are still
-   accepted without a spec change.
-
-These are **not** new spec components.  They are model subclasses used
-internally by ``GenericLlmConfig`` to type the ``provider`` field more
-precisely.  ``GenericLlmConfig`` remains the only component kind; the
-subclass is selected automatically based on ``provider.type`` during
-deserialization.
-
-Resolution strategy
-"""""""""""""""""""
-
-When ``GenericLlmConfig`` deserializes the ``provider`` field, it inspects the
-``type`` value and selects the appropriate subclass:
-
-1. If ``type`` matches a well-known provider (e.g. ``"aws_bedrock"``), the
-   corresponding subclass (``AwsBedrockProviderConfig``) is used.  Required
-   fields are validated at parse time.
-2. If ``type`` does not match any well-known provider, the base
-   ``ProviderConfig`` is used with ``extra="allow"``.  No validation is
-   performed beyond the base fields.
-
-This can be implemented via a Pydantic discriminated union on ``type``, with
-``ProviderConfig`` as the fallback default.
-
-Well-known subclasses
-"""""""""""""""""""""
-
-**AwsBedrockProviderConfig**
-
-.. code-block:: python
-
-   class AwsBedrockProviderConfig(ProviderConfig):
-       type: Literal["aws_bedrock"] = "aws_bedrock"
-       region: str                           # required — AWS region
-
-.. code-block:: yaml
-
-   provider:
-     type: aws_bedrock
-     region: us-east-1
-
-**AzureOpenAiProviderConfig**
-
-.. code-block:: python
-
-   class AzureOpenAiProviderConfig(ProviderConfig):
-       type: Literal["azure_openai"] = "azure_openai"
-       deployment_name: str                  # required — Azure deployment name
-       resource_group: Optional[str] = None  # optional — Azure resource group
-
-.. code-block:: yaml
-
-   provider:
-     type: azure_openai
-     endpoint: https://my-resource.openai.azure.com
-     api_version: "2024-06-01"
-     deployment_name: gpt4o-deploy
-     resource_group: my-rg                  # optional
-
-**GcpVertexAiProviderConfig**
-
-.. code-block:: python
-
-   class GcpVertexAiProviderConfig(ProviderConfig):
-       type: Literal["gcp_vertex_ai"] = "gcp_vertex_ai"
-       project_id: str                       # required — GCP project ID
-       region: str                           # required — GCP region
-
-.. code-block:: yaml
-
-   provider:
-     type: gcp_vertex_ai
-     project_id: my-gcp-project
-     region: us-central1
-
-Summary table
-"""""""""""""
-
-.. list-table::
-   :header-rows: 1
-   :widths: 20 30 10 40
-
-   * - Subclass
-     - Field
-     - Required
-     - Description
-   * - ``AwsBedrockProviderConfig``
-     - ``region``
-     - Yes
-     - AWS region (e.g. ``"us-east-1"``)
-   * - ``AzureOpenAiProviderConfig``
-     - ``deployment_name``
-     - Yes
-     - Azure deployment name
-   * - ``AzureOpenAiProviderConfig``
-     - ``resource_group``
-     - No
-     - Azure resource group
-   * - ``GcpVertexAiProviderConfig``
-     - ``project_id``
-     - Yes
-     - GCP project ID
-   * - ``GcpVertexAiProviderConfig``
-     - ``region``
-     - Yes
-     - GCP region (e.g. ``"us-central1"``)
-
-Extensibility
-"""""""""""""
-
-New well-known provider configs can be added in future spec versions by
-creating additional ``ProviderConfig`` subclasses.  This does **not** require
-changes to ``GenericLlmConfig`` itself -- only an update to the discriminated
-union mapping.
-
-Providers without a well-known subclass continue to use the base
-``ProviderConfig`` with ``extra="allow"``, requiring no spec change at all.
-
-Why subclasses, not separate components?
-""""""""""""""""""""""""""""""""""""""""
-
-The well-known provider configs are **model subclasses**, not standalone spec
-components (i.e. they do not have their own ``kind``).  This is intentional:
-
-- ``GenericLlmConfig`` remains the single entry point.  Users never need to
-  choose between ``kind: GenericLlmConfig`` and
-  ``kind: AwsBedrockGenericLlmConfig``.
-- The ``provider.type`` string is the sole discriminator.  Adding a subclass
-  does not change the YAML surface -- only validation strictness.
-- Adapters continue to dispatch on ``provider.type``.  The subclass gives
-  them typed access to fields (``provider.region`` instead of
-  ``provider.model_extra["region"]``) but does not change the dispatch logic.
+     provider: meta
+     api_provider: ollama
 
 Backward compatibility
 ^^^^^^^^^^^^^^^^^^^^^^
 
-- ``GenericLlmConfig`` introduces a new ``component_type`` value
-  (``kind: GenericLlmConfig``).  Existing configs (``OpenAiConfig``,
-  ``OciGenAiConfig``, etc.) continue to work unchanged.
-- The minimum ``apiVersion`` is ``v26.2.0``; older spec versions silently
-  exclude the new fields.
+- ``LlmConfig`` becomes non-abstract.  This is an additive change -- all
+  existing subclasses continue to compile and work unchanged.
+- The three new fields (``provider``, ``api_provider``, ``api_type``) are
+  optional with ``None`` defaults, so existing YAML files that omit them
+  remain valid.
+- The minimum ``apiVersion`` for the new fields is ``v26.2.0``; older spec
+  versions silently exclude them.
 - No existing YAML files need to be modified.
 
 Potential risks or concerns
 ---------------------------
 
-- **Free-form ``provider.type``.**
-  Because ``provider.type`` is an unconstrained string, typos (e.g.
-  ``"opanai"``) produce runtime errors rather than schema-level validation
-  failures.  A recommended-values list in documentation could mitigate this.
+- **Free-form strings.**
+  Because ``provider``, ``api_provider``, and ``api_type`` are unconstrained
+  strings, typos (e.g. ``"opanai"``) produce runtime errors rather than
+  schema-level validation failures.  The well-known values list in
+  documentation mitigates this, and adapters should surface clear error
+  messages for unrecognized values.
 
 - **Adapter complexity for non-OpenAI protocols.**
   Providers with proprietary APIs (Bedrock, Vertex AI) require dedicated client
@@ -673,14 +372,6 @@ Potential risks or concerns
   adapter implementations.
 
 - **Naming conventions.**
-  There is no enforced convention for ``provider.type`` strings (e.g.
-  ``"aws_bedrock"`` vs. ``"bedrock"`` vs. ``"amazon_bedrock"``).  Documentation
-  should establish canonical names.
-
-- **``extra="allow"`` discoverability.**
-  Extra fields on the base ``ProviderConfig`` are not visible in the JSON
-  schema.  The *Well-known provider configs* described above address this for
-  major providers by declaring explicit fields that surface in validation
-  errors, IDE auto-completion, and generated documentation.  Unknown providers
-  still rely on ``extra="allow"`` and external documentation.
-
+  There is no enforced convention for string values (e.g.
+  ``"aws_bedrock"`` vs. ``"bedrock"`` vs. ``"amazon_bedrock"``).  The
+  well-known values list establishes canonical names.
