@@ -39,6 +39,11 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **New tool output streaming Event:**
+
+  A new :ref:`ToolExecutionStreamingChunkReceived <toolexecutionstreamingchunkreceived>`
+  is introduced to enable surfacing intermediate tool chunks when executing a long-running tool.
+
 * **Swarm support in LangGraph adapter:**
 
   The LangGraph adapter now supports the conversion of the Swarm multi-agent pattern.
