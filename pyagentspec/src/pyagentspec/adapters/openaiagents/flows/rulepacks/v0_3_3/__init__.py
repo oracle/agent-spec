@@ -40,12 +40,7 @@ def _sdk_version() -> str:
 
 
 # Shared mapping for json-schema type name -> Property class
-from pyagentspec.property import (
-    BooleanProperty,
-    IntegerProperty,
-    NumberProperty,
-    StringProperty,
-)
+from pyagentspec.property import BooleanProperty, IntegerProperty, NumberProperty, StringProperty
 
 _TYPE_NAME_TO_PROPERTY_CLASS = {
     "string": StringProperty,

@@ -192,6 +192,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Optional[Dict[str, Any]] = None,
         checkpointer: Optional[Checkpointer] = None,
         config: Optional[RunnableConfig] = None,
+        **kwargs: Any,
     ) -> Any:
         """Convert the given PyAgentSpec component object into the corresponding LangGraph component"""
         if converted_components is None:
@@ -371,8 +372,8 @@ class AgentSpecToLangGraphConverter:
             # Provide both sync and async entrypoints natively. LangGraph will use
             # the appropriate one based on invoke/stream vs ainvoke/astream.
             runnable = RunnableLambda(
-                func=lambda state, _exec=node_executor: _exec(state),  # type: ignore
-                afunc=lambda state, _exec=node_executor: _exec.__acall__(state),
+                func=node_executor,
+                afunc=node_executor.__acall__,
                 name=node_id,
             )
             graph_builder.add_node(node_id, runnable)
@@ -1226,15 +1227,17 @@ class AgentSpecToLangGraphConverter:
         ]
 
         if isinstance(llm_config, VllmConfig):
-            from langchain_openai import ChatOpenAI
-
-            return ChatOpenAI(
-                model=llm_config.model_id,
-                api_key=SecretStr("EMPTY"),
+            # if llm_config.api_key is None, ChatOpenAI constructor will attempt to read from the env
+            # OPENAI_API_KEY and raise an error if missing
+            # as local vLLM servers are not typically set up with API keys, we use the "EMPTY" as the default
+            # for ease of use
+            return _create_chat_openai_model(
+                model_id=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
+                api_key=llm_config.api_key if llm_config.api_key is not None else "EMPTY",
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
-                **generation_config,
+                generation_config=generation_config,
             )
         elif isinstance(llm_config, OllamaConfig):
             from langchain_ollama import ChatOllama
@@ -1251,23 +1254,21 @@ class AgentSpecToLangGraphConverter:
                 **generation_config,
             )
         elif isinstance(llm_config, OpenAiConfig):
-            from langchain_openai import ChatOpenAI
-
-            return ChatOpenAI(
-                model=llm_config.model_id,
+            return _create_chat_openai_model(
+                model_id=llm_config.model_id,
+                api_key=llm_config.api_key,
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
-                **generation_config,
+                generation_config=generation_config,
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
-            from langchain_openai import ChatOpenAI
-
-            return ChatOpenAI(
-                model=llm_config.model_id,
+            return _create_chat_openai_model(
+                model_id=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
+                api_key=llm_config.api_key,
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
-                **generation_config,
+                generation_config=generation_config,
             )
         elif isinstance(llm_config, OciGenAiConfig):
             from langchain_oci import ChatOCIGenAI  # type: ignore
@@ -1472,6 +1473,36 @@ def _add_session_tools_to_registry(
 
     # Commit staged entries
     tool_registry.update(staged)
+
+
+def _create_chat_openai_model(
+    *,
+    model_id: str,
+    use_responses_api: bool,
+    callbacks: List[BaseCallbackHandler],
+    generation_config: Dict[str, Any],
+    base_url: Optional[str] = None,
+    api_key: Optional[str] = None,
+) -> BaseChatModel:
+    """Create a ChatOpenAI model without overriding env-based defaults.
+
+    Important: passing `api_key=None` disables LangChain's env-based default (`OPENAI_API_KEY`)
+    and results in a model without a sync client. Only pass `api_key` when it is explicitly
+    specified in the Agent Spec config.
+    """
+    from langchain_openai import ChatOpenAI
+
+    kwargs: Dict[str, Any] = {
+        "model": model_id,
+        "use_responses_api": use_responses_api,
+        "callbacks": callbacks,
+        **generation_config,
+    }
+    if base_url is not None:
+        kwargs["base_url"] = base_url
+    if api_key is not None:
+        kwargs["api_key"] = SecretStr(api_key)
+    return ChatOpenAI(**kwargs)
 
 
 def _prepare_openai_compatible_url(url: str) -> str:

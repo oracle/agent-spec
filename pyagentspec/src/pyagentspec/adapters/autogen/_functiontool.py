@@ -9,10 +9,7 @@ from typing import Any, Callable, Optional, Sequence, Type, Union
 
 from pydantic import BaseModel
 
-from pyagentspec.adapters.autogen._types import (
-    AutogenFunctionTool,
-    AutogenImport,
-)
+from pyagentspec.adapters.autogen._types import AutogenFunctionTool, AutogenImport
 
 
 def signature_from_pydantic_model(model_cls: type[BaseModel]) -> inspect.Signature:

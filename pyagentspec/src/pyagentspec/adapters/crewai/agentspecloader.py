@@ -4,85 +4,213 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+"""Provide the CrewAI adapter Agent Spec loader."""
 
-from typing import Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional
 
-from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
-from pyagentspec.adapters.crewai._types import (
-    CrewAIComponent,
-    CrewAIServerToolType,
+from pyagentspec.adapters._agentspecloader import (
+    AdapterAgnosticAgentSpecLoader,
+    AgentSpecToRuntimeConverter,
+    RuntimeToAgentSpecConverter,
 )
-from pyagentspec.component import Component as AgentSpecComponent
-from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
+from pyagentspec.adapters.crewai._agentspecconverter import CrewAIToAgentSpecConverter
+from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
 
 
-class AgentSpecLoader:
+class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
     """Helper class to convert Agent Spec configurations to CrewAI objects."""
 
     def __init__(
         self,
-        tool_registry: Optional[Dict[str, CrewAIServerToolType]] = None,
-        plugins: Optional[List[ComponentDeserializationPlugin]] = None,
-    ):
+        tool_registry: Optional[Dict[str, Any]] = None,
+        plugins: Optional[List[Any]] = None,
+        *,
+        enable_agentspec_tracing: bool = True,
+    ) -> None:
+        super().__init__(tool_registry=tool_registry, plugins=plugins)
+        self._enable_agentspec_tracing = enable_agentspec_tracing
+
+    @property
+    def agentspec_to_runtime_converter(self) -> AgentSpecToRuntimeConverter:
+        return AgentSpecToCrewAIConverter(enable_agentspec_tracing=self._enable_agentspec_tracing)
+
+    @property
+    def runtime_to_agentspec_converter(self) -> RuntimeToAgentSpecConverter:
+        return CrewAIToAgentSpecConverter()
+
+    def load_yaml(
+        self,
+        serialized_assistant: str,
+        components_registry: Optional[Dict[str, Any]] = None,
+        import_only_referenced_components: bool = False,
+    ) -> Any:
         """
+        Transform the given Agent Spec YAML into CrewAI components, with support for
+        disaggregated configurations.
+
         Parameters
         ----------
-
-        tool_registry:
-            Optional dictionary to enable converting/loading assistant configurations involving the
-            use of tools. Keys must be the tool names as specified in the serialized configuration, and
-            the values are the tool objects.
-        plugins:
-            Optional list of plugins to enable converting/loading assistant configurations involving
-            non-core Agent Spec components.
-        """
-        self.tool_registry = tool_registry or {}
-        self.plugins = plugins
-        self._enable_agentspec_tracing = True
-
-    def load_yaml(self, serialized_assistant: str) -> CrewAIComponent:
-        """
-        Transform the given Agent Spec YAML representation into the respective CrewAI Component
-
-        Parameters
-        ----------
-
         serialized_assistant:
-            Serialized Agent Spec configuration to be converted to a CrewAI Component.
-        """
-        agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_yaml(
-            serialized_assistant
-        )
-        return self.load_component(agentspec_assistant)
+            Serialized Agent Spec configuration.
+        components_registry:
+            Optional registry mapping ids to CrewAI components/values. The loader will
+            convert these back to Agent Spec components/values internally to resolve
+            references during deserialization.
+        import_only_referenced_components:
+            When ``True``, loads only the referenced/disaggregated components and returns a
+            dictionary mapping component id to CrewAI components/values. These can be
+            used as the ``components_registry`` when loading the main configuration. When
+            ``False``, loads the main component and returns the compiled CrewAI graph.
 
-    def load_json(self, serialized_assistant: str) -> CrewAIComponent:
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``
+
+        Any
+            The converted CrewAI component.
+
+        If ``import_only_referenced_components`` is ``True``
+
+        Dict[str, Any]
+            A dictionary containing the converted referenced components.
+
+        Examples
+        --------
+        Basic two-phase loading with disaggregation:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> main_yaml, disag_yaml = AgentSpecSerializer().to_yaml(
+        ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
+        ... )
+        >>> from pyagentspec.adapters.crewai import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> registry = loader.load_yaml(disag_yaml, import_only_referenced_components=True)
+        >>> compiled = loader.load_yaml(main_yaml, components_registry=registry)
+
         """
-        Transform the given Agent Spec JSON representation into the respective CrewAI Component
+        return super().load_yaml(
+            serialized_assistant,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
+        )
+
+    def load_json(
+        self,
+        serialized_assistant: str,
+        components_registry: Optional[Dict[str, Any]] = None,
+        import_only_referenced_components: bool = False,
+    ) -> Any:
+        """
+        Transform the given Agent Spec JSON into CrewAI components, with support for
+        disaggregated configurations.
 
         Parameters
         ----------
-
         serialized_assistant:
-            Serialized Agent Spec configuration to be converted to a CrewAI Component.
-        """
-        agentspec_assistant = AgentSpecDeserializer(plugins=self.plugins).from_json(
-            serialized_assistant
-        )
-        return self.load_component(agentspec_assistant)
+            Serialized Agent Spec configuration.
+        components_registry:
+            Optional registry mapping ids to CrewAI components/values. The loader will
+            convert these back to Agent Spec components/values internally to resolve
+            references during deserialization.
+        import_only_referenced_components:
+            When ``True``, loads only the referenced/disaggregated components and returns a
+            dictionary mapping component id to CrewAI components/values. These can be
+            used as the ``components_registry`` when loading the main configuration. When
+            ``False``, loads the main component and returns the compiled CrewAI graph.
 
-    def load_component(self, agentspec_component: AgentSpecComponent) -> CrewAIComponent:
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``
+
+        Any
+            The converted CrewAI component.
+
+        If ``import_only_referenced_components`` is ``True``
+
+        Dict[str, Any]
+            A dictionary containing the converted referenced components.
+
+        Examples
+        --------
+        Basic two-phase loading with disaggregation:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(id="llm_id", name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> main_json, disag_json = AgentSpecSerializer().to_json(
+        ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
+        ... )
+        >>> from pyagentspec.adapters.crewai import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> registry = loader.load_json(disag_json, import_only_referenced_components=True)
+        >>> crewai = loader.load_json(main_json, components_registry=registry)
+
         """
-        Transform the given PyAgentSpec Component into the respective CrewAI Component
+        return super().load_json(
+            serialized_assistant,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
+        )
+
+    def load_dict(
+        self,
+        serialized_assistant: Dict[str, Any],
+        components_registry: Optional[Dict[str, Any]] = None,
+        import_only_referenced_components: bool = False,
+    ) -> Any:
+        """
+        Transform the given Agent Spec dictionary into CrewAI components, with support
+        for disaggregated configurations.
 
         Parameters
         ----------
+        serialized_assistant:
+            Serialized Agent Spec configuration as a dictionary.
+        components_registry:
+            Optional registry mapping ids to CrewAI components/values. The loader will
+            convert these back to Agent Spec components/values internally to resolve
+            references during deserialization.
+        import_only_referenced_components:
+            When ``True``, loads only the referenced/disaggregated components and returns a
+            dictionary mapping component id to CrewAI components/values. These can be
+            used as the ``components_registry`` when loading the main configuration. When
+            ``False``, loads the main component and returns the compiled CrewAI graph.
 
-        agentspec_component:
-            PyAgentSpec Component to be converted to a CrewAI Component.
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``
+
+        Any
+            The converted CrewAI component.
+
+        If ``import_only_referenced_components`` is ``True``
+
+        Dict[str, Any]
+            A dictionary containing the converted referenced components.
+
+        Examples
+        --------
+        Basic two-phase loading with disaggregation:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import OllamaConfig
+        >>> from pyagentspec.serialization import AgentSpecSerializer
+        >>> agent = Agent(id="agent_id", name="A", system_prompt="You are helpful.", llm_config=OllamaConfig(id="llm_id", name="m", model_id="llama3.1", url="http://localhost:11434"))
+        >>> main_dict, disag_dict = AgentSpecSerializer().to_dict(
+        ...     agent, disaggregated_components=[(agent.llm_config, "llm_id")], export_disaggregated_components=True
+        ... )
+        >>> from pyagentspec.adapters.crewai import AgentSpecLoader
+        >>> loader = AgentSpecLoader()
+        >>> registry = loader.load_dict(disag_dict, import_only_referenced_components=True)
+        >>> crewai = loader.load_dict(main_dict, components_registry=registry)
+
         """
-        return cast(
-            CrewAIComponent,
-            AgentSpecToCrewAIConverter(
-                enable_agentspec_tracing=self._enable_agentspec_tracing,
-            ).convert(agentspec_component, self.tool_registry),
+        return super().load_dict(
+            serialized_assistant,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
         )

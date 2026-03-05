@@ -8,18 +8,7 @@
 from abc import abstractmethod
 from collections import Counter
 from enum import Enum
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
@@ -82,7 +71,6 @@ class SerializationContext:
         info: Optional[FieldInfoTypeT],
     ) -> Union[int, float, bool, str, List[Any], Dict[str, Any]]:
         """Dump a component field based on its value and optional info."""
-        pass
 
 
 class _SerializationContextImpl(SerializationContext):

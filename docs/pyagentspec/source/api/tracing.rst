@@ -88,6 +88,9 @@ Tool Events
 .. _toolexecutionresponse:
 .. autoclass:: pyagentspec.tracing.events.tool.ToolExecutionResponse
 
+.. _toolexecutionstreamingchunkreceived:
+.. autoclass:: pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived
+
 .. _toolconfirmationrequest:
 .. autoclass:: pyagentspec.tracing.events.tool.ToolConfirmationRequest
 

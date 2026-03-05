@@ -1,31 +1,67 @@
-# Copyright © 2026 Oracle and/or its affiliates.
+# Copyright © 2025 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any, Literal, Optional, Tuple, Union, overload
-
-from pyagentspec.adapters._agentspecexporter import (
-    AdapterAgnosticAgentSpecExporter,
-    _RuntimeDisaggregatedComponentsConfigT,
+from abc import ABC, abstractmethod
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeAlias,
+    Union,
+    cast,
+    overload,
 )
-from pyagentspec.adapters._agentspecloader import RuntimeToAgentSpecConverter, _RuntimeComponentT
-from pyagentspec.adapters.agent_framework._agentspecconverter import (
-    AgentFrameworkToAgentSpecConverter,
+
+from pyagentspec.adapters._agentspecloader import (
+    RuntimeToAgentSpecConverter,
+    _RuntimeComponentT,
+)
+from pyagentspec.component import Component as AgentSpecComponent
+from pyagentspec.serialization import AgentSpecSerializer, ComponentSerializationPlugin
+from pyagentspec.serialization.types import (
+    DisaggregatedComponentsConfigT as AgentSpecDisaggregatedComponentsConfigT,
 )
 from pyagentspec.versioning import AgentSpecVersionEnum
 
+FieldID: TypeAlias = str
+_RuntimeDisaggregatedComponentsConfigT: TypeAlias = Sequence[
+    Union[_RuntimeComponentT, Tuple[_RuntimeComponentT, FieldID]]
+]
 
-class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
-    """Helper class to convert Microsoft Agent Framework objects to Agent Spec configurations."""
+
+class AdapterAgnosticAgentSpecExporter(ABC):
+    """Helper class to convert Runtime objects to Agent Spec configurations."""
+
+    def __init__(
+        self,
+        plugins: Optional[List[ComponentSerializationPlugin]] = None,
+    ):
+        """
+        Parameters
+        ----------
+        plugins:
+            List of serialization plugins to use.
+
+        """
+        self.plugins = plugins or []
 
     @property
+    @abstractmethod
     def runtime_to_agentspec_converter(self) -> RuntimeToAgentSpecConverter:
-        return AgentFrameworkToAgentSpecConverter()
+        """Instance of runtime converter used to convert runtime components."""
 
     @overload
-    def to_json(self, runtime_component: _RuntimeComponentT) -> str: ...
+    def to_json(
+        self,
+        runtime_component: _RuntimeComponentT,
+    ) -> str: ...
 
     @overload
     def to_json(
@@ -78,12 +114,12 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         export_disaggregated_components: bool = False,
     ) -> Union[str, Tuple[str, str]]:
         """
-        Transform the given Microsoft Agent Framework component into the respective Agent Spec JSON representation.
+        Transform the given runtime component into the respective Agent Spec JSON representation.
 
         Parameters
         ----------
         runtime_component:
-            Microsoft Agent Framework component to serialize to an Agent Spec configuration.
+            Runtime component to serialize to an Agent Spec configuration.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -115,15 +151,22 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         str
             The JSON serialization of the root component.
         """
-        return super().to_json(
-            runtime_component,
-            agentspec_version=agentspec_version,
-            disaggregated_components=disaggregated_components,
-            export_disaggregated_components=export_disaggregated_components,
+        return cast(
+            str,
+            self._export(
+                exporter="json",
+                runtime_component=runtime_component,
+                agentspec_version=agentspec_version,
+                disaggregated_components=disaggregated_components,
+                export_disaggregated_components=export_disaggregated_components,
+            ),
         )
 
     @overload
-    def to_yaml(self, runtime_component: _RuntimeComponentT) -> str: ...
+    def to_yaml(
+        self,
+        runtime_component: _RuntimeComponentT,
+    ) -> str: ...
 
     @overload
     def to_yaml(
@@ -176,12 +219,12 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         export_disaggregated_components: bool = False,
     ) -> Union[str, Tuple[str, str]]:
         """
-        Transform the given Microsoft Agent Framework component into the respective Agent Spec YAML representation.
+        Transform the given Runtime component into the respective Agent Spec YAML representation.
 
         Parameters
         ----------
         runtime_component:
-            Microsoft Agent Framework component to serialize to an Agent Spec configuration.
+            Runtime component to serialize to an Agent Spec configuration.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -213,15 +256,22 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         str
             The YAML serialization of the root component.
         """
-        return super().to_yaml(
-            runtime_component,
-            agentspec_version=agentspec_version,
-            disaggregated_components=disaggregated_components,
-            export_disaggregated_components=export_disaggregated_components,
+        return cast(
+            str,
+            self._export(
+                exporter="yaml",
+                runtime_component=runtime_component,
+                agentspec_version=agentspec_version,
+                disaggregated_components=disaggregated_components,
+                export_disaggregated_components=export_disaggregated_components,
+            ),
         )
 
     @overload
-    def to_dict(self, runtime_component: _RuntimeComponentT) -> dict[str, Any]: ...
+    def to_dict(
+        self,
+        runtime_component: _RuntimeComponentT,
+    ) -> dict[str, Any]: ...
 
     @overload
     def to_dict(
@@ -274,12 +324,12 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         export_disaggregated_components: bool = False,
     ) -> Union[dict[str, Any], Tuple[str, dict[str, Any]]]:
         """
-        Transform the given Microsoft Agent Framework component into the respective Agent Spec dictionary.
+        Transform the given Runtime component into the respective Agent Spec dictionary.
 
         Parameters
         ----------
         runtime_component:
-            Microsoft Agent Framework component to serialize to an Agent Spec configuration.
+            Runtime component to serialize to an Agent Spec configuration.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -311,9 +361,81 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         str
             The dictionary serialization of the root component.
         """
-        return super().to_dict(
-            runtime_component,
+        return cast(
+            dict[str, Any],
+            self._export(
+                exporter="dict",
+                runtime_component=runtime_component,
+                agentspec_version=agentspec_version,
+                disaggregated_components=disaggregated_components,
+                export_disaggregated_components=export_disaggregated_components,
+            ),
+        )
+
+    def _export(
+        self,
+        exporter: str,
+        runtime_component: _RuntimeComponentT,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional[_RuntimeDisaggregatedComponentsConfigT] = None,
+        export_disaggregated_components: bool = False,
+    ) -> Any:
+        """Common implementation of the export function. The returned type depends on the type of exporter."""
+        serializer = AgentSpecSerializer(plugins=self.plugins)
+        serializer_func: Callable[..., Any]
+        if exporter == "yaml":
+            serializer_func = serializer.to_yaml
+        elif exporter == "json":
+            serializer_func = serializer.to_json
+        elif exporter == "dict":
+            serializer_func = serializer.to_dict
+        else:
+            raise ValueError(
+                f"Unsupported exporter type: `{exporter}`. Expected `dict`, `json`, or `yaml`."
+            )
+
+        converted_disag_config, referenced_components = (
+            self._convert_disaggregated_config(disaggregated_components)
+            if disaggregated_components is not None
+            else (None, None)
+        )
+        agentspec_assistant = self.runtime_to_agentspec_converter.convert(
+            runtime_component, referenced_components
+        )
+        return serializer_func(
+            agentspec_assistant,
             agentspec_version=agentspec_version,
-            disaggregated_components=disaggregated_components,
+            disaggregated_components=converted_disag_config,
             export_disaggregated_components=export_disaggregated_components,
         )
+
+    def _convert_disaggregated_config(
+        self, runtime_disag_config: _RuntimeDisaggregatedComponentsConfigT
+    ) -> Tuple[AgentSpecDisaggregatedComponentsConfigT, dict[str, Any]]:
+        agentspec_disaggregated_components = []
+        referenced_components: dict[str, Any] = {}
+        for disag_config in runtime_disag_config:
+            is_pair = isinstance(disag_config, tuple)
+            if is_pair:
+                runtime_component, custom_id = disag_config
+            else:
+                runtime_component, custom_id = disag_config, None
+            agentspec_component = self.runtime_to_agentspec_converter.convert(
+                runtime_component, referenced_components
+            )
+            agentspec_disaggregated_components.append(
+                (agentspec_component, custom_id) if is_pair else agentspec_component
+            )
+        return agentspec_disaggregated_components, referenced_components  # type: ignore
+
+    def to_component(self, runtime_component: _RuntimeComponentT) -> AgentSpecComponent:
+        """
+        Transform the given Runtime component into the respective PyAgentSpec Component.
+
+        Parameters
+        ----------
+
+        runtime_component:
+            Runtime Component to serialize to a corresponding PyAgentSpec Component.
+        """
+        return self.runtime_to_agentspec_converter.convert(runtime_component)

@@ -5,7 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Mapping, Tuple, TypedDict, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Tuple, TypedDict, Union
 
 from typing_extensions import TypeAlias
 
@@ -82,7 +82,7 @@ else:
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
 LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]
 LangGraphRuntimeComponent: TypeAlias = Union[LangGraphComponent, BaseChatModel, StructuredTool]
-LangGraphComponentsRegistryT: TypeAlias = Mapping[str, Union[LangGraphRuntimeComponent, Any]]
+LangGraphComponentsRegistryT: TypeAlias = Dict[str, Union[LangGraphRuntimeComponent, Any]]
 
 
 @dataclass

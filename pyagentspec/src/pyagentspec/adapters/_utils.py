@@ -201,3 +201,11 @@ def create_pydantic_model_from_properties(
         fields[property_.title] = (annotation, default_field)
 
     return create_model(model_name, **fields)  # type: ignore
+
+
+def _get_obj_reference(obj: Any) -> str:
+    """
+    Return a reference for the given object.
+    Used in Runtime to Agent Spec converters to store converted objects in the registry.
+    """
+    return f"{obj.__class__.__name__.lower()}/{id(obj)}"

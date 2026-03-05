@@ -24,6 +24,7 @@ from typing import (
 from typing_extensions import Literal
 
 from pyagentspec import Property
+from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
     _langgraph_graph_convert_to_agentspec,
 )
@@ -91,20 +92,21 @@ class LangGraphToAgentSpecConverter:
 
     def convert(
         self,
-        langgraph_component: LangGraphRuntimeComponent,
+        runtime_component: LangGraphRuntimeComponent,
         referenced_objects: Optional[Dict[str, AgentSpecComponent]] = None,
+        **kwargs: Any,
     ) -> AgentSpecComponent:
         """Convert the given LangGraph component object into the corresponding PyAgentSpec component"""
         if referenced_objects is None:
             referenced_objects = {}
 
         # Reuse the same object multiple times in order to exploit the referencing system
-        object_reference = self._get_obj_reference(langgraph_component)
+        object_reference = _get_obj_reference(runtime_component)
         if object_reference in referenced_objects:
             return referenced_objects[object_reference]
 
         referenced_objects[object_reference] = self._convert(
-            langgraph_component=langgraph_component,
+            langgraph_component=runtime_component,
             referenced_objects=referenced_objects,
         )
         return referenced_objects[object_reference]
@@ -304,7 +306,7 @@ class LangGraphToAgentSpecConverter:
             tools = []
         return AgentSpecAgent(
             name=agent_name,
-            llm_config=self._basechatmodel_convert_to_agentspec(basechatmodel),
+            llm_config=cast(AgentSpecLlmConfig, self.convert(basechatmodel, referenced_objects)),
             system_prompt=self._extract_prompt_from_model_node(model_node),
             tools=tools,
         )
@@ -613,6 +615,3 @@ class LangGraphToAgentSpecConverter:
             rts = None
 
         return SessionParameters() if rts is None else SessionParameters(read_timeout_seconds=rts)
-
-    def _get_obj_reference(self, obj: Any) -> str:
-        return f"{obj.__class__.__name__.lower()}/{id(obj)}"
