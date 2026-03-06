@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -11,6 +11,7 @@ from typing import Mapping
 from pyagentspec.a2aagent import A2AAgent, A2AConnectionConfig
 from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
+from pyagentspec.auth import OAuthClientConfig, OAuthConfig
 from pyagentspec.component import Component, ComponentWithIO
 from pyagentspec.datastores.datastore import Datastore, InMemoryCollectionDatastore
 from pyagentspec.datastores.oracle import (
@@ -142,6 +143,8 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "TlsPostgresDatabaseConnectionConfig": TlsPostgresDatabaseConnectionConfig,
     "MessageSummarizationTransform": MessageSummarizationTransform,
     "ConversationSummarizationTransform": ConversationSummarizationTransform,
+    "OAuthClientConfig": OAuthClientConfig,
+    "OAuthConfig": OAuthConfig,
     "VllmConfig": VllmConfig,
     "Swarm": Swarm,
     "ManagerWorkers": ManagerWorkers,

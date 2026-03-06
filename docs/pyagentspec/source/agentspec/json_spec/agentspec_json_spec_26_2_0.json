@@ -62,6 +62,17 @@
         }
       ]
     },
+    "AgentSpecVersionEnum": {
+      "description": "An Enumeration for different versions of Agent Spec.",
+      "enum": [
+        "25.4.1",
+        "25.4.2",
+        "26.1.0",
+        "26.2.0"
+      ],
+      "title": "AgentSpecVersionEnum",
+      "type": "string"
+    },
     "AgentSpecializationParameters": {
       "anyOf": [
         {
@@ -86,6 +97,16 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseApiNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "AuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -417,6 +438,81 @@
         }
       ]
     },
+    "OAuthClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOAuthClientConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "OAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "OAuthEndpoints": {
+      "description": "Explicit OAuth endpoint configuration.\n\nUse this component when endpoint discovery is not available or not desired.\nThis groups the relevant endpoints required to execute OAuth authorization\ncode flows and token refresh.",
+      "properties": {
+        "authorization_endpoint": {
+          "title": "Authorization Endpoint",
+          "type": "string"
+        },
+        "token_endpoint": {
+          "title": "Token Endpoint",
+          "type": "string"
+        },
+        "refresh_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Refresh Endpoint"
+        },
+        "revocation_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revocation Endpoint"
+        },
+        "userinfo_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Userinfo Endpoint"
+        }
+      },
+      "required": [
+        "authorization_endpoint",
+        "token_endpoint"
+      ],
+      "title": "OAuthEndpoints",
+      "type": "object"
+    },
     "OciAPIType": {
       "description": "Enumeration of API Types.",
       "enum": [
@@ -566,6 +662,30 @@
         }
       ]
     },
+    "PKCEMethod": {
+      "enum": [
+        "S256",
+        "plain"
+      ],
+      "title": "PKCEMethod",
+      "type": "string"
+    },
+    "PKCEPolicy": {
+      "description": "Policy configuration for Proof Key for Code Exchange (PKCE).\n\nPKCE mitigates authorization code interception and injection attacks in\nauthorization code flows. Some protocols (such as MCP OAuth) require PKCE.",
+      "properties": {
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "method": {
+          "$ref": "#/$defs/PKCEMethod",
+          "default": "S256"
+        }
+      },
+      "title": "PKCEPolicy",
+      "type": "object"
+    },
     "ParallelFlowNode": {
       "anyOf": [
         {
@@ -671,6 +791,14 @@
           "$ref": "#/$defs/ComponentReference"
         }
       ]
+    },
+    "ScopePolicy": {
+      "enum": [
+        "fixed",
+        "use_challenge_or_supported"
+      ],
+      "title": "ScopePolicy",
+      "type": "string"
     },
     "ServerTool": {
       "anyOf": [
@@ -1521,6 +1649,14 @@
       "title": "ApiNode",
       "type": "object",
       "x-abstract-component": false
+    },
+    "BaseAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OAuthConfig"
+        }
+      ],
+      "x-abstract-component": true
     },
     "BaseBranchingNode": {
       "additionalProperties": false,
@@ -3615,6 +3751,268 @@
       ],
       "x-abstract-component": true
     },
+    "BaseOAuthClientConfig": {
+      "additionalProperties": false,
+      "description": "OAuth client identity / registration configuration.\n\nThis configuration describes how the runtime establishes the OAuth client\nidentity to use with the authorization server. It supports:\n- Pre-registered clients (static client_id/client_secret)\n- Client ID Metadata Documents (URL-formatted client_id)\n- Dynamic client registration (RFC 7591)",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "min_agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum",
+          "default": "26.2.0"
+        },
+        "type": {
+          "enum": [
+            "client_id_metadata_document",
+            "dynamic_registration",
+            "pre_registered"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "client_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Id"
+        },
+        "client_secret": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Secret"
+        },
+        "token_endpoint_auth_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Token Endpoint Auth Method"
+        },
+        "client_id_metadata_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Id Metadata Url"
+        },
+        "registration_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Registration Endpoint"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OAuthClientConfig"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "title": "OAuthClientConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOAuthConfig": {
+      "additionalProperties": false,
+      "description": "Configure OAuth-based authentication for a tool or transport.\n\nOAuthConfig is a generic configuration that can be used for both MCP servers\nand non-MCP remote API tools. It supports discovery-based configuration (via\n``issuer``) and explicit endpoints (via ``endpoints``).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "min_agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum",
+          "default": "26.2.0"
+        },
+        "issuer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issuer"
+        },
+        "endpoints": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/OAuthEndpoints"
+            }
+          ],
+          "default": null
+        },
+        "client": {
+          "$ref": "#/$defs/OAuthClientConfig"
+        },
+        "redirect_uri": {
+          "title": "Redirect Uri",
+          "type": "string"
+        },
+        "scopes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scopes"
+        },
+        "scope_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/ScopePolicy"
+            }
+          ],
+          "default": null
+        },
+        "pkce": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/PKCEPolicy"
+            }
+          ],
+          "default": null
+        },
+        "resource": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OAuthConfig"
+        }
+      },
+      "required": [
+        "client",
+        "name",
+        "redirect_uri"
+      ],
+      "title": "OAuthConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseOciAgent": {
       "additionalProperties": false,
       "description": "An agent is a component that can do several rounds of conversation to solve a task.\n\nThe agent is defined on the OCI console and this is only a wrapper to connect to it.\nIt can be executed by itself, or be executed in a flow using an AgentNode.",
@@ -5003,6 +5401,17 @@
               "title": "Url",
               "type": "string"
             },
+            "auth": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/AuthConfig"
+                }
+              ],
+              "default": null
+            },
             "headers": {
               "anyOf": [
                 {
@@ -5092,6 +5501,17 @@
         "url": {
           "title": "Url",
           "type": "string"
+        },
+        "auth": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/AuthConfig"
+            }
+          ],
+          "default": null
         },
         "headers": {
           "anyOf": [
@@ -5553,6 +5973,17 @@
               "title": "Url",
               "type": "string"
             },
+            "auth": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/AuthConfig"
+                }
+              ],
+              "default": null
+            },
             "headers": {
               "anyOf": [
                 {
@@ -5642,6 +6073,17 @@
         "url": {
           "title": "Url",
           "type": "string"
+        },
+        "auth": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/AuthConfig"
+            }
+          ],
+          "default": null
         },
         "headers": {
           "anyOf": [
@@ -6268,6 +6710,9 @@
             "$ref": "#/$defs/BaseApiNode"
           },
           {
+            "$ref": "#/$defs/BaseAuthConfig"
+          },
+          {
             "$ref": "#/$defs/BaseBranchingNode"
           },
           {
@@ -6344,6 +6789,12 @@
           },
           {
             "$ref": "#/$defs/BaseNode"
+          },
+          {
+            "$ref": "#/$defs/BaseOAuthClientConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseOAuthConfig"
           },
           {
             "$ref": "#/$defs/BaseOciAgent"
@@ -6483,17 +6934,6 @@
         "$component_ref",
         "$referenced_components"
       ]
-    },
-    "AgentSpecVersionEnum": {
-      "description": "An Enumeration for different versions of Agent Spec.",
-      "enum": [
-        "25.4.1",
-        "25.4.2",
-        "26.1.0",
-        "26.2.0"
-      ],
-      "title": "AgentSpecVersionEnum",
-      "type": "string"
     },
     "VersionedA2AAgent": {
       "anyOf": [
@@ -6964,6 +7404,36 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedOAuthClientConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOAuthClientConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedOAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -7589,6 +8059,12 @@
     },
     {
       "$ref": "#/$defs/VersionedNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedOAuthClientConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedOAuthConfig"
     },
     {
       "$ref": "#/$defs/VersionedOciAgent"
