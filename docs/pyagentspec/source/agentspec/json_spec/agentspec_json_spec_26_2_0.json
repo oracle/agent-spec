@@ -93,6 +93,16 @@
         }
       ]
     },
+    "AnthropicLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseAnthropicLlmConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ApiNode": {
       "anyOf": [
         {
@@ -1513,6 +1523,98 @@
       ],
       "x-abstract-component": true
     },
+    "BaseAnthropicLlmConfig": {
+      "additionalProperties": false,
+      "description": "Class to configure a connection to an Anthropic Claude model.\n\nRequires to specify the model identity. The API key and endpoint are provided by the runtime environment.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "format": "password",
+              "type": "string",
+              "writeOnly": true
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "AnthropicLlmConfig"
+        }
+      },
+      "required": [
+        "model_id",
+        "name"
+      ],
+      "title": "AnthropicLlmConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseApiNode": {
       "additionalProperties": false,
       "description": "Make an API call.\n\nThis node is intended to be a part of a Flow.\n\n- **Inputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users have to manually specify them.\n- **Outputs**\n    Inferred from the json spec retrieved from API Spec URI, if available and reachable.\n    Otherwise, users should manually specify them.\n\n    If None is given, ``pyagentspec`` infers a generic property of any type named ``response``.\n- **Branches**\n    One, the default next.\n\n\nExamples\n--------\n>>> from pyagentspec.flows.nodes import ApiNode\n>>> from pyagentspec.property import Property\n>>> weather_result_property = Property(\n...     json_schema={\n...         \"title\": \"zurich_weather\",\n...         \"type\": \"object\",\n...         \"properties\": {\n...             \"temperature\": {\n...                 \"type\": \"number\",\n...                 \"description\": \"Temperature in celsius degrees\",\n...             },\n...             \"weather\": {\"type\": \"string\"}\n...         },\n...     }\n... )\n>>> call_current_weather_step = ApiNode(\n...     name=\"Weather API call node\",\n...     url=\"https://example.com/weather\",\n...     http_method = \"GET\",\n...     query_params={\n...         \"location\": \"zurich\",\n...     },\n...     outputs=[weather_result_property]\n... )\n>>>\n>>> item_id_property = Property(\n...     json_schema={\"title\": \"item_id\", \"type\": \"string\"}\n... )\n>>> order_id_property = Property(\n...     json_schema={\"title\": \"order_id\", \"type\": \"string\"}\n... )\n>>> store_id_property = Property(\n...     json_schema={\"title\": \"store_id\", \"type\": \"string\"}\n... )\n>>> session_id_property = Property(\n...     json_schema={\"title\": \"session_id\", \"type\": \"string\"}\n... )\n>>> create_order_step = ApiNode(\n...     name=\"Orders api call node\",\n...     url=\"https://example.com/orders/{{ order_id }}\",\n...     http_method=\"POST\",\n...     # sending an object which will automatically be transformed into JSON\n...     data={\n...         # define a static body parameter\n...         \"topic_id\": 12345,\n...         # define a templated body parameter.\n...         # The value for {{ item_id }} will be taken from the IO system at runtime\n...         \"item_id\": \"{{ item_id }}\",\n...     },\n...     query_params={\n...         # provide one templated query parameter called \"store_id\"\n...         # which will take its value from the IO system from key \"store_id\"\n...         \"store_id\": \"{{ store_id }}\",\n...     },\n...     headers={\n...         # set header session_id. the value is coming from the IO system\n...         \"session_id\": \"{{ session_id }}\",\n...     },\n...     inputs=[item_id_property, order_id_property, store_id_property, session_id_property],\n... )",
@@ -2915,6 +3017,9 @@
     },
     "BaseLlmConfig": {
       "anyOf": [
+        {
+          "$ref": "#/$defs/AnthropicLlmConfig"
+        },
         {
           "$ref": "#/$defs/OciGenAiConfig"
         },
@@ -6707,6 +6812,9 @@
             "$ref": "#/$defs/BaseAgenticComponent"
           },
           {
+            "$ref": "#/$defs/BaseAnthropicLlmConfig"
+          },
+          {
             "$ref": "#/$defs/BaseApiNode"
           },
           {
@@ -7014,6 +7122,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseAgenticComponent"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedAnthropicLlmConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseAnthropicLlmConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -7978,6 +8101,9 @@
     },
     {
       "$ref": "#/$defs/VersionedAgenticComponent"
+    },
+    {
+      "$ref": "#/$defs/VersionedAnthropicLlmConfig"
     },
     {
       "$ref": "#/$defs/VersionedApiNode"

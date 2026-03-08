@@ -66,6 +66,13 @@ OpenAI Models
 .. autoclass:: pyagentspec.llms.openaiconfig.OpenAiConfig
     :exclude-members: model_post_init, model_config
 
+Anthropic Models
+^^^^^^^^^^^^^^^^
+
+.. _anthropicllmconfig:
+.. autoclass:: pyagentspec.llms.anthropicconfig.AnthropicLlmConfig
+    :exclude-members: model_post_init, model_config
+
 OciGenAi Models
 ^^^^^^^^^^^^^^^
 

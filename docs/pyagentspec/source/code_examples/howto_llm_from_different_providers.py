@@ -82,6 +82,20 @@ llm = OpenAiConfig(
 )
 # .. openai-end
 
+# .. anthropic-start
+from pyagentspec.llms import AnthropicLlmConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.95)
+
+llm = AnthropicLlmConfig(
+    name="anthropic-claude-haiku",
+    model_id="claude-haiku-4-5-20251001",
+    url="https://api.anthropic.com",
+    api_key="optional_api_key",
+    default_generation_parameters=generation_config,
+)
+# .. anthropic-end
+
 # .. ollama-start
 from pyagentspec.llms import OllamaConfig
 
@@ -145,6 +159,17 @@ generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0
 llm = OpenAiConfig(
     name="openai-gpt-5",
     model_id="gpt-5",
+    default_generation_parameters=generation_config,
+)
+
+from pyagentspec.llms import AnthropicLlmConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.95)
+
+llm = AnthropicLlmConfig(
+    name="anthropic-claude-haiku",
+    model_id="claude-haiku-4-5-20251001",
+    url="https://api.anthropic.com",
     default_generation_parameters=generation_config,
 )
 

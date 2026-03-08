@@ -6,6 +6,7 @@
 
 """Define LLM configurations abstraction and concrete classes for connecting to vLLM or OCI."""
 
+from .anthropicconfig import AnthropicLlmConfig
 from .llmconfig import LlmConfig
 from .llmgenerationconfig import LlmGenerationConfig
 from .ocigenaiconfig import OciGenAiConfig
@@ -15,6 +16,7 @@ from .openaiconfig import OpenAiConfig
 from .vllmconfig import VllmConfig
 
 __all__ = [
+    "AnthropicLlmConfig",
     "LlmConfig",
     "LlmGenerationConfig",
     "VllmConfig",

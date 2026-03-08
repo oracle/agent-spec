@@ -79,6 +79,7 @@ from pyagentspec.flows.nodes import MapNode as AgentSpecMapNode
 from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageNode
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
+from pyagentspec.llms.anthropicconfig import AnthropicLlmConfig
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfig,
@@ -1288,6 +1289,27 @@ class AgentSpecToLangGraphConverter:
                 model_kwargs=model_kwargs,
                 **self._oci_client_config_to_langgraph(llm_config.client_config),
             )
+        elif isinstance(llm_config, AnthropicLlmConfig):
+            from langchain_anthropic import ChatAnthropic
+
+            anthropic_generation_config: dict[str, Any] = {
+                "temperature": generation_config.get("temperature"),
+                "max_tokens": generation_config.get("max_completion_tokens"),
+                "top_p": generation_config.get("top_p"),
+            }
+            anthropic_generation_config = {
+                k: v for k, v in anthropic_generation_config.items() if v is not None
+            }
+            anthropic_kwargs: Dict[str, Any] = {
+                "model": llm_config.model_id,
+                "callbacks": callbacks,
+                **anthropic_generation_config,
+            }
+            if llm_config.url:
+                anthropic_kwargs["base_url"] = llm_config.url
+            if llm_config.api_key:
+                anthropic_kwargs["anthropic_api_key"] = llm_config.api_key.get_secret_value()
+            return ChatAnthropic(**anthropic_kwargs)
         else:
             raise NotImplementedError(
                 f"Llm model of type {llm_config.__class__.__name__} is not yet supported."

@@ -44,6 +44,7 @@ from pyagentspec.flows.nodes import (
     ToolNode,
 )
 from pyagentspec.llms import (
+    AnthropicLlmConfig,
     OciGenAiConfig,
     OllamaConfig,
     OpenAiCompatibleConfig,
@@ -88,6 +89,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "AgenticComponent": AgenticComponent,
     "AgentNode": AgentNode,
     "AgentSpecializationParameters": AgentSpecializationParameters,
+    "AnthropicLlmConfig": AnthropicLlmConfig,
     "ApiNode": ApiNode,
     "BranchingNode": BranchingNode,
     "CatchExceptionNode": CatchExceptionNode,

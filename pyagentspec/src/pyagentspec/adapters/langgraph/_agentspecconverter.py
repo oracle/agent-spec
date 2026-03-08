@@ -23,6 +23,8 @@ from typing import (
 
 from typing_extensions import Literal
 
+from pydantic import SecretStr
+
 from pyagentspec import Property
 from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.langgraph._agentspec_converter_flow import (
@@ -36,6 +38,7 @@ from pyagentspec.adapters.langgraph._types import (
     StateNodeSpec,
     StructuredTool,
     SystemMessage,
+    langchain_anthropic,
     langchain_ollama,
     langchain_openai,
     langgraph_graph,
@@ -43,6 +46,7 @@ from pyagentspec.adapters.langgraph._types import (
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.agenticcomponent import AgenticComponent as AgentSpecAgenticComponent
 from pyagentspec.component import Component as AgentSpecComponent
+from pyagentspec.llms import AnthropicLlmConfig as AgentSpecAnthropicLlmConfig
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
@@ -284,6 +288,12 @@ class LangGraphToAgentSpecConverter:
                     model_id=model.model_name,
                     api_type=api_type,
                 )
+        elif isinstance(model, langchain_anthropic.ChatAnthropic):
+            return AgentSpecAnthropicLlmConfig(
+                name=model.model,
+                model_id=model.model,
+                url=model.anthropic_api_url,
+            )
         raise ValueError(f"The LLM instance provided is of an unsupported type `{type(model)}`.")
 
     def _langgraph_agent_convert_to_agentspec(
