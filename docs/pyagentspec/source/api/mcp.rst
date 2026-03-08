@@ -39,9 +39,3 @@ Base Classes for Client Transports
 
 .. autoclass:: pyagentspec.mcp.clienttransport.RemoteTransport
     :exclude-members: model_post_init, model_config
-
-
-Tools
------
-
-See :ref:`MCP Tool <mcptool>`

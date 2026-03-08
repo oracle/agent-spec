@@ -68,10 +68,11 @@ $referenced_components:
     component_type: SSETransport
     id: mcp_transport
     name: mcp_transport
+    auth: null
     description: null
     metadata: {}
     session_parameters:
-      read_timeout_seconds: 60
+      read_timeout_seconds: 60.0
     url: https://some.where/sse
     headers: null
     sensitive_headers: null

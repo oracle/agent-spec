@@ -273,6 +273,19 @@
         ]
     },
     {
+        "name": "Authentication",
+        "path": "auth",
+        "classes": [
+            {"path": "pyagentspec.auth.AuthConfig"},
+            {"path": "pyagentspec.auth.OAuthEndpoints"},
+            {"path": "pyagentspec.auth.PKCEMethod"},
+            {"path": "pyagentspec.auth.PKCEPolicy"},
+            {"path": "pyagentspec.auth.OAuthClientConfig"},
+            {"path": "pyagentspec.auth.ScopePolicy"},
+            {"path": "pyagentspec.auth.OAuthConfig"}
+        ]
+    },
+    {
         "name": "Datastores",
         "path": "datastores",
         "classes": [
