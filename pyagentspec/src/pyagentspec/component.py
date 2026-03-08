@@ -16,6 +16,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Set,
     Tuple,
@@ -25,6 +26,7 @@ from typing import (
     cast,
     get_args,
     get_origin,
+    overload,
 )
 
 from pydantic import (
@@ -60,6 +62,13 @@ from pyagentspec.versioning import (
 
 if TYPE_CHECKING:
     from pyagentspec.serialization import ComponentDeserializationPlugin
+    from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
+    from pyagentspec.serialization.types import (
+        ComponentAsDictT,
+        ComponentsRegistryT,
+        DisaggregatedComponentsAsDictT,
+        DisaggregatedComponentsConfigT,
+    )
 
 EnumType = TypeVar("EnumType", bound=Enum)
 SerializeAsEnum = Annotated[EnumType, PlainSerializer(lambda x: x.value)]
@@ -570,6 +579,539 @@ class Component(AbstractableModel, abstract=True):
         partial_config["component_type"] = cls.__name__
         _, validation_errors = deserializer.from_partial_dict(partial_config)
         return validation_errors
+
+    @overload
+    def to_yaml(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: Literal[False] = False,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        *,
+        export_disaggregated_components: Literal[True],
+    ) -> Tuple[str, str]: ...
+
+    @overload
+    def to_yaml(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    def to_yaml(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+    ) -> Union[str, Tuple[str, str]]:
+        """
+        Serialize this component and its sub-components to YAML.
+
+        Parameters
+        ----------
+        plugins:
+            List of plugins to serialize additional components.
+        agentspec_version:
+            The Agent Spec version of the component.
+        disaggregated_components:
+            Configuration specifying the components/fields to disaggregate upon serialization.
+            Each item can be:
+
+            - A ``Component``: to disaggregate the component using its id
+            - A tuple ``(Component, str)``: to disaggregate the component using
+              a custom id.
+
+            .. note::
+
+                Components in ``disaggregated_components`` are disaggregated
+                even if ``export_disaggregated_components`` is ``False``.
+        export_disaggregated_components:
+            Whether to export the disaggregated components or not. Defaults to ``False``.
+
+        Returns
+        -------
+        If ``export_disaggregated_components`` is ``True``:
+
+        str
+            The YAML serialization of the root component.
+        str
+            The YAML serialization of the disaggregated components.
+
+        If ``export_disaggregated_components`` is ``False``:
+
+        str
+            The YAML serialization of the root component.
+        """
+        from pyagentspec.serialization.serializer import AgentSpecSerializer
+
+        return AgentSpecSerializer(plugins=plugins).to_yaml(
+            component=self,
+            agentspec_version=agentspec_version,
+            disaggregated_components=disaggregated_components,
+            export_disaggregated_components=export_disaggregated_components,
+        )
+
+    @overload
+    def to_json(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: Literal[False] = False,
+        indent: Optional[int] = None,
+    ) -> str: ...
+
+    @overload
+    def to_json(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        *,
+        export_disaggregated_components: Literal[True],
+        indent: Optional[int] = None,
+    ) -> Tuple[str, str]: ...
+
+    @overload
+    def to_json(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+        indent: Optional[int] = None,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    def to_json(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+        indent: Optional[int] = None,
+    ) -> Union[str, Tuple[str, str]]:
+        """
+        Serialize this component and its sub-components to JSON.
+
+        Parameters
+        ----------
+        plugins:
+            List of plugins to serialize additional components.
+        agentspec_version:
+            The Agent Spec version of the component.
+        disaggregated_components:
+            Configuration specifying the components/fields to disaggregate upon serialization.
+            Each item can be:
+
+            - A ``Component``: to disaggregate the component using its id
+            - A tuple ``(Component, str)``: to disaggregate the component using
+              a custom id.
+
+            .. note::
+
+                Components in ``disaggregated_components`` are disaggregated
+                even if ``export_disaggregated_components`` is ``False``.
+        export_disaggregated_components:
+            Whether to export the disaggregated components or not. Defaults to ``False``.
+        indent:
+            The number of spaces to use for the JSON indentation.
+
+        Returns
+        -------
+        If ``export_disaggregated_components`` is ``True``:
+
+        str
+            The JSON serialization of the root component.
+        str
+            The JSON serialization of the disaggregated components.
+
+        If ``export_disaggregated_components`` is ``False``:
+
+        str
+            The JSON serialization of the root component.
+        """
+        from pyagentspec.serialization.serializer import AgentSpecSerializer
+
+        return AgentSpecSerializer(plugins=plugins).to_json(
+            component=self,
+            agentspec_version=agentspec_version,
+            disaggregated_components=disaggregated_components,
+            export_disaggregated_components=export_disaggregated_components,
+            indent=indent,
+        )
+
+    @overload
+    def to_dict(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: Literal[False] = False,
+    ) -> "ComponentAsDictT": ...
+
+    @overload
+    def to_dict(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        *,
+        export_disaggregated_components: Literal[True],
+    ) -> Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]: ...
+
+    @overload
+    def to_dict(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+    ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]: ...
+
+    def to_dict(
+        self,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        export_disaggregated_components: bool = False,
+    ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]:
+        """
+        Serialize this component and its sub-components to a dictionary.
+
+        Parameters
+        ----------
+        plugins:
+            List of plugins to serialize additional components.
+        agentspec_version:
+            The Agent Spec version of the component.
+        disaggregated_components:
+            Configuration specifying the components/fields to disaggregate upon serialization.
+            Each item can be:
+
+            - A ``Component``: to disaggregate the component using its id
+            - A tuple ``(Component, str)``: to disaggregate the component using
+              a custom id.
+
+            .. note::
+
+                Components in ``disaggregated_components`` are disaggregated
+                even if ``export_disaggregated_components`` is ``False``.
+        export_disaggregated_components:
+            Whether to export the disaggregated components or not. Defaults to ``False``.
+
+        Returns
+        -------
+        If ``export_disaggregated_components`` is ``True``:
+
+        ComponentAsDictT
+            A dictionary containing the serialization of the root component.
+        DisaggregatedComponentsAsDictT
+            A dictionary containing the serialization of the disaggregated components.
+
+        If ``export_disaggregated_components`` is ``False``:
+
+        ComponentAsDictT
+            A dictionary containing the serialization of the root component.
+
+        Examples
+        --------
+        Basic serialization using the convenience API:
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import VllmConfig
+        >>> llm = VllmConfig(name="vllm", model_id="model1", url="http://dev.llm.url")
+        >>> agent = Agent(name="Simple Agent", llm_config=llm, system_prompt="Be helpful")
+        >>> agent_config = agent.to_dict()
+
+        Serialization with disaggregated components:
+
+        >>> llm = VllmConfig(
+        ...     id="llm_id",
+        ...     name="vllm",
+        ...     model_id="model1",
+        ...     url="http://dev.llm.url",
+        ... )
+        >>> agent = Agent(name="Simple Agent", llm_config=llm, system_prompt="Be helpful")
+        >>> agent_config, disagg_config = agent.to_dict(
+        ...     disaggregated_components=[llm],
+        ...     export_disaggregated_components=True,
+        ... )
+        >>> list(disagg_config["$referenced_components"].keys())
+        ['llm_id']
+        """
+        from pyagentspec.serialization.serializer import AgentSpecSerializer
+
+        return AgentSpecSerializer(plugins=plugins).to_dict(
+            component=self,
+            agentspec_version=agentspec_version,
+            disaggregated_components=disaggregated_components,
+            export_disaggregated_components=export_disaggregated_components,
+        )
+
+    @classmethod
+    def _ensure_deserialized_component_type(
+        cls: Type[ComponentT], component: "Component"
+    ) -> ComponentT:
+        """Ensure a deserialized component has the expected concrete type."""
+        if cls is Component:
+            return cast(ComponentT, component)
+        if not isinstance(component, cls):
+            raise TypeError(
+                f"Expected component of type '{cls.__name__}', got "
+                f"'{component.__class__.__name__}'."
+            )
+        return component
+
+    @overload
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: Literal[False] = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
+        import_only_referenced_components: Literal[True],
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Dict[str, "Component"]: ...
+
+    @overload
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
+
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]:
+        """
+        Load a component and its sub-components from YAML.
+
+        Parameters
+        ----------
+        yaml_content:
+            The YAML content to deserialize.
+        components_registry:
+            A dictionary of loaded components to use when deserializing the
+            main component.
+        import_only_referenced_components:
+            When ``True``, loads the referenced/disaggregated components
+            into a dictionary to be used as the ``components_registry``
+            when deserializing the main component. Otherwise, loads the
+            main component. Defaults to ``False``.
+        plugins:
+            List of plugins to deserialize additional components.
+
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``:
+
+        ComponentT
+            The deserialized component typed as ``cls``.
+
+        If ``import_only_referenced_components`` is ``True``:
+
+        Dict[str, Component]
+            A dictionary containing the loaded referenced components.
+        """
+        from pyagentspec.serialization.deserializer import AgentSpecDeserializer
+
+        deserialized = AgentSpecDeserializer(plugins=plugins).from_yaml(
+            yaml_content,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
+        )
+        if import_only_referenced_components:
+            return cast(Dict[str, Component], deserialized)
+        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
+
+    @overload
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: Literal[False] = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
+        import_only_referenced_components: Literal[True],
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Dict[str, "Component"]: ...
+
+    @overload
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
+
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]:
+        """
+        Load a component and its sub-components from JSON.
+
+        Parameters
+        ----------
+        json_content:
+            The JSON content to deserialize.
+        components_registry:
+            A dictionary of loaded components to use when deserializing the
+            main component.
+        import_only_referenced_components:
+            When ``True``, loads the referenced/disaggregated components
+            into a dictionary to be used as the ``components_registry``
+            when deserializing the main component. Otherwise, loads the
+            main component. Defaults to ``False``.
+        plugins:
+            List of plugins to deserialize additional components.
+
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``:
+
+        ComponentT
+            The deserialized component typed as ``cls``.
+
+        If ``import_only_referenced_components`` is ``True``:
+
+        Dict[str, Component]
+            A dictionary containing the loaded referenced components.
+        """
+        from pyagentspec.serialization.deserializer import AgentSpecDeserializer
+
+        deserialized = AgentSpecDeserializer(plugins=plugins).from_json(
+            json_content,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
+        )
+        if import_only_referenced_components:
+            return cast(Dict[str, Component], deserialized)
+        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
+
+    @overload
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: Literal[False] = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
+        import_only_referenced_components: Literal[True],
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Dict[str, "Component"]: ...
+
+    @overload
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
+
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        components_registry: Optional["ComponentsRegistryT"] = None,
+        import_only_referenced_components: bool = False,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> Union[ComponentT, Dict[str, "Component"]]:
+        """
+        Load a component and its sub-components from dictionary.
+
+        Parameters
+        ----------
+        dict_content:
+            The loaded serialized component representation as a dictionary.
+        components_registry:
+            A dictionary of loaded components to use when deserializing the
+            main component.
+        import_only_referenced_components:
+            When ``True``, loads the referenced/disaggregated components
+            into a dictionary to be used as the ``components_registry``
+            when deserializing the main component. Otherwise, loads the
+            main component. Defaults to ``False``.
+        plugins:
+            List of plugins to deserialize additional components.
+
+        Returns
+        -------
+        If ``import_only_referenced_components`` is ``False``:
+
+        ComponentT
+            The deserialized component typed as ``cls``.
+
+        If ``import_only_referenced_components`` is ``True``:
+
+        Dict[str, Component]
+            A dictionary containing the loaded referenced components.
+        """
+        from pyagentspec.serialization.deserializer import AgentSpecDeserializer
+
+        deserialized = AgentSpecDeserializer(plugins=plugins).from_dict(
+            dict_content,
+            components_registry=components_registry,
+            import_only_referenced_components=import_only_referenced_components,
+        )
+        if import_only_referenced_components:
+            return cast(Dict[str, Component], deserialized)
+        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
 
 
 def replace_abstract_models_and_hierarchical_definitions(

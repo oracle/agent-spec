@@ -62,7 +62,9 @@ You can simply define them, and add them to the Agent's instantiation.
 Agent Spec Serialization
 ========================
 
-You can export the assistant configuration using the :ref:`AgentSpecSerializer <serialize>`.
+You can export the assistant configuration directly from the component using
+``to_json()`` or ``to_yaml()`` convenience methods.
+These methods are shorthand wrappers around :ref:`AgentSpecSerializer <serialize>`.
 
 .. literalinclude:: ../code_examples/howto_agents.py
     :language: python

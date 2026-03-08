@@ -11,6 +11,15 @@ Improvements
 
   Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
 
+* **Convenience serialization APIs on Components**
+
+  Components now expose direct serialization and deserialization helpers:
+  ``to_yaml()``, ``to_json()``, ``to_dict()``, ``from_yaml()``,
+  ``from_json()``, and ``from_dict()``.
+  This provides a shorter API (e.g., ``agent.to_json()``) while preserving
+  compatibility with disaggregated configurations through
+  ``components_registry`` and ``import_only_referenced_components``.
+
 * **Disaggregated configurations in LangGraph adapter**
 
   The LangGraph adapter now supports loading disaggregated components during deserialization.

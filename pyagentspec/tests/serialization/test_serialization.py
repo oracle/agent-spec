@@ -331,6 +331,237 @@ def test_dict_serialization_and_deserialization(simplest_flow: Flow) -> None:
     assert deserialized_flow == simplest_flow
 
 
+def test_direct_component_serialization_and_deserialization(simplest_flow: Flow) -> None:
+    serialized_flow_as_dict = simplest_flow.to_dict()
+    deserialized_flow_from_dict = AgentSpecDeserializer().from_dict(serialized_flow_as_dict)
+    assert deserialized_flow_from_dict == simplest_flow
+
+    serialized_flow_as_json = simplest_flow.to_json()
+    deserialized_flow_from_json = AgentSpecDeserializer().from_json(serialized_flow_as_json)
+    assert deserialized_flow_from_json == simplest_flow
+
+    serialized_flow_as_yaml = simplest_flow.to_yaml()
+    deserialized_flow_from_yaml = AgentSpecDeserializer().from_yaml(serialized_flow_as_yaml)
+    assert deserialized_flow_from_yaml == simplest_flow
+
+
+def test_direct_component_json_serialization_with_indent(simplest_flow: Flow) -> None:
+    serialized_flow_as_json = simplest_flow.to_json(indent=2)
+    assert '\n  "component_type"' in serialized_flow_as_json
+    deserialized_flow = AgentSpecDeserializer().from_json(serialized_flow_as_json)
+    assert deserialized_flow == simplest_flow
+
+
+def test_direct_component_json_serialization_with_indent_for_disaggregated_outputs() -> None:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+
+    main_json, disaggregated_json = agent.to_json(
+        disaggregated_components=[llm_config],
+        export_disaggregated_components=True,
+        indent=2,
+    )
+    assert '\n  "component_type"' in main_json
+    assert '\n  "$referenced_components"' in disaggregated_json
+    loaded_references = Component.from_json(
+        disaggregated_json, import_only_referenced_components=True
+    )
+    assert isinstance(loaded_references, dict)
+    assert Agent.from_json(main_json, components_registry=loaded_references) == agent
+
+
+@pytest.mark.parametrize(
+    "component_method, serializer_method, expected_output",
+    [
+        ("to_dict", "to_dict", {"component_type": "Flow"}),
+        ("to_json", "to_json", '{"component_type": "Flow"}'),
+        ("to_yaml", "to_yaml", "component_type: Flow\n"),
+    ],
+)
+def test_direct_component_serialization_forwards_agentspec_version(
+    simplest_flow: Flow,
+    component_method: str,
+    serializer_method: str,
+    expected_output: Union[Dict[str, str], str],
+) -> None:
+    with patch.object(
+        AgentSpecSerializer, serializer_method, return_value=expected_output
+    ) as serializer_method_mock:
+        output = getattr(simplest_flow, component_method)(
+            agentspec_version=AgentSpecVersionEnum.v25_3_0
+        )
+    assert output == expected_output
+    assert serializer_method_mock.call_count == 1
+    assert serializer_method_mock.call_args.kwargs["component"] == simplest_flow
+    assert (
+        serializer_method_mock.call_args.kwargs["agentspec_version"] == AgentSpecVersionEnum.v25_3_0
+    )
+
+
+def test_direct_component_class_deserialization(simplest_flow: Flow) -> None:
+    serializer = AgentSpecSerializer()
+    serialized_flow_as_dict = serializer.to_dict(simplest_flow)
+    serialized_flow_as_json = serializer.to_json(simplest_flow)
+    serialized_flow_as_yaml = serializer.to_yaml(simplest_flow)
+
+    assert Flow.from_dict(serialized_flow_as_dict) == simplest_flow
+    assert Flow.from_json(serialized_flow_as_json) == simplest_flow
+    assert Flow.from_yaml(serialized_flow_as_yaml) == simplest_flow
+
+
+@pytest.mark.parametrize(
+    "serialize_method, deserialize_method",
+    [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
+)
+def test_component_base_class_deserialization_returns_concrete_type(
+    simplest_flow: Flow,
+    serialize_method: str,
+    deserialize_method: str,
+) -> None:
+    serialized_flow = getattr(AgentSpecSerializer(), serialize_method)(simplest_flow)
+    deserialized = getattr(Component, deserialize_method)(serialized_flow)
+    assert isinstance(deserialized, Flow)
+    assert deserialized == simplest_flow
+
+
+@pytest.mark.parametrize(
+    "serialize_method, deserialize_method",
+    [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
+)
+def test_direct_component_class_deserialization_raises_on_type_mismatch(
+    simplest_flow: Flow,
+    serialize_method: str,
+    deserialize_method: str,
+) -> None:
+    serialized_flow = getattr(AgentSpecSerializer(), serialize_method)(simplest_flow)
+    with pytest.raises(TypeError, match="Expected component of type 'Agent', got 'Flow'"):
+        getattr(Agent, deserialize_method)(serialized_flow)
+
+
+@pytest.mark.parametrize(
+    "serialize_method, deserialize_method",
+    [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
+)
+def test_direct_component_serialization_with_disaggregated_loading(
+    serialize_method: str,
+    deserialize_method: str,
+) -> None:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+
+    main_config, disaggregated_config = getattr(agent, serialize_method)(
+        disaggregated_components=[llm_config], export_disaggregated_components=True
+    )
+    loaded_references = getattr(Component, deserialize_method)(
+        disaggregated_config, import_only_referenced_components=True
+    )
+    assert isinstance(loaded_references, dict)
+    assert set(loaded_references.keys()) == {"llm_config"}
+
+    loaded_references_from_agent = getattr(Agent, deserialize_method)(
+        disaggregated_config, import_only_referenced_components=True
+    )
+    assert isinstance(loaded_references_from_agent, dict)
+    assert set(loaded_references_from_agent.keys()) == {"llm_config"}
+
+    deserialized_agent = getattr(Agent, deserialize_method)(
+        main_config, components_registry=loaded_references
+    )
+    assert deserialized_agent == agent
+
+
+@pytest.mark.parametrize(
+    "serialize_method, deserialize_method",
+    [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
+)
+def test_direct_component_serialization_with_custom_disaggregated_id(
+    serialize_method: str,
+    deserialize_method: str,
+) -> None:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+
+    main_config, disaggregated_config = getattr(agent, serialize_method)(
+        disaggregated_components=[(llm_config, "custom_llm_id")],
+        export_disaggregated_components=True,
+    )
+    loaded_references = getattr(Component, deserialize_method)(
+        disaggregated_config, import_only_referenced_components=True
+    )
+    assert isinstance(loaded_references, dict)
+    assert set(loaded_references.keys()) == {"custom_llm_id"}
+
+    deserialized_agent = getattr(Agent, deserialize_method)(
+        main_config, components_registry=loaded_references
+    )
+    assert deserialized_agent == agent
+
+
+def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> None:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+
+    main_config_only = agent.to_dict(
+        disaggregated_components=[(llm_config, "custom_llm_id")],
+        export_disaggregated_components=False,
+    )
+    assert isinstance(main_config_only, dict)
+    assert main_config_only["llm_config"] == {"$component_ref": "custom_llm_id"}
+
+    _, disaggregated_config = agent.to_dict(
+        disaggregated_components=[(llm_config, "custom_llm_id")],
+        export_disaggregated_components=True,
+    )
+    loaded_references = Component.from_dict(
+        disaggregated_config, import_only_referenced_components=True
+    )
+    assert isinstance(loaded_references, dict)
+    assert set(loaded_references.keys()) == {"custom_llm_id"}
+
+    deserialized_agent = Agent.from_dict(main_config_only, components_registry=loaded_references)
+    assert deserialized_agent == agent
+
+
+@pytest.mark.parametrize(
+    "serialize_method, deserialize_method",
+    [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
+)
+def test_direct_component_import_only_referenced_components_rejects_main_config(
+    serialize_method: str,
+    deserialize_method: str,
+) -> None:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+    main_config = getattr(agent, serialize_method)()
+    with pytest.raises(ValueError, match=r"\$referenced_components"):
+        getattr(Component, deserialize_method)(main_config, import_only_referenced_components=True)
+
+
 def test_json_and_yaml_serializations_have_the_right_order(
     outer_flow_with_complex_nested_structure: Agent,
 ) -> None:
@@ -467,6 +698,83 @@ class CUnionCompIntStr(Component):
 
 class CUnionPipeSyntax(Component):
     value: UnionMemberComponent | int | str
+
+
+class PluginDisaggregatedConfig(Component):
+    value: str
+
+
+class PluginDisaggregatedContainer(Component):
+    nested: PluginDisaggregatedConfig
+
+
+def test_direct_component_serialization_with_plugins() -> None:
+    ser_plugin = PydanticComponentSerializationPlugin(
+        component_types_and_models={
+            CUnionCompStr.__name__: CUnionCompStr,
+            UnionMemberComponent.__name__: UnionMemberComponent,
+        }
+    )
+    deser_plugin = PydanticComponentDeserializationPlugin(
+        component_types_and_models={
+            CUnionCompStr.__name__: CUnionCompStr,
+            UnionMemberComponent.__name__: UnionMemberComponent,
+        }
+    )
+
+    component = CUnionCompStr(name="x", value="keep-this-string")
+
+    serialized_dict = component.to_dict(plugins=[ser_plugin])
+    deserialized_from_dict = CUnionCompStr.from_dict(serialized_dict, plugins=[deser_plugin])
+    assert deserialized_from_dict == component
+
+    serialized_json = component.to_json(plugins=[ser_plugin])
+    deserialized_from_json = CUnionCompStr.from_json(serialized_json, plugins=[deser_plugin])
+    assert deserialized_from_json == component
+
+    serialized_yaml = component.to_yaml(plugins=[ser_plugin])
+    deserialized_from_yaml = CUnionCompStr.from_yaml(serialized_yaml, plugins=[deser_plugin])
+    assert deserialized_from_yaml == component
+
+
+def test_direct_component_serialization_with_plugins_and_disaggregated_components() -> None:
+    ser_plugin = PydanticComponentSerializationPlugin(
+        component_types_and_models={
+            PluginDisaggregatedConfig.__name__: PluginDisaggregatedConfig,
+            PluginDisaggregatedContainer.__name__: PluginDisaggregatedContainer,
+        }
+    )
+    deser_plugin = PydanticComponentDeserializationPlugin(
+        component_types_and_models={
+            PluginDisaggregatedConfig.__name__: PluginDisaggregatedConfig,
+            PluginDisaggregatedContainer.__name__: PluginDisaggregatedContainer,
+        }
+    )
+
+    component = PluginDisaggregatedContainer(
+        name="container",
+        nested=PluginDisaggregatedConfig(name="nested", value="keep-me"),
+    )
+
+    main_dict, disaggregated_dict = component.to_dict(
+        plugins=[ser_plugin],
+        disaggregated_components=[(component.nested, "nested_component")],
+        export_disaggregated_components=True,
+    )
+    loaded_references = Component.from_dict(
+        disaggregated_dict,
+        import_only_referenced_components=True,
+        plugins=[deser_plugin],
+    )
+    assert isinstance(loaded_references, dict)
+    assert set(loaded_references.keys()) == {"nested_component"}
+
+    deserialized = PluginDisaggregatedContainer.from_dict(
+        main_dict,
+        components_registry=loaded_references,
+        plugins=[deser_plugin],
+    )
+    assert deserialized == component
 
 
 @pytest.mark.parametrize(
