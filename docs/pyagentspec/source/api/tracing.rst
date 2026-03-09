@@ -130,6 +130,12 @@ Multi-agent Events
 .. _swarmexecutionend:
 .. autoclass:: pyagentspec.tracing.events.swarm.SwarmExecutionEnd
 
+State Events
+~~~~~~~~~~~~
+
+.. _statesnapshotemitted:
+.. autoclass:: pyagentspec.tracing.events.state.StateSnapshotEmitted
+
 Other Events
 ~~~~~~~~~~~~
 

@@ -948,8 +948,8 @@ Emitted when a NodeExecutionSpan ends.
       - -
       - no
 
-Conversation and control events
--------------------------------
+Conversation, state, and control events
+---------------------------------------
 
 ConversationMessageAdded
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -969,6 +969,41 @@ A message was added to the conversation.
       - The message added; must contain at least content and role, optionally sender
       - Message
       - -
+      - yes
+
+StateSnapshotEmitted
+^^^^^^^^^^^^^^^^^^^^
+
+A runtime emitted a point-in-time snapshot of the current conversation or thread state.
+
+This event is intended for downstream consumers such as UIs, debuggers, or observability
+processors. Agent Spec standardizes the event envelope, but the exact structure of
+``state_snapshot`` and the frequency at which snapshots are emitted remain runtime-defined.
+Runtimes that do not implement state snapshots may never emit this event.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 22 48 18 12 10
+
+    * - Name
+      - Description
+      - Type
+      - Default/Optional
+      - Sensitive
+    * - conversation_id
+      - Identifier of the conversation or thread this snapshot refers to
+      - str
+      - -
+      - no
+    * - state_snapshot
+      - Runtime-defined JSON-serializable snapshot of the current state
+      - Optional[dict[str, any]]
+      - null
+      - yes
+    * - extra_state
+      - Optional developer-defined UI or application state emitted alongside the snapshot
+      - Optional[dict[str, any]]
+      - null
       - yes
 
 ExceptionRaised
@@ -1062,6 +1097,7 @@ For example:
 - request_id: unique identifier of a single LLM or Tool execution request within a Span.
 - completion_id: identifier of a completion (LLM message or tool-call) which may receive streaming chunks.
 - tool_execution_request_id: identifier of a tool execution for confirmation.
+- conversation_id: identifier used to associate state snapshots with a conversation or thread.
 
 Runtimes SHOULD ensure uniqueness within a Span and consistency across all related events.
 
@@ -1165,6 +1201,7 @@ Additionally, tracing frequently includes potentially sensitive information (PII
 - Tool inputs/outputs
 - Exception messages and stacktraces
 - Conversation messages
+- State snapshots and extra application state
 
 Implementing a SpanProcessor
 ----------------------------
