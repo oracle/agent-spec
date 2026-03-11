@@ -120,6 +120,10 @@
                 "name": "pyagentspec.llms.OciGenAiConfig"
             },
             {
+                "path": "pyagentspec.llms.geminiconfig.GeminiConfig",
+                "name": "pyagentspec.llms.GeminiConfig"
+            },
+            {
                 "path": "pyagentspec.llms.ociclientconfig.OciClientConfig",
                 "name": "pyagentspec.llms.OciClientConfig"
             },

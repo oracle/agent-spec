@@ -9,6 +9,7 @@
 from typing import Any, Dict, List, Mapping, Type
 
 from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 
 from pyagentspec.component import Component
 from pyagentspec.sensitive_field import is_sensitive_field
@@ -18,6 +19,23 @@ from pyagentspec.serialization.serializationplugin import ComponentSerialization
 
 class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
     """Serialization plugin for Pydantic Components."""
+
+    @staticmethod
+    def _sensitive_field_has_value(value: Any, field_info: FieldInfo) -> bool:
+        """Return whether a sensitive field carries non-empty data."""
+        if isinstance(value, BaseModel):
+            if field_info.is_required():
+                return True
+            default_value = field_info.get_default(call_default_factory=True)
+            if (
+                isinstance(default_value, BaseModel)
+                and value.__class__ is not default_value.__class__
+            ):
+                return True
+            # Empty BaseModel defaults should remain inline so they do not require an
+            # external component-registry entry during deserialization.
+            return bool(value.model_dump(exclude_defaults=True, exclude_none=True))
+        return bool(value)
 
     def __init__(
         self,
@@ -68,7 +86,9 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                 # If a sensitive value is left as a falsy value (e.g. None, False, {}, "") then it
                 # is not replaced by a reference, such that the empty value does not need to be
                 # explicitly specified when loading the component configuration.
-                if is_sensitive_field(field_info) and field_value:
+                if is_sensitive_field(field_info) and self._sensitive_field_has_value(
+                    field_value, field_info
+                ):
                     serialized_component[field_name] = {
                         "$component_ref": f"{component.id}.{field_name}"
                     }

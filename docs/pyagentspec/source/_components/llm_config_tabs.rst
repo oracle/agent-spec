@@ -37,6 +37,18 @@
                 client_config=client_config,
             )
 
+    .. tab:: Gemini
+
+        .. code-block:: python
+
+            from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig
+
+            llm_config = GeminiConfig(
+                name="Gemini Flash",
+                model_id="gemini-2.5-flash",
+                auth=GeminiAiStudioAuthConfig(api_key="GEMINI_API_KEY"),
+            )
+
     .. tab:: vLLM
 
         .. code-block:: python

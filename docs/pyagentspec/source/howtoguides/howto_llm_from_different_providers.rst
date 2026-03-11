@@ -6,6 +6,7 @@ Agent Spec supports several LLM providers, each one having its own LlmConfig com
 The available LLMs are:
 
 - :ref:`OpenAiConfig <openaiconfig>`
+- :ref:`GeminiConfig <geminiconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
 - :ref:`OpenAiCompatibleConfig <openaicompatibleconfig>`
 - :ref:`VllmConfig <vllmconfig>`
@@ -182,6 +183,88 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
     :end-before: .. openai-end
 
 .. _howto-openaicompatibleconfig:
+
+GeminiConfig
+============
+
+`Gemini <https://gemini.google.com/>`_ models can be configured through ``GeminiConfig``.
+Agent Spec supports both Google AI Studio and Google Vertex AI authentication modes.
+
+**Parameters**
+
+.. option:: model_id: str
+
+  Name of the model to use, for example ``gemini-2.5-flash`` or
+  ``gemini-2.0-flash-lite``.
+
+.. option:: auth: GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig
+
+  Required authentication configuration for Gemini. Use
+  ``GeminiAiStudioAuthConfig()`` if you want runtimes to load ``GEMINI_API_KEY``
+  from the environment, or ``GeminiVertexAiAuthConfig(...)`` for Vertex AI.
+
+.. option:: default_generation_parameters: dict, null
+
+  Default parameters for text generation with this model.
+
+AI Studio authentication
+------------------------
+
+Use ``GeminiAiStudioAuthConfig`` when connecting through Google AI Studio.
+
+**Parameters**
+
+.. option:: type: Literal["aistudio"]
+
+  Authentication mode discriminator. Defaults to ``"aistudio"``.
+
+.. option:: api_key: str, null
+
+  Optional Gemini API key. If omitted, runtimes may load it from ``GEMINI_API_KEY``.
+
+**Example**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. gemini-aistudio-start
+    :end-before: .. gemini-aistudio-end
+
+Vertex AI authentication
+------------------------
+
+Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
+
+**Parameters**
+
+.. option:: type: Literal["vertex_ai"]
+
+  Authentication mode discriminator. Defaults to ``"vertex_ai"``.
+
+.. option:: project_id: str, null
+
+  Optional Google Cloud project identifier.
+  In practice, you may still need to set this explicitly when ADC provides
+  credentials but does not expose a default project.
+
+.. option:: location: str
+
+  Vertex AI location or region. Defaults to ``global``.
+
+.. option:: credentials: str | dict, null
+
+  Optional path to a service-account JSON file or an inline service-account JSON object.
+  When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
+  ``GOOGLE_APPLICATION_CREDENTIALS``, the local ADC file created by
+  ``gcloud auth application-default login``, or an attached service account.
+  This does not guarantee that ``project_id`` can also be inferred automatically.
+
+**Example**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. gemini-vertex-start
+    :end-before: .. gemini-vertex-end
+
 
 OpenAiCompatibleConfig
 ======================

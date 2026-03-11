@@ -27,6 +27,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, ValidationError
+from pydantic.fields import FieldInfo
 from typing_extensions import TypeGuard
 
 from pyagentspec.component import Component
@@ -83,6 +84,17 @@ class DeserializationContext(ABC):
         raise NotImplementedError(
             "Partial configuration deserialization is not implemented in this Context class"
         )
+
+
+def _get_annotation_for_partial_field_loading(field_info: FieldInfo) -> Optional[type]:
+    """Return the annotation used by the custom partial field loader.
+
+    For discriminated unions we defer the actual model selection to Pydantic itself,
+    and only use the custom loader to resolve references first.
+    """
+    if getattr(field_info, "discriminator", None) is not None:
+        return None
+    return field_info.annotation
 
 
 class _DeserializationContextImpl(DeserializationContext):
@@ -402,7 +414,7 @@ class _DeserializationContextImpl(DeserializationContext):
         resolved_content: BaseModelAsDictT = {}
         all_validation_errors: List[PyAgentSpecErrorDetails] = []
         for field_name, field_info in model_class.model_fields.items():
-            annotation = field_info.annotation
+            annotation = _get_annotation_for_partial_field_loading(field_info)
             if field_name in content:
                 resolved_content[field_name], nested_validation_errors = self._load_field(
                     content[field_name], annotation

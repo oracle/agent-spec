@@ -85,6 +85,38 @@ llm = OpenAiConfig(
 )
 # .. openai-end
 
+# .. gemini-aistudio-start
+from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.9)
+
+llm = GeminiConfig(
+    name="gemini-aistudio-flash",
+    model_id="gemini-2.5-flash",
+    auth=GeminiAiStudioAuthConfig(api_key="optional_api_key"),
+    default_generation_parameters=generation_config,
+)
+# .. gemini-aistudio-end
+
+# .. gemini-vertex-start
+from pyagentspec.llms import GeminiVertexAiAuthConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.4, top_p=0.95)
+
+llm = GeminiConfig(
+    name="gemini-vertex-flash",
+    model_id="gemini-2.0-flash-lite",
+    auth=GeminiVertexAiAuthConfig(
+        # Often still required even when ADC supplies the credentials.
+        project_id="my-gcp-project",
+        location="global",
+        # Optional when Google Application Default Credentials are already configured.
+        credentials="path/to/service-account.json",
+    ),
+    default_generation_parameters=generation_config,
+)
+# .. gemini-vertex-end
+
 # .. ollama-start
 from pyagentspec.llms import OllamaConfig
 
@@ -165,6 +197,30 @@ generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0
 llm = OpenAiConfig(
     name="openai-gpt-5",
     model_id="gpt-5",
+    default_generation_parameters=generation_config,
+)
+
+from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig, GeminiVertexAiAuthConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.9)
+
+llm = GeminiConfig(
+    name="gemini-aistudio-flash",
+    model_id="gemini-2.5-flash",
+    auth=GeminiAiStudioAuthConfig(api_key="optional_api_key"),
+    default_generation_parameters=generation_config,
+)
+
+llm = GeminiConfig(
+    name="gemini-vertex-flash",
+    model_id="gemini-2.0-flash-lite",
+    auth=GeminiVertexAiAuthConfig(
+        # Often still required even when ADC supplies the credentials.
+        project_id="my-gcp-project",
+        location="global",
+        # Optional when Google Application Default Credentials are already configured.
+        credentials="path/to/service-account.json",
+    ),
     default_generation_parameters=generation_config,
 )
 

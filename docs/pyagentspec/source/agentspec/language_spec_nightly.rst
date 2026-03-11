@@ -837,6 +837,46 @@ Client configuration that should be used if users want to use resource principal
     class OciClientConfigWithResourcePrincipal(OciClientConfig):
         auth_type: Literal["RESOURCE_PRINCIPAL"] = "RESOURCE_PRINCIPAL"
 
+Gemini
+^^^^^^
+
+This class of LLMs refers to the Gemini family of models offered by `Google <https://gemini.google/about/>`_.
+Google offers Gemini through two services: `AI Studio <https://aistudio.google.com/welcome/>`_ and `Vertex AI <https://cloud.google.com/vertex-ai/>`_.
+
+.. code-block:: python
+
+   class GeminiConfig(LlmConfig):
+     model_id: str
+     auth: SensitiveField[GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig]
+
+AI Studio uses API key-based authentication:
+
+.. code-block:: python
+
+   class GeminiAiStudioAuthConfig(BaseModel):
+     type: Literal["aistudio"] = "aistudio"
+     api_key: Optional[str] = None
+
+When `api_key` not specified, it will try to load it from the `GEMINI_API_KEY` environment variable.
+The `auth` field itself remains required and selects the Gemini service to use.
+
+Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
+either inline or through a local file path. When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
+the ``GOOGLE_APPLICATION_CREDENTIALS`` environment variable, credentials configured with ``gcloud auth application-default login``,
+or an attached service account. Even with ADC, the ``project_id`` may still need to be provided explicitly when it cannot be
+resolved from the local Google Cloud configuration:
+
+.. code-block:: python
+
+   class GeminiVertexAiAuthConfig(BaseModel):
+     type: Literal["vertex_ai"] = "vertex_ai"
+     project_id: Optional[str] = None
+     location: str = "global"
+     credentials: Optional[Union[str, Dict[str, Any]]] = None
+
+See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
+and `GeminiCLI <https://geminicli.com/docs/get-started/authentication/#b-vertex-ai---service-account-json-key>`_ docs for more details.
+
 Tools
 ~~~~~
 
@@ -2866,6 +2906,8 @@ See all the fields below that are considered sensitive fields:
 | OpenAiCompatibleConfig           | ca_file            |
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| GeminiConfig                     | auth               |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+
