@@ -701,6 +701,11 @@ class Component(AbstractableModel, abstract=True):
 
         str
             The YAML serialization of the root component.
+
+        Examples
+        --------
+
+        See examples in the ``.to_dict`` method docstring.
         """
         from pyagentspec.serialization.serializer import AgentSpecSerializer
 
@@ -844,6 +849,11 @@ class Component(AbstractableModel, abstract=True):
 
         str
             The JSON serialization of the root component.
+
+        Examples
+        --------
+
+        See examples in the ``.to_dict`` method docstring.
         """
         from pyagentspec.serialization.serializer import AgentSpecSerializer
 
@@ -979,29 +989,48 @@ class Component(AbstractableModel, abstract=True):
 
         Examples
         --------
-        Basic serialization using the convenience API:
+        Basic serialization is done as follows.
 
         >>> from pyagentspec.agent import Agent
         >>> from pyagentspec.llms import VllmConfig
-        >>> llm = VllmConfig(name="vllm", model_id="model1", url="http://dev.llm.url")
-        >>> agent = Agent(name="Simple Agent", llm_config=llm, system_prompt="Be helpful")
+        >>> llm = VllmConfig(
+        ...     name="vllm",
+        ...     model_id="model1",
+        ...     url="http://dev.llm.url"
+        ... )
+        >>> agent = Agent(
+        ...     name="Simple Agent",
+        ...     llm_config=llm,
+        ...     system_prompt="Be helpful"
+        ... )
         >>> agent_config = agent.to_dict()
 
-        Serialization with disaggregated components:
+        To use component disaggregation, specify the component(s) to disaggregate
+        in the ``disaggregated_components`` parameter, and ensure that
+        ``export_disaggregated_components`` is set to ``True``.
 
         >>> llm = VllmConfig(
         ...     id="llm_id",
         ...     name="vllm",
         ...     model_id="model1",
-        ...     url="http://dev.llm.url",
+        ...     url="http://dev.llm.url"
         ... )
         >>> agent = Agent(name="Simple Agent", llm_config=llm, system_prompt="Be helpful")
-        >>> agent_config, disagg_config = agent.to_dict(
+        >>> agent_config, disag_config = agent.to_dict(
         ...     disaggregated_components=[llm],
         ...     export_disaggregated_components=True,
         ... )
-        >>> list(disagg_config["$referenced_components"].keys())
+        >>> list(disag_config["$referenced_components"].keys())
         ['llm_id']
+
+        Finally, you can specify custom ids for the disaggregated components.
+
+        >>> agent_config, disag_config = agent.to_dict(
+        ...     disaggregated_components=[(llm, "custom_llm_id")],
+        ...     export_disaggregated_components=True,
+        ... )
+        >>> list(disag_config["$referenced_components"].keys())
+        ['custom_llm_id']
         """
         from pyagentspec.serialization.serializer import AgentSpecSerializer
 
