@@ -583,45 +583,92 @@ class Component(AbstractableModel, abstract=True):
     @overload
     def to_yaml(
         self,
+        *,
         plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: Literal[False] = False,
     ) -> str: ...
 
     @overload
     def to_yaml(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
         *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        *,
+        export_disaggregated_components: Literal[False],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        *,
+        export_disaggregated_components: bool,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    @overload
+    def to_yaml(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: Literal[False],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_yaml(
+        self,
+        *,
+        disaggregated_components: "DisaggregatedComponentsConfigT",
         export_disaggregated_components: Literal[True],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Tuple[str, str]: ...
 
     @overload
     def to_yaml(
         self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
         plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: bool = False,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    @overload
+    def to_yaml(
+        self,
+        agentspec_version: Optional[AgentSpecVersionEnum],
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
+        *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union[str, Tuple[str, str]]: ...
 
     def to_yaml(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
         disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
         export_disaggregated_components: bool = False,
+        *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union[str, Tuple[str, str]]:
         """
         Serialize this component and its sub-components to YAML.
 
         Parameters
         ----------
-        plugins:
-            List of plugins to serialize additional components.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -638,6 +685,8 @@ class Component(AbstractableModel, abstract=True):
                 even if ``export_disaggregated_components`` is ``False``.
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
+        plugins:
+            List of plugins to serialize additional components.
 
         Returns
         -------
@@ -665,49 +714,102 @@ class Component(AbstractableModel, abstract=True):
     @overload
     def to_json(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: Literal[False] = False,
+        *,
         indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> str: ...
 
     @overload
     def to_json(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum],
         *,
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_json(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_json(
+        self,
+        *,
+        export_disaggregated_components: Literal[False],
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_json(
+        self,
+        *,
+        export_disaggregated_components: bool,
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    @overload
+    def to_json(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: Literal[False],
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> str: ...
+
+    @overload
+    def to_json(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
         export_disaggregated_components: Literal[True],
         indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Tuple[str, str]: ...
 
     @overload
     def to_json(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: bool = False,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
         indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> Union[str, Tuple[str, str]]: ...
+
+    @overload
+    def to_json(
+        self,
+        agentspec_version: Optional[AgentSpecVersionEnum],
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
+        *,
+        indent: Optional[int] = None,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union[str, Tuple[str, str]]: ...
 
     def to_json(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
         disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
         export_disaggregated_components: bool = False,
         indent: Optional[int] = None,
+        *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union[str, Tuple[str, str]]:
         """
         Serialize this component and its sub-components to JSON.
 
         Parameters
         ----------
-        plugins:
-            List of plugins to serialize additional components.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -726,6 +828,8 @@ class Component(AbstractableModel, abstract=True):
             Whether to export the disaggregated components or not. Defaults to ``False``.
         indent:
             The number of spaces to use for the JSON indentation.
+        plugins:
+            List of plugins to serialize additional components.
 
         Returns
         -------
@@ -754,45 +858,92 @@ class Component(AbstractableModel, abstract=True):
     @overload
     def to_dict(
         self,
+        *,
         plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: Literal[False] = False,
     ) -> "ComponentAsDictT": ...
 
     @overload
     def to_dict(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
+        agentspec_version: Optional[AgentSpecVersionEnum],
         *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> "ComponentAsDictT": ...
+
+    @overload
+    def to_dict(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> "ComponentAsDictT": ...
+
+    @overload
+    def to_dict(
+        self,
+        *,
+        export_disaggregated_components: Literal[False],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> "ComponentAsDictT": ...
+
+    @overload
+    def to_dict(
+        self,
+        *,
+        export_disaggregated_components: bool,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]: ...
+
+    @overload
+    def to_dict(
+        self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: Literal[False],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
+    ) -> "ComponentAsDictT": ...
+
+    @overload
+    def to_dict(
+        self,
+        *,
+        disaggregated_components: "DisaggregatedComponentsConfigT",
         export_disaggregated_components: Literal[True],
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]: ...
 
     @overload
     def to_dict(
         self,
+        *,
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
         plugins: Optional[List["ComponentSerializationPlugin"]] = None,
-        agentspec_version: Optional[AgentSpecVersionEnum] = None,
-        disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
-        export_disaggregated_components: bool = False,
+    ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]: ...
+
+    @overload
+    def to_dict(
+        self,
+        agentspec_version: Optional[AgentSpecVersionEnum],
+        disaggregated_components: Optional["DisaggregatedComponentsConfigT"],
+        export_disaggregated_components: bool,
+        *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]: ...
 
     def to_dict(
         self,
-        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
         disaggregated_components: Optional["DisaggregatedComponentsConfigT"] = None,
         export_disaggregated_components: bool = False,
+        *,
+        plugins: Optional[List["ComponentSerializationPlugin"]] = None,
     ) -> Union["ComponentAsDictT", Tuple["ComponentAsDictT", "DisaggregatedComponentsAsDictT"]]:
         """
         Serialize this component and its sub-components to a dictionary.
 
         Parameters
         ----------
-        plugins:
-            List of plugins to serialize additional components.
         agentspec_version:
             The Agent Spec version of the component.
         disaggregated_components:
@@ -809,6 +960,8 @@ class Component(AbstractableModel, abstract=True):
                 even if ``export_disaggregated_components`` is ``False``.
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
+        plugins:
+            List of plugins to serialize additional components.
 
         Returns
         -------
