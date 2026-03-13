@@ -74,6 +74,10 @@ Make sure to welcome the user first, their name is {{user_name}}, but keep it sh
 serialized_assistant = agent.to_json()
 # .. end-export-config-to-agentspec
 
+# .. start-import-config-from-agentspec
+loaded_agent = Agent.from_json(serialized_assistant)
+# .. end-import-config-from-agentspec
+
 # .. start-full-code
 from pyagentspec.agent import Agent
 from pyagentspec.llms import VllmConfig
@@ -111,4 +115,5 @@ Make sure to welcome the user first, their name is {{user_name}}, but keep it sh
 )
 
 serialized_assistant = agent.to_json()
+loaded_agent = Agent.from_json(serialized_assistant)
 # .. end-full-code

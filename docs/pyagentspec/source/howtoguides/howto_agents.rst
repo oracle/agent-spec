@@ -71,6 +71,15 @@ These methods are shorthand wrappers around :ref:`AgentSpecSerializer <serialize
     :start-after: .. start-export-config-to-agentspec
     :end-before: .. end-export-config-to-agentspec
 
+To load the configuration back into an :ref:`Agent <Agent>`, use the matching
+``from_json()`` or ``from_yaml()`` class convenience methods.
+These methods are shorthand wrappers around :ref:`AgentSpecDeserializer <deserialize>`.
+
+.. literalinclude:: ../code_examples/howto_agents.py
+    :language: python
+    :start-after: .. start-import-config-from-agentspec
+    :end-before: .. end-import-config-from-agentspec
+
 
 Here is what the **Agent Spec representation will look like ↓**
 
