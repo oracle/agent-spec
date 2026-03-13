@@ -1055,11 +1055,31 @@ class Component(AbstractableModel, abstract=True):
             )
         return component
 
+    @overload
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_yaml(
+        cls: Type[ComponentT],
+        yaml_content: str,
+        components_registry: Optional["ComponentsRegistryT"],
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
     @classmethod
     def from_yaml(
         cls: Type[ComponentT],
         yaml_content: str,
         components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
     ) -> ComponentT:
         """
@@ -1089,11 +1109,31 @@ class Component(AbstractableModel, abstract=True):
         )
         return cls._ensure_deserialized_component_type(deserialized)
 
+    @overload
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_json(
+        cls: Type[ComponentT],
+        json_content: str,
+        components_registry: Optional["ComponentsRegistryT"],
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
     @classmethod
     def from_json(
         cls: Type[ComponentT],
         json_content: str,
         components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
     ) -> ComponentT:
         """
@@ -1123,11 +1163,31 @@ class Component(AbstractableModel, abstract=True):
         )
         return cls._ensure_deserialized_component_type(deserialized)
 
+    @overload
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
+    @overload
+    @classmethod
+    def from_dict(
+        cls: Type[ComponentT],
+        dict_content: "ComponentAsDictT",
+        components_registry: Optional["ComponentsRegistryT"],
+        *,
+        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+    ) -> ComponentT: ...
+
     @classmethod
     def from_dict(
         cls: Type[ComponentT],
         dict_content: "ComponentAsDictT",
         components_registry: Optional["ComponentsRegistryT"] = None,
+        *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
     ) -> ComponentT:
         """
