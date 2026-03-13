@@ -3,11 +3,11 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+# isort:skip_file
 # mypy: ignore-errors
 
-from pyagentspec.agent import Agent
-
 # .. start-define-components:
+from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
@@ -76,9 +76,8 @@ loaded_agent = Agent.from_yaml(
 )
 # .. end-export-deserialization:
 
-from pyagentspec.agent import Agent
-
 # .. start-complete:
+from pyagentspec.agent import Agent
 from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
