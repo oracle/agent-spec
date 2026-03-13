@@ -352,16 +352,12 @@ def test_direct_component_json_serialization_with_indent(simplest_flow: Flow) ->
     assert deserialized_flow == simplest_flow
 
 
-def test_direct_component_json_serialization_with_indent_for_disaggregated_outputs() -> None:
-    llm_config = VllmConfig(
-        id="llm_config",
-        name="model_name",
-        model_id="some_model",
-        url="http://some.where",
-    )
-    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+def test_direct_component_json_serialization_with_indent_for_disaggregated_outputs(
+    simplest_agent: Agent,
+) -> None:
+    llm_config = simplest_agent.llm_config
 
-    main_json, disaggregated_json = agent.to_json(
+    main_json, disaggregated_json = simplest_agent.to_json(
         disaggregated_components=[llm_config],
         export_disaggregated_components=True,
         indent=2,
@@ -372,7 +368,7 @@ def test_direct_component_json_serialization_with_indent_for_disaggregated_outpu
         disaggregated_json, import_only_referenced_components=True
     )
     assert isinstance(loaded_references, dict)
-    assert Agent.from_json(main_json, components_registry=loaded_references) == agent
+    assert Agent.from_json(main_json, components_registry=loaded_references) == simplest_agent
 
 
 @pytest.mark.parametrize(
@@ -448,18 +444,13 @@ def test_direct_component_class_deserialization_raises_on_type_mismatch(
     [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
 )
 def test_direct_component_serialization_with_disaggregated_loading(
+    simplest_agent: Agent,
     serialize_method: str,
     deserialize_method: str,
 ) -> None:
-    llm_config = VllmConfig(
-        id="llm_config",
-        name="model_name",
-        model_id="some_model",
-        url="http://some.where",
-    )
-    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+    llm_config = simplest_agent.llm_config
 
-    main_config, disaggregated_config = getattr(agent, serialize_method)(
+    main_config, disaggregated_config = getattr(simplest_agent, serialize_method)(
         disaggregated_components=[llm_config], export_disaggregated_components=True
     )
     loaded_references = getattr(AgentSpecDeserializer(), deserialize_method)(
@@ -471,7 +462,7 @@ def test_direct_component_serialization_with_disaggregated_loading(
     deserialized_agent = getattr(Agent, deserialize_method)(
         main_config, components_registry=loaded_references
     )
-    assert deserialized_agent == agent
+    assert deserialized_agent == simplest_agent
 
 
 @pytest.mark.parametrize(
@@ -479,18 +470,13 @@ def test_direct_component_serialization_with_disaggregated_loading(
     [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
 )
 def test_direct_component_serialization_with_custom_disaggregated_id(
+    simplest_agent: Agent,
     serialize_method: str,
     deserialize_method: str,
 ) -> None:
-    llm_config = VllmConfig(
-        id="llm_config",
-        name="model_name",
-        model_id="some_model",
-        url="http://some.where",
-    )
-    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+    llm_config = simplest_agent.llm_config
 
-    main_config, disaggregated_config = getattr(agent, serialize_method)(
+    main_config, disaggregated_config = getattr(simplest_agent, serialize_method)(
         disaggregated_components=[(llm_config, "custom_llm_id")],
         export_disaggregated_components=True,
     )
@@ -503,26 +489,22 @@ def test_direct_component_serialization_with_custom_disaggregated_id(
     deserialized_agent = getattr(Agent, deserialize_method)(
         main_config, components_registry=loaded_references
     )
-    assert deserialized_agent == agent
+    assert deserialized_agent == simplest_agent
 
 
-def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> None:
-    llm_config = VllmConfig(
-        id="llm_config",
-        name="model_name",
-        model_id="some_model",
-        url="http://some.where",
-    )
-    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
+def test_direct_component_serialization_non_export_disaggregated_roundtrip(
+    simplest_agent: Agent,
+) -> None:
+    llm_config = simplest_agent.llm_config
 
-    main_config_only = agent.to_dict(
+    main_config_only = simplest_agent.to_dict(
         disaggregated_components=[(llm_config, "custom_llm_id")],
         export_disaggregated_components=False,
     )
     assert isinstance(main_config_only, dict)
     assert main_config_only["llm_config"] == {"$component_ref": "custom_llm_id"}
 
-    _, disaggregated_config = agent.to_dict(
+    _, disaggregated_config = simplest_agent.to_dict(
         disaggregated_components=[(llm_config, "custom_llm_id")],
         export_disaggregated_components=True,
     )
@@ -533,7 +515,7 @@ def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> 
     assert set(loaded_references.keys()) == {"custom_llm_id"}
 
     deserialized_agent = Agent.from_dict(main_config_only, components_registry=loaded_references)
-    assert deserialized_agent == agent
+    assert deserialized_agent == simplest_agent
 
 
 @pytest.mark.parametrize(
@@ -541,17 +523,12 @@ def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> 
     [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
 )
 def test_direct_component_deserialization_rejects_disaggregated_config(
+    simplest_agent: Agent,
     serialize_method: str,
     deserialize_method: str,
 ) -> None:
-    llm_config = VllmConfig(
-        id="llm_config",
-        name="model_name",
-        model_id="some_model",
-        url="http://some.where",
-    )
-    agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
-    _, disaggregated_config = getattr(agent, serialize_method)(
+    llm_config = simplest_agent.llm_config
+    _, disaggregated_config = getattr(simplest_agent, serialize_method)(
         disaggregated_components=[llm_config],
         export_disaggregated_components=True,
     )
