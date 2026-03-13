@@ -1088,7 +1088,7 @@ class Component(AbstractableModel, abstract=True):
         Parameters
         ----------
         yaml_content:
-            The YAML content to deserialize.
+            The YAML content to use to deserialize the component.
         components_registry:
             A dictionary of loaded components to use when deserializing the
             main component.
@@ -1099,6 +1099,11 @@ class Component(AbstractableModel, abstract=True):
         -------
         ComponentT
             The deserialized component typed as ``cls``.
+
+        Examples
+        --------
+
+        See examples in the ``.from_dict`` method docstring.
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
@@ -1142,7 +1147,7 @@ class Component(AbstractableModel, abstract=True):
         Parameters
         ----------
         json_content:
-            The JSON content to deserialize.
+            The JSON content to use to deserialize the component.
         components_registry:
             A dictionary of loaded components to use when deserializing the
             main component.
@@ -1153,6 +1158,11 @@ class Component(AbstractableModel, abstract=True):
         -------
         ComponentT
             The deserialized component typed as ``cls``.
+
+        Examples
+        --------
+
+        See examples in the ``.from_dict`` method docstring.
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
@@ -1207,6 +1217,45 @@ class Component(AbstractableModel, abstract=True):
         -------
         ComponentT
             The deserialized component typed as ``cls``.
+
+        Examples
+        --------
+        Basic deserialization is done as follows. First, serialize a component (here an ``Agent``).
+
+        >>> from pyagentspec.agent import Agent
+        >>> from pyagentspec.llms import VllmConfig
+        >>> llm = VllmConfig(
+        ...     name="vllm",
+        ...     model_id="model1",
+        ...     url="http://dev.llm.url"
+        ... )
+        >>> agent = Agent(
+        ...     name="Simple Agent",
+        ...     llm_config=llm,
+        ...     system_prompt="Be helpful"
+        ... )
+        >>> agent_config = agent.to_dict()
+
+        Then deserialize using the convenience API.
+
+        >>> deser_agent = Agent.from_dict(agent_config)
+
+        When using disaggregated components, the deserialization must be done
+        in several phases, as follows.
+
+        >>> agent_config, disag_config = agent.to_dict(
+        ...     disaggregated_components=[(llm, "custom_llm_id")],
+        ...     export_disaggregated_components=True,
+        ... )
+        >>> from pyagentspec.serialization import AgentSpecDeserializer
+        >>> disag_components = AgentSpecDeserializer().from_dict(
+        ...     disag_config,
+        ...     import_only_referenced_components=True
+        ... )
+        >>> deser_agent = Agent.from_dict(
+        ...     agent_config,
+        ...     components_registry=disag_components
+        ... )
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
