@@ -678,12 +678,12 @@ class CUnionPipeSyntax(Component):
     value: UnionMemberComponent | int | str
 
 
-class PluginDisaggregatedConfig(Component):
+class PluginNestedComponent(Component):
     value: str
 
 
-class PluginDisaggregatedContainer(Component):
-    nested: PluginDisaggregatedConfig
+class PluginContainerComponent(Component):
+    nested: PluginNestedComponent
 
 
 def test_direct_component_serialization_with_plugins() -> None:
@@ -718,20 +718,20 @@ def test_direct_component_serialization_with_plugins() -> None:
 def test_direct_component_serialization_with_plugins_and_disaggregated_components() -> None:
     ser_plugin = PydanticComponentSerializationPlugin(
         component_types_and_models={
-            PluginDisaggregatedConfig.__name__: PluginDisaggregatedConfig,
-            PluginDisaggregatedContainer.__name__: PluginDisaggregatedContainer,
+            PluginNestedComponent.__name__: PluginNestedComponent,
+            PluginContainerComponent.__name__: PluginContainerComponent,
         }
     )
     deser_plugin = PydanticComponentDeserializationPlugin(
         component_types_and_models={
-            PluginDisaggregatedConfig.__name__: PluginDisaggregatedConfig,
-            PluginDisaggregatedContainer.__name__: PluginDisaggregatedContainer,
+            PluginNestedComponent.__name__: PluginNestedComponent,
+            PluginContainerComponent.__name__: PluginContainerComponent,
         }
     )
 
-    component = PluginDisaggregatedContainer(
+    component = PluginContainerComponent(
         name="container",
-        nested=PluginDisaggregatedConfig(name="nested", value="keep-me"),
+        nested=PluginNestedComponent(name="nested", value="keep-me"),
     )
 
     main_dict, disaggregated_dict = component.to_dict(
@@ -746,7 +746,7 @@ def test_direct_component_serialization_with_plugins_and_disaggregated_component
     assert isinstance(referenced_components, dict)
     assert set(referenced_components.keys()) == {"nested_component"}
 
-    deserialized = PluginDisaggregatedContainer.from_dict(
+    deserialized = PluginContainerComponent.from_dict(
         main_dict,
         components_registry=referenced_components,
         plugins=[deser_plugin],
