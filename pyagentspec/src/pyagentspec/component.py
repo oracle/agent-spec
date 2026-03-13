@@ -1055,45 +1055,13 @@ class Component(AbstractableModel, abstract=True):
             )
         return component
 
-    @overload
     @classmethod
     def from_yaml(
         cls: Type[ComponentT],
         yaml_content: str,
         components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: Literal[False] = False,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> ComponentT: ...
-
-    @overload
-    @classmethod
-    def from_yaml(
-        cls: Type[ComponentT],
-        yaml_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        *,
-        import_only_referenced_components: Literal[True],
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Dict[str, "Component"]: ...
-
-    @overload
-    @classmethod
-    def from_yaml(
-        cls: Type[ComponentT],
-        yaml_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
-
-    @classmethod
-    def from_yaml(
-        cls: Type[ComponentT],
-        yaml_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]:
+    ) -> ComponentT:
         """
         Load a component and its sub-components from YAML.
 
@@ -1104,76 +1072,30 @@ class Component(AbstractableModel, abstract=True):
         components_registry:
             A dictionary of loaded components to use when deserializing the
             main component.
-        import_only_referenced_components:
-            When ``True``, loads the referenced/disaggregated components
-            into a dictionary to be used as the ``components_registry``
-            when deserializing the main component. Otherwise, loads the
-            main component. Defaults to ``False``.
         plugins:
             List of plugins to deserialize additional components.
 
         Returns
         -------
-        If ``import_only_referenced_components`` is ``False``:
-
         ComponentT
             The deserialized component typed as ``cls``.
-
-        If ``import_only_referenced_components`` is ``True``:
-
-        Dict[str, Component]
-            A dictionary containing the loaded referenced components.
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
         deserialized = AgentSpecDeserializer(plugins=plugins).from_yaml(
             yaml_content,
             components_registry=components_registry,
-            import_only_referenced_components=import_only_referenced_components,
+            import_only_referenced_components=False,
         )
-        if import_only_referenced_components:
-            return cast(Dict[str, Component], deserialized)
-        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
-
-    @overload
-    @classmethod
-    def from_json(
-        cls: Type[ComponentT],
-        json_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: Literal[False] = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> ComponentT: ...
-
-    @overload
-    @classmethod
-    def from_json(
-        cls: Type[ComponentT],
-        json_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        *,
-        import_only_referenced_components: Literal[True],
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Dict[str, "Component"]: ...
-
-    @overload
-    @classmethod
-    def from_json(
-        cls: Type[ComponentT],
-        json_content: str,
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
+        return cls._ensure_deserialized_component_type(deserialized)
 
     @classmethod
     def from_json(
         cls: Type[ComponentT],
         json_content: str,
         components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]:
+    ) -> ComponentT:
         """
         Load a component and its sub-components from JSON.
 
@@ -1184,76 +1106,30 @@ class Component(AbstractableModel, abstract=True):
         components_registry:
             A dictionary of loaded components to use when deserializing the
             main component.
-        import_only_referenced_components:
-            When ``True``, loads the referenced/disaggregated components
-            into a dictionary to be used as the ``components_registry``
-            when deserializing the main component. Otherwise, loads the
-            main component. Defaults to ``False``.
         plugins:
             List of plugins to deserialize additional components.
 
         Returns
         -------
-        If ``import_only_referenced_components`` is ``False``:
-
         ComponentT
             The deserialized component typed as ``cls``.
-
-        If ``import_only_referenced_components`` is ``True``:
-
-        Dict[str, Component]
-            A dictionary containing the loaded referenced components.
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
         deserialized = AgentSpecDeserializer(plugins=plugins).from_json(
             json_content,
             components_registry=components_registry,
-            import_only_referenced_components=import_only_referenced_components,
+            import_only_referenced_components=False,
         )
-        if import_only_referenced_components:
-            return cast(Dict[str, Component], deserialized)
-        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
-
-    @overload
-    @classmethod
-    def from_dict(
-        cls: Type[ComponentT],
-        dict_content: "ComponentAsDictT",
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: Literal[False] = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> ComponentT: ...
-
-    @overload
-    @classmethod
-    def from_dict(
-        cls: Type[ComponentT],
-        dict_content: "ComponentAsDictT",
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        *,
-        import_only_referenced_components: Literal[True],
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Dict[str, "Component"]: ...
-
-    @overload
-    @classmethod
-    def from_dict(
-        cls: Type[ComponentT],
-        dict_content: "ComponentAsDictT",
-        components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
-        plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]: ...
+        return cls._ensure_deserialized_component_type(deserialized)
 
     @classmethod
     def from_dict(
         cls: Type[ComponentT],
         dict_content: "ComponentAsDictT",
         components_registry: Optional["ComponentsRegistryT"] = None,
-        import_only_referenced_components: bool = False,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
-    ) -> Union[ComponentT, Dict[str, "Component"]]:
+    ) -> ComponentT:
         """
         Load a component and its sub-components from dictionary.
 
@@ -1264,36 +1140,22 @@ class Component(AbstractableModel, abstract=True):
         components_registry:
             A dictionary of loaded components to use when deserializing the
             main component.
-        import_only_referenced_components:
-            When ``True``, loads the referenced/disaggregated components
-            into a dictionary to be used as the ``components_registry``
-            when deserializing the main component. Otherwise, loads the
-            main component. Defaults to ``False``.
         plugins:
             List of plugins to deserialize additional components.
 
         Returns
         -------
-        If ``import_only_referenced_components`` is ``False``:
-
         ComponentT
             The deserialized component typed as ``cls``.
-
-        If ``import_only_referenced_components`` is ``True``:
-
-        Dict[str, Component]
-            A dictionary containing the loaded referenced components.
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
         deserialized = AgentSpecDeserializer(plugins=plugins).from_dict(
             dict_content,
             components_registry=components_registry,
-            import_only_referenced_components=import_only_referenced_components,
+            import_only_referenced_components=False,
         )
-        if import_only_referenced_components:
-            return cast(Dict[str, Component], deserialized)
-        return cls._ensure_deserialized_component_type(cast(Component, deserialized))
+        return cls._ensure_deserialized_component_type(deserialized)
 
 
 def replace_abstract_models_and_hierarchical_definitions(

@@ -368,7 +368,7 @@ def test_direct_component_json_serialization_with_indent_for_disaggregated_outpu
     )
     assert '\n  "component_type"' in main_json
     assert '\n  "$referenced_components"' in disaggregated_json
-    loaded_references = Component.from_json(
+    loaded_references = AgentSpecDeserializer().from_json(
         disaggregated_json, import_only_referenced_components=True
     )
     assert isinstance(loaded_references, dict)
@@ -462,17 +462,11 @@ def test_direct_component_serialization_with_disaggregated_loading(
     main_config, disaggregated_config = getattr(agent, serialize_method)(
         disaggregated_components=[llm_config], export_disaggregated_components=True
     )
-    loaded_references = getattr(Component, deserialize_method)(
+    loaded_references = getattr(AgentSpecDeserializer(), deserialize_method)(
         disaggregated_config, import_only_referenced_components=True
     )
     assert isinstance(loaded_references, dict)
     assert set(loaded_references.keys()) == {"llm_config"}
-
-    loaded_references_from_agent = getattr(Agent, deserialize_method)(
-        disaggregated_config, import_only_referenced_components=True
-    )
-    assert isinstance(loaded_references_from_agent, dict)
-    assert set(loaded_references_from_agent.keys()) == {"llm_config"}
 
     deserialized_agent = getattr(Agent, deserialize_method)(
         main_config, components_registry=loaded_references
@@ -500,7 +494,7 @@ def test_direct_component_serialization_with_custom_disaggregated_id(
         disaggregated_components=[(llm_config, "custom_llm_id")],
         export_disaggregated_components=True,
     )
-    loaded_references = getattr(Component, deserialize_method)(
+    loaded_references = getattr(AgentSpecDeserializer(), deserialize_method)(
         disaggregated_config, import_only_referenced_components=True
     )
     assert isinstance(loaded_references, dict)
@@ -532,7 +526,7 @@ def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> 
         disaggregated_components=[(llm_config, "custom_llm_id")],
         export_disaggregated_components=True,
     )
-    loaded_references = Component.from_dict(
+    loaded_references = AgentSpecDeserializer().from_dict(
         disaggregated_config, import_only_referenced_components=True
     )
     assert isinstance(loaded_references, dict)
@@ -546,7 +540,7 @@ def test_direct_component_serialization_non_export_disaggregated_roundtrip() -> 
     "serialize_method, deserialize_method",
     [("to_dict", "from_dict"), ("to_json", "from_json"), ("to_yaml", "from_yaml")],
 )
-def test_direct_component_import_only_referenced_components_rejects_main_config(
+def test_direct_component_deserialization_rejects_disaggregated_config(
     serialize_method: str,
     deserialize_method: str,
 ) -> None:
@@ -557,9 +551,14 @@ def test_direct_component_import_only_referenced_components_rejects_main_config(
         url="http://some.where",
     )
     agent = Agent(name="my_agent", system_prompt="be helpful", llm_config=llm_config)
-    main_config = getattr(agent, serialize_method)()
-    with pytest.raises(ValueError, match=r"\$referenced_components"):
-        getattr(Component, deserialize_method)(main_config, import_only_referenced_components=True)
+    _, disaggregated_config = getattr(agent, serialize_method)(
+        disaggregated_components=[llm_config],
+        export_disaggregated_components=True,
+    )
+    with pytest.raises(ValueError, match="import_only_referenced_components"):
+        getattr(Component, deserialize_method)(disaggregated_config)
+    with pytest.raises(ValueError, match="import_only_referenced_components"):
+        getattr(Agent, deserialize_method)(disaggregated_config)
 
 
 def test_json_and_yaml_serializations_have_the_right_order(
@@ -761,10 +760,9 @@ def test_direct_component_serialization_with_plugins_and_disaggregated_component
         disaggregated_components=[(component.nested, "nested_component")],
         export_disaggregated_components=True,
     )
-    loaded_references = Component.from_dict(
+    loaded_references = AgentSpecDeserializer(plugins=[deser_plugin]).from_dict(
         disaggregated_dict,
         import_only_referenced_components=True,
-        plugins=[deser_plugin],
     )
     assert isinstance(loaded_references, dict)
     assert set(loaded_references.keys()) == {"nested_component"}
