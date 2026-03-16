@@ -133,6 +133,9 @@ Multi-agent Events
 State Events
 ~~~~~~~~~~~~
 
+State events expose runtime snapshots that can be consumed by UIs, observability
+tools, or resumability mechanisms.
+
 .. _statesnapshotemitted:
 .. autoclass:: pyagentspec.tracing.events.state.StateSnapshotEmitted
 

@@ -254,18 +254,16 @@ def test_span_start_failure_triggers_cleanup() -> None:
         )
 
 
-def test_add_event_async_calls_async_handlers(dummy_span_processor: DummySpanProcessor) -> None:
-
-    async def run():
-        async_ev = Event(name="async_ev")
-        with Trace(span_processors=[dummy_span_processor]):
-            with Span() as s:
-                await s.add_event_async(async_ev)
-        return async_ev
-
-    ev = asyncio.run(run())
+@pytest.mark.anyio
+async def test_add_event_async_calls_async_handlers(
+    dummy_span_processor: DummySpanProcessor,
+) -> None:
+    async_ev = Event(name="async_ev")
+    with Trace(span_processors=[dummy_span_processor]):
+        with Span() as s:
+            await s.add_event_async(async_ev)
     assert len(dummy_span_processor.events_async) == 1
-    assert dummy_span_processor.events_async[0][0] is ev
+    assert dummy_span_processor.events_async[0][0] is async_ev
 
 
 # =========================
@@ -413,44 +411,39 @@ def test_span_emits_exception_event_on_error_async() -> None:
     assert asyncio.run(run()) is True
 
 
-def test_span_start_failure_triggers_cleanup_async() -> None:
+@pytest.mark.anyio
+async def test_span_start_failure_triggers_cleanup_async() -> None:
     successful_processor = DummySpanProcessor()
     failing_processor = FailingStartSpanProcessor()
 
-    async def run() -> bool:
-        async with Trace(span_processors=[successful_processor]) as trace:
-            trace.span_processors = [successful_processor, failing_processor]
-            with pytest.raises(RuntimeError, match="start async failed"):
-                await Span(name="startup-failure-async").start_async()
+    async with Trace(span_processors=[successful_processor]) as trace:
+        trace.span_processors = [successful_processor, failing_processor]
+        with pytest.raises(RuntimeError, match="start async failed"):
+            await Span(name="startup-failure-async").start_async()
 
-            failed_span = successful_processor.ends_async[0]
-            assert isinstance(failed_span, Span)
-            assert successful_processor.ends_async == [failed_span]
-            assert failing_processor.ends_async == []
-            assert get_current_span() is trace._root_span
-            assert failed_span not in get_active_span_stack()
-            assert any(
-                isinstance(event, ExceptionRaised) and span is failed_span
-                for event, span in successful_processor.events_async
-            )
-        return True
-
-    assert asyncio.run(run()) is True
+        failed_span = successful_processor.ends_async[0]
+        assert isinstance(failed_span, Span)
+        assert successful_processor.ends_async == [failed_span]
+        assert failing_processor.ends_async == []
+        assert get_current_span() is trace._root_span
+        assert failed_span not in get_active_span_stack()
+        assert any(
+            isinstance(event, ExceptionRaised) and span is failed_span
+            for event, span in successful_processor.events_async
+        )
 
 
-def test_trace_startup_shutdown_and_nesting_async(dummy_span_processor: DummySpanProcessor) -> None:
-
-    async def run():
-        async with Trace(span_processors=[dummy_span_processor]):
-            assert dummy_span_processor.started_up is False
-            assert dummy_span_processor.started_up_async is True
-            assert get_trace() is not None
-            # Nested Trace not allowed
-            with pytest.raises(RuntimeError, match="A Trace already exists"):
-                with Trace():
-                    pass
-        assert dummy_span_processor.shut_down is False
-        assert dummy_span_processor.shut_down_async is True
-        return True
-
-    assert asyncio.run(run()) is True
+@pytest.mark.anyio
+async def test_trace_startup_shutdown_and_nesting_async(
+    dummy_span_processor: DummySpanProcessor,
+) -> None:
+    async with Trace(span_processors=[dummy_span_processor]):
+        assert dummy_span_processor.started_up is False
+        assert dummy_span_processor.started_up_async is True
+        assert get_trace() is not None
+        # Nested Trace not allowed
+        with pytest.raises(RuntimeError, match="A Trace already exists"):
+            with Trace():
+                pass
+    assert dummy_span_processor.shut_down is False
+    assert dummy_span_processor.shut_down_async is True

@@ -976,10 +976,12 @@ StateSnapshotEmitted
 
 A runtime emitted a point-in-time snapshot of the current conversation or thread state.
 
-This event is intended for downstream consumers such as UIs, debuggers, or observability
-processors. Agent Spec standardizes the event envelope, but the exact structure of
-``state_snapshot`` and the frequency at which snapshots are emitted remain runtime-defined.
-Runtimes that do not implement state snapshots may never emit this event.
+This event is intended for downstream consumers such as UIs, debuggers, resumability
+systems, or observability processors. Agent Spec standardizes the event envelope, but
+the exact structure of ``state_snapshot`` and the frequency at which snapshots are
+emitted remain runtime-defined. Runtimes can use these snapshots to capture enough
+state to resume or reconstruct execution later. Runtimes that do not implement state
+snapshots may never emit this event.
 
 .. list-table::
     :header-rows: 1
@@ -1001,7 +1003,7 @@ Runtimes that do not implement state snapshots may never emit this event.
       - null
       - yes
     * - extra_state
-      - Optional developer-defined UI or application state emitted alongside the snapshot
+      - Developer-defined state such as UI or application state, useful for resumability
       - Optional[dict[str, any]]
       - null
       - yes

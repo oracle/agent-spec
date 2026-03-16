@@ -1,10 +1,8 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
-
-"""State snapshot tracing events for UI and observability consumers."""
 
 from typing import Any, Dict, Optional
 
@@ -27,4 +25,4 @@ class StateSnapshotEmitted(Event):
     """Runtime-defined snapshot content for the current state."""
 
     extra_state: SensitiveField[Optional[Dict[str, Any]]] = None
-    """Optional developer-defined UI or application state."""
+    """Developer-defined state such as UI or application state, useful for resumability."""
