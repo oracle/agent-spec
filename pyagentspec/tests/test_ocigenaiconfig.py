@@ -6,7 +6,7 @@
 
 import pytest
 
-from pyagentspec.llms.ociclientconfig import OciClientConfigWithInstancePrincipal
+from pyagentspec.llms.ociclientconfig import OciClientConfig, OciClientConfigWithInstancePrincipal
 from pyagentspec.llms.ocigenaiconfig import ModelProvider, OciAPIType, OciGenAiConfig, ServingMode
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -15,17 +15,36 @@ from .conftest import read_agentspec_config_file
 
 
 @pytest.fixture
-def oci_llm_config() -> OciGenAiConfig:
+def oci_client() -> OciClientConfig:
+    return OciClientConfigWithInstancePrincipal(
+        service_endpoint="my_llm_endpoint", name="my_oci_config"
+    )
+
+
+@pytest.fixture
+def oci_llm_config(oci_client: OciClientConfig) -> OciGenAiConfig:
     return OciGenAiConfig(
         name="oci_llm",
         description="my remote oci llm",
         id="oci_llm_123",
         model_id="cohere",
-        client_config=OciClientConfigWithInstancePrincipal(
-            service_endpoint="my_llm_endpoint", name="my_oci_config"
-        ),
+        client_config=oci_client,
         serving_mode=ServingMode.DEDICATED,
         provider=ModelProvider.COHERE,
+        compartment_id="my_compartment",
+    )
+
+
+@pytest.fixture
+def oci_xai_llm_config(oci_client: OciClientConfig) -> OciGenAiConfig:
+    return OciGenAiConfig(
+        name="oci_llm",
+        description="my remote oci llm",
+        id="oci_llm_123",
+        model_id="grok-fast",
+        client_config=oci_client,
+        serving_mode=ServingMode.DEDICATED,
+        provider=ModelProvider.XAI,
         compartment_id="my_compartment",
     )
 
@@ -103,4 +122,28 @@ def test_export_config_with_responses_api_to_old_version_raises(
         serialized_agent = AgentSpecSerializer().to_yaml(
             component=oci_responses_llm_config,
             agentspec_version=AgentSpecVersionEnum.v25_4_1,
+        )
+
+
+def test_can_serialize_and_deserialize_xai_ocigenai_config(
+    oci_xai_llm_config: OciGenAiConfig,
+) -> None:
+    serialized_assistant = AgentSpecSerializer().to_yaml(
+        oci_xai_llm_config, agentspec_version=AgentSpecVersionEnum.v26_2_0
+    )
+    assert len(serialized_assistant.strip()) > 0
+    assert "XAI" in serialized_assistant
+    deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_assistant)
+    assert isinstance(deserialized_assistant, OciGenAiConfig)
+    assert deserialized_assistant._is_equal(
+        oci_xai_llm_config, fields_to_exclude=["min_agentspec_version"]
+    )
+
+
+def test_cannot_serialize_xai_ocigenai_config_with_old_versions(
+    oci_xai_llm_config: OciGenAiConfig,
+) -> None:
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecSerializer().to_yaml(
+            oci_xai_llm_config, agentspec_version=AgentSpecVersionEnum.v26_1_0
         )

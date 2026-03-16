@@ -175,6 +175,7 @@ class Component(AbstractableModel, abstract=True):
         """Override of the method used by Pydantic as post-init."""
         super().model_post_init(__context)
         self.min_agentspec_version = self._infer_min_agentspec_version_from_configuration()
+        self.max_agentspec_version = self._infer_max_agentspec_version_from_configuration()
 
     @computed_field
     def component_type(self) -> str:
@@ -195,6 +196,15 @@ class Component(AbstractableModel, abstract=True):
         # By default, we just return the min_agentspec_version defined for the Component
         # If a Component changes its behavior based on the spec version, it should override this method accordingly
         return self.min_agentspec_version
+
+    def _infer_max_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        """
+        Returns the maximum agentspec version needed to correctly represent
+        this Component and its behavior based on its configuration.
+        """
+        # By default, we just return the max_agentspec_version defined for the Component
+        # If a Component changes its behavior based on the spec version, it should override this method accordingly
+        return self.max_agentspec_version
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
