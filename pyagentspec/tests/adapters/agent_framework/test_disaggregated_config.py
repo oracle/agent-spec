@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """Tests disaggregated config loading in the Microsoft Agent Framework adapter."""
+
 import pytest
 
 from pyagentspec.agent import Agent

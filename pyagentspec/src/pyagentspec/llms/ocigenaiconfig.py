@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """Class to configure a connection to an OCI GenAI hosted model."""
+
 from enum import Enum
 from typing import Optional
 

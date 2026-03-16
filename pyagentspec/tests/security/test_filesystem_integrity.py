@@ -8,7 +8,6 @@
 The purpose of these tests is to show that the filesystem is not accessed (read/write)
 unexpectedly by the main pyagentspec functionalities.
 """
-import os
 
 import pytest
 
@@ -21,7 +20,7 @@ from pyagentspec.flows.nodes import (
     LlmNode,
     StartNode,
 )
-from pyagentspec.llms import LlmConfig, LlmGenerationConfig, OciGenAiConfig, VllmConfig
+from pyagentspec.llms import LlmConfig, LlmGenerationConfig, OciGenAiConfig
 from pyagentspec.llms.ociclientconfig import OciClientConfigWithSecurityToken
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer

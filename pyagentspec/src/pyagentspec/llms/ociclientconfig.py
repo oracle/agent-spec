@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """Defines the class for configuring how to connect to a OCI GenAI client."""
+
 from typing import Literal
 
 from pyagentspec.component import Component

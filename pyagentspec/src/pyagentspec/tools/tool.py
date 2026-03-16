@@ -6,7 +6,6 @@
 
 """This module defines the base class for tools."""
 
-
 from pyagentspec.component import ComponentWithIO
 from pyagentspec.versioning import AgentSpecVersionEnum
 

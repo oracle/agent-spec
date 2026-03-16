@@ -5,10 +5,9 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines the agentic component."""
+
 from pyagentspec.component import ComponentWithIO
 
 
 class AgenticComponent(ComponentWithIO, abstract=True):
     """Represents a component that can be interacted with, asking questions and getting answers from it."""
-
-    pass

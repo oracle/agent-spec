@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines helpers for Agent Spec components."""
+
 import warnings
 from typing import Any, Dict, List, Type, TypeVar
 

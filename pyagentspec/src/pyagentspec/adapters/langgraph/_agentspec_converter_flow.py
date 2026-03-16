@@ -133,10 +133,8 @@ def _langgraph_branch_convert_to_agentspec(
     for conditional_node_name, branch_spec in branch_specs.items():
         mapping: Dict[str, str]
         if branch_spec.ends is None:
-            raise TypeError(
-                f"""Mapping for {conditional_node_name} not found.
-            Make sure to add proper return type hints to the branching function."""
-            )
+            raise TypeError(f"""Mapping for {conditional_node_name} not found.
+            Make sure to add proper return type hints to the branching function.""")
         mapping = {str(k): v for k, v in branch_spec.ends.items()}
 
         # Create the conditional node to compute which branch to go to

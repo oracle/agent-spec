@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 """This file defines message transforms for message and conversation summarization."""
+
 from typing import ClassVar, Optional, Union
 
 from pydantic import Field, ValidationInfo, field_validator
