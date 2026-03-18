@@ -107,6 +107,17 @@ describe("Swarm", () => {
     });
     expect(swarm.id).toBeDefined();
   });
+
+  it("should reject empty relationships", () => {
+    const agent1 = makeAgent("agent1");
+    expect(() =>
+      createSwarm({
+        name: "test-swarm",
+        firstAgent: agent1,
+        relationships: [],
+      }),
+    ).toThrow("Cannot define a Swarm with no relationships between the agents");
+  });
 });
 
 describe("HandoffMode", () => {

@@ -268,23 +268,21 @@ describe("FlowNode", () => {
 
   it("should infer branches from subflow EndNode branchNames", () => {
     const start = createStartNode({ name: "start" });
+    const branching = createBranchingNode({
+      name: "branching",
+      mapping: { s: "branch_s", f: "branch_f" },
+    });
     const end1 = createEndNode({ name: "end-success", branchName: "success" });
     const end2 = createEndNode({ name: "end-failure", branchName: "failure" });
-    const e1 = createControlFlowEdge({
-      name: "e1",
-      fromNode: start,
-      toNode: end1,
-    });
-    const e2 = createControlFlowEdge({
-      name: "e2",
-      fromNode: start,
-      toNode: end2,
-    });
     const flow = createFlow({
       name: "branching-flow",
       startNode: start,
-      nodes: [start, end1, end2],
-      controlFlowConnections: [e1, e2],
+      nodes: [start, branching, end1, end2],
+      controlFlowConnections: [
+        createControlFlowEdge({ name: "e0", fromNode: start, toNode: branching }),
+        createControlFlowEdge({ name: "e1", fromNode: branching, fromBranch: "branch_s", toNode: end1 }),
+        createControlFlowEdge({ name: "e2", fromNode: branching, fromBranch: "branch_f", toNode: end2 }),
+      ],
     });
     const node = createFlowNode({ name: "flow-node", subflow: flow });
     expect(node.branches).toContain("success");

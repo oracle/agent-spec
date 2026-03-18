@@ -38,12 +38,21 @@ describe("ComponentBaseSchema", () => {
     expect(result.id).toBe(customId);
   });
 
-  it("should reject an invalid UUID", () => {
+  it("should accept a non-UUID id", () => {
+    const result = ComponentBaseSchema.parse({
+      name: "test",
+      componentType: "Agent",
+      id: "START_NODE",
+    });
+    expect(result.id).toBe("START_NODE");
+  });
+
+  it("should reject an empty id", () => {
     expect(() =>
       ComponentBaseSchema.parse({
         name: "test",
         componentType: "Agent",
-        id: "not-a-uuid",
+        id: "",
       }),
     ).toThrow();
   });

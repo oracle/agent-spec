@@ -44,6 +44,7 @@ describe("Flow with BranchingNode (manual construction)", () => {
     const startNode = createStartNode({
       name: "Node 1",
       inputs: [input1, input2],
+      outputs: [input1, input2],
     });
 
     const branchingNode1 = createBranchingNode({
@@ -60,10 +61,12 @@ describe("Flow with BranchingNode (manual construction)", () => {
 
     const endNode1 = createEndNode({
       name: "End Node 1",
+      inputs: [input1],
       outputs: [input1],
     });
     const endNode2 = createEndNode({
       name: "End Node 2",
+      inputs: [input2],
       outputs: [input2],
     });
     const endNode3 = createEndNode({
@@ -176,6 +179,7 @@ describe("Flow with BranchingNode (manual construction)", () => {
     const startNode = createStartNode({
       name: "start",
       inputs: [input1],
+      outputs: [input1],
     });
     const branchingNode = createBranchingNode({
       name: "branch",
@@ -432,6 +436,10 @@ describe("Flow output inference with branching", () => {
 
   it("should have empty inferred outputs when EndNodes share nothing", () => {
     const startNode = createStartNode({ name: "start" });
+    const branchingNode = createBranchingNode({
+      name: "branching",
+      mapping: { a: "branch_a", b: "branch_b" },
+    });
     const endA = createEndNode({
       name: "end-a",
       outputs: [stringProperty({ title: "x" })],
@@ -444,10 +452,11 @@ describe("Flow output inference with branching", () => {
     const flow = createFlow({
       name: "no-common-outputs",
       startNode,
-      nodes: [startNode, endA, endB],
+      nodes: [startNode, branchingNode, endA, endB],
       controlFlowConnections: [
-        createControlFlowEdge({ name: "e1", fromNode: startNode, toNode: endA }),
-        createControlFlowEdge({ name: "e2", fromNode: startNode, toNode: endB }),
+        createControlFlowEdge({ name: "e1", fromNode: startNode, toNode: branchingNode }),
+        createControlFlowEdge({ name: "e2", fromNode: branchingNode, fromBranch: "branch_a", toNode: endA }),
+        createControlFlowEdge({ name: "e3", fromNode: branchingNode, fromBranch: "branch_b", toNode: endB }),
       ],
     });
 

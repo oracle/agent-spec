@@ -12,6 +12,7 @@ export const MCPToolBoxSchema = ComponentBaseSchema.extend({
   toolFilter: z
     .array(z.union([MCPToolSpecSchema, z.string()]))
     .optional(),
+  requiresConfirmation: z.boolean().default(false),
 });
 
 export type MCPToolBox = z.infer<typeof MCPToolBoxSchema>;
@@ -23,6 +24,7 @@ export function createMCPToolBox(opts: {
   description?: string;
   metadata?: Record<string, unknown>;
   toolFilter?: Array<z.infer<typeof MCPToolSpecSchema> | string>;
+  requiresConfirmation?: boolean;
 }): MCPToolBox {
   return Object.freeze(
     MCPToolBoxSchema.parse({

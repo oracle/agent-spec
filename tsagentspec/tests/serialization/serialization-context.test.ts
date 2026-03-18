@@ -403,7 +403,7 @@ describe("AgentSpecSerializer camelCase mode", () => {
 });
 
 describe("AgentSpecSerializer version gating", () => {
-  it("should exclude BuiltinTool fields when serializing at older version", () => {
+  it("should throw when serializing BuiltinTool at older version (fail-fast)", () => {
     const serializer = new AgentSpecSerializer();
     const agent = createAgent({
       name: "agent",
@@ -413,17 +413,13 @@ describe("AgentSpecSerializer version gating", () => {
         createBuiltinTool({ name: "bt", toolType: "code_execution" }),
       ],
     });
-    const json = serializer.toJson(agent, {
-      agentspecVersion: AgentSpecVersion.V25_4_1,
-    }) as string;
-    const dict = JSON.parse(json);
-    // BuiltinTool has _self gate at V25_4_2, so its fields should be
-    // version-gated (excluded) when serializing at V25_4_1
-    const tool = dict["tools"][0];
-    // component_type is added unconditionally outside the gating logic
-    expect(tool["component_type"]).toBe("BuiltinTool");
-    // tool_type should be excluded by the _self gate
-    expect(tool["tool_type"]).toBeUndefined();
+    // BuiltinTool has _self gate at V25_4_2, so serializing at V25_4_1
+    // should fail fast with a version error
+    expect(() =>
+      serializer.toJson(agent, {
+        agentspecVersion: AgentSpecVersion.V25_4_1,
+      }),
+    ).toThrow(/Invalid agentspec_version.*25\.4\.1.*25\.4\.2.*bt/);
   });
 });
 

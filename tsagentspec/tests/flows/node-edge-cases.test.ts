@@ -11,6 +11,7 @@ import {
   createStartNode,
   createEndNode,
   createControlFlowEdge,
+  createBranchingNode,
   stringProperty,
   integerProperty,
   DEFAULT_INPUT_MESSAGE_OUTPUT,
@@ -68,17 +69,38 @@ function makeTestFlowWithBranches(branchNames: string[]) {
   const endNodes = branchNames.map((bn, i) =>
     createEndNode({ name: `end-${i}`, branchName: bn }),
   );
-  const edges = endNodes.map((end, i) =>
-    createControlFlowEdge({
-      name: `edge-${i}`,
-      fromNode: start,
-      toNode: end,
-    }),
-  );
+  if (endNodes.length === 1) {
+    const edges = [
+      createControlFlowEdge({ name: "edge-0", fromNode: start, toNode: endNodes[0]! }),
+    ];
+    return createFlow({
+      name: "test-flow",
+      startNode: start,
+      nodes: [start, ...endNodes],
+      controlFlowConnections: edges,
+    });
+  }
+  // Multiple end nodes: route through a branching node
+  const mapping: Record<string, string> = {};
+  branchNames.forEach((bn, i) => {
+    mapping[`key-${i}`] = `branch-${i}`;
+  });
+  const branching = createBranchingNode({ name: "branching", mapping });
+  const edges = [
+    createControlFlowEdge({ name: "edge-start", fromNode: start, toNode: branching }),
+    ...endNodes.map((end, i) =>
+      createControlFlowEdge({
+        name: `edge-${i}`,
+        fromNode: branching,
+        fromBranch: `branch-${i}`,
+        toNode: end,
+      }),
+    ),
+  ];
   return createFlow({
     name: "test-flow",
     startNode: start,
-    nodes: [start, ...endNodes],
+    nodes: [start, branching, ...endNodes],
     controlFlowConnections: edges,
   });
 }

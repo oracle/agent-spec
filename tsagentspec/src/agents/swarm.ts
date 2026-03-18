@@ -22,7 +22,7 @@ const AgenticComponentRef = z.lazy(() => z.record(z.unknown()));
 export const SwarmSchema = ComponentWithIOSchema.extend({
   componentType: z.literal("Swarm"),
   firstAgent: AgenticComponentRef,
-  relationships: z.array(z.tuple([AgenticComponentRef, AgenticComponentRef])),
+  relationships: z.array(z.tuple([AgenticComponentRef, AgenticComponentRef])).min(1, "Cannot define a Swarm with no relationships between the agents. Use an Agent instead."),
   handoff: z
     .enum([HandoffMode.NEVER, HandoffMode.OPTIONAL, HandoffMode.ALWAYS])
     .default(HandoffMode.OPTIONAL),
