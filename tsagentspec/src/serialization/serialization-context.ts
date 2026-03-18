@@ -5,7 +5,7 @@
  * sensitive field exclusion, version-gated field exclusion, and key ordering.
  */
 import type { AgentSpecVersion } from "../versioning.js";
-import { CURRENT_VERSION, versionLt, versionGte, versionMax } from "../versioning.js";
+import { CURRENT_VERSION, versionLt } from "../versioning.js";
 import { isComponent, type ComponentBase } from "../component.js";
 import type { Property } from "../property.js";
 import { isSensitiveField } from "../sensitive-field.js";

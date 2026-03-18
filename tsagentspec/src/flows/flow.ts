@@ -116,7 +116,7 @@ function validateFlowInvariants(opts: {
   }
 
   // 5. At least one EndNode
-  const endNodes = nodes.filter((n) => n["componentType"] === "EndNode");
+  const endNodes = getEndNodes(nodes);
   if (endNodes.length === 0) {
     throw new Error(
       "A Flow should be composed of at least one EndNode but " +
@@ -149,41 +149,28 @@ function validateFlowInvariants(opts: {
     );
   }
 
-  // 8. All control edge fromNode/toNode exist in nodes
+  // 8–9. All edge endpoints must reference nodes in the flow
   const nodeIds = new Set(nodes.map((n) => n["id"] as string));
-  for (const edge of controlFlowConnections) {
-    const fromId = (edge.fromNode as Record<string, unknown>)["id"] as string;
-    const fromName = (edge.fromNode as Record<string, unknown>)["name"] as string;
-    if (!nodeIds.has(fromId)) {
+
+  function assertNodeInFlow(
+    node: Record<string, unknown>,
+    edgeKind: string,
+    role: string,
+  ): void {
+    if (!nodeIds.has(node["id"] as string)) {
       throw new Error(
-        `A control flow edge was defined, but the flow does not contain the source node '${fromName}'`,
-      );
-    }
-    const toId = (edge.toNode as Record<string, unknown>)["id"] as string;
-    const toName = (edge.toNode as Record<string, unknown>)["name"] as string;
-    if (!nodeIds.has(toId)) {
-      throw new Error(
-        `A control flow edge was defined, but the flow does not contain the destination node '${toName}'`,
+        `A ${edgeKind} was defined, but the flow does not contain the ${role} '${node["name"]}'`,
       );
     }
   }
 
-  // 9. All data edge sourceNode/destinationNode exist in nodes
+  for (const edge of controlFlowConnections) {
+    assertNodeInFlow(edge.fromNode as Record<string, unknown>, "control flow edge", "source node");
+    assertNodeInFlow(edge.toNode as Record<string, unknown>, "control flow edge", "destination node");
+  }
   for (const edge of dataFlowConnections ?? []) {
-    const srcId = (edge.sourceNode as Record<string, unknown>)["id"] as string;
-    const srcName = (edge.sourceNode as Record<string, unknown>)["name"] as string;
-    if (!nodeIds.has(srcId)) {
-      throw new Error(
-        `A data flow edge was defined, but the flow does not contain the source node '${srcName}'`,
-      );
-    }
-    const destId = (edge.destinationNode as Record<string, unknown>)["id"] as string;
-    const destName = (edge.destinationNode as Record<string, unknown>)["name"] as string;
-    if (!nodeIds.has(destId)) {
-      throw new Error(
-        `A data flow edge was defined, but the flow does not contain the destination node '${destName}'`,
-      );
-    }
+    assertNodeInFlow(edge.sourceNode as Record<string, unknown>, "data flow edge", "source node");
+    assertNodeInFlow(edge.destinationNode as Record<string, unknown>, "data flow edge", "destination node");
   }
 }
 
