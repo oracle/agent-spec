@@ -705,6 +705,10 @@ conversations when using the openai responses API.
      conversation_store_id: Optional[str] = None
 
 .. note::
+    While both ``GROK`` and ``XAI`` values for ``provider`` are supported and refer to xAI models, we recommend
+    to use the value ``XAI``.
+
+.. note::
     The authentication components must not contain any sensitive information about the authentication,
     like secrets, API keys, passwords, etc. Users must not include this information anywhere, as exported
     Agent Spec configurations should never include sensitive data.
