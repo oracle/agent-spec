@@ -6,7 +6,6 @@
 
 """This module defines several Agent Spec components."""
 
-
 from enum import Enum
 from typing import List, Literal, Optional, Union
 

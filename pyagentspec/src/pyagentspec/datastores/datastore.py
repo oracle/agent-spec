@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 """This module defines the base, relational and in-memory datastore component."""
+
 from typing import Annotated, Dict
 
 from pydantic import AfterValidator, Field

@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines data flow edges that can be used to propagate values between flow nodes."""
+
 from pydantic import SerializeAsAny
 from typing_extensions import Self
 

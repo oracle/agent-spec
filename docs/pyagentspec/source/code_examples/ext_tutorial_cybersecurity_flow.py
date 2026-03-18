@@ -206,7 +206,7 @@ control_flow_edges.extend(
     [
         # From last tool to branching node
         create_control_flow_edge(has_findings_tool_node, has_findings_branching_node),
-        # Go to no findings message by default (will specify alternative behavior later) 
+        # Go to no findings message by default (will specify alternative behavior later)
         create_control_flow_edge(has_findings_branching_node, no_findings_output_node, from_branch="default"),
         # From message to beginning
         create_control_flow_edge(no_findings_output_node, get_tenancy_id_node)
@@ -231,7 +231,7 @@ llm_config = VllmConfig(
 )
 
 # In the prompt, the {{<input>}} token is used to pass the inputs
-# and is mandatory if the Node specifies inputs 
+# and is mandatory if the Node specifies inputs
 SUMMARIZATION_INSTRUCTIONS = """
 You are a CyberSecurity expert tasked to summarize security vulnerability findings.
 You will receive a list of findings in the format:
@@ -269,7 +269,7 @@ going_to_triage_output_node = OutputMessageNode(
 flow_nodes.extend([summarization_node, going_to_triage_output_node])
 
 control_flow_edges.extend(
-    [   
+    [
         # summarize if there are findings
         create_control_flow_edge(has_findings_branching_node, summarization_node, from_branch="has_findings"),
         # when finished, notify the user that triaging is next
@@ -358,7 +358,7 @@ request_confirmation_message_node = OutputMessageNode(
 flow_nodes.extend([triaging_agent_node, request_confirmation_message_node])
 
 control_flow_edges.extend(
-    [   
+    [
         # From previous message to the triaging agent
         create_control_flow_edge(going_to_triage_output_node, triaging_agent_node),
         create_control_flow_edge(triaging_agent_node, request_confirmation_message_node)
@@ -366,7 +366,7 @@ control_flow_edges.extend(
 )
 
 data_flow_edges.extend(
-    [   
+    [
         # Triaging agent needs tenancy graph and findings
         create_data_flow_edge(retrieve_tenancy_graph_tool_node, triaging_agent_node, "tenancy_graph"),
         create_data_flow_edge(summarization_node, triaging_agent_node, "findings")
