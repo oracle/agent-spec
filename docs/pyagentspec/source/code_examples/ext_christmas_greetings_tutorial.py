@@ -268,18 +268,18 @@ serialized_flow = AgentSpecSerializer().to_json(main_flow)
 #         str: A b64 json encoded image data.
 #     """
 #     prompt = f"""
-#     Create a beautiful and festive Christmas greeting card. 
-#     The design should evoke a warm, inspiring, and joyful holiday atmosphere. 
-#     Use the following email content as inspiration for the message, but please avoid copying the exact words. 
-#     Instead, make the message general enough to fit anyone, but specific enough to feel personal and meaningful. 
-#     The design should be elegant and incorporate Christmas-themed visuals like snowflakes, trees, ornaments, or winter scenes. 
+#     Create a beautiful and festive Christmas greeting card.
+#     The design should evoke a warm, inspiring, and joyful holiday atmosphere.
+#     Use the following email content as inspiration for the message, but please avoid copying the exact words.
+#     Instead, make the message general enough to fit anyone, but specific enough to feel personal and meaningful.
+#     The design should be elegant and incorporate Christmas-themed visuals like snowflakes, trees, ornaments, or winter scenes.
 #     Email Content Inspiration:
 #     {body}
-#     Keep the tone heartfelt and warm, with a balance of cheerfulness and inspiration. 
-#     Feel free to include any symbolic holiday elements that would enhance the mood. 
+#     Keep the tone heartfelt and warm, with a balance of cheerfulness and inspiration.
+#     Feel free to include any symbolic holiday elements that would enhance the mood.
 #     Make sure the image conveys a sense of closeness and joy without directly quoting the email text.
-#     Don't use more than 20 words. The card should have a clean, colored, flat design with no background elements. 
-#     Keep it minimalistic, with the message or visual elements standing out. 
+#     Don't use more than 20 words. The card should have a clean, colored, flat design with no background elements.
+#     Keep it minimalistic, with the message or visual elements standing out.
 #     """
 #     url = "https://api.openai.com/v1/images/generations"
 #     payload = {"model": "gpt-image-1", "prompt": prompt}
@@ -436,18 +436,18 @@ serialized_flow = AgentSpecSerializer().to_json(main_flow)
 #         str: A b64 json encoded image data.
 #     """
 #     prompt = f"""
-#     Create a beautiful and festive Christmas greeting card. 
-#     The design should evoke a warm, inspiring, and joyful holiday atmosphere. 
-#     Use the following email content as inspiration for the message, but please avoid copying the exact words. 
-#     Instead, make the message general enough to fit anyone, but specific enough to feel personal and meaningful. 
-#     The design should be elegant and incorporate Christmas-themed visuals like snowflakes, trees, ornaments, or winter scenes. 
+#     Create a beautiful and festive Christmas greeting card.
+#     The design should evoke a warm, inspiring, and joyful holiday atmosphere.
+#     Use the following email content as inspiration for the message, but please avoid copying the exact words.
+#     Instead, make the message general enough to fit anyone, but specific enough to feel personal and meaningful.
+#     The design should be elegant and incorporate Christmas-themed visuals like snowflakes, trees, ornaments, or winter scenes.
 #     Email Content Inspiration:
 #     {body}
-#     Keep the tone heartfelt and warm, with a balance of cheerfulness and inspiration. 
-#     Feel free to include any symbolic holiday elements that would enhance the mood. 
+#     Keep the tone heartfelt and warm, with a balance of cheerfulness and inspiration.
+#     Feel free to include any symbolic holiday elements that would enhance the mood.
 #     Make sure the image conveys a sense of closeness and joy without directly quoting the email text.
-#     Don't use more than 20 words. The card should have a clean, colored, flat design with no background elements. 
-#     Keep it minimalistic, with the message or visual elements standing out. 
+#     Don't use more than 20 words. The card should have a clean, colored, flat design with no background elements.
+#     Keep it minimalistic, with the message or visual elements standing out.
 #     """
 #     url = "https://api.openai.com/v1/images/generations"
 #     payload = {"model": "gpt-image-1", "prompt": prompt}

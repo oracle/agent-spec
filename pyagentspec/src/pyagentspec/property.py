@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines the base class for the definition of inputs and outputs in Components."""
+
 from collections import defaultdict
 from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 

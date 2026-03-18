@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 """This module defines the classes related to serialization of Agent Spec configurations."""
+
 from abc import abstractmethod
 from collections import Counter
 from enum import Enum

@@ -29,8 +29,7 @@ def transform_yes_no_str_to_boolean(v: str) -> bool:
 class SemanticBinaryMatchMetric(LlmAsAJudgeMetric[bool]):
     """Evaluate whether a response matches a reference semantically as a binary decision."""
 
-    SYSTEM_PROMPT = textwrap.dedent(
-        """
+    SYSTEM_PROMPT = textwrap.dedent("""
         You are an evaluator who determines if a response refers to the same entity or concept as a given reference, using these criteria:
         - The response and the reference must represent the same entity or concept (for example, the same city, person, or term).
         - Accept minor spelling or linguistic differences, such as typographical errors, alternate spellings, or translations (e.g., "Geneva", "Genève", and "Genf").
@@ -40,18 +39,15 @@ class SemanticBinaryMatchMetric(LlmAsAJudgeMetric[bool]):
         For each evaluation, first provide a brief justification, then your final decision in the following XML format:
         <justification>[Brief explanation]</justification>
         <result>Yes/No</result>
-        """
-    )
+        """)
 
-    USER_PROMPT_TEMPLATE = textwrap.dedent(
-        """
+    USER_PROMPT_TEMPLATE = textwrap.dedent("""
         Reference:
         {{ reference }}
 
         Response:
         {{ response }}
-        """
-    )
+        """)
 
     def __init__(
         self,

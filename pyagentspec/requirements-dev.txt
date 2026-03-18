@@ -2,7 +2,7 @@
 # Learn more at: https://pre-commit.com/
 pre-commit
 
-black==25.1.0
+black==26.3.1
 isort==6.0.1
 mypy==1.15.0
 bandit==1.8.3
