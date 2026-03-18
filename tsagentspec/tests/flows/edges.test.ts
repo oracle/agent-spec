@@ -102,8 +102,14 @@ describe("DataFlowEdge", () => {
   });
 
   it("should auto-generate an id", () => {
-    const start = createStartNode({ name: "start" });
-    const end = createEndNode({ name: "end" });
+    const start = createStartNode({
+      name: "start",
+      outputs: [stringProperty({ title: "x" })],
+    });
+    const end = createEndNode({
+      name: "end",
+      inputs: [stringProperty({ title: "x" })],
+    });
     const edge = createDataFlowEdge({
       name: "data-edge",
       sourceNode: start,
@@ -115,8 +121,14 @@ describe("DataFlowEdge", () => {
   });
 
   it("should be frozen", () => {
-    const start = createStartNode({ name: "start" });
-    const end = createEndNode({ name: "end" });
+    const start = createStartNode({
+      name: "start",
+      outputs: [stringProperty({ title: "x" })],
+    });
+    const end = createEndNode({
+      name: "end",
+      inputs: [stringProperty({ title: "x" })],
+    });
     const edge = createDataFlowEdge({
       name: "data-edge",
       sourceNode: start,
@@ -192,17 +204,17 @@ describe("DataFlowEdge", () => {
     ).toThrow(/incompatible types/);
   });
 
-  it("should allow edges when nodes have no inputs/outputs defined", () => {
+  it("should throw when source node has no outputs defined", () => {
     const start = createStartNode({ name: "start" });
     const end = createEndNode({ name: "end" });
-    // No outputs on start, no inputs on end — validation is skipped
-    const edge = createDataFlowEdge({
-      name: "loose-edge",
-      sourceNode: start,
-      sourceOutput: "anything",
-      destinationNode: end,
-      destinationInput: "anything",
-    });
-    expect(edge.componentType).toBe("DataFlowEdge");
+    expect(() =>
+      createDataFlowEdge({
+        name: "bad-edge",
+        sourceNode: start,
+        sourceOutput: "anything",
+        destinationNode: end,
+        destinationInput: "anything",
+      }),
+    ).toThrow(/anything.*source node.*start/);
   });
 });

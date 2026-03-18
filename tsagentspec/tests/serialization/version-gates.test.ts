@@ -50,7 +50,7 @@ describe("version-gated field serialization", () => {
     expect("human_in_the_loop" in dict).toBe(true);
   });
 
-  it("should exclude toolboxes for versions before 25.4.2", () => {
+  it("should throw when serializing MCPToolBox at version before 25.4.2", () => {
     const serializer = new AgentSpecSerializer();
     const toolbox = createMCPToolBox({
       name: "toolbox",
@@ -65,11 +65,11 @@ describe("version-gated field serialization", () => {
       systemPrompt: "Hello",
       toolboxes: [toolbox],
     });
-    const json = serializer.toJson(agent, {
-      agentspecVersion: AgentSpecVersion.V25_4_1,
-    }) as string;
-    const dict = JSON.parse(json);
-    expect("toolboxes" in dict).toBe(false);
+    expect(() =>
+      serializer.toJson(agent, {
+        agentspecVersion: AgentSpecVersion.V25_4_1,
+      }),
+    ).toThrow(/Invalid agentspec_version.*25\.4\.1.*25\.4\.2.*toolbox/);
   });
 
   it("should exclude requiresConfirmation on tools for versions before 25.4.2", () => {
@@ -118,6 +118,54 @@ describe("version-gated field serialization", () => {
     expect(btCurrent!["tool_type"]).toBe("code_execution");
   });
 
+  it("should exclude MCPToolBox requiresConfirmation for versions before 26.2.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const toolbox = createMCPToolBox({
+      name: "toolbox",
+      clientTransport: createStdioTransport({
+        name: "stdio",
+        command: "node",
+      }),
+      requiresConfirmation: true,
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+      toolboxes: [toolbox],
+    });
+    const json = serializer.toJson(agent, {
+      agentspecVersion: AgentSpecVersion.V25_4_2,
+    }) as string;
+    const dict = JSON.parse(json);
+    const toolboxes = dict["toolboxes"] as Record<string, unknown>[];
+    expect("requires_confirmation" in toolboxes[0]!).toBe(false);
+  });
+
+  it("should include MCPToolBox requiresConfirmation for version 26.2.0+", () => {
+    const serializer = new AgentSpecSerializer();
+    const toolbox = createMCPToolBox({
+      name: "toolbox",
+      clientTransport: createStdioTransport({
+        name: "stdio",
+        command: "node",
+      }),
+      requiresConfirmation: true,
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+      toolboxes: [toolbox],
+    });
+    const json = serializer.toJson(agent, {
+      agentspecVersion: AgentSpecVersion.V26_2_0,
+    }) as string;
+    const dict = JSON.parse(json);
+    const toolboxes = dict["toolboxes"] as Record<string, unknown>[];
+    expect("requires_confirmation" in toolboxes[0]!).toBe(true);
+  });
+
   it("should include everything for current version", () => {
     const serializer = new AgentSpecSerializer();
     const tool = createServerTool({
@@ -137,5 +185,25 @@ describe("version-gated field serialization", () => {
     expect("human_in_the_loop" in dict).toBe(true);
     const tools = dict["tools"] as Record<string, unknown>[];
     expect("requires_confirmation" in tools[0]!).toBe(true);
+  });
+
+  it("should throw when serializing BuiltinTool at version before 25.4.2", () => {
+    const serializer = new AgentSpecSerializer();
+    const tool = createBuiltinTool({
+      name: "code-exec",
+      toolType: "code_execution",
+      configuration: { language: "python" },
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Hello",
+      tools: [tool],
+    });
+    expect(() =>
+      serializer.toJson(agent, {
+        agentspecVersion: AgentSpecVersion.V25_4_1,
+      }),
+    ).toThrow(/Invalid agentspec_version.*25\.4\.1.*25\.4\.2.*code-exec/);
   });
 });

@@ -5,7 +5,7 @@
  * sensitive field exclusion, version-gated field exclusion, and key ordering.
  */
 import type { AgentSpecVersion } from "../versioning.js";
-import { CURRENT_VERSION, versionLt } from "../versioning.js";
+import { CURRENT_VERSION, versionLt, versionGte, versionMax } from "../versioning.js";
 import { isComponent, type ComponentBase } from "../component.js";
 import type { Property } from "../property.js";
 import { isSensitiveField } from "../sensitive-field.js";
@@ -18,7 +18,7 @@ import {
   type SerializedDict,
   type SerializedFields,
 } from "./types.js";
-import { computeReferencingStructure } from "./referencing.js";
+import { computeReferencingStructure, getChildrenFromFieldValue } from "./referencing.js";
 import { VERSION_GATED_FIELDS } from "./version-gates.js";
 
 /** Maximum recursion depth for serialization to prevent stack overflow */
@@ -97,6 +97,50 @@ export class SerializationContext {
       }
     }
     return map;
+  }
+
+  /**
+   * Walk the component tree and find the highest _self version gate.
+   * Returns [minVersion, componentName] or null if no gate applies.
+   */
+  private computeMinRequiredVersion(
+    component: ComponentBase,
+  ): [AgentSpecVersion, string] | null {
+    let minVersion: AgentSpecVersion | null = null;
+    let boundingComponentName = "";
+
+    const visited = new Set<string>();
+    const queue: ComponentBase[] = [component];
+
+    while (queue.length > 0) {
+      const current = queue.pop()!;
+      if (visited.has(current.id)) continue;
+      visited.add(current.id);
+
+      const componentType = current.componentType;
+      const gatedFields = (VERSION_GATED_FIELDS as Record<string, Record<string, AgentSpecVersion> | undefined>)[componentType];
+      if (gatedFields) {
+        const selfGate = gatedFields["_self"];
+        if (selfGate) {
+          if (minVersion === null || versionLt(minVersion, selfGate)) {
+            minVersion = selfGate;
+            boundingComponentName = current.name;
+          }
+        }
+      }
+
+      // Walk children
+      const obj = current as unknown as Record<string, unknown>;
+      for (const [key, value] of Object.entries(obj)) {
+        if (key === "id" || key === "componentType") continue;
+        const children = getChildrenFromFieldValue(value);
+        for (const child of children) {
+          queue.push(child);
+        }
+      }
+    }
+
+    return minVersion ? [minVersion, boundingComponentName] : null;
   }
 
   /** Serialize a field value. Handles nested components, properties, arrays, etc. */
@@ -246,6 +290,20 @@ export class SerializationContext {
     agentspecVersion?: AgentSpecVersion,
   ): SerializedDict {
     this.agentspecVersion = agentspecVersion ?? CURRENT_VERSION;
+
+    // Fail-fast: check if target version is too low for any component in the tree
+    const minRequired = this.computeMinRequiredVersion(component);
+    if (minRequired) {
+      const [minRequiredVersion, name] = minRequired;
+      if (versionLt(this.agentspecVersion, minRequiredVersion)) {
+        throw new Error(
+          `Invalid agentspec_version: received agentspec_version=${this.agentspecVersion} ` +
+            `but the minimum allowed version is ${minRequiredVersion} ` +
+            `(lower bounded by component '${name}')`,
+        );
+      }
+    }
+
     this.referencingStructure = computeReferencingStructure(component);
 
     const keys = getProtocolKeys(this.camelCase);

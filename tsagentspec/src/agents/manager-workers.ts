@@ -13,7 +13,7 @@ const AgenticComponentRef = z.lazy(() => z.record(z.unknown()));
 export const ManagerWorkersSchema = ComponentWithIOSchema.extend({
   componentType: z.literal("ManagerWorkers"),
   groupManager: AgenticComponentRef,
-  workers: z.array(AgenticComponentRef),
+  workers: z.array(AgenticComponentRef).min(1, "Cannot define a ManagerWorkers with no worker. Use an Agent instead."),
 });
 
 export type ManagerWorkers = z.infer<typeof ManagerWorkersSchema>;
@@ -28,6 +28,9 @@ export function createManagerWorkers(opts: {
   inputs?: Property[];
   outputs?: Property[];
 }): ManagerWorkers {
+  if (opts.workers.some(w => w === opts.groupManager)) {
+    throw new Error("Group manager cannot be a worker.");
+  }
   return Object.freeze(
     ManagerWorkersSchema.parse({
       ...opts,

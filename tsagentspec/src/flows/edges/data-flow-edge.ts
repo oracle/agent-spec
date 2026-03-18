@@ -35,7 +35,7 @@ export function createDataFlowEdge(opts: {
 }): DataFlowEdge {
   const { outputs: sourceOutputs, name: sourceName } = opts.sourceNode;
   const sourceProperty = findPropertyByTitle(sourceOutputs, opts.sourceOutput);
-  if (sourceOutputs && sourceOutputs.length > 0 && !sourceProperty) {
+  if (!sourceProperty) {
     throw new Error(
       `Flow data connection named \`${opts.name}\` is connected to a property ` +
         `named \`${opts.sourceOutput}\` of the source node \`${sourceName}\`, ` +
@@ -45,7 +45,7 @@ export function createDataFlowEdge(opts: {
 
   const { inputs: destInputs, name: destName } = opts.destinationNode;
   const destProperty = findPropertyByTitle(destInputs, opts.destinationInput);
-  if (destInputs && destInputs.length > 0 && !destProperty) {
+  if (!destProperty) {
     throw new Error(
       `Flow data connection named \`${opts.name}\` is connected to a property ` +
         `named \`${opts.destinationInput}\` of the destination node \`${destName}\`, ` +
@@ -53,13 +53,11 @@ export function createDataFlowEdge(opts: {
     );
   }
 
-  if (sourceProperty && destProperty) {
-    if (!propertyIsCastableTo(sourceProperty, destProperty)) {
-      throw new Error(
-        `Flow data connection named \`${opts.name}\` connects two properties ` +
-          `with incompatible types: \`${opts.sourceOutput}\` and \`${opts.destinationInput}\`.`,
-      );
-    }
+  if (!propertyIsCastableTo(sourceProperty, destProperty)) {
+    throw new Error(
+      `Flow data connection named \`${opts.name}\` connects two properties ` +
+        `with incompatible types: \`${opts.sourceOutput}\` and \`${opts.destinationInput}\`.`,
+    );
   }
 
   return Object.freeze(

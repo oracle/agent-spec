@@ -96,4 +96,26 @@ describe("ManagerWorkers", () => {
     expect(mw.description).toBe("A manager-workers setup");
     expect(mw.metadata).toEqual({ team: "alpha" });
   });
+
+  it("should reject empty workers", () => {
+    const manager = makeAgent("manager");
+    expect(() =>
+      createManagerWorkers({
+        name: "test-mw",
+        groupManager: manager,
+        workers: [],
+      }),
+    ).toThrow("Cannot define a ManagerWorkers with no worker");
+  });
+
+  it("should reject manager as worker", () => {
+    const manager = makeAgent("manager");
+    expect(() =>
+      createManagerWorkers({
+        name: "test-mw",
+        groupManager: manager,
+        workers: [manager],
+      }),
+    ).toThrow("Group manager cannot be a worker.");
+  });
 });

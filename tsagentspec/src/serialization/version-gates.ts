@@ -25,6 +25,7 @@ export const VERSION_GATED_FIELDS = {
   },
   RemoteTool: {
     requiresConfirmation: AgentSpecVersion.V25_4_2,
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
   },
   MCPTool: {
     requiresConfirmation: AgentSpecVersion.V25_4_2,
@@ -47,7 +48,35 @@ export const VERSION_GATED_FIELDS = {
   ManagerWorkers: {
     _self: AgentSpecVersion.V25_4_2,
   },
+  OpenAiConfig: {
+    apiType: AgentSpecVersion.V25_4_2,
+  },
+  OpenAiCompatibleConfig: {
+    apiType: AgentSpecVersion.V25_4_2,
+  },
+  OciGenAiConfig: {
+    apiType: AgentSpecVersion.V25_4_2,
+  },
+  ApiNode: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
+  SSETransport: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
+  SSEmTLSTransport: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
+  StreamableHTTPTransport: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
+  StreamableHTTPmTLSTransport: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
+  RemoteTransport: {
+    sensitiveHeaders: AgentSpecVersion.V25_4_2,
+  },
   MCPToolBox: {
     _self: AgentSpecVersion.V25_4_2,
+    requiresConfirmation: AgentSpecVersion.V26_2_0,
   },
 } satisfies Partial<Record<ComponentTypeName, Record<string, AgentSpecVersion>>>;

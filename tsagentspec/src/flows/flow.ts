@@ -65,6 +65,128 @@ function inferFlowOutputs(
   return Object.values(flowOutputsByName);
 }
 
+/** Validate flow graph invariants before schema parsing */
+function validateFlowInvariants(opts: {
+  startNode: Record<string, unknown>;
+  nodes: Record<string, unknown>[];
+  controlFlowConnections: ControlFlowEdge[];
+  dataFlowConnections?: DataFlowEdge[];
+}): void {
+  const { startNode, nodes, controlFlowConnections, dataFlowConnections } = opts;
+
+  // 1. Exactly one StartNode
+  const startNodes = nodes.filter((n) => n["componentType"] === "StartNode");
+  if (startNodes.length !== 1) {
+    throw new Error(
+      `A Flow should be composed of exactly one StartNode, contains ${startNodes.length}.\n` +
+        "Please check for missing or duplicated nodes.",
+    );
+  }
+
+  // 2. StartNode matches opts.startNode
+  if (startNodes[0]!["id"] !== startNode["id"]) {
+    throw new Error(
+      "The ``start_node`` node is not matching the start node from the " +
+        `list of nodes in the flow \`\`nodes\`\` (start node was '${startNode["name"]}', ` +
+        `found '${startNodes[0]!["name"]}' in \`\`nodes\`\`).`,
+    );
+  }
+
+  // 3. StartNode has exactly one outgoing control flow edge
+  const startOutgoing = controlFlowConnections.filter(
+    (edge) => (edge.fromNode as Record<string, unknown>)["id"] === startNode["id"],
+  );
+  if (startOutgoing.length !== 1) {
+    throw new Error(
+      "The ``start_node`` should have exactly one outgoing control flow edge, " +
+        `found ${startOutgoing.length}. Please check the list of control flow edges.`,
+    );
+  }
+
+  // 4. No incoming control flow edges to StartNode
+  const startIncoming = controlFlowConnections.filter(
+    (edge) => (edge.toNode as Record<string, unknown>)["componentType"] === "StartNode",
+  );
+  if (startIncoming.length > 0) {
+    const names = startIncoming.map((e) => e.name);
+    throw new Error(
+      "Transitions to StartNode is not accepted. Please check the " +
+        `following control flow edges: \n${JSON.stringify(names)}`,
+    );
+  }
+
+  // 5. At least one EndNode
+  const endNodes = nodes.filter((n) => n["componentType"] === "EndNode");
+  if (endNodes.length === 0) {
+    throw new Error(
+      "A Flow should be composed of at least one EndNode but " +
+        "didn't find any in ``nodes``. Please make sure to add EndNode(s) to the flow.",
+    );
+  }
+
+  // 6. Every EndNode has at least one incoming control flow edge
+  for (const endNode of endNodes) {
+    const incoming = controlFlowConnections.filter(
+      (edge) => (edge.toNode as Record<string, unknown>)["id"] === endNode["id"],
+    );
+    if (incoming.length === 0) {
+      throw new Error(
+        "Found an end node without any incoming control flow edge, " +
+          `which is not permitted (node is '${endNode["name"]}'). Please check the control flow edges.`,
+      );
+    }
+  }
+
+  // 7. No outgoing control flow edges from EndNode
+  const endOutgoing = controlFlowConnections.filter(
+    (edge) => (edge.fromNode as Record<string, unknown>)["componentType"] === "EndNode",
+  );
+  if (endOutgoing.length > 0) {
+    const names = endOutgoing.map((e) => e.name);
+    throw new Error(
+      "Transitions from EndNode is not accepted. Please check the " +
+        `following control flow connections: \n${JSON.stringify(names)}`,
+    );
+  }
+
+  // 8. All control edge fromNode/toNode exist in nodes
+  const nodeIds = new Set(nodes.map((n) => n["id"] as string));
+  for (const edge of controlFlowConnections) {
+    const fromId = (edge.fromNode as Record<string, unknown>)["id"] as string;
+    const fromName = (edge.fromNode as Record<string, unknown>)["name"] as string;
+    if (!nodeIds.has(fromId)) {
+      throw new Error(
+        `A control flow edge was defined, but the flow does not contain the source node '${fromName}'`,
+      );
+    }
+    const toId = (edge.toNode as Record<string, unknown>)["id"] as string;
+    const toName = (edge.toNode as Record<string, unknown>)["name"] as string;
+    if (!nodeIds.has(toId)) {
+      throw new Error(
+        `A control flow edge was defined, but the flow does not contain the destination node '${toName}'`,
+      );
+    }
+  }
+
+  // 9. All data edge sourceNode/destinationNode exist in nodes
+  for (const edge of dataFlowConnections ?? []) {
+    const srcId = (edge.sourceNode as Record<string, unknown>)["id"] as string;
+    const srcName = (edge.sourceNode as Record<string, unknown>)["name"] as string;
+    if (!nodeIds.has(srcId)) {
+      throw new Error(
+        `A data flow edge was defined, but the flow does not contain the source node '${srcName}'`,
+      );
+    }
+    const destId = (edge.destinationNode as Record<string, unknown>)["id"] as string;
+    const destName = (edge.destinationNode as Record<string, unknown>)["name"] as string;
+    if (!nodeIds.has(destId)) {
+      throw new Error(
+        `A data flow edge was defined, but the flow does not contain the destination node '${destName}'`,
+      );
+    }
+  }
+}
+
 export function createFlow(opts: {
   name: string;
   startNode: Record<string, unknown>;
@@ -77,6 +199,7 @@ export function createFlow(opts: {
   inputs?: Property[];
   outputs?: Property[];
 }): Flow {
+  validateFlowInvariants(opts);
   const inputs = opts.inputs ?? inferFlowInputs(opts.startNode);
   const outputs = opts.outputs ?? inferFlowOutputs(opts.nodes);
 
