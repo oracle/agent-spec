@@ -35,6 +35,9 @@ from pyagentspec.tools import RemoteTool
             url="https://api.closedai.com/v2",
             model_id="gpt-7",
             api_key="abcdexyz",
+            key_file="/etc/certs/abcdexyz.key",
+            cert_file="/etc/certs/abcdexyz.pem",
+            ca_file="/etc/certs/abcdexyz-ca.pem",
         ),
         OciClientConfigWithSecurityToken(
             name="name",
@@ -116,13 +119,35 @@ def test_configuration_containing_inlined_sensitive_fields_can_be_loaded():
     assert llm_config.api_key == "THIS_SECRET_IS_SAFELY_INLINED"
 
 
-def test_openaicompatibleconfig_cannot_be_imported_without_the_required_api_key() -> None:
+def test_configuration_containing_inlined_certificate_sensitive_fields_can_be_loaded():
+    serialized_llm = """{
+      "component_type": "OpenAiCompatibleConfig",
+      "id": "openai-compatible-config-id",
+      "name": "openai-compatible-config",
+      "url": "https://api.closedai.com/v2",
+      "model_id": "gpt-7",
+      "key_file": "/etc/certs/client.key",
+      "cert_file": "/etc/certs/client.pem",
+      "ca_file": "/etc/certs/ca.pem",
+      "agentspec_version": "26.2.0"
+    }"""
+    llm_config = AgentSpecDeserializer().from_json(serialized_llm)
+    assert isinstance(llm_config, OpenAiCompatibleConfig)
+    assert llm_config.key_file == "/etc/certs/client.key"
+    assert llm_config.cert_file == "/etc/certs/client.pem"
+    assert llm_config.ca_file == "/etc/certs/ca.pem"
+
+
+def test_openaicompatibleconfig_cannot_be_imported_without_required_sensitive_fields() -> None:
     llm_config = OpenAiCompatibleConfig(
         name="openai-compatible-config",
         id="openai-compatible-config-id",
         url="https://api.closedai.com/v2",
         model_id="gpt-7",
         api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+        cert_file="/etc/certs/client.pem",
+        ca_file="/etc/certs/ca.pem",
     )
     serialized_llm = AgentSpecSerializer().to_json(llm_config)
     with pytest.raises(
@@ -130,7 +155,10 @@ def test_openaicompatibleconfig_cannot_be_imported_without_the_required_api_key(
         match=(
             r"The following references to fields or components are missing and should be passed as "
             r"part of the component registry when deserializing: "
-            r"\[\'openai-compatible-config-id.api_key\']"
+            r"\[\'openai-compatible-config-id.api_key\', "
+            r"\'openai-compatible-config-id.ca_file\', "
+            r"\'openai-compatible-config-id.cert_file\', "
+            r"\'openai-compatible-config-id.key_file\'\]"
         ),
     ):
         AgentSpecDeserializer().from_json(serialized_llm)
@@ -147,18 +175,28 @@ def test_openaicompatibleconfig_without_api_key_can_be_imported_without_api_key(
     assert new_llm_config == llm_config
 
 
-def test_openaicompatibleconfig_can_be_imported_with_api_key_in_component_registry() -> None:
+def test_openaicompatibleconfig_can_be_imported_with_sensitive_fields_in_components_registry() -> (
+    None
+):
     llm_config = OpenAiCompatibleConfig(
         name="openai-compatible-config",
         id="openai-compatible-config-id",
         url="https://api.closedai.com/v2",
         model_id="gpt-7",
         api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+        cert_file="/etc/certs/client.pem",
+        ca_file="/etc/certs/ca.pem",
     )
     serialized_llm = AgentSpecSerializer().to_json(llm_config)
     new_llm_config = AgentSpecDeserializer().from_json(
         serialized_llm,
-        components_registry={"openai-compatible-config-id.api_key": "THIS_IS_SECRET"},
+        components_registry={
+            "openai-compatible-config-id.api_key": "THIS_IS_SECRET",
+            "openai-compatible-config-id.key_file": "/etc/certs/client.key",
+            "openai-compatible-config-id.cert_file": "/etc/certs/client.pem",
+            "openai-compatible-config-id.ca_file": "/etc/certs/ca.pem",
+        },
     )
     assert new_llm_config == llm_config
 
@@ -181,6 +219,9 @@ def nested_component_with_multiple_sensitive_fields() -> Component:
         url="https://api.closedai.com/v2",
         model_id="gpt-7",
         api_key="abcdexyz",
+        key_file="/etc/certs/abcdexyz.key",
+        cert_file="/etc/certs/abcdexyz.pem",
+        ca_file="/etc/certs/abcdexyz-ca.pem",
     )
     agent = Agent(
         name="agent",
@@ -235,6 +276,9 @@ def test_loading_serialized_nested_components_without_component_registry_raises(
         match=(
             r"api-node-id\.sensitive_headers.*"
             r"openai-compatible-config-id\.api_key.*"
+            r"openai-compatible-config-id\.ca_file.*"
+            r"openai-compatible-config-id\.cert_file.*"
+            r"openai-compatible-config-id\.key_file.*"
             r"sse-transport-id\.sensitive_headers.*"
         ),
     ):
@@ -249,7 +293,13 @@ def test_loading_serialized_nested_components_with_partial_component_registry_ra
     )
     with pytest.raises(
         ValueError,
-        match=(r"api-node-id\.sensitive_headers.*" r"sse-transport-id\.sensitive_headers.*"),
+        match=(
+            r"api-node-id\.sensitive_headers.*"
+            r"openai-compatible-config-id\.ca_file.*"
+            r"openai-compatible-config-id\.cert_file.*"
+            r"openai-compatible-config-id\.key_file.*"
+            r"sse-transport-id\.sensitive_headers.*"
+        ),
     ):
         AgentSpecDeserializer().from_json(
             serialized_nested_components,
@@ -267,12 +317,18 @@ def test_loading_serialized_nested_components_with_component_registry_succeeds(
         serialized_nested_components,
         components_registry={
             "openai-compatible-config-id.api_key": "abcdexyz",
+            "openai-compatible-config-id.key_file": "/etc/certs/abcdexyz.key",
+            "openai-compatible-config-id.cert_file": "/etc/certs/abcdexyz.pem",
+            "openai-compatible-config-id.ca_file": "/etc/certs/abcdexyz-ca.pem",
             "api-node-id.sensitive_headers": {"Authorization": "Bearer abcdexyz"},
             "sse-transport-id.sensitive_headers": {"Authorization": "Bearer abcdexyz"},
         },
     )
     assert new_component.nodes[1].sensitive_headers == {"Authorization": "Bearer abcdexyz"}
     assert new_component.nodes[2].agent.llm_config.api_key == "abcdexyz"
+    assert new_component.nodes[2].agent.llm_config.key_file == "/etc/certs/abcdexyz.key"
+    assert new_component.nodes[2].agent.llm_config.cert_file == "/etc/certs/abcdexyz.pem"
+    assert new_component.nodes[2].agent.llm_config.ca_file == "/etc/certs/abcdexyz-ca.pem"
     assert new_component.nodes[2].agent.toolboxes[0].client_transport.sensitive_headers == {
         "Authorization": "Bearer abcdexyz"
     }
@@ -308,6 +364,9 @@ def test_disaggregated_configuration_with_sensitive_fields_can_be_loaded_back(
         disaggregated_agent_config,
         components_registry={
             "openai-compatible-config-id.api_key": "abcdexyz",
+            "openai-compatible-config-id.key_file": "/etc/certs/abcdexyz.key",
+            "openai-compatible-config-id.cert_file": "/etc/certs/abcdexyz.pem",
+            "openai-compatible-config-id.ca_file": "/etc/certs/abcdexyz-ca.pem",
             "sse-transport-id.sensitive_headers": {"Authorization": "Bearer abcdexyz"},
         },
         import_only_referenced_components=True,
@@ -321,6 +380,9 @@ def test_disaggregated_configuration_with_sensitive_fields_can_be_loaded_back(
     )
     assert deserialized_flow.nodes[1].sensitive_headers == {"Authorization": "Bearer abcdexyz"}
     assert deserialized_flow.nodes[2].agent.llm_config.api_key == "abcdexyz"
+    assert deserialized_flow.nodes[2].agent.llm_config.key_file == "/etc/certs/abcdexyz.key"
+    assert deserialized_flow.nodes[2].agent.llm_config.cert_file == "/etc/certs/abcdexyz.pem"
+    assert deserialized_flow.nodes[2].agent.llm_config.ca_file == "/etc/certs/abcdexyz-ca.pem"
     assert deserialized_flow.nodes[2].agent.toolboxes[0].client_transport.sensitive_headers == {
         "Authorization": "Bearer abcdexyz"
     }
@@ -330,6 +392,9 @@ def test_partial_configurations_exclude_secrets():
     partial_llm_config = {
         "name": "openai-compatible-config",
         "api_key": "THIS_SECRET_NOT_TO_BE_EXPORTED",
+        "key_file": "/etc/certs/client.key",
+        "cert_file": "/etc/certs/client.pem",
+        "ca_file": "/etc/certs/ca.pem",
     }
     partial_llm = OpenAiCompatibleConfig.build_from_partial_config(partial_llm_config)
     serialized_partial_llm = AgentSpecSerializer(_allow_partial_model_serialization=True).to_json(

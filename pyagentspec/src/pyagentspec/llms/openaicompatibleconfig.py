@@ -43,14 +43,30 @@ class OpenAiCompatibleConfig(LlmConfig):
     api_key: SensitiveField[Optional[str]] = None
     """An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
        excluded and replaced by a reference when exporting the configuration."""
+    key_file: SensitiveField[Optional[str]] = None
+    """The path to an optional client private key file (PEM format)."""
+    cert_file: SensitiveField[Optional[str]] = None
+    """The path to an optional client certificate chain file (PEM format)."""
+    ca_file: SensitiveField[Optional[str]] = None
+    """The path to an optional trusted CA certificate file (PEM format) used to verify the server."""
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
-        fields_to_exclude = set()
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("api_key")
+        # Certificate fields were added in 26.2.0. For backwards compatibility with existing
+        # serialized configs, omit them entirely when they are unset instead of exporting `null`.
+        has_certificate_configuration = any(
+            certificate_path is not None
+            for certificate_path in (self.key_file, self.cert_file, self.ca_file)
+        )
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("key_file")
+            fields_to_exclude.add("cert_file")
+            fields_to_exclude.add("ca_file")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
@@ -63,4 +79,11 @@ class OpenAiCompatibleConfig(LlmConfig):
             # If the api type is not chat completions, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        if any(
+            certificate_path is not None
+            for certificate_path in (self.key_file, self.cert_file, self.ca_file)
+        ):
+            current_object_min_version = max(
+                current_object_min_version, AgentSpecVersionEnum.v26_2_0
+            )
         return max(current_object_min_version, parent_min_version)

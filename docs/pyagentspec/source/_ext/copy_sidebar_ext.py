@@ -24,7 +24,9 @@ def copy_sidebar_at_build_time(app: Sphinx, exception):
     source_index_path = build_dir / SOURCE_INDEX_NAME
 
     if not index_path.exists() or not source_index_path.exists():
-        logger.warning("Could not find %s or %s", INDEX_NAME, SOURCE_INDEX_NAME)
+        logger.info(
+            "Skipping sidebar copy because %s or %s is missing", INDEX_NAME, SOURCE_INDEX_NAME
+        )
         return
 
     with open(index_path, "r", encoding="utf-8") as f:

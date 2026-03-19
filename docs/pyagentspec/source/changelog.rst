@@ -43,6 +43,13 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Certificate configuration for OpenAI-compatible LLMs**
+
+  ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``
+  fields for HTTPS and mTLS connections to private endpoints.
+
+  For more information read the how-to guide on using :ref:`LLM Providers <howto-openaicompatibleconfig>`.
+
 * **New tool output streaming Event:**
 
   A new :ref:`ToolExecutionStreamingChunkReceived <toolexecutionstreamingchunkreceived>`
