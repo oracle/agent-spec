@@ -1031,6 +1031,7 @@ class Component(AbstractableModel, abstract=True):
         ... )
         >>> list(disag_config["$referenced_components"].keys())
         ['custom_llm_id']
+        
         """
         from pyagentspec.serialization.serializer import AgentSpecSerializer
 
@@ -1256,6 +1257,7 @@ class Component(AbstractableModel, abstract=True):
         ...     agent_config,
         ...     components_registry=disag_components
         ... )
+        
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
