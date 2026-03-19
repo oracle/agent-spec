@@ -106,8 +106,7 @@ export class SerializationContext {
   private computeMinRequiredVersion(
     component: ComponentBase,
   ): [AgentSpecVersion, string] | null {
-    let minVersion: AgentSpecVersion | null = null;
-    let boundingComponentName = "";
+    let result: [AgentSpecVersion, string] | null = null;
 
     const visited = new Set<string>();
     const queue: ComponentBase[] = [component];
@@ -117,30 +116,17 @@ export class SerializationContext {
       if (visited.has(current.id)) continue;
       visited.add(current.id);
 
-      const componentType = current.componentType;
-      const gatedFields = (VERSION_GATED_FIELDS as Record<string, Record<string, AgentSpecVersion> | undefined>)[componentType];
-      if (gatedFields) {
-        const selfGate = gatedFields["_self"];
-        if (selfGate) {
-          if (minVersion === null || versionLt(minVersion, selfGate)) {
-            minVersion = selfGate;
-            boundingComponentName = current.name;
-          }
-        }
+      const selfGate = (VERSION_GATED_FIELDS as Record<string, Record<string, AgentSpecVersion>>)[current.componentType]?._self;
+      if (selfGate && (!result || versionLt(result[0], selfGate))) {
+        result = [selfGate, current.name];
       }
 
-      // Walk children
-      const obj = current as unknown as Record<string, unknown>;
-      for (const [key, value] of Object.entries(obj)) {
-        if (key === "id" || key === "componentType") continue;
-        const children = getChildrenFromFieldValue(value);
-        for (const child of children) {
-          queue.push(child);
-        }
+      for (const value of Object.values(current as unknown as Record<string, unknown>)) {
+        queue.push(...getChildrenFromFieldValue(value));
       }
     }
 
-    return minVersion ? [minVersion, boundingComponentName] : null;
+    return result;
   }
 
   /** Serialize a field value. Handles nested components, properties, arrays, etc. */
