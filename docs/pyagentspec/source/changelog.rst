@@ -17,10 +17,9 @@ Improvements
   ``to_yaml()``, ``to_json()``, ``to_dict()``, ``from_yaml()``,
   ``from_json()``, and ``from_dict()``.
   This provides a shorter API (e.g., ``agent.to_json()``) while preserving
-  compatibility with disaggregated configurations through
-  ``components_registry`` on the convenience APIs and
-  ``AgentSpecDeserializer(..., import_only_referenced_components=True)``
-  for importing referenced components.
+  compatibility with disaggregated configurations.
+
+  We thank @pullely-samuel for the contribution!
 
 * **Disaggregated configurations in LangGraph adapter**
 
