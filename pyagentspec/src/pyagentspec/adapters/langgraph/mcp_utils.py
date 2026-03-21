@@ -83,6 +83,15 @@ class AsyncContext(Enum):
     SYNC_WORKER = "sync_worker"
 
 
+# anyio.NoEventLoopError was added in anyio 4.11. anyio 4.10 is still supported
+# (via the langgraph/evaluation extras), where the attribute does not exist.
+# Once the minimum anyio version is ≥ 4.11, replace this with a plain
+# tuple and catch anyio.NoEventLoopError directly (commented out below)
+_NO_LOOP_ERRORS: tuple[type[BaseException], ...] = (AsyncLibraryNotFoundError,)
+if hasattr(anyio, "NoEventLoopError"):
+    _NO_LOOP_ERRORS = (*_NO_LOOP_ERRORS, anyio.NoEventLoopError)
+
+
 def get_execution_context() -> AsyncContext:
     """
     Return one of:
@@ -93,7 +102,8 @@ def get_execution_context() -> AsyncContext:
     try:
         anyio.get_current_task()
         return AsyncContext.ASYNC
-    except AsyncLibraryNotFoundError:
+    # except (AsyncLibraryNotFoundError, anyio.NoEventLoopError): # anyio>4.10
+    except _NO_LOOP_ERRORS:
         current_thread = from_thread.current_thread()  # type: ignore
         worker_name = current_thread.name.lower()
         if "worker" in worker_name and "anyio" in worker_name:
