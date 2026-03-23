@@ -23,7 +23,7 @@ class GeminiAiStudioAuthConfig(BaseModel):
 
     type: Literal["aistudio"] = "aistudio"
     """Discriminator for the Gemini AI Studio authentication mode."""
-    api_key: Optional[str] = None
+    api_key: SensitiveField[Optional[str]] = None
     """API key to use. If unset, runtimes may load it from ``GEMINI_API_KEY``."""
 
 
@@ -43,7 +43,7 @@ class GeminiVertexAiAuthConfig(BaseModel):
     """
     location: str = "global"
     """Vertex AI location/region."""
-    credentials: Optional[str | Dict[str, Any]] = None
+    credentials: SensitiveField[Optional[str | Dict[str, Any]]] = None
     """Optional service-account JSON file path or inline service-account JSON object.
 
     When unset, runtimes may rely on Application Default Credentials (ADC), such as

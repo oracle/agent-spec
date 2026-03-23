@@ -190,6 +190,12 @@ GeminiConfig
 `Gemini <https://gemini.google.com/>`_ models can be configured through ``GeminiConfig``.
 Agent Spec supports both Google AI Studio and Google Vertex AI authentication modes.
 
+When explicit secret material is omitted, Gemini authentication settings can remain inline
+during serialization and the configuration can be deserialized without a
+``components_registry``. When ``api_key`` or ``credentials`` is provided explicitly,
+the serializer externalizes the entire ``auth`` object and expects it to be supplied
+separately when loading the configuration back.
+
 **Parameters**
 
 .. option:: model_id: str
@@ -202,6 +208,9 @@ Agent Spec supports both Google AI Studio and Google Vertex AI authentication mo
   Required authentication configuration for Gemini. Use
   ``GeminiAiStudioAuthConfig()`` if you want runtimes to load ``GEMINI_API_KEY``
   from the environment, or ``GeminiVertexAiAuthConfig(...)`` for Vertex AI.
+  When no explicit secret material is provided, the ``auth`` object remains inline
+  when serialized. If ``api_key`` or ``credentials`` is set explicitly, the entire
+  ``auth`` object is serialized as a reference instead.
 
 .. option:: default_generation_parameters: dict, null
 
@@ -221,6 +230,8 @@ Use ``GeminiAiStudioAuthConfig`` when connecting through Google AI Studio.
 .. option:: api_key: str, null
 
   Optional Gemini API key. If omitted, runtimes may load it from ``GEMINI_API_KEY``.
+  If provided explicitly, the entire ``auth`` object is externalized during
+  serialization and must be supplied separately when deserializing.
 
 **Example**
 
@@ -257,6 +268,9 @@ Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
   ``GOOGLE_APPLICATION_CREDENTIALS``, the local ADC file created by
   ``gcloud auth application-default login``, or an attached service account.
   This does not guarantee that ``project_id`` can also be inferred automatically.
+  If provided explicitly, the entire ``auth`` object is externalized during serialization.
+  The deserialization registry entry must therefore also include any non-secret auth
+  settings that should be preserved, such as ``project_id`` and ``location``.
 
 **Example**
 

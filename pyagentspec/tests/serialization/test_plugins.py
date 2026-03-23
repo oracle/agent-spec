@@ -8,6 +8,7 @@ from typing import List, Optional, Type, Union, cast
 
 import pytest
 import yaml
+from pydantic import BaseModel
 
 from pyagentspec.component import Component
 from pyagentspec.flows.edges import ControlFlowEdge
@@ -15,6 +16,7 @@ from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.node import Node
 from pyagentspec.flows.nodes import EndNode, StartNode
 from pyagentspec.property import Property
+from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.serialization.builtinsdeserializationplugin import (
     BuiltinsComponentDeserializationPlugin,
@@ -179,6 +181,14 @@ class MyComponent1(Component):
     value: Optional[Union[List[MySubComponent], MySubComponent, str]] = None
 
 
+class MyNestedAuthConfig(BaseModel):
+    type: str = "custom"
+
+
+class MySensitiveBaseModelComponent(Component):
+    auth: SensitiveField[MyNestedAuthConfig]
+
+
 def _assert_values_correctness_and_equality(
     deser_value: Optional[Union[List[MySubComponent], MySubComponent, str]],
     expected_value: Optional[Union[List[MySubComponent], MySubComponent, str]],
@@ -244,6 +254,23 @@ def test_component_field_serialization_works_with_joint_union_and_optional_types
             expected_value=value,
             expected_value_type=expected_value_type,
         )
+
+
+def test_sensitive_basemodel_without_nested_sensitive_fields_uses_legacy_fallback() -> None:
+    component = MySensitiveBaseModelComponent(
+        id="component-id",
+        name="component-name",
+        auth=MyNestedAuthConfig(),
+    )
+    serialization_plugin = PydanticComponentSerializationPlugin(
+        component_types_and_models={
+            MySensitiveBaseModelComponent.__name__: MySensitiveBaseModelComponent
+        }
+    )
+
+    serialized_component = AgentSpecSerializer(plugins=[serialization_plugin]).to_json(component)
+
+    assert '"$component_ref":"component-id.auth"' in serialized_component.replace(" ", "")
 
 
 class MyComponent2(Component):

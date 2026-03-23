@@ -46,7 +46,8 @@
             llm_config = GeminiConfig(
                 name="Gemini Flash",
                 model_id="gemini-2.5-flash",
-                auth=GeminiAiStudioAuthConfig(api_key="GEMINI_API_KEY"),
+                # The runtime can read GEMINI_API_KEY from the environment.
+                auth=GeminiAiStudioAuthConfig(),
             )
 
     .. tab:: vLLM

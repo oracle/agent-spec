@@ -93,7 +93,8 @@ generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0
 llm = GeminiConfig(
     name="gemini-aistudio-flash",
     model_id="gemini-2.5-flash",
-    auth=GeminiAiStudioAuthConfig(api_key="optional_api_key"),
+    # Optional: if omitted, runtimes may load GEMINI_API_KEY from the environment.
+    auth=GeminiAiStudioAuthConfig(),
     default_generation_parameters=generation_config,
 )
 # .. gemini-aistudio-end
@@ -110,8 +111,7 @@ llm = GeminiConfig(
         # Often still required even when ADC supplies the credentials.
         project_id="my-gcp-project",
         location="global",
-        # Optional when Google Application Default Credentials are already configured.
-        credentials="path/to/service-account.json",
+        # Optional: explicit credentials can be provided when ADC is not available.
     ),
     default_generation_parameters=generation_config,
 )
@@ -207,7 +207,8 @@ generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0
 llm = GeminiConfig(
     name="gemini-aistudio-flash",
     model_id="gemini-2.5-flash",
-    auth=GeminiAiStudioAuthConfig(api_key="optional_api_key"),
+    # Optional: if omitted, runtimes may load GEMINI_API_KEY from the environment.
+    auth=GeminiAiStudioAuthConfig(),
     default_generation_parameters=generation_config,
 )
 
@@ -218,8 +219,7 @@ llm = GeminiConfig(
         # Often still required even when ADC supplies the credentials.
         project_id="my-gcp-project",
         location="global",
-        # Optional when Google Application Default Credentials are already configured.
-        credentials="path/to/service-account.json",
+        # Optional: explicit credentials can be provided when ADC is not available.
     ),
     default_generation_parameters=generation_config,
 )

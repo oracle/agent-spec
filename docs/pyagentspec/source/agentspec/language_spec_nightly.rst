@@ -855,9 +855,10 @@ AI Studio uses API key-based authentication:
 
    class GeminiAiStudioAuthConfig(BaseModel):
      type: Literal["aistudio"] = "aistudio"
-     api_key: Optional[str] = None
+     api_key: SensitiveField[Optional[str]] = None
 
-When `api_key` not specified, it will try to load it from the `GEMINI_API_KEY` environment variable.
+When `api_key` is not specified, runtimes may try to load it from the `GEMINI_API_KEY`
+environment variable. In that case the `auth` object can remain inline when serialized.
 The `auth` field itself remains required and selects the Gemini service to use.
 
 Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
@@ -872,10 +873,14 @@ resolved from the local Google Cloud configuration:
      type: Literal["vertex_ai"] = "vertex_ai"
      project_id: Optional[str] = None
      location: str = "global"
-     credentials: Optional[Union[str, Dict[str, Any]]] = None
+     credentials: SensitiveField[Optional[Union[str, Dict[str, Any]]]] = None
 
 See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
 and `GeminiCLI <https://geminicli.com/docs/get-started/authentication/#b-vertex-ai---service-account-json-key>`_ docs for more details.
+When `credentials` is omitted and ADC is used instead, the `auth` object may remain
+inline when serialized, including `project_id` and `location`. When explicit secret
+material such as `api_key` or `credentials` is provided, the serializer externalizes
+the whole `auth` object as a reference.
 
 Tools
 ~~~~~
@@ -2931,6 +2936,10 @@ See all the fields below that are considered sensitive fields:
 +----------------------------------+--------------------+
 | StreamableHTTPmTLSTransport      | ca_file            |
 +----------------------------------+--------------------+
+
+For ``GeminiConfig``, the ``auth`` field is only externalized when explicit secret
+material such as ``api_key`` or ``credentials`` is provided. When this happens, the
+whole ``auth`` object is externalized, not just the nested secret member.
 
 
 For example, the following component produced using the `pyagentspec` SDK:

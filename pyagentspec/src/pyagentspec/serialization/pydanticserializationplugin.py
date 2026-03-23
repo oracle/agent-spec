@@ -6,6 +6,7 @@
 
 """This module defines the serialization plugin for Pydantic Components."""
 
+from enum import Enum
 from typing import Any, Dict, List, Mapping, Type
 
 from pydantic import BaseModel
@@ -17,13 +18,58 @@ from pyagentspec.serialization.serializationcontext import SerializationContext
 from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
 
 
+class _NestedSensitiveValueState(Enum):
+    """How a nested BaseModel inside a sensitive field should be serialized."""
+
+    HAS_VALUE = "has_value"
+    ALL_EMPTY = "all_empty"
+    NO_SENSITIVE_FIELDS = "no_sensitive_fields"
+
+
 class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
     """Serialization plugin for Pydantic Components."""
+
+    @staticmethod
+    def _get_nested_sensitive_value_state(
+        value: BaseModel,
+    ) -> _NestedSensitiveValueState:
+        """Classify how nested sensitive fields affect serialization.
+
+        Sensitive BaseModels fall into three cases:
+        - at least one nested sensitive field is populated
+        - nested sensitive fields exist but they are all empty
+        - no nested sensitive fields exist, so the caller should use the existing
+          whole-model fallback logic
+        """
+        has_nested_sensitive_field = False
+        for nested_field_name, nested_field_info in value.__class__.model_fields.items():
+            if not is_sensitive_field(nested_field_info):
+                continue
+            has_nested_sensitive_field = True
+            if PydanticComponentSerializationPlugin._sensitive_field_has_value(
+                getattr(value, nested_field_name), nested_field_info
+            ):
+                return _NestedSensitiveValueState.HAS_VALUE
+        if has_nested_sensitive_field:
+            return _NestedSensitiveValueState.ALL_EMPTY
+        return _NestedSensitiveValueState.NO_SENSITIVE_FIELDS
 
     @staticmethod
     def _sensitive_field_has_value(value: Any, field_info: FieldInfo) -> bool:
         """Return whether a sensitive field carries non-empty data."""
         if isinstance(value, BaseModel):
+            nested_sensitive_value_state = (
+                PydanticComponentSerializationPlugin._get_nested_sensitive_value_state(value)
+            )
+            match nested_sensitive_value_state:
+                case _NestedSensitiveValueState.HAS_VALUE:
+                    return True
+                case _NestedSensitiveValueState.ALL_EMPTY:
+                    return False
+                case _NestedSensitiveValueState.NO_SENSITIVE_FIELDS:
+                    pass
+            # BaseModels without nested sensitive fields keep the existing whole-model
+            # fallback logic below.
             if field_info.is_required():
                 return True
             default_value = field_info.get_default(call_default_factory=True)
