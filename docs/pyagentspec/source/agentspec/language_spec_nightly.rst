@@ -699,10 +699,14 @@ conversations when using the openai responses API.
      model_id: str
      compartment_id: str
      serving_mode: Literal["ON_DEMAND", "DEDICATED"] = "ON_DEMAND"
-     provider: Optional[Literal["META", "GROK", "COHERE", "OTHER"]] = None
+     provider: Optional[Literal["META", "XAI", "GROK", "COHERE", "OTHER"]] = None
      client_config: OciClientConfig
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      conversation_store_id: Optional[str] = None
+
+.. note::
+    While both ``GROK`` and ``XAI`` values for ``provider`` are supported and refer to xAI models, we recommend
+    to use the value ``XAI``.
 
 .. note::
     The authentication components must not contain any sensitive information about the authentication,

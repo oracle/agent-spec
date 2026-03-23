@@ -423,7 +423,8 @@
         "COHERE",
         "GROK",
         "META",
-        "OTHER"
+        "OTHER",
+        "XAI"
       ],
       "title": "ModelProvider",
       "type": "string"

@@ -7,6 +7,10 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **New xAI model provider for OciGenAiConfig**
+
+  Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
+
 * **Disaggregated configurations in LangGraph adapter**
 
   The LangGraph adapter now supports loading disaggregated components during deserialization.
