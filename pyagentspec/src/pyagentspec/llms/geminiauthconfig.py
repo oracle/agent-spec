@@ -46,7 +46,9 @@ class GeminiVertexAIAuthConfig(GeminiAuthConfig):
     location: str = "global"
     """Vertex AI location/region."""
     credentials: SensitiveField[Optional[str | Dict[str, Any]]] = None
-    """Optional service-account JSON file path or inline service-account JSON object.
+    """Optional local file path to a Google Cloud JSON credential file, such as a
+    service-account key file, or an inline dictionary containing the parsed JSON
+    contents of that file.
 
     When unset, runtimes may rely on Application Default Credentials (ADC), such as
     ``GOOGLE_APPLICATION_CREDENTIALS``, credentials made available through the local

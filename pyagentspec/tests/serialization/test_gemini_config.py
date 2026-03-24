@@ -230,22 +230,24 @@ def test_can_serialize_and_deserialize_gemini_config_with_sensitive_auth_fields(
 
 def test_geminiconfig_requires_auth() -> None:
     with pytest.raises(ValidationError, match="auth"):
-        GeminiConfig(name="gemini", model_id="gemini-2.5-flash")
+        GeminiConfig(name=GEMINI_CONFIG_NAME, model_id="gemini-2.5-flash")
 
 
 def test_can_deserialize_gemini_config_with_inline_vertex_auth_component() -> None:
-    serialized_llm = """{
-      "component_type": "GeminiConfig",
-      "id": "gemini-config-id",
-      "name": "gemini",
-      "model_id": "gemini-2.0-flash-lite",
-      "auth": {
-        "component_type": "GeminiVertexAIAuthConfig",
-        "id": "gemini-vertex-auth-id",
-        "name": "gemini-vertex-auth"
-      },
-      "agentspec_version": "26.2.0"
-    }"""
+    serialized_llm = json.dumps(
+        {
+            "component_type": "GeminiConfig",
+            "id": GEMINI_CONFIG_ID,
+            "name": GEMINI_CONFIG_NAME,
+            "model_id": "gemini-2.0-flash-lite",
+            "auth": {
+                "component_type": "GeminiVertexAIAuthConfig",
+                "id": GEMINI_VERTEX_AUTH_ID,
+                "name": GEMINI_VERTEX_AUTH_NAME,
+            },
+            "agentspec_version": AgentSpecVersionEnum.v26_2_0.value,
+        }
+    )
 
     deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
 
@@ -258,13 +260,15 @@ def test_can_deserialize_gemini_config_with_inline_vertex_auth_component() -> No
 
 
 def test_deserializing_gemini_config_without_auth_raises_error() -> None:
-    serialized_llm = """{
-      "component_type": "GeminiConfig",
-      "id": "gemini-config-id",
-      "name": "gemini",
-      "model_id": "gemini-2.0-flash-lite",
-      "agentspec_version": "26.2.0"
-    }"""
+    serialized_llm = json.dumps(
+        {
+            "component_type": "GeminiConfig",
+            "id": GEMINI_CONFIG_ID,
+            "name": GEMINI_CONFIG_NAME,
+            "model_id": "gemini-2.0-flash-lite",
+            "agentspec_version": AgentSpecVersionEnum.v26_2_0.value,
+        }
+    )
 
     with pytest.raises(ValidationError, match="auth"):
         AgentSpecDeserializer().from_json(serialized_llm)
@@ -277,7 +281,7 @@ def test_deserializing_gemini_config_without_auth_raises_error() -> None:
         "vertex_ai/gemini-2.0-flash-lite",
     ],
 )
-def test_geminiconfig_preserves_prefixed_model_id(model_id: str) -> None:
+def test_gemini_config_preserves_prefixed_model_id(model_id: str) -> None:
     llm_config = GeminiConfig(
         id=GEMINI_CONFIG_ID,
         name=GEMINI_CONFIG_NAME,
@@ -301,9 +305,9 @@ def test_geminiconfig_preserves_prefixed_model_id(model_id: str) -> None:
 
 def test_serializing_gemini_config_with_unsupported_version_raises_error() -> None:
     llm_config = GeminiConfig(
-        name="gemini",
+        name=GEMINI_CONFIG_NAME,
         model_id="gemini-2.5-flash",
-        auth=GeminiAIStudioAuthConfig(name="gemini-aistudio-auth"),
+        auth=GeminiAIStudioAuthConfig(name=GEMINI_AISTUDIO_AUTH_NAME),
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

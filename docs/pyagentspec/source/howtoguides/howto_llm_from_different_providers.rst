@@ -202,7 +202,7 @@ be supplied through ``components_registry`` when loading the configuration back.
   Name of the model to use, for example ``gemini-2.5-flash`` or
   ``gemini-2.0-flash-lite``.
 
-.. option:: auth: GeminiAIStudioAuthConfig | GeminiVertexAIAuthConfig
+.. option:: auth: GeminiAuthConfig
 
   Required authentication component for Gemini. As with other Agent Spec components,
   auth configs need a ``name``. Use ``GeminiAIStudioAuthConfig(name="gemini-aistudio-auth")``
@@ -215,8 +215,8 @@ be supplied through ``components_registry`` when loading the configuration back.
 
   Default parameters for text generation with this model.
 
-AI Studio authentication
-------------------------
+Google AI Studio authentication
+-------------------------------
 
 Use ``GeminiAIStudioAuthConfig`` when connecting through Google AI Studio.
 
@@ -254,7 +254,9 @@ Use ``GeminiVertexAIAuthConfig`` when connecting through Google Vertex AI.
 
 .. option:: credentials: str | dict, null
 
-  Optional path to a service-account JSON file or an inline service-account JSON object.
+  Optional local file path (``str``) to a Google Cloud JSON credential file, such as a
+  service-account key file, or an inline ``dict`` containing the parsed JSON contents of
+  that file.
   When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
   ``GOOGLE_APPLICATION_CREDENTIALS``, credentials made available through the local
   Google Cloud environment, or an attached service account.

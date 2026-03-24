@@ -862,9 +862,7 @@ AI Studio uses API key-based authentication:
      api_key: SensitiveField[Optional[str]] = None
 
 When ``api_key`` is not specified, runtimes may try to load it from the ``GEMINI_API_KEY``
-environment variable. In that case the auth component can remain inline when serialized.
-The ``auth`` field itself remains required, and the concrete auth component type selects
-the Gemini service to use.
+environment variable.
 
 Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
 either inline or through a local file path. When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
@@ -879,12 +877,17 @@ resolved from the local Google Cloud configuration:
      location: str = "global"
      credentials: SensitiveField[Optional[Union[str, Dict[str, Any]]]] = None
 
-See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
-and `GeminiCLI <https://geminicli.com/docs/get-started/authentication/#b-vertex-ai---service-account-json-key>`_ docs for more details.
-When ``credentials`` is omitted and ADC is used instead, the auth component may remain
-inline when serialized, including ``project_id`` and ``location``. When explicit secret
-material such as ``api_key`` or ``credentials`` is provided, the serializer externalizes
-only that sensitive field, while the rest of the auth component stays inline.
+Here, ``credentials`` accepts either a local file path (``str``) to a Google Cloud JSON
+credential file, such as a service-account key file, or an inline ``dict`` containing the
+parsed JSON contents of that file.
+
+See `Using Gemini API keys <https://ai.google.dev/gemini-api/docs/api-key>`_,
+`Application Default Credentials <https://cloud.google.com/docs/authentication/application-default-credentials>`_,
+and `Create and delete service account keys <https://cloud.google.com/iam/docs/keys-create-delete>`_
+for more details.
+``GeminiConfig.auth`` stays inline when serialized. If ``api_key`` or ``credentials`` of the auth object is
+specified, only that sensitive field is externalized. Otherwise, if ``api_key`` or ``credentials`` is
+unset, that field serializes as ``null``.
 
 Tools
 ~~~~~
@@ -2943,7 +2946,6 @@ See all the fields below that are considered sensitive fields:
 | StreamableHTTPmTLSTransport      | ca_file            |
 +----------------------------------+--------------------+
 
-For Gemini auth components, only the sensitive leaf field is externalized.
 For example, ``GeminiAIStudioAuthConfig.api_key`` or
 ``GeminiVertexAIAuthConfig.credentials`` may become references while the enclosing
 ``auth`` component remains inline.
