@@ -131,7 +131,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
-            "litellm>=1.80.15",
+            "litellm>=1.80.15,<1.82.7",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",
