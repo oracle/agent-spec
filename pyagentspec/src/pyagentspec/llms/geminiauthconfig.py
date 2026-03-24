@@ -49,8 +49,8 @@ class GeminiVertexAiAuthConfig(GeminiAuthConfig):
     """Optional service-account JSON file path or inline service-account JSON object.
 
     When unset, runtimes may rely on Application Default Credentials (ADC), such as
-    ``GOOGLE_APPLICATION_CREDENTIALS``, credentials configured via
-    ``gcloud auth application-default login``, or an attached service account.
+    ``GOOGLE_APPLICATION_CREDENTIALS``, credentials made available through the local
+    Google Cloud environment, or an attached service account.
     Even then, ``project_id`` may still need to be provided separately if it
     cannot be resolved from the environment.
     """

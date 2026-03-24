@@ -110,6 +110,8 @@ New features
   Added ``GeminiConfig`` together with ``GeminiAiStudioAuthConfig`` and
   ``GeminiVertexAiAuthConfig`` to represent Gemini models in Agent Spec.
 
+  For more information read the :doc:`API Reference <api/llmmodels>`.
+
 * **Added Microsoft Agent Framework adapter to pyagentspec:**
 
   The Microsoft Agent Framework adapter is now available as part of ``pyagentspec``.

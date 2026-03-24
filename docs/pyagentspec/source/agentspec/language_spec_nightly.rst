@@ -861,14 +861,14 @@ AI Studio uses API key-based authentication:
    class GeminiAiStudioAuthConfig(GeminiAuthConfig):
      api_key: SensitiveField[Optional[str]] = None
 
-When `api_key` is not specified, runtimes may try to load it from the `GEMINI_API_KEY`
+When ``api_key`` is not specified, runtimes may try to load it from the ``GEMINI_API_KEY``
 environment variable. In that case the auth component can remain inline when serialized.
-The `auth` field itself remains required, and the concrete auth component type selects
+The ``auth`` field itself remains required, and the concrete auth component type selects
 the Gemini service to use.
 
 Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
 either inline or through a local file path. When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
-the ``GOOGLE_APPLICATION_CREDENTIALS`` environment variable, credentials configured with ``gcloud auth application-default login``,
+the ``GOOGLE_APPLICATION_CREDENTIALS`` environment variable, credentials made available through the local Google Cloud environment,
 or an attached service account. Even with ADC, the ``project_id`` may still need to be provided explicitly when it cannot be
 resolved from the local Google Cloud configuration:
 
@@ -881,9 +881,9 @@ resolved from the local Google Cloud configuration:
 
 See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
 and `GeminiCLI <https://geminicli.com/docs/get-started/authentication/#b-vertex-ai---service-account-json-key>`_ docs for more details.
-When `credentials` is omitted and ADC is used instead, the auth component may remain
-inline when serialized, including `project_id` and `location`. When explicit secret
-material such as `api_key` or `credentials` is provided, the serializer externalizes
+When ``credentials`` is omitted and ADC is used instead, the auth component may remain
+inline when serialized, including ``project_id`` and ``location``. When explicit secret
+material such as ``api_key`` or ``credentials`` is provided, the serializer externalizes
 only that sensitive field, while the rest of the auth component stays inline.
 
 Tools

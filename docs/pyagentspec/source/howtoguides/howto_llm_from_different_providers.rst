@@ -256,8 +256,10 @@ Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
 
   Optional path to a service-account JSON file or an inline service-account JSON object.
   When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
-  ``GOOGLE_APPLICATION_CREDENTIALS``, the local ADC file created by
-  ``gcloud auth application-default login``, or an attached service account.
+  ``GOOGLE_APPLICATION_CREDENTIALS``, credentials made available through the local
+  Google Cloud environment, or an attached service account.
+  See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
+  for details.
   This does not guarantee that ``project_id`` can also be inferred automatically.
   If provided explicitly, only the ``credentials`` field is externalized during
   serialization. Non-secret auth settings such as ``project_id`` and ``location``
