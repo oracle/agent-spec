@@ -6,11 +6,7 @@
 
 """Define LLM configuration abstractions and provider-specific implementations."""
 
-from .geminiconfig import (
-    GeminiAiStudioAuthConfig,
-    GeminiConfig,
-    GeminiVertexAiAuthConfig,
-)
+from .geminiconfig import GeminiConfig
 from .llmconfig import LlmConfig
 from .llmgenerationconfig import LlmGenerationConfig
 from .ocigenaiconfig import OciGenAiConfig
@@ -22,8 +18,6 @@ from .vllmconfig import VllmConfig
 __all__ = [
     "LlmConfig",
     "LlmGenerationConfig",
-    "GeminiAiStudioAuthConfig",
-    "GeminiVertexAiAuthConfig",
     "GeminiConfig",
     "VllmConfig",
     "OciGenAiConfig",

@@ -190,11 +190,10 @@ GeminiConfig
 `Gemini <https://gemini.google.com/>`_ models can be configured through ``GeminiConfig``.
 Agent Spec supports both Google AI Studio and Google Vertex AI authentication modes.
 
-When explicit secret material is omitted, Gemini authentication settings can remain inline
-during serialization and the configuration can be deserialized without a
-``components_registry``. When ``api_key`` or ``credentials`` is provided explicitly,
-the serializer externalizes the entire ``auth`` object and expects it to be supplied
-separately when loading the configuration back.
+Gemini authentication is modeled as a nested auth component, similar to OCI ``client_config``.
+The auth component itself remains inline during serialization. When ``api_key`` or
+``credentials`` is provided explicitly, only that sensitive field is externalized and must
+be supplied through ``components_registry`` when loading the configuration back.
 
 **Parameters**
 
@@ -205,12 +204,12 @@ separately when loading the configuration back.
 
 .. option:: auth: GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig
 
-  Required authentication configuration for Gemini. Use
-  ``GeminiAiStudioAuthConfig()`` if you want runtimes to load ``GEMINI_API_KEY``
-  from the environment, or ``GeminiVertexAiAuthConfig(...)`` for Vertex AI.
-  When no explicit secret material is provided, the ``auth`` object remains inline
-  when serialized. If ``api_key`` or ``credentials`` is set explicitly, the entire
-  ``auth`` object is serialized as a reference instead.
+  Required authentication component for Gemini. As with other Agent Spec components,
+  auth configs need a ``name``. Use ``GeminiAiStudioAuthConfig(name="gemini-aistudio-auth")``
+  if you want runtimes to load ``GEMINI_API_KEY`` from the environment, or
+  ``GeminiVertexAiAuthConfig(name="gemini-vertex-auth", ...)`` for Vertex AI.
+  The auth component remains inline when serialized. If ``api_key`` or ``credentials``
+  is set explicitly, only that sensitive field is serialized as a reference.
 
 .. option:: default_generation_parameters: dict, null
 
@@ -223,14 +222,10 @@ Use ``GeminiAiStudioAuthConfig`` when connecting through Google AI Studio.
 
 **Parameters**
 
-.. option:: type: Literal["aistudio"]
-
-  Authentication mode discriminator. Defaults to ``"aistudio"``.
-
 .. option:: api_key: str, null
 
   Optional Gemini API key. If omitted, runtimes may load it from ``GEMINI_API_KEY``.
-  If provided explicitly, the entire ``auth`` object is externalized during
+  If provided explicitly, only the ``api_key`` field is externalized during
   serialization and must be supplied separately when deserializing.
 
 **Example**
@@ -246,10 +241,6 @@ Vertex AI authentication
 Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
 
 **Parameters**
-
-.. option:: type: Literal["vertex_ai"]
-
-  Authentication mode discriminator. Defaults to ``"vertex_ai"``.
 
 .. option:: project_id: str, null
 
@@ -268,9 +259,9 @@ Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
   ``GOOGLE_APPLICATION_CREDENTIALS``, the local ADC file created by
   ``gcloud auth application-default login``, or an attached service account.
   This does not guarantee that ``project_id`` can also be inferred automatically.
-  If provided explicitly, the entire ``auth`` object is externalized during serialization.
-  The deserialization registry entry must therefore also include any non-secret auth
-  settings that should be preserved, such as ``project_id`` and ``location``.
+  If provided explicitly, only the ``credentials`` field is externalized during
+  serialization. Non-secret auth settings such as ``project_id`` and ``location``
+  remain inline in the main config.
 
 **Example**
 

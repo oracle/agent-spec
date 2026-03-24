@@ -86,7 +86,8 @@ llm = OpenAiConfig(
 # .. openai-end
 
 # .. gemini-aistudio-start
-from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig
+from pyagentspec.llms import GeminiConfig
+from pyagentspec.llms.geminiauthconfig import GeminiAiStudioAuthConfig
 
 generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.9)
 
@@ -94,13 +95,13 @@ llm = GeminiConfig(
     name="gemini-aistudio-flash",
     model_id="gemini-2.5-flash",
     # Optional: if omitted, runtimes may load GEMINI_API_KEY from the environment.
-    auth=GeminiAiStudioAuthConfig(),
+    auth=GeminiAiStudioAuthConfig(name="gemini-aistudio-auth"),
     default_generation_parameters=generation_config,
 )
 # .. gemini-aistudio-end
 
 # .. gemini-vertex-start
-from pyagentspec.llms import GeminiVertexAiAuthConfig
+from pyagentspec.llms.geminiauthconfig import GeminiVertexAiAuthConfig
 
 generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.4, top_p=0.95)
 
@@ -108,6 +109,7 @@ llm = GeminiConfig(
     name="gemini-vertex-flash",
     model_id="gemini-2.0-flash-lite",
     auth=GeminiVertexAiAuthConfig(
+        name="gemini-vertex-auth",
         # Often still required even when ADC supplies the credentials.
         project_id="my-gcp-project",
         location="global",
@@ -200,7 +202,8 @@ llm = OpenAiConfig(
     default_generation_parameters=generation_config,
 )
 
-from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig, GeminiVertexAiAuthConfig
+from pyagentspec.llms import GeminiConfig
+from pyagentspec.llms.geminiauthconfig import GeminiAiStudioAuthConfig, GeminiVertexAiAuthConfig
 
 generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7, top_p=0.9)
 
@@ -208,7 +211,7 @@ llm = GeminiConfig(
     name="gemini-aistudio-flash",
     model_id="gemini-2.5-flash",
     # Optional: if omitted, runtimes may load GEMINI_API_KEY from the environment.
-    auth=GeminiAiStudioAuthConfig(),
+    auth=GeminiAiStudioAuthConfig(name="gemini-aistudio-auth"),
     default_generation_parameters=generation_config,
 )
 
@@ -216,6 +219,7 @@ llm = GeminiConfig(
     name="gemini-vertex-flash",
     model_id="gemini-2.0-flash-lite",
     auth=GeminiVertexAiAuthConfig(
+        name="gemini-vertex-auth",
         # Often still required even when ADC supplies the credentials.
         project_id="my-gcp-project",
         location="global",

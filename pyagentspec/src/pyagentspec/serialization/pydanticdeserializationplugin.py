@@ -12,10 +12,7 @@ from pydantic import BaseModel, ValidationError
 from pydantic_core import InitErrorDetails
 
 from pyagentspec.component import Component
-from pyagentspec.serialization.deserializationcontext import (
-    DeserializationContext,
-    _get_annotation_for_partial_field_loading,
-)
+from pyagentspec.serialization.deserializationcontext import DeserializationContext
 from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
 from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
 
@@ -91,7 +88,7 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
         model_class = self.component_types_and_models[component_type]
         resolved_content: Dict[str, Any] = {}
         for field_name, field_info in model_class.model_fields.items():
-            annotation = _get_annotation_for_partial_field_loading(field_info)
+            annotation = field_info.annotation
             if field_name in serialized_component:
                 # We always do partial build, and we raise in the caller function
                 # if we are not allowed to have validation issues

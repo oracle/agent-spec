@@ -51,6 +51,11 @@ from pyagentspec.llms import (
     OpenAiConfig,
     VllmConfig,
 )
+from pyagentspec.llms.geminiauthconfig import (
+    GeminiAiStudioAuthConfig,
+    GeminiAuthConfig,
+    GeminiVertexAiAuthConfig,
+)
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfig,
@@ -118,6 +123,9 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "OciClientConfigWithInstancePrincipal": OciClientConfigWithInstancePrincipal,
     "OciClientConfigWithResourcePrincipal": OciClientConfigWithResourcePrincipal,
     "OciClientConfigWithSecurityToken": OciClientConfigWithSecurityToken,
+    "GeminiAuthConfig": GeminiAuthConfig,
+    "GeminiAiStudioAuthConfig": GeminiAiStudioAuthConfig,
+    "GeminiVertexAiAuthConfig": GeminiVertexAiAuthConfig,
     "GeminiConfig": GeminiConfig,
     "OciGenAiConfig": OciGenAiConfig,
     "OllamaConfig": OllamaConfig,

@@ -5,56 +5,227 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import json
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
-from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig, GeminiVertexAiAuthConfig
+from pyagentspec.llms import GeminiConfig
+from pyagentspec.llms.geminiauthconfig import GeminiAiStudioAuthConfig, GeminiVertexAiAuthConfig
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
 
+GEMINI_CONFIG_ID = "gemini-config-id"
+GEMINI_CONFIG_NAME = "gemini"
+GEMINI_AISTUDIO_AUTH_ID = "gemini-aistudio-auth-id"
+GEMINI_AISTUDIO_AUTH_NAME = "gemini-aistudio-auth"
+GEMINI_VERTEX_AUTH_ID = "gemini-vertex-auth-id"
+GEMINI_VERTEX_AUTH_NAME = "gemini-vertex-auth"
 
-def _assert_serialized_geminiconfig_json(
-    serialized_llm: str,
-    *,
-    model_id: str,
-    auth: dict[str, object],
+
+def _assert_serialized_geminiconfig_fields(
+    serialized_llm_as_dict: dict[str, Any], *, model_id: str
 ) -> None:
-    assert json.loads(serialized_llm) == {
-        "component_type": "GeminiConfig",
-        "id": "gemini-config-id",
-        "name": "gemini",
-        "description": None,
-        "metadata": {},
-        "default_generation_parameters": None,
-        "model_id": model_id,
-        "auth": auth,
-        "agentspec_version": AgentSpecVersionEnum.v26_2_0.value,
-    }
+    assert serialized_llm_as_dict["component_type"] == "GeminiConfig"
+    assert serialized_llm_as_dict["id"] == GEMINI_CONFIG_ID
+    assert serialized_llm_as_dict["name"] == GEMINI_CONFIG_NAME
+    assert serialized_llm_as_dict["description"] is None
+    assert serialized_llm_as_dict["metadata"] == {}
+    assert serialized_llm_as_dict["default_generation_parameters"] is None
+    assert serialized_llm_as_dict["model_id"] == model_id
+    assert serialized_llm_as_dict["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
 
 
-def test_geminiconfig_empty_aistudio_auth_round_trips_inline_without_registry() -> None:
+@pytest.mark.parametrize(
+    ("auth", "model_id", "expected_auth", "expected_auth_type"),
+    [
+        (
+            GeminiAiStudioAuthConfig(
+                id=GEMINI_AISTUDIO_AUTH_ID,
+                name=GEMINI_AISTUDIO_AUTH_NAME,
+            ),
+            "gemini-2.5-flash",
+            {
+                "component_type": "GeminiAiStudioAuthConfig",
+                "id": GEMINI_AISTUDIO_AUTH_ID,
+                "name": GEMINI_AISTUDIO_AUTH_NAME,
+                "description": None,
+                "metadata": {},
+                "api_key": None,
+            },
+            GeminiAiStudioAuthConfig,
+        ),
+        (
+            GeminiVertexAiAuthConfig(
+                id=GEMINI_VERTEX_AUTH_ID,
+                name=GEMINI_VERTEX_AUTH_NAME,
+            ),
+            "gemini-2.0-flash-lite",
+            {
+                "component_type": "GeminiVertexAiAuthConfig",
+                "id": GEMINI_VERTEX_AUTH_ID,
+                "name": GEMINI_VERTEX_AUTH_NAME,
+                "description": None,
+                "metadata": {},
+                "project_id": None,
+                "location": "global",
+                "credentials": None,
+            },
+            GeminiVertexAiAuthConfig,
+        ),
+        (
+            GeminiVertexAiAuthConfig(
+                id=GEMINI_VERTEX_AUTH_ID,
+                name=GEMINI_VERTEX_AUTH_NAME,
+                project_id="project-id",
+                location="us-central1",
+            ),
+            "gemini-2.0-flash-lite",
+            {
+                "component_type": "GeminiVertexAiAuthConfig",
+                "id": GEMINI_VERTEX_AUTH_ID,
+                "name": GEMINI_VERTEX_AUTH_NAME,
+                "description": None,
+                "metadata": {},
+                "project_id": "project-id",
+                "location": "us-central1",
+                "credentials": None,
+            },
+            GeminiVertexAiAuthConfig,
+        ),
+    ],
+    ids=["aistudio-empty", "vertex-empty", "vertex-without-credentials"],
+)
+def test_can_serialize_and_deserialize_gemini_config_with_inline_auth(
+    auth: GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig,
+    model_id: str,
+    expected_auth: dict[str, Any],
+    expected_auth_type: type[object],
+) -> None:
     llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
-        model_id="gemini-2.5-flash",
-        auth=GeminiAiStudioAuthConfig(),
+        id=GEMINI_CONFIG_ID,
+        name=GEMINI_CONFIG_NAME,
+        model_id=model_id,
+        auth=auth,
     )
 
     serialized_llm = AgentSpecSerializer().to_json(llm_config)
+    serialized_llm_as_dict = json.loads(serialized_llm)
 
     assert '"$component_ref"' not in serialized_llm
-    _assert_serialized_geminiconfig_json(
-        serialized_llm,
-        model_id="gemini-2.5-flash",
-        auth={"type": "aistudio", "api_key": None},
-    )
+    _assert_serialized_geminiconfig_fields(serialized_llm_as_dict, model_id=model_id)
+    assert serialized_llm_as_dict["auth"] == expected_auth
 
     deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
 
     assert deserialized_llm == llm_config
-    assert isinstance(deserialized_llm.auth, GeminiAiStudioAuthConfig)
     assert deserialized_llm.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert isinstance(deserialized_llm.auth, expected_auth_type)
+
+
+@pytest.mark.parametrize(
+    (
+        "auth",
+        "model_id",
+        "expected_auth",
+        "components_registry",
+        "missing_component_ref",
+        "hidden_values",
+        "expected_auth_type",
+    ),
+    [
+        (
+            GeminiAiStudioAuthConfig(
+                id=GEMINI_AISTUDIO_AUTH_ID,
+                name=GEMINI_AISTUDIO_AUTH_NAME,
+                api_key="THIS_IS_SECRET",
+            ),
+            "gemini-2.5-flash",
+            {
+                "component_type": "GeminiAiStudioAuthConfig",
+                "id": GEMINI_AISTUDIO_AUTH_ID,
+                "name": GEMINI_AISTUDIO_AUTH_NAME,
+                "description": None,
+                "metadata": {},
+                "api_key": {"$component_ref": f"{GEMINI_AISTUDIO_AUTH_ID}.api_key"},
+            },
+            {f"{GEMINI_AISTUDIO_AUTH_ID}.api_key": "THIS_IS_SECRET"},
+            rf"{GEMINI_AISTUDIO_AUTH_ID}\.api_key",
+            ("THIS_IS_SECRET",),
+            GeminiAiStudioAuthConfig,
+        ),
+        (
+            GeminiVertexAiAuthConfig(
+                id=GEMINI_VERTEX_AUTH_ID,
+                name=GEMINI_VERTEX_AUTH_NAME,
+                project_id="project-id",
+                location="global",
+                credentials={
+                    "type": "service_account",
+                    "client_email": "agent@example.com",
+                    "private_key": "line1\\nline2",
+                },
+            ),
+            "gemini-2.0-flash-lite",
+            {
+                "component_type": "GeminiVertexAiAuthConfig",
+                "id": GEMINI_VERTEX_AUTH_ID,
+                "name": GEMINI_VERTEX_AUTH_NAME,
+                "description": None,
+                "metadata": {},
+                "project_id": "project-id",
+                "location": "global",
+                "credentials": {"$component_ref": f"{GEMINI_VERTEX_AUTH_ID}.credentials"},
+            },
+            {
+                f"{GEMINI_VERTEX_AUTH_ID}.credentials": {
+                    "type": "service_account",
+                    "client_email": "agent@example.com",
+                    "private_key": "line1\\nline2",
+                },
+            },
+            rf"{GEMINI_VERTEX_AUTH_ID}\.credentials",
+            ("service_account", "agent@example.com"),
+            GeminiVertexAiAuthConfig,
+        ),
+    ],
+    ids=["aistudio-api-key", "vertex-credentials"],
+)
+def test_can_serialize_and_deserialize_gemini_config_with_sensitive_auth_fields(
+    auth: GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig,
+    model_id: str,
+    expected_auth: dict[str, Any],
+    components_registry: dict[str, Any],
+    missing_component_ref: str,
+    hidden_values: tuple[str, ...],
+    expected_auth_type: type[object],
+) -> None:
+    llm_config = GeminiConfig(
+        id=GEMINI_CONFIG_ID,
+        name=GEMINI_CONFIG_NAME,
+        model_id=model_id,
+        auth=auth,
+    )
+
+    serialized_llm = AgentSpecSerializer().to_json(llm_config)
+    serialized_llm_as_dict = json.loads(serialized_llm)
+
+    for hidden_value in hidden_values:
+        assert hidden_value not in serialized_llm
+
+    _assert_serialized_geminiconfig_fields(serialized_llm_as_dict, model_id=model_id)
+    assert serialized_llm_as_dict["auth"] == expected_auth
+
+    with pytest.raises(ValueError, match=missing_component_ref):
+        AgentSpecDeserializer().from_json(serialized_llm)
+
+    deserialized_llm = AgentSpecDeserializer().from_json(
+        serialized_llm,
+        components_registry=components_registry,
+    )
+
+    assert deserialized_llm == llm_config
+    assert isinstance(deserialized_llm.auth, expected_auth_type)
 
 
 def test_geminiconfig_requires_auth() -> None:
@@ -62,146 +233,17 @@ def test_geminiconfig_requires_auth() -> None:
         GeminiConfig(name="gemini", model_id="gemini-2.5-flash")
 
 
-def test_geminiconfig_aistudio_auth_is_exported_as_sensitive_reference() -> None:
-    llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
-        model_id="gemini-2.5-flash",
-        auth=GeminiAiStudioAuthConfig(api_key="THIS_IS_SECRET"),
-    )
-
-    serialized_llm = AgentSpecSerializer().to_json(llm_config)
-
-    assert "THIS_IS_SECRET" not in serialized_llm
-    assert '"$component_ref":"gemini-config-id.auth"' in serialized_llm.replace(" ", "")
-
-    with pytest.raises(
-        ValueError,
-        match=r"gemini-config-id\.auth",
-    ):
-        AgentSpecDeserializer().from_json(serialized_llm)
-
-    deserialized_llm = AgentSpecDeserializer().from_json(
-        serialized_llm,
-        components_registry={
-            "gemini-config-id.auth": {
-                "type": "aistudio",
-                "api_key": "THIS_IS_SECRET",
-            }
-        },
-    )
-    assert deserialized_llm == llm_config
-    assert isinstance(deserialized_llm.auth, GeminiAiStudioAuthConfig)
-
-
-def test_geminiconfig_vertex_auth_is_exported_as_sensitive_reference() -> None:
-    llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
-        model_id="gemini-2.0-flash-lite",
-        auth=GeminiVertexAiAuthConfig(
-            project_id="project-id",
-            location="global",
-            credentials={
-                "type": "service_account",
-                "client_email": "agent@example.com",
-                "private_key": "line1\\nline2",
-            },
-        ),
-    )
-
-    serialized_llm = AgentSpecSerializer().to_json(llm_config)
-
-    assert "service_account" not in serialized_llm
-    assert '"$component_ref":"gemini-config-id.auth"' in serialized_llm.replace(" ", "")
-
-    deserialized_llm = AgentSpecDeserializer().from_json(
-        serialized_llm,
-        components_registry={
-            "gemini-config-id.auth": {
-                "type": "vertex_ai",
-                "project_id": "project-id",
-                "location": "global",
-                "credentials": {
-                    "type": "service_account",
-                    "client_email": "agent@example.com",
-                    "private_key": "line1\\nline2",
-                },
-            }
-        },
-    )
-    assert deserialized_llm == llm_config
-    assert isinstance(deserialized_llm.auth, GeminiVertexAiAuthConfig)
-
-
-def test_geminiconfig_empty_vertex_auth_round_trips_inline_without_registry() -> None:
-    llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
-        model_id="gemini-2.0-flash-lite",
-        auth=GeminiVertexAiAuthConfig(),
-    )
-
-    serialized_llm = AgentSpecSerializer().to_json(llm_config)
-
-    assert '"$component_ref"' not in serialized_llm
-    _assert_serialized_geminiconfig_json(
-        serialized_llm,
-        model_id="gemini-2.0-flash-lite",
-        auth={
-            "type": "vertex_ai",
-            "project_id": None,
-            "location": "global",
-            "credentials": None,
-        },
-    )
-
-    deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
-
-    assert deserialized_llm == llm_config
-    assert isinstance(deserialized_llm.auth, GeminiVertexAiAuthConfig)
-
-
-def test_geminiconfig_vertex_auth_without_credentials_round_trips_inline() -> None:
-    llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
-        model_id="gemini-2.0-flash-lite",
-        auth=GeminiVertexAiAuthConfig(
-            project_id="project-id",
-            location="us-central1",
-        ),
-    )
-
-    serialized_llm = AgentSpecSerializer().to_json(llm_config)
-
-    assert '"$component_ref"' not in serialized_llm
-    _assert_serialized_geminiconfig_json(
-        serialized_llm,
-        model_id="gemini-2.0-flash-lite",
-        auth={
-            "type": "vertex_ai",
-            "project_id": "project-id",
-            "location": "us-central1",
-            "credentials": None,
-        },
-    )
-
-    deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
-
-    assert deserialized_llm == llm_config
-    assert isinstance(deserialized_llm.auth, GeminiVertexAiAuthConfig)
-    assert deserialized_llm.auth.project_id == "project-id"
-    assert deserialized_llm.auth.location == "us-central1"
-
-
-def test_geminiconfig_inline_vertex_auth_can_be_deserialized() -> None:
+def test_can_deserialize_gemini_config_with_inline_vertex_auth_component() -> None:
     serialized_llm = """{
       "component_type": "GeminiConfig",
       "id": "gemini-config-id",
       "name": "gemini",
       "model_id": "gemini-2.0-flash-lite",
-      "auth": {"type": "vertex_ai"},
+      "auth": {
+        "component_type": "GeminiVertexAiAuthConfig",
+        "id": "gemini-vertex-auth-id",
+        "name": "gemini-vertex-auth"
+      },
       "agentspec_version": "26.2.0"
     }"""
 
@@ -209,10 +251,13 @@ def test_geminiconfig_inline_vertex_auth_can_be_deserialized() -> None:
 
     assert isinstance(deserialized_llm, GeminiConfig)
     assert isinstance(deserialized_llm.auth, GeminiVertexAiAuthConfig)
-    assert deserialized_llm.auth == GeminiVertexAiAuthConfig()
+    assert deserialized_llm.auth == GeminiVertexAiAuthConfig(
+        id=GEMINI_VERTEX_AUTH_ID,
+        name=GEMINI_VERTEX_AUTH_NAME,
+    )
 
 
-def test_geminiconfig_missing_auth_cannot_be_deserialized() -> None:
+def test_deserializing_gemini_config_without_auth_raises_error() -> None:
     serialized_llm = """{
       "component_type": "GeminiConfig",
       "id": "gemini-config-id",
@@ -234,29 +279,31 @@ def test_geminiconfig_missing_auth_cannot_be_deserialized() -> None:
 )
 def test_geminiconfig_preserves_prefixed_model_id(model_id: str) -> None:
     llm_config = GeminiConfig(
-        id="gemini-config-id",
-        name="gemini",
+        id=GEMINI_CONFIG_ID,
+        name=GEMINI_CONFIG_NAME,
         model_id=model_id,
-        auth=GeminiAiStudioAuthConfig(),
+        auth=GeminiAiStudioAuthConfig(
+            id=GEMINI_AISTUDIO_AUTH_ID,
+            name=GEMINI_AISTUDIO_AUTH_NAME,
+        ),
     )
 
     serialized_llm = AgentSpecSerializer().to_json(llm_config)
-    _assert_serialized_geminiconfig_json(
-        serialized_llm,
-        model_id=model_id,
-        auth={"type": "aistudio", "api_key": None},
-    )
+    serialized_llm_as_dict = json.loads(serialized_llm)
+    _assert_serialized_geminiconfig_fields(serialized_llm_as_dict, model_id=model_id)
+    assert serialized_llm_as_dict["auth"]["component_type"] == "GeminiAiStudioAuthConfig"
+
     deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
 
     assert llm_config.model_id == model_id
     assert deserialized_llm.model_id == model_id
 
 
-def test_geminiconfig_cannot_be_exported_to_pre_26_2_version() -> None:
+def test_serializing_gemini_config_with_unsupported_version_raises_error() -> None:
     llm_config = GeminiConfig(
         name="gemini",
         model_id="gemini-2.5-flash",
-        auth=GeminiAiStudioAuthConfig(),
+        auth=GeminiAiStudioAuthConfig(name="gemini-aistudio-auth"),
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

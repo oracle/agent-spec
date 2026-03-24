@@ -41,13 +41,14 @@
 
         .. code-block:: python
 
-            from pyagentspec.llms import GeminiAiStudioAuthConfig, GeminiConfig
+            from pyagentspec.llms import GeminiConfig
+            from pyagentspec.llms.geminiauthconfig import GeminiAiStudioAuthConfig
 
             llm_config = GeminiConfig(
                 name="Gemini Flash",
                 model_id="gemini-2.5-flash",
                 # The runtime can read GEMINI_API_KEY from the environment.
-                auth=GeminiAiStudioAuthConfig(),
+                auth=GeminiAiStudioAuthConfig(name="gemini-aistudio-auth"),
             )
 
     .. tab:: vLLM

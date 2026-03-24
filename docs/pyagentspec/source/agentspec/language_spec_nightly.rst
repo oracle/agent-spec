@@ -847,19 +847,24 @@ Google offers Gemini through two services: `AI Studio <https://aistudio.google.c
 
    class GeminiConfig(LlmConfig):
      model_id: str
-     auth: SensitiveField[GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig]
+     auth: SerializeAsAny[GeminiAuthConfig]
+
+.. code-block:: python
+
+   class GeminiAuthConfig(Component, abstract=True):
+     pass
 
 AI Studio uses API key-based authentication:
 
 .. code-block:: python
 
-   class GeminiAiStudioAuthConfig(BaseModel):
-     type: Literal["aistudio"] = "aistudio"
+   class GeminiAiStudioAuthConfig(GeminiAuthConfig):
      api_key: SensitiveField[Optional[str]] = None
 
 When `api_key` is not specified, runtimes may try to load it from the `GEMINI_API_KEY`
-environment variable. In that case the `auth` object can remain inline when serialized.
-The `auth` field itself remains required and selects the Gemini service to use.
+environment variable. In that case the auth component can remain inline when serialized.
+The `auth` field itself remains required, and the concrete auth component type selects
+the Gemini service to use.
 
 Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
 either inline or through a local file path. When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
@@ -869,18 +874,17 @@ resolved from the local Google Cloud configuration:
 
 .. code-block:: python
 
-   class GeminiVertexAiAuthConfig(BaseModel):
-     type: Literal["vertex_ai"] = "vertex_ai"
+   class GeminiVertexAiAuthConfig(GeminiAuthConfig):
      project_id: Optional[str] = None
      location: str = "global"
      credentials: SensitiveField[Optional[Union[str, Dict[str, Any]]]] = None
 
 See `Google Cloud authentication docs <https://cloud.google.com/docs/authentication/application-default-credentials>`_
 and `GeminiCLI <https://geminicli.com/docs/get-started/authentication/#b-vertex-ai---service-account-json-key>`_ docs for more details.
-When `credentials` is omitted and ADC is used instead, the `auth` object may remain
+When `credentials` is omitted and ADC is used instead, the auth component may remain
 inline when serialized, including `project_id` and `location`. When explicit secret
 material such as `api_key` or `credentials` is provided, the serializer externalizes
-the whole `auth` object as a reference.
+only that sensitive field, while the rest of the auth component stays inline.
 
 Tools
 ~~~~~
@@ -2912,7 +2916,9 @@ See all the fields below that are considered sensitive fields:
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
 +----------------------------------+--------------------+
-| GeminiConfig                     | auth               |
+| GeminiAiStudioAuthConfig         | api_key            |
++----------------------------------+--------------------+
+| GeminiVertexAiAuthConfig         | credentials        |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+
@@ -2937,9 +2943,10 @@ See all the fields below that are considered sensitive fields:
 | StreamableHTTPmTLSTransport      | ca_file            |
 +----------------------------------+--------------------+
 
-For ``GeminiConfig``, the ``auth`` field is only externalized when explicit secret
-material such as ``api_key`` or ``credentials`` is provided. When this happens, the
-whole ``auth`` object is externalized, not just the nested secret member.
+For Gemini auth components, only the sensitive leaf field is externalized.
+For example, ``GeminiAiStudioAuthConfig.api_key`` or
+``GeminiVertexAiAuthConfig.credentials`` may become references while the enclosing
+``auth`` component remains inline.
 
 
 For example, the following component produced using the `pyagentspec` SDK:
