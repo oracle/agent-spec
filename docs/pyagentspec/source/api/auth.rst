@@ -25,3 +25,9 @@ Auth
 .. _pkcepolicy:
 .. autoclass:: pyagentspec.auth.PKCEPolicy
     :exclude-members: model_post_init, model_config
+
+.. _pkcemethod:
+.. autoclass:: pyagentspec.auth.PKCEMethod
+
+.. _scopepolicy:
+.. autoclass:: pyagentspec.auth.ScopePolicy

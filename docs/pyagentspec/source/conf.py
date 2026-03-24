@@ -66,8 +66,10 @@ else:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.mathjax",
+    "sphinx-prompt",
     "sphinx_substitution_extensions",
     "sphinx.ext.extlinks",
     "sphinx_toolbox.collapse",
@@ -134,6 +136,7 @@ autodoc_default_options = {
 
 # Add type hints to parameter description, not to signature.
 autodoc_typehints = "description"
+autodoc_mock_imports = ["crewai"]
 
 # Redirects
 rediraffe_redirects = {"agentspec/language_spec.rst": f"agentspec/{language_spec_file}.rst"}
@@ -218,6 +221,32 @@ nitpick_ignore_regex = [
     ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
     ("py:class", r"pyagentspec.serialization.serializationcontext.T"),
     ("py:class", r"pyagentspec.property._empty_default"),
+    # Private adapter internals used in type annotations and inheritance docs
+    ("py:.*", r"pyagentspec\.adapters\._agentspecexporter\..*"),
+    ("py:.*", r"pyagentspec\.adapters\._agentspecloader\..*"),
+    ("py:.*", r"pyagentspec\.adapters\.(langgraph|agent_framework)\._.*"),
+    # Private/internal evaluation types that are not part of the public API inventory
+    ("py:.*", r"pyagentspec\.evaluation\.datasets\._data_source\._DataSource"),
+    (
+        "py:.*",
+        r"pyagentspec\.evaluation\.(aggregators\.aggregator|intermediates\.intermediate|metrics\.metrics)\.(MetricToAggregateValueType|AggregatedValueType|IntermediateValueType|MetricValueType)",
+    ),
+    (
+        "py:.*",
+        r"MetricToAggregateValueType|AggregatedValueType|IntermediateValueType|MetricValueType",
+    ),
+    ("py:.*", r"pyagentspec\.evaluation\.exceptions\.EvaluationException|EvaluationException"),
+    ("py:.*", r"pyagentspec\.tracing\._basemodel\.BaseModelWithSensitiveInfo"),
+    # Optional third-party types
+    ("py:.*", r"pandas(\.core\.frame)?\.DataFrame"),
+    # Napoleon occasionally interprets prose/literals as xrefs in these docstrings
+    ("py:.*", r"A dataset that wraps that dataframe\."),
+    ("py:.*", r'\{"strict"'),
+    ("py:.*", r'"relaxed"'),
+    ("py:.*", r'"bypass"\}'),
+    ("py:.*", r'default "strict"'),
+    ("py:.*", r"The method signature can take one"),
+    ("py:.*", r"the following"),
 ]
 
 # to remove the `View page source` link

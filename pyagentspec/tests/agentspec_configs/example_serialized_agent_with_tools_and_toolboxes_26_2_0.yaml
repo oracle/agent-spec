@@ -15,6 +15,9 @@ transforms: []
 llm_config:
   component_type: VllmConfig
   api_key: null
+  ca_file: null
+  cert_file: null
+  key_file: null
   id: agi1
   name: agi1
   description: null

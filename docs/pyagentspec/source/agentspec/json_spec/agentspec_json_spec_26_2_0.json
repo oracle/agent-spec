@@ -4561,6 +4561,42 @@
           "default": null,
           "title": "Api Key"
         },
+        "key_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Key File"
+        },
+        "cert_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cert File"
+        },
+        "ca_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ca File"
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -4655,6 +4691,42 @@
               ],
               "default": null,
               "title": "Api Key"
+            },
+            "key_file": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Key File"
+            },
+            "cert_file": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Cert File"
+            },
+            "ca_file": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ca File"
             },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
@@ -6668,6 +6740,42 @@
           ],
           "default": null,
           "title": "Api Key"
+        },
+        "key_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Key File"
+        },
+        "cert_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cert File"
+        },
+        "ca_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ca File"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"

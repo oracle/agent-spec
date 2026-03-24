@@ -618,7 +618,8 @@ This class of LLMs groups all the LLMs that are compatible with either the
 `OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
 The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely
 ``chat_completions`` or ``responses``. By default, the API type is set to chat completions. Additionally, an optional
-``api_key`` can be set for the remote LLM model.
+``api_key`` can be set for the remote LLM model. OpenAI-compatible LLMs also support optional certificate
+configuration for HTTPS and mTLS connections to private endpoints.
 
 .. code-block:: python
 
@@ -627,6 +628,13 @@ The API type can be configured by using the ``api_type`` parameter, which takes 
      url: str
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      api_key: SensitiveField[Optional[str]] = None
+     key_file: SensitiveField[Optional[str]] = None
+     cert_file: SensitiveField[Optional[str]] = None
+     ca_file: SensitiveField[Optional[str]] = None
+
+* ``key_file`` is the path to an optional client private key file (PEM format).
+* ``cert_file`` is the path to an optional client certificate chain file (PEM format).
+* ``ca_file`` is the path to an optional trusted CA certificate file (PEM format) used to verify the server.
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -2778,6 +2786,12 @@ See all the fields below that are considered sensitive fields:
 +==================================+====================+
 | OpenAiCompatibleConfig           | api_key            |
 +----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | key_file           |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | cert_file          |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | ca_file            |
++----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
@@ -2814,9 +2828,12 @@ For example, the following component produced using the `pyagentspec` SDK:
         url="https://some.api.com/v2",
         model_id="some_model_id",
         api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+        cert_file="/etc/certs/client.pem",
+        ca_file="/etc/certs/ca.pem",
     )
 
-should produce the following configuration, in which the sensitive ``api_key`` is replaced by a reference
+should produce the following configuration, in which sensitive fields are replaced by references
 
 .. code-block:: JSON5
 
@@ -2829,6 +2846,15 @@ should produce the following configuration, in which the sensitive ``api_key`` i
       "api_key" : {
         "$component_ref" : "llm-config-id.api_key"
       },
+      "key_file" : {
+        "$component_ref" : "llm-config-id.key_file"
+      },
+      "cert_file" : {
+        "$component_ref" : "llm-config-id.cert_file"
+      },
+      "ca_file" : {
+        "$component_ref" : "llm-config-id.ca_file"
+      },
     }
 
 Such a configuration would then require to pass the referenced sensitive information when loading, as
@@ -2838,7 +2864,12 @@ in the example code below:
 
     llm_config = AgentSpecDeserializer().from_json(
         serialized_llm,
-        components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
+        components_registry={
+            "llm-config-id.api_key": "THIS_IS_SECRET",
+            "llm-config-id.key_file": "/etc/certs/client.key",
+            "llm-config-id.cert_file": "/etc/certs/client.pem",
+            "llm-config-id.ca_file": "/etc/certs/ca.pem",
+        },
     )
 
 
@@ -2952,7 +2983,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_25_4_2.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_2_0.json
         :language: json
 
 Note about serialization of components

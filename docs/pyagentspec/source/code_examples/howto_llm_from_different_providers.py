@@ -46,11 +46,14 @@ from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
 generation_config = LlmGenerationConfig(max_tokens=512, temperature=1.0, top_p=1.0)
 
 llm = OpenAiCompatibleConfig(
-    name="vllm-llama-4-maverick",
+    name="openai-compatible-llama-4-maverick",
     model_id="llama-4-maverick",
-    url="http://url.to.my.vllm.server/llama4mav",
+    url="https://url.to.my.openai.compatible.server/llama4mav",
     api_type=OpenAIAPIType.RESPONSES,
     api_key="optional_api_key",
+    key_file="/path/to/client.key",
+    cert_file="/path/to/client.pem",
+    ca_file="/path/to/ca.pem",
     default_generation_parameters=generation_config,
 )
 # .. openaicompatible-end
@@ -124,6 +127,23 @@ llm = OciGenAiConfig(
         auth_file_location="~/.oci/config",
         auth_profile="DEFAULT",
     ),
+    default_generation_parameters=generation_config,
+)
+
+from pyagentspec.llms import OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType
+
+generation_config = LlmGenerationConfig(max_tokens=512, temperature=1.0, top_p=1.0)
+
+llm = OpenAiCompatibleConfig(
+    name="openai-compatible-llama-4-maverick",
+    model_id="llama-4-maverick",
+    url="https://url.to.my.openai.compatible.server/llama4mav",
+    api_type=OpenAIAPIType.RESPONSES,
+    api_key="optional_api_key",
+    key_file="/path/to/client.key",
+    cert_file="/path/to/client.pem",
+    ca_file="/path/to/ca.pem",
     default_generation_parameters=generation_config,
 )
 
