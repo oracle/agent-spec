@@ -202,12 +202,12 @@ be supplied through ``components_registry`` when loading the configuration back.
   Name of the model to use, for example ``gemini-2.5-flash`` or
   ``gemini-2.0-flash-lite``.
 
-.. option:: auth: GeminiAiStudioAuthConfig | GeminiVertexAiAuthConfig
+.. option:: auth: GeminiAIStudioAuthConfig | GeminiVertexAIAuthConfig
 
   Required authentication component for Gemini. As with other Agent Spec components,
-  auth configs need a ``name``. Use ``GeminiAiStudioAuthConfig(name="gemini-aistudio-auth")``
+  auth configs need a ``name``. Use ``GeminiAIStudioAuthConfig(name="gemini-aistudio-auth")``
   if you want runtimes to load ``GEMINI_API_KEY`` from the environment, or
-  ``GeminiVertexAiAuthConfig(name="gemini-vertex-auth", ...)`` for Vertex AI.
+  ``GeminiVertexAIAuthConfig(name="gemini-vertex-auth", ...)`` for Vertex AI.
   The auth component remains inline when serialized. If ``api_key`` or ``credentials``
   is set explicitly, only that sensitive field is serialized as a reference.
 
@@ -218,7 +218,7 @@ be supplied through ``components_registry`` when loading the configuration back.
 AI Studio authentication
 ------------------------
 
-Use ``GeminiAiStudioAuthConfig`` when connecting through Google AI Studio.
+Use ``GeminiAIStudioAuthConfig`` when connecting through Google AI Studio.
 
 **Parameters**
 
@@ -238,7 +238,7 @@ Use ``GeminiAiStudioAuthConfig`` when connecting through Google AI Studio.
 Vertex AI authentication
 ------------------------
 
-Use ``GeminiVertexAiAuthConfig`` when connecting through Google Vertex AI.
+Use ``GeminiVertexAIAuthConfig`` when connecting through Google Vertex AI.
 
 **Parameters**
 

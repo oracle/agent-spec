@@ -74,11 +74,11 @@ Gemini Models
     :exclude-members: model_post_init, model_config
 
 .. _geminiaistudioauthconfig:
-.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiAiStudioAuthConfig
+.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig
     :exclude-members: model_post_init, model_config
 
 .. _geminivertexaiauthconfig:
-.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiVertexAiAuthConfig
+.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig
     :exclude-members: model_post_init, model_config
 
 .. _geminiconfig:

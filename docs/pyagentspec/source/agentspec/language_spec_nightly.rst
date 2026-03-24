@@ -858,7 +858,7 @@ AI Studio uses API key-based authentication:
 
 .. code-block:: python
 
-   class GeminiAiStudioAuthConfig(GeminiAuthConfig):
+   class GeminiAIStudioAuthConfig(GeminiAuthConfig):
      api_key: SensitiveField[Optional[str]] = None
 
 When ``api_key`` is not specified, runtimes may try to load it from the ``GEMINI_API_KEY``
@@ -874,7 +874,7 @@ resolved from the local Google Cloud configuration:
 
 .. code-block:: python
 
-   class GeminiVertexAiAuthConfig(GeminiAuthConfig):
+   class GeminiVertexAIAuthConfig(GeminiAuthConfig):
      project_id: Optional[str] = None
      location: str = "global"
      credentials: SensitiveField[Optional[Union[str, Dict[str, Any]]]] = None
@@ -2916,9 +2916,9 @@ See all the fields below that are considered sensitive fields:
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
 +----------------------------------+--------------------+
-| GeminiAiStudioAuthConfig         | api_key            |
+| GeminiAIStudioAuthConfig         | api_key            |
 +----------------------------------+--------------------+
-| GeminiVertexAiAuthConfig         | credentials        |
+| GeminiVertexAIAuthConfig         | credentials        |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+
@@ -2944,8 +2944,8 @@ See all the fields below that are considered sensitive fields:
 +----------------------------------+--------------------+
 
 For Gemini auth components, only the sensitive leaf field is externalized.
-For example, ``GeminiAiStudioAuthConfig.api_key`` or
-``GeminiVertexAiAuthConfig.credentials`` may become references while the enclosing
+For example, ``GeminiAIStudioAuthConfig.api_key`` or
+``GeminiVertexAIAuthConfig.credentials`` may become references while the enclosing
 ``auth`` component remains inline.
 
 

@@ -243,10 +243,10 @@
         }
       ]
     },
-    "GeminiAiStudioAuthConfig": {
+    "GeminiAIStudioAuthConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/BaseGeminiAiStudioAuthConfig"
+          "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -273,10 +273,10 @@
         }
       ]
     },
-    "GeminiVertexAiAuthConfig": {
+    "GeminiVertexAIAuthConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/BaseGeminiVertexAiAuthConfig"
+          "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -2896,7 +2896,7 @@
       "type": "object",
       "x-abstract-component": false
     },
-    "BaseGeminiAiStudioAuthConfig": {
+    "BaseGeminiAIStudioAuthConfig": {
       "additionalProperties": false,
       "description": "Authentication settings for Gemini via Google AI Studio.",
       "properties": {
@@ -2948,23 +2948,23 @@
           "$ref": "#/$defs/ReferencedComponents"
         },
         "component_type": {
-          "const": "GeminiAiStudioAuthConfig"
+          "const": "GeminiAIStudioAuthConfig"
         }
       },
       "required": [
         "name"
       ],
-      "title": "GeminiAiStudioAuthConfig",
+      "title": "GeminiAIStudioAuthConfig",
       "type": "object",
       "x-abstract-component": false
     },
     "BaseGeminiAuthConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/GeminiAiStudioAuthConfig"
+          "$ref": "#/$defs/GeminiAIStudioAuthConfig"
         },
         {
-          "$ref": "#/$defs/GeminiVertexAiAuthConfig"
+          "$ref": "#/$defs/GeminiVertexAIAuthConfig"
         }
       ],
       "x-abstract-component": true
@@ -3039,7 +3039,7 @@
       "type": "object",
       "x-abstract-component": false
     },
-    "BaseGeminiVertexAiAuthConfig": {
+    "BaseGeminiVertexAIAuthConfig": {
       "additionalProperties": false,
       "description": "Authentication settings for Gemini via Google Vertex AI.",
       "properties": {
@@ -3112,13 +3112,13 @@
           "$ref": "#/$defs/ReferencedComponents"
         },
         "component_type": {
-          "const": "GeminiVertexAiAuthConfig"
+          "const": "GeminiVertexAIAuthConfig"
         }
       },
       "required": [
         "name"
       ],
-      "title": "GeminiVertexAiAuthConfig",
+      "title": "GeminiVertexAIAuthConfig",
       "type": "object",
       "x-abstract-component": false
     },
@@ -7350,7 +7350,7 @@
             "$ref": "#/$defs/BaseFlowNode"
           },
           {
-            "$ref": "#/$defs/BaseGeminiAiStudioAuthConfig"
+            "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
           },
           {
             "$ref": "#/$defs/BaseGeminiAuthConfig"
@@ -7359,7 +7359,7 @@
             "$ref": "#/$defs/BaseGeminiConfig"
           },
           {
-            "$ref": "#/$defs/BaseGeminiVertexAiAuthConfig"
+            "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
           },
           {
             "$ref": "#/$defs/BaseInMemoryCollectionDatastore"
@@ -7845,10 +7845,10 @@
         }
       }
     },
-    "VersionedGeminiAiStudioAuthConfig": {
+    "VersionedGeminiAIStudioAuthConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/BaseGeminiAiStudioAuthConfig"
+          "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -7890,10 +7890,10 @@
         }
       }
     },
-    "VersionedGeminiVertexAiAuthConfig": {
+    "VersionedGeminiVertexAIAuthConfig": {
       "anyOf": [
         {
-          "$ref": "#/$defs/BaseGeminiVertexAiAuthConfig"
+          "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -8695,7 +8695,7 @@
       "$ref": "#/$defs/VersionedFlowNode"
     },
     {
-      "$ref": "#/$defs/VersionedGeminiAiStudioAuthConfig"
+      "$ref": "#/$defs/VersionedGeminiAIStudioAuthConfig"
     },
     {
       "$ref": "#/$defs/VersionedGeminiAuthConfig"
@@ -8704,7 +8704,7 @@
       "$ref": "#/$defs/VersionedGeminiConfig"
     },
     {
-      "$ref": "#/$defs/VersionedGeminiVertexAiAuthConfig"
+      "$ref": "#/$defs/VersionedGeminiVertexAIAuthConfig"
     },
     {
       "$ref": "#/$defs/VersionedInMemoryCollectionDatastore"

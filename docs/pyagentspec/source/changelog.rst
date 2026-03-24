@@ -107,8 +107,8 @@ New features
 
 * **Gemini LLM configuration support**
 
-  Added ``GeminiConfig`` together with ``GeminiAiStudioAuthConfig`` and
-  ``GeminiVertexAiAuthConfig`` to represent Gemini models in Agent Spec.
+  Added ``GeminiConfig`` together with ``GeminiAIStudioAuthConfig`` and
+  ``GeminiVertexAIAuthConfig`` to represent Gemini models in Agent Spec.
 
   For more information read the :doc:`API Reference <api/llmmodels>`.
 

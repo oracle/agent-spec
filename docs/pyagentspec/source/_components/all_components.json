@@ -128,12 +128,12 @@
                 "name": "pyagentspec.llms.GeminiAuthConfig"
             },
             {
-                "path": "pyagentspec.llms.geminiauthconfig.GeminiAiStudioAuthConfig",
-                "name": "pyagentspec.llms.GeminiAiStudioAuthConfig"
+                "path": "pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig",
+                "name": "pyagentspec.llms.GeminiAIStudioAuthConfig"
             },
             {
-                "path": "pyagentspec.llms.geminiauthconfig.GeminiVertexAiAuthConfig",
-                "name": "pyagentspec.llms.GeminiVertexAiAuthConfig"
+                "path": "pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig",
+                "name": "pyagentspec.llms.GeminiVertexAIAuthConfig"
             },
             {
                 "path": "pyagentspec.llms.ociclientconfig.OciClientConfig",

@@ -26,14 +26,14 @@ class GeminiAuthConfig(Component, abstract=True):
     )
 
 
-class GeminiAiStudioAuthConfig(GeminiAuthConfig):
+class GeminiAIStudioAuthConfig(GeminiAuthConfig):
     """Authentication settings for Gemini via Google AI Studio."""
 
     api_key: SensitiveField[Optional[str]] = None
     """API key to use. If unset, runtimes may load it from ``GEMINI_API_KEY``."""
 
 
-class GeminiVertexAiAuthConfig(GeminiAuthConfig):
+class GeminiVertexAIAuthConfig(GeminiAuthConfig):
     """Authentication settings for Gemini via Google Vertex AI."""
 
     project_id: Optional[str] = None
