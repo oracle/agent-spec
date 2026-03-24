@@ -25,6 +25,12 @@ class OpenAiConfig(LlmConfig):
     model_id: str
     """ID of the model to use"""
 
+    provider: str = "openai"
+    """The provider of the model."""
+
+    api_provider: str = "openai"
+    """The API provider used to serve the model."""
+
     api_type: SerializeAsEnum[OpenAIAPIType] = OpenAIAPIType.CHAT_COMPLETIONS
     """OpenAI API protocol to use"""
     api_key: SensitiveField[Optional[str]] = None
@@ -35,6 +41,10 @@ class OpenAiConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # provider and api_provider are frozen/implied by component_type
+        fields_to_exclude.add("provider")
+        fields_to_exclude.add("api_provider")
+        fields_to_exclude.add("url")
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("api_key")

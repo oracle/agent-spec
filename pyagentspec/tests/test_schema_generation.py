@@ -38,8 +38,8 @@ def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
     for component_type in llm_config_subtypes:
         assert component_type.__name__ in schema["$defs"]
     assert AgentSpecVersionEnum.__name__ in schema["$defs"]
-    # +1 because the schema includes ComponentReferenceWithNestedReferences
-    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 1
+    # +1 for ComponentReferenceWithNestedReferences, +1 for LlmConfig itself (concrete)
+    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 2
 
 
 def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:
