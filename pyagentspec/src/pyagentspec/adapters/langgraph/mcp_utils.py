@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -12,7 +12,7 @@ from typing import Any, Awaitable, Callable, Optional, TypeVar
 import anyio
 import httpx
 from anyio import from_thread
-from sniffio import AsyncLibraryNotFoundError
+from sniffio import AsyncLibraryNotFoundError, current_async_library
 
 T = TypeVar("T")
 
@@ -81,13 +81,16 @@ class AsyncContext(Enum):
     SYNC_WORKER = "sync_worker"
 
 
-# anyio.NoEventLoopError was added in anyio 4.11. anyio 4.10 is still supported
-# (via the langgraph/evaluation extras), where the attribute does not exist.
-# Once the minimum anyio version is ≥ 4.11, replace this with a plain
-# tuple and catch anyio.NoEventLoopError directly (commented out below)
-_NO_LOOP_ERRORS: tuple[type[BaseException], ...] = (AsyncLibraryNotFoundError,)
-if hasattr(anyio, "NoEventLoopError"):
-    _NO_LOOP_ERRORS = (*_NO_LOOP_ERRORS, anyio.NoEventLoopError)
+def _is_anyio_worker_thread() -> bool:
+    try:
+        # check_cancelled() is a lightweight public API (no I/O, no scheduling)
+        # that only succeeds inside an AnyIO worker thread spawned by
+        # to_thread.run_sync(). Outside that context it raises RuntimeError.
+        from_thread.check_cancelled()
+    except RuntimeError:
+        return False
+    else:
+        return True
 
 
 def get_execution_context() -> AsyncContext:
@@ -98,19 +101,16 @@ def get_execution_context() -> AsyncContext:
     - 'async'        → running inside the event loop
     """
     try:
-        anyio.get_current_task()
+        current_async_library()
         return AsyncContext.ASYNC
-    # except (AsyncLibraryNotFoundError, anyio.NoEventLoopError): # anyio>4.10
-    except _NO_LOOP_ERRORS:
-        current_thread = from_thread.current_thread()  # type: ignore
-        worker_name = current_thread.name.lower()
-        if "worker" in worker_name and "anyio" in worker_name:
+    except AsyncLibraryNotFoundError:
+        if _is_anyio_worker_thread():
             # for anyio workers, we can use specific methods to
             # handle back asynchronous code to the main loop
             return AsyncContext.SYNC_WORKER
-        else:
-            # otherwise, consider it as a synchronous thread
-            return AsyncContext.SYNC
+
+        # otherwise, consider it as a synchronous thread
+        return AsyncContext.SYNC
 
 
 def run_async_in_sync(
