@@ -72,6 +72,17 @@ def get_current_span() -> Optional["Span"]:
     return None
 
 
+def _format_exception_stacktrace(
+    exc_type: Optional[Type[BaseException]],
+    exc_value: Optional[BaseException],
+    traceback_obj: Optional[TracebackType],
+) -> str:
+    """Return a full traceback string for a caught exception."""
+    if exc_value is None:
+        return ""
+    return "".join(traceback.format_exception(exc_type, exc_value, traceback_obj))
+
+
 class Span(BaseModelWithSensitiveInfo):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -134,8 +145,8 @@ class Span(BaseModelWithSensitiveInfo):
                 ExceptionRaised(
                     exception_type=exc_type.__name__ if exc_type else "Unknown",
                     exception_message=str(exc_value),
-                    exception_stacktrace="".join(
-                        traceback.format_exception(exc_type, exc_value, traceback_obj)
+                    exception_stacktrace=_format_exception_stacktrace(
+                        exc_type, exc_value, traceback_obj
                     ),
                 )
             )
@@ -145,7 +156,7 @@ class Span(BaseModelWithSensitiveInfo):
         self,
         exc_type: Optional[Type[BaseException]],
         exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        traceback_obj: Optional[TracebackType],
     ) -> None:
         if exc_value is not None:
             from pyagentspec.tracing.events import ExceptionRaised
@@ -154,7 +165,9 @@ class Span(BaseModelWithSensitiveInfo):
                 ExceptionRaised(
                     exception_type=exc_type.__name__ if exc_type else "Unknown",
                     exception_message=str(exc_value),
-                    exception_stacktrace=str(traceback),
+                    exception_stacktrace=_format_exception_stacktrace(
+                        exc_type, exc_value, traceback_obj
+                    ),
                 )
             )
         await self.end_async()
@@ -175,12 +188,12 @@ class Span(BaseModelWithSensitiveInfo):
                 self._started_span_processors.append(span_processor)
             _append_span_to_active_stack(self)
             self._span_was_appended_to_active_stack = True
-        except Exception as e:
+        except Exception:
             # If anything happens during the recording of the start span,
             # we still have to do the work needed to exit the context
             # including the span_processors.on_end call and removing the span from the active stack
             self.__exit__(*sys.exc_info())
-            raise e
+            raise
 
     async def start_async(self) -> None:
         """
@@ -198,12 +211,12 @@ class Span(BaseModelWithSensitiveInfo):
                 self._started_span_processors.append(span_processor)
             _append_span_to_active_stack(self)
             self._span_was_appended_to_active_stack = True
-        except Exception as e:
+        except Exception:
             # If anything happens during the recording of the start span,
             # we still have to do the work needed to exit the context
             # including the span_processors.on_end call and removing the span from the active stack
             await self.__aexit__(*sys.exc_info())
-            raise e
+            raise
 
     def end(self) -> None:
         """

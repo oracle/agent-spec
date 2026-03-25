@@ -948,8 +948,8 @@ Emitted when a NodeExecutionSpan ends.
       - -
       - no
 
-Conversation and control events
--------------------------------
+Conversation, state, and control events
+---------------------------------------
 
 ConversationMessageAdded
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -970,6 +970,50 @@ A message was added to the conversation.
       - Message
       - -
       - yes
+
+StateSnapshotEmitted
+^^^^^^^^^^^^^^^^^^^^
+
+A runtime emitted a point-in-time snapshot of the current logical conversation or thread state.
+
+This event is intended for downstream consumers such as UIs, debuggers, resumability
+systems, or observability processors. Agent Spec standardizes the event envelope, but
+the exact structure of ``state_snapshot`` and the frequency at which snapshots are
+emitted remain runtime-defined. ``state_snapshot`` is not limited to a lightweight
+inspection-only view: runtimes can use it to carry opaque runtime-owned state that
+is sufficient to resume or reconstruct execution later. Runtimes that do not
+implement state snapshots may never emit this event.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 22 48 18 12 10
+
+    * - Name
+      - Description
+      - Type
+      - Default/Optional
+      - Sensitive
+    * - conversation_id
+      - Stable identifier of the logical conversation or thread this snapshot refers to
+      - str
+      - -
+      - no
+    * - state_snapshot
+      - Runtime-defined JSON-serializable snapshot of the current state; may include opaque runtime-owned resumable state and any runtime-local identifiers
+      - Optional[dict[str, any]]
+      - null
+      - yes
+    * - extra_state
+      - Developer-defined JSON-serializable state such as UI or application state
+      - Optional[dict[str, any]]
+      - null
+      - yes
+
+At least one of ``state_snapshot`` or ``extra_state`` must be present. The
+``conversation_id`` identifies the logical conversation or thread across all related
+snapshots; runtime-local execution identifiers, if needed, should be carried inside
+``state_snapshot``. Runtime-defined resumability payloads should also be carried in
+``state_snapshot`` rather than ``extra_state``.
 
 ExceptionRaised
 ^^^^^^^^^^^^^^^
@@ -1062,6 +1106,7 @@ For example:
 - request_id: unique identifier of a single LLM or Tool execution request within a Span.
 - completion_id: identifier of a completion (LLM message or tool-call) which may receive streaming chunks.
 - tool_execution_request_id: identifier of a tool execution for confirmation.
+- conversation_id: stable identifier used to associate state snapshots with the same logical conversation or thread.
 
 Runtimes SHOULD ensure uniqueness within a Span and consistency across all related events.
 
@@ -1165,6 +1210,7 @@ Additionally, tracing frequently includes potentially sensitive information (PII
 - Tool inputs/outputs
 - Exception messages and stacktraces
 - Conversation messages
+- State snapshots and extra application state
 
 Implementing a SpanProcessor
 ----------------------------
