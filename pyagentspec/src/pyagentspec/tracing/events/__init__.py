@@ -12,6 +12,7 @@ from .humanintheloop import HumanInTheLoopRequest, HumanInTheLoopResponse
 from .llmgeneration import LlmGenerationChunkReceived, LlmGenerationRequest, LlmGenerationResponse
 from .managerworkers import ManagerWorkersExecutionEnd, ManagerWorkersExecutionStart
 from .node import NodeExecutionEnd, NodeExecutionStart
+from .state import StateSnapshotEmitted
 from .swarm import SwarmExecutionEnd, SwarmExecutionStart
 from .tool import (
     ToolConfirmationRequest,
@@ -36,6 +37,7 @@ __all__ = [
     "ToolExecutionStreamingChunkReceived",
     "NodeExecutionStart",
     "NodeExecutionEnd",
+    "StateSnapshotEmitted",
     "FlowExecutionStart",
     "FlowExecutionEnd",
     "ManagerWorkersExecutionStart",

@@ -46,6 +46,14 @@ You can pass the ``generation_config`` for each of them.
     :start-after: .. vllm_config:
     :end-before: .. end-vllm_config
 
+If you also need resilience for remote LLM calls, configure ``retry_policy`` on
+the same LLM configuration. For more details, see :ref:`howto-llmwithretrypolicy`.
+
+.. literalinclude:: ../code_examples/howto_generation_config.py
+    :language: python
+    :start-after: # .. llm_retry_policy:
+    :end-before: # .. end-llm_retry_policy
+
 .. important::
     API keys should not be stored anywhere in the Agent Spec representation of an agent.
 

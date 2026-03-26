@@ -194,6 +194,8 @@ class AgentSpecSerializer:
     def to_json(
         self,
         component: Component,
+        *,
+        indent: Optional[int] = None,
     ) -> str: ...
 
     @overload
@@ -201,6 +203,8 @@ class AgentSpecSerializer:
         self,
         component: Component,
         agentspec_version: Optional[AgentSpecVersionEnum],
+        *,
+        indent: Optional[int] = None,
     ) -> str: ...
 
     @overload
@@ -209,6 +213,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
+        indent: Optional[int] = None,
     ) -> str: ...
 
     @overload
@@ -217,6 +222,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: Literal[False],
+        indent: Optional[int] = None,
     ) -> str: ...
 
     @overload
@@ -225,6 +231,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: bool,
+        indent: Optional[int] = None,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -234,6 +241,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[False],
+        indent: Optional[int] = None,
     ) -> str: ...
 
     @overload
@@ -243,6 +251,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[True],
+        indent: Optional[int] = None,
     ) -> Tuple[str, str]: ...
 
     @overload
@@ -252,6 +261,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        indent: Optional[int] = None,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -261,6 +271,8 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum],
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        *,
+        indent: Optional[int] = None,
     ) -> Union[str, Tuple[str, str]]: ...
 
     def to_json(
@@ -363,7 +375,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: bool,
-    ) -> Union[ComponentAsDictT, DisaggregatedComponentsAsDictT]: ...
+    ) -> Union[ComponentAsDictT, Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]]: ...
 
     @overload
     def to_dict(

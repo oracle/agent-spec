@@ -14,6 +14,24 @@ The available LLMs are:
 Their configuration is specified directly in their respective class constructor.
 This guide will show you how to configure LLMs from different LLM providers with examples and notes on usage.
 
+.. _howto-llmwithretrypolicy:
+
+Configure retry behavior for remote LLM calls
+=============================================
+
+All ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
+Use it to configure retry attempts, per-request timeouts, and backoff behavior
+for transient failures when calling remote LLM endpoints.
+
+For example, you can attach a retry policy directly to a ``VllmConfig``:
+
+.. literalinclude:: ../code_examples/howto_generation_config.py
+    :language: python
+    :start-after: # .. llm_retry_policy:
+    :end-before: # .. end-llm_retry_policy
+
+API Reference: :ref:`LlmConfig <llmconfig>`, :ref:`RetryPolicy <retrypolicy>`
+
 
 OciGenAiConfig
 ==============
@@ -163,6 +181,7 @@ You can refer to one of those models by using the ``OpenAiConfig`` Component.
     :start-after: .. openai-start
     :end-before: .. openai-end
 
+.. _howto-openaicompatibleconfig:
 
 OpenAiCompatibleConfig
 ======================
@@ -178,7 +197,7 @@ The ``OpenAiCompatibleConfig`` allows users to use this type of models in their 
 
 .. option:: url: str
 
-  Hostname and port of the vLLM server where the model is hosted.
+  Hostname and port of the server exposing the OpenAI-compatible endpoint.
 
 .. option:: api_type: str
 
@@ -188,9 +207,25 @@ The ``OpenAiCompatibleConfig`` allows users to use this type of models in their 
 
   An optional api key if the remote server requires it.
 
+.. option:: key_file: str, null
+
+  Path to an optional client private key file in PEM format.
+
+.. option:: cert_file: str, null
+
+  Path to an optional client certificate chain file in PEM format.
+
+.. option:: ca_file: str, null
+
+  Path to an optional trusted CA certificate file in PEM format, used to verify the server.
+
 .. option:: default_generation_parameters: dict, null
 
   Default parameters for text generation with this model.
+
+The certificate fields are useful when the remote endpoint is exposed over HTTPS with a private CA
+or when it requires mutual TLS (mTLS). Like ``api_key``, these values are treated as sensitive
+fields during serialization.
 
 **Examples**
 
@@ -227,6 +262,9 @@ The ``VllmConfig`` allows users to use this type of models in their agents and f
 .. option:: api_key: str, null
 
   An optional api key if the remote vllm server requires it.
+
+The ``VllmConfig`` inherits from ``OpenAiCompatibleConfig``, so it also supports the optional
+``key_file``, ``cert_file``, and ``ca_file`` parameters for HTTPS and mTLS connections.
 
 **Examples**
 

@@ -38,6 +38,7 @@ class ModelProvider(str, Enum):
 
     META = "META"
     GROK = "GROK"
+    XAI = "XAI"
     COHERE = "COHERE"
     OTHER = "OTHER"
 
@@ -67,7 +68,7 @@ class OciGenAiConfig(LlmConfig):
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
-        fields_to_exclude = set()
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("conversation_store_id")
@@ -83,4 +84,7 @@ class OciGenAiConfig(LlmConfig):
             # If the api type is not the original oci APIs, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
+        if self.provider == ModelProvider.XAI:
+            # `XAI` model provider is only introduced starting from 26.2.0
+            current_object_min_version = AgentSpecVersionEnum.v26_2_0
         return max(current_object_min_version, parent_min_version)

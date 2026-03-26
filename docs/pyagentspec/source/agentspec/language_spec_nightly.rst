@@ -536,10 +536,62 @@ We define a new Component called LlmConfig that contains all the details:
 
    class LlmConfig(Component):
      default_generation_parameters: Optional[Dict[str, Any]]
+     retry_policy: Optional[RetryPolicy]
 
 We require only to specify the default generation parameters that should be used by default when prompting the LLM.
 These parameters are specified as a dictionary of parameter names and respective values.
 The names are strings, while values can be of any type compatible with the JSON schema standard.
+Additionally, an optional Retry policy can be specified to configure the how remote LLM calls are retried
+in case of network failures.
+
+Retry Policy
+^^^^^^^^^^^^
+
+Users can provide an optional retry policy configuration for remote LLM calls.
+This policy is provider-agnostic and can be interpreted by runtimes to implement
+consistent retry behavior across different LLM providers.
+
+.. code-block:: python
+
+   class RetryPolicy:
+     max_attempts: int
+     request_timeout: Optional[float]
+     initial_retry_delay: float
+     max_retry_delay: float
+     backoff_factor: float
+     jitter: Optional[Literal["equal", "full", "full_and_equal_for_throttle", "decorrelated"]]
+     service_error_retry_on_any_5xx: bool
+     recoverable_statuses: Dict[str, List[str]]
+
+
+* ``max_attempts``: maximum number of retries for a request that fails with a recoverable status.
+* ``request_timeout``: timeout parameter to pass to underlying HTTP clients for slow endpoints such
+  as transcription or inference services, in seconds.
+* ``initial_retry_delay``: minimum amount of time to wait between retries in seconds.
+* ``max_retry_delay``: maximum amount of time to wait between retries in seconds.
+* ``backoff_factor``: for exponential backoff with jitter, the exponent which we will raise to the power
+  of the number of attempts.
+* ``jitter``: type of backoff we want to do. Defaults to ``"full_and_equal_for_throttle"``.
+
+  * ``None``: No jitter. ``t = min(min_wait * (backoff_factor ** attempts), max_wait)``
+  * ``"full"``: ``t = min(random(0, min_wait * (backoff_factor ** attempts)), max_wait)``
+  * ``"equal"``: ``t = min(min_wait * (backoff_factor ** attempts), max_wait) * (1 + random(0, 1)) / 2``
+  * ``"full_and_equal_for_throttle"``: full for 5xx errors and equal for 4xx errors
+  * ``"decorrelated"``: ``t = min(min_wait * (backoff_factor ** attempts) + random(0, 1), max_wait)``
+
+* ``service_error_retry_on_any_5xx``: whether to retry on all 5xx errors, except 501 (network errors).
+* ``recoverable_statuses``: configure what HTTP statuses (e.g. 429) to retry on and, optionally, whether
+  the textual code (e.g. TooManyRequests) matches a given value. The expected format is a dictionary where
+  the key is a string representing the HTTP status, and the value is a ``List[str]`` where we will test
+  if the textual code in the service error is a member of the list. If an empty list is provided, then
+  only the numeric status is checked for retry purposes.
+
+When all retries fail, an error is raised and the execution is interrupted.
+
+.. note::
+    Runtimes MUST NOT treat TLS/certificate verification errors as retryable.
+    Runtimes SHOULD NOT retry on authentication/authorization errors (e.g., HTTP 401/403)
+    or validation errors (e.g., HTTP 400/422).
 
 .. note::
 
@@ -618,7 +670,8 @@ This class of LLMs groups all the LLMs that are compatible with either the
 `OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
 The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely
 ``chat_completions`` or ``responses``. By default, the API type is set to chat completions. Additionally, an optional
-``api_key`` can be set for the remote LLM model.
+``api_key`` can be set for the remote LLM model. OpenAI-compatible LLMs also support optional certificate
+configuration for HTTPS and mTLS connections to private endpoints.
 
 .. code-block:: python
 
@@ -627,6 +680,13 @@ The API type can be configured by using the ``api_type`` parameter, which takes 
      url: str
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      api_key: SensitiveField[Optional[str]] = None
+     key_file: SensitiveField[Optional[str]] = None
+     cert_file: SensitiveField[Optional[str]] = None
+     ca_file: SensitiveField[Optional[str]] = None
+
+* ``key_file`` is the path to an optional client private key file (PEM format).
+* ``cert_file`` is the path to an optional client certificate chain file (PEM format).
+* ``ca_file`` is the path to an optional trusted CA certificate file (PEM format) used to verify the server.
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -699,10 +759,14 @@ conversations when using the openai responses API.
      model_id: str
      compartment_id: str
      serving_mode: Literal["ON_DEMAND", "DEDICATED"] = "ON_DEMAND"
-     provider: Optional[Literal["META", "GROK", "COHERE", "OTHER"]] = None
+     provider: Optional[Literal["META", "XAI", "GROK", "COHERE", "OTHER"]] = None
      client_config: OciClientConfig
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      conversation_store_id: Optional[str] = None
+
+.. note::
+    While both ``GROK`` and ``XAI`` values for ``provider`` are supported and refer to xAI models, we recommend
+    to use the value ``XAI``.
 
 .. note::
     The authentication components must not contain any sensitive information about the authentication,
@@ -850,6 +914,7 @@ the correct built-in tool.
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
      sensitive_headers: SensitiveField[Dict[str, Any]]
+     retry_policy: Optional[RetryPolicy]
 
    class MCPTool(Tool):
      client_transport: ClientTransport
@@ -902,6 +967,7 @@ Like other tools, MCP Tools define inputs, outputs, and metadata but include a
 ``client_transport`` for managing connections (e.g., via SSE or Streamable HTTP
 with mTLS) (details about the client transport can be found in
 :ref:`the MCP section <agentspecmcpspec_nightly>` below).
+
 
 .. code-block:: python
 
@@ -1539,6 +1605,11 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - retry_policy
+              - Optional retry policy configuration applied to this API call.
+              - RetryPolicy | null
+              - No
+              - null
 
       - Inferred from the json spec retrieved from API Spec URI, if available and reachable.
         Empty otherwise (users will have to manually specify them)
@@ -1910,15 +1981,15 @@ For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Pro
 
   class A2AAgent(AgenticComponent):
     agent_url: str
-    connection_config: A2AConnectionConfig # Parameters for HTTP connection settings, including timeouts and SSL/TLS security
-    session_parameters: Optional[Dict[str, Any]] # Parameters controlling session behavior such as polling timeouts and retry logic
+    connection_config: A2AConnectionConfig
+    session_parameters: Optional[Dict[str, Any]]
 
-- `agent_url`: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
-- `connection_config`: Contains HTTP connection details, including timeouts and SSL/TLS security settings, ensuring a secure and optimized connection with necessary certificates.
-- `session_parameters`: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
-                        These settings include `timeout`, specifying the maximum wait time in seconds before deeming a session unresponsive;
-                        `poll_interval`, defining the interval in seconds between polling attempts to check for server responses;
-                        and `max_retries`, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
+- ``agent_url``: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
+- ``connection_config``: Contains HTTP connection details, including timeouts, SSL/TLS security settings, and optional retry policy configuration, ensuring a secure and optimized connection with necessary certificates.
+- ``session_parameters``: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
+                        These settings include ``timeout``, specifying the maximum wait time in seconds before deeming a session unresponsive;
+                        ``poll_interval``, defining the interval in seconds between polling attempts to check for server responses;
+                        and ``max_retries``, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
 
 RemoteAgent
 ~~~~~~~~~~~
@@ -1940,6 +2011,12 @@ Oracle Cloud Infrastructure. It adds OCI-specific authentication and connection 
    class OciAgent(ComponentWithIO):
       agent_endpoint_id: str
       client_config: OciClientConfig  # contains all OCI authentication related configurations
+      retry_policy: Optional[RetryPolicy]  # Optional retry configuration for calls sent to the remote OCI agent
+
+- ``agent_endpoint_id`` identifies the OCI AI Agent endpoint that should receive the request.
+- ``client_config`` contains the OCI client and authentication configuration used to connect to the service.
+- ``retry_policy`` optionally specifies a ``RetryPolicy`` for outbound requests to the remote OCI agent.
+
 
 Swarm
 ~~~~~
@@ -2476,7 +2553,8 @@ Remote MCP transports
 
 Another category of MCP client transports rely on remote connections to MCP servers.
 Those components should extend the ``RemoteTransport`` component and should support
-the ``url``, ``auth`` and ``headers`` fields.
+the ``url``, ``auth``, ``headers``, ``sensitive_headers`` and optional
+``retry_policy`` fields.
 
 .. code-block:: python
 
@@ -2485,6 +2563,7 @@ the ``url``, ``auth`` and ``headers`` fields.
      auth: Optional[AuthConfig]
      headers: Dict[str, str]
      sensitive_headers: SensitiveField[Dict[str, str]]
+     retry_policy: Optional[RetryPolicy]
 
 
 - ``url`` is a string representing the URL to send the request.
@@ -2496,6 +2575,7 @@ the ``url``, ``auth`` and ``headers`` fields.
   when executing the request, but these headers are excluded from exported configuration thus they
   are better suited to contain sensitive information not intended to be shared as widely as the
   exported configuration.
+- ``retry_policy`` optionally specifies a ``RetryPolicy`` for requests sent through the remote MCP transport.
 
 
 SSE Transport
@@ -2580,8 +2660,12 @@ Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication
 This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively.
 It can also be used to establish a connection with a remote agent, allowing for distributed agentic systems.
 
-The connection to a remote agent or between agents is configured using `A2AConnectionConfig`, which defines the necessary parameters for establishing a secure and reliable HTTP connection.
-This includes settings such as timeouts, retry policies, and SSL/TLS security configurations to ensure encrypted and authenticated communication.
+The connection to a remote agent or between agents is configured using ``A2AConnectionConfig``,
+which defines the parameters for establishing a secure and reliable HTTP connection. Session
+behavior such as polling is configured with ``A2AAgent.session_parameters``, while request retry
+behavior can be configured with ``A2AConnectionConfig.retry_policy``. Together these settings
+cover timeouts, polling, retries, and SSL/TLS security for encrypted and authenticated
+communication.
 
 .. code-block:: python
 
@@ -2593,6 +2677,7 @@ This includes settings such as timeouts, retry policies, and SSL/TLS security co
      cert_file: Optional[str]  # Path to the client's certificate chain file
      ssl_ca_cert: Optional[str]  # Path to private key file
      ca_path: Optional[str]  # Path to the trusted CA certificate file
+     retry_policy: Optional[RetryPolicy]  # Optional retry configuration for requests sent through this A2A connection
 
 Ecosystem of plugins
 --------------------
@@ -2774,6 +2859,12 @@ See all the fields below that are considered sensitive fields:
 +==================================+====================+
 | OpenAiCompatibleConfig           | api_key            |
 +----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | key_file           |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | cert_file          |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | ca_file            |
++----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
@@ -2810,9 +2901,12 @@ For example, the following component produced using the `pyagentspec` SDK:
         url="https://some.api.com/v2",
         model_id="some_model_id",
         api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+        cert_file="/etc/certs/client.pem",
+        ca_file="/etc/certs/ca.pem",
     )
 
-should produce the following configuration, in which the sensitive ``api_key`` is replaced by a reference
+should produce the following configuration, in which sensitive fields are replaced by references
 
 .. code-block:: JSON5
 
@@ -2825,6 +2919,15 @@ should produce the following configuration, in which the sensitive ``api_key`` i
       "api_key" : {
         "$component_ref" : "llm-config-id.api_key"
       },
+      "key_file" : {
+        "$component_ref" : "llm-config-id.key_file"
+      },
+      "cert_file" : {
+        "$component_ref" : "llm-config-id.cert_file"
+      },
+      "ca_file" : {
+        "$component_ref" : "llm-config-id.ca_file"
+      },
     }
 
 Such a configuration would then require to pass the referenced sensitive information when loading, as
@@ -2834,7 +2937,12 @@ in the example code below:
 
     llm_config = AgentSpecDeserializer().from_json(
         serialized_llm,
-        components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
+        components_registry={
+            "llm-config-id.api_key": "THIS_IS_SECRET",
+            "llm-config-id.key_file": "/etc/certs/client.key",
+            "llm-config-id.cert_file": "/etc/certs/client.pem",
+            "llm-config-id.ca_file": "/etc/certs/ca.pem",
+        },
     )
 
 
@@ -2948,7 +3056,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_25_4_2.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_2_0.json
         :language: json
 
 Note about serialization of components

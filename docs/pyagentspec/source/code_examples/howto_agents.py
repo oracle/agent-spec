@@ -71,16 +71,17 @@ Make sure to welcome the user first, their name is {{user_name}}, but keep it sh
 # .. end-tools
 
 # .. start-export-config-to-agentspec
-from pyagentspec.serialization import AgentSpecSerializer
-
-serialized_assistant = AgentSpecSerializer().to_json(agent)
+serialized_assistant = agent.to_json()
 # .. end-export-config-to-agentspec
+
+# .. start-import-config-from-agentspec
+loaded_agent = Agent.from_json(serialized_assistant)
+# .. end-import-config-from-agentspec
 
 # .. start-full-code
 from pyagentspec.agent import Agent
 from pyagentspec.llms import VllmConfig
 from pyagentspec.property import ListProperty, StringProperty
-from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ServerTool
 
 llm_config = VllmConfig(
@@ -113,5 +114,6 @@ Make sure to welcome the user first, their name is {{user_name}}, but keep it sh
     inputs=[StringProperty(title="user_name")]
 )
 
-serialized_assistant = AgentSpecSerializer().to_json(agent)
+serialized_assistant = agent.to_json()
+loaded_agent = Agent.from_json(serialized_assistant)
 # .. end-full-code

@@ -22,6 +22,7 @@ from .component import Component
 from .managerworkers import ManagerWorkers
 from .ociagent import OciAgent
 from .property import Property
+from .retrypolicy import RetryPolicy
 from .serialization import AgentSpecDeserializer, AgentSpecSerializer
 from .swarm import Swarm
 
@@ -32,6 +33,7 @@ __all__ = [
     "AgentSpecDeserializer",
     "AgentSpecSerializer",
     "Property",
+    "RetryPolicy",
     "Component",
     "Agent",
     "OpenAiAgent",

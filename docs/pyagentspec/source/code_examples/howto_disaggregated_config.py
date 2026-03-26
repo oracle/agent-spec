@@ -3,14 +3,15 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+# isort:skip_file
 # mypy: ignore-errors
 
 # .. start-define-components:
-from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
-from pyagentspec.tools import ClientTool
-from pyagentspec.property import StringProperty
 from pyagentspec.agent import Agent
-from pyagentspec.serialization import AgentSpecSerializer, AgentSpecDeserializer
+from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
+from pyagentspec.property import StringProperty
+from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
+from pyagentspec.tools import ClientTool
 
 llm_config_dev = OpenAiCompatibleConfig(
     name="llm-dev",
@@ -69,18 +70,18 @@ component_registry["llm_config"] = llm_config_prod
 # The `client_weather_tool` remains the one that was deserialized from `disagg_yaml`
 
 # Load the agent with the updated component registry
-loaded_agent = deserializer.from_yaml(
+loaded_agent = Agent.from_yaml(
     main_yaml,
     components_registry=component_registry,
 )
 # .. end-export-deserialization:
 
 # .. start-complete:
-from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
-from pyagentspec.tools import ClientTool
-from pyagentspec.property import StringProperty
 from pyagentspec.agent import Agent
-from pyagentspec.serialization import AgentSpecSerializer, AgentSpecDeserializer
+from pyagentspec.llms.vllmconfig import OpenAiCompatibleConfig
+from pyagentspec.property import StringProperty
+from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
+from pyagentspec.tools import ClientTool
 
 llm_config_dev = OpenAiCompatibleConfig(
     name="llm-dev",
@@ -135,7 +136,7 @@ component_registry["llm_config"] = llm_config_prod
 # The `client_weather_tool` remains the one that was deserialized from `disagg_yaml`
 
 # Load the agent with the updated component registry
-loaded_agent = deserializer.from_yaml(
+loaded_agent = Agent.from_yaml(
     main_yaml,
     components_registry=component_registry,
 )

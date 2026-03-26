@@ -15,6 +15,9 @@ transforms: []
 llm_config:
   component_type: VllmConfig
   api_key: null
+  ca_file: null
+  cert_file: null
+  key_file: null
   id: agi1
   name: agi1
   description: null
@@ -22,6 +25,7 @@ llm_config:
   default_generation_parameters: null
   url: http://some.where
   model_id: agi_model1
+  retry_policy: null
   api_type: chat_completions
 system_prompt: No matter what the user asks, don't reply but make a joke instead
 tools:
@@ -69,6 +73,7 @@ $referenced_components:
     id: mcp_transport
     name: mcp_transport
     auth: null
+    retry_policy: null
     description: null
     metadata: {}
     session_parameters:

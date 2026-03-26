@@ -7,6 +7,7 @@
 import pytest
 
 from pyagentspec.a2aagent import A2AAgent, A2AConnectionConfig, A2ASessionParameters
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -27,6 +28,26 @@ def a2aagent() -> A2AAgent:
             key_file="/path/to/key.pem",
             cert_file="/path/to/cert.pem",
             ssl_ca_cert="/path/to/ca.pem",
+        ),
+        session_parameters=A2ASessionParameters(timeout=20.0, poll_interval=3.0, max_retries=4),
+    )
+
+
+@pytest.fixture
+def a2aagent_with_retry_policy() -> A2AAgent:
+    return A2AAgent(
+        name="a2a_agent",
+        description="client to connect remote agent using a2a protocol",
+        id="agent123",
+        agent_url="http://127.0.0.1:8000",
+        connection_config=A2AConnectionConfig(
+            name="sample_connection_config",
+            timeout=100.0,
+            verify=True,
+            key_file="/path/to/key.pem",
+            cert_file="/path/to/cert.pem",
+            ssl_ca_cert="/path/to/ca.pem",
+            retry_policy=RetryPolicy(max_attempts=4, request_timeout=2.0, initial_retry_delay=0.5),
         ),
         session_parameters=A2ASessionParameters(timeout=20.0, poll_interval=3.0, max_retries=4),
     )
@@ -68,6 +89,30 @@ def test_can_serialize_and_deserialize_a2aagent(a2aagent: A2AAgent) -> None:
         _ = AgentSpecSerializer().to_json(a2aagent, agentspec_version=AgentSpecVersionEnum.v25_4_1)
     assert isinstance(deserialized_assistant, A2AAgent)
     assert deserialized_assistant == a2aagent
+
+
+def test_can_serialize_and_deserialize_a2aagent_with_retry_policy(
+    a2aagent_with_retry_policy: A2AAgent,
+) -> None:
+    dumped_agent = AgentSpecSerializer().to_dict(a2aagent_with_retry_policy)
+
+    assert dumped_agent["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert "retry_policy" not in dumped_agent
+    assert "retry_policy" in dumped_agent["connection_config"]
+
+    loaded_agent = AgentSpecDeserializer().from_dict(dumped_agent)
+
+    assert isinstance(loaded_agent, A2AAgent)
+    assert AgentSpecSerializer().to_dict(loaded_agent) == dumped_agent
+
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecSerializer().to_dict(
+            a2aagent_with_retry_policy, agentspec_version=AgentSpecVersionEnum.v26_1_0
+        )
+
+    dumped_agent["agentspec_version"] = AgentSpecVersionEnum.v26_1_0.value
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecDeserializer().from_dict(dumped_agent)
 
 
 def test_deserialize_a2aagent_from_file(a2aagent: A2AAgent) -> None:

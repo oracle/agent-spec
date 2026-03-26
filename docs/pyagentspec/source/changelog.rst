@@ -7,6 +7,20 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **New xAI model provider for OciGenAiConfig**
+
+  Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
+
+* **Convenience serialization APIs on Components**
+
+  Components now expose direct serialization and deserialization helpers:
+  ``to_yaml()``, ``to_json()``, ``to_dict()``, ``from_yaml()``,
+  ``from_json()``, and ``from_dict()``.
+  This provides a shorter API (e.g., ``agent.to_json()``) while preserving
+  compatibility with disaggregated configurations.
+
+  We thank @pullely-samuel for the contribution!
+
 * **Disaggregated configurations in LangGraph adapter**
 
   The LangGraph adapter now supports loading disaggregated components during deserialization.
@@ -38,6 +52,20 @@ Improvements
 
 New features
 ^^^^^^^^^^^^
+
+* **Retry policy for components doing remote calls:**
+
+  Added ``retry_policy`` support to components doing remote calls to enable
+  configuration of retries, backoff, and request timeouts across remote integrations.
+
+  For more information read the guide on :ref:`using LLM providers <howto-llmwithretrypolicy>`.
+
+* **Certificate configuration for OpenAI-compatible LLMs**
+
+  ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``
+  fields for HTTPS and mTLS connections to private endpoints.
+
+  For more information read the how-to guide on using :ref:`LLM Providers <howto-openaicompatibleconfig>`.
 
 * **New tool output streaming Event:**
 

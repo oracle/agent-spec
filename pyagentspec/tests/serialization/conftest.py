@@ -9,6 +9,7 @@ import json
 import pytest
 import yaml
 
+from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode
@@ -46,3 +47,14 @@ def simplest_flow() -> Flow:
 @pytest.fixture()
 def vllmconfig():
     yield VllmConfig(id="agi1", name="agi1", model_id="agi_model1", url="http://some.where")
+
+
+@pytest.fixture
+def simplest_agent() -> Agent:
+    llm_config = VllmConfig(
+        id="llm_config",
+        name="model_name",
+        model_id="some_model",
+        url="http://some.where",
+    )
+    return Agent(name="my_agent", system_prompt="Be helpful", llm_config=llm_config)

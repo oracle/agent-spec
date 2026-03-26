@@ -11,6 +11,7 @@ from pydantic.json_schema import SkipJsonSchema
 
 from pyagentspec.component import Component
 from pyagentspec.remoteagent import RemoteAgent
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 
@@ -50,9 +51,30 @@ class A2AConnectionConfig(Component):
     ssl_ca_cert: Optional[str] = None
     """Path to the trusted CA certificate file in PEM format, used to verify the server's identity."""
 
+    retry_policy: Optional[RetryPolicy] = None
+    """Optional retry configuration for requests sent through this A2A connection."""
+
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
         default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
     )
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        """Return fields that are not available for the requested Agent Spec version."""
+
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("retry_policy")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        """Infer the minimum Agent Spec version required by this A2A connection config."""
+
+        min_version = super()._infer_min_agentspec_version_from_configuration()
+        if self.retry_policy is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+        return min_version
 
 
 class A2AAgent(RemoteAgent):

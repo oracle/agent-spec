@@ -18,6 +18,7 @@ from pyagentspec.mcp import (
     StreamableHTTPTransport,
 )
 from pyagentspec.mcp.clienttransport import ClientTransport
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -103,6 +104,23 @@ def test_agent_with_mcp_tool_can_be_serialized_then_deserialized(
         },
     )
     assert example_agent_with_mcp_tool == new_agent
+
+
+def test_agent_with_mcp_tool_and_transport_retry_policy_can_be_serialized_then_deserialized() -> (
+    None
+):
+    client_transport = SSETransport(
+        id="client_transport_component_id",
+        name="sse_mcp_transport_with_retry",
+        url="https://some.where/sse",
+        retry_policy=RetryPolicy(max_attempts=3, initial_retry_delay=0.25),
+    )
+    example_agent_with_mcp_tool = get_example_agent_with_mcp_tool(client_transport)
+
+    dumped_agent = AgentSpecSerializer().to_dict(example_agent_with_mcp_tool)
+    loaded_agent = AgentSpecDeserializer().from_dict(dumped_agent)
+
+    assert AgentSpecSerializer().to_dict(loaded_agent) == dumped_agent
 
 
 def test_deserializing_mcp_tool_box_with_confirmation_raises_on_version_less_than_26_2():
