@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -14,7 +14,7 @@ from typing import Any, Awaitable, Callable, Optional, TypeVar
 import anyio
 import httpx
 from anyio import from_thread
-from sniffio import AsyncLibraryNotFoundError
+from sniffio import AsyncLibraryNotFoundError, current_async_library
 
 T = TypeVar("T")
 
@@ -83,6 +83,18 @@ class AsyncContext(Enum):
     SYNC_WORKER = "sync_worker"
 
 
+def _is_anyio_worker_thread() -> bool:
+    try:
+        # check_cancelled() is a lightweight public API (no I/O, no scheduling)
+        # that only succeeds inside an AnyIO worker thread spawned by
+        # to_thread.run_sync(). Outside that context it raises RuntimeError.
+        from_thread.check_cancelled()
+    except RuntimeError:
+        return False
+    else:
+        return True
+
+
 def get_execution_context() -> AsyncContext:
     """
     Return one of:
@@ -91,18 +103,16 @@ def get_execution_context() -> AsyncContext:
     - 'async'        → running inside the event loop
     """
     try:
-        anyio.get_current_task()
+        current_async_library()
         return AsyncContext.ASYNC
     except AsyncLibraryNotFoundError:
-        current_thread = from_thread.current_thread()  # type: ignore
-        worker_name = current_thread.name.lower()
-        if "worker" in worker_name and "anyio" in worker_name:
+        if _is_anyio_worker_thread():
             # for anyio workers, we can use specific methods to
             # handle back asynchronous code to the main loop
             return AsyncContext.SYNC_WORKER
-        else:
-            # otherwise, consider it as a synchronous thread
-            return AsyncContext.SYNC
+
+        # otherwise, consider it as a synchronous thread
+        return AsyncContext.SYNC
 
 
 def run_async_in_sync(
