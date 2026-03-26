@@ -773,6 +773,83 @@
         }
       ]
     },
+    "RetryPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_attempts": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "request_timeout": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Timeout"
+        },
+        "initial_retry_delay": {
+          "default": 1.0,
+          "minimum": 0,
+          "title": "Initial Retry Delay",
+          "type": "number"
+        },
+        "max_retry_delay": {
+          "default": 8.0,
+          "minimum": 0,
+          "title": "Max Retry Delay",
+          "type": "number"
+        },
+        "backoff_factor": {
+          "default": 2.0,
+          "exclusiveMinimum": 0,
+          "title": "Backoff Factor",
+          "type": "number"
+        },
+        "jitter": {
+          "anyOf": [
+            {
+              "enum": [
+                "decorrelated",
+                "equal",
+                "full",
+                "full_and_equal_for_throttle"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "full_and_equal_for_throttle",
+          "title": "Jitter"
+        },
+        "service_error_retry_on_any_5xx": {
+          "default": true,
+          "title": "Service Error Retry On Any 5Xx",
+          "type": "boolean"
+        },
+        "recoverable_statuses": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Recoverable Statuses",
+          "type": "object"
+        }
+      },
+      "title": "RetryPolicy",
+      "type": "object"
+    },
     "SSETransport": {
       "anyOf": [
         {
@@ -1145,6 +1222,17 @@
           ],
           "default": null,
           "title": "Ssl Ca Cert"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -1634,6 +1722,17 @@
           "additionalProperties": true,
           "title": "Sensitive Headers",
           "type": "object"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -4087,6 +4186,17 @@
         "client_config": {
           "$ref": "#/$defs/OciClientConfig"
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -4431,6 +4541,17 @@
           ],
           "default": null
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
@@ -4533,6 +4654,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null
@@ -4668,6 +4800,17 @@
               ],
               "default": null
             },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
+                }
+              ],
+              "default": null
+            },
             "url": {
               "title": "Url",
               "type": "string"
@@ -4789,6 +4932,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null
@@ -5393,6 +5547,17 @@
           "title": "Sensitive Headers",
           "type": "object"
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -5515,6 +5680,17 @@
               "default": null,
               "title": "Sensitive Headers"
             },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
+                }
+              ],
+              "default": null
+            },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
             },
@@ -5615,6 +5791,17 @@
           ],
           "default": null,
           "title": "Sensitive Headers"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
         },
         "key_file": {
           "title": "Key File",
@@ -6087,6 +6274,17 @@
               "default": null,
               "title": "Sensitive Headers"
             },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
+                }
+              ],
+              "default": null
+            },
             "$referenced_components": {
               "$ref": "#/$defs/ReferencedComponents"
             },
@@ -6187,6 +6385,17 @@
           ],
           "default": null,
           "title": "Sensitive Headers"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
         },
         "key_file": {
           "title": "Key File",
@@ -6713,6 +6922,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null

@@ -43,6 +43,13 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Retry policy for components doing remote calls:**
+
+  Added ``retry_policy`` support to components doing remote calls to enable
+  configuration of retries, backoff, and request timeouts across remote integrations.
+
+  For more information read the guide on :ref:`using LLM providers <howto-llmwithretrypolicy>`.
+
 * **Certificate configuration for OpenAI-compatible LLMs**
 
   ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``

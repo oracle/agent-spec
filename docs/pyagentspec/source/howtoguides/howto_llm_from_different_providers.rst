@@ -14,6 +14,24 @@ The available LLMs are:
 Their configuration is specified directly in their respective class constructor.
 This guide will show you how to configure LLMs from different LLM providers with examples and notes on usage.
 
+.. _howto-llmwithretrypolicy:
+
+Configure retry behavior for remote LLM calls
+=============================================
+
+All ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
+Use it to configure retry attempts, per-request timeouts, and backoff behavior
+for transient failures when calling remote LLM endpoints.
+
+For example, you can attach a retry policy directly to a ``VllmConfig``:
+
+.. literalinclude:: ../code_examples/howto_generation_config.py
+    :language: python
+    :start-after: # .. llm_retry_policy:
+    :end-before: # .. end-llm_retry_policy
+
+API Reference: :ref:`LlmConfig <llmconfig>`, :ref:`RetryPolicy <retrypolicy>`
+
 
 OciGenAiConfig
 ==============

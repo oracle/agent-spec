@@ -1,7 +1,7 @@
-Authentication
-==============
+Connectivity and Resilience
+===========================
 
-This page presents all APIs and classes related to Authentication.
+This page presents all APIs and classes related to connectivity and resilience.
 
 Auth
 ----
@@ -31,3 +31,10 @@ Auth
 
 .. _scopepolicy:
 .. autoclass:: pyagentspec.auth.ScopePolicy
+
+Retry Policy
+------------
+
+.. _retrypolicy:
+.. autoclass:: pyagentspec.retrypolicy.RetryPolicy
+    :exclude-members: model_config
