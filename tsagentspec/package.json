@@ -1,0 +1,57 @@
+{
+  "name": "agentspec",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the Oracle Open Agent Specification",
+  "license": "UPL-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oracle/agent-spec.git",
+    "directory": "tsagentspec"
+  },
+  "homepage": "https://github.com/oracle/agent-spec/tree/main/tsagentspec",
+  "keywords": [
+    "agent",
+    "agentspec",
+    "oracle",
+    "llm",
+    "ai"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit && eslint src tests examples",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "yaml": "^2.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^25.2.3",
+    "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^9.39.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.55.0",
+    "vitest": "^2.0.0"
+  }
+}
