@@ -29,6 +29,8 @@ Agent Spec defines a Component called ``LlmConfig`` that contains all necessary 
      provider: Optional[str]
      api_provider: Optional[str]
      api_type: Optional[str]
+     url: Optional[str]
+     api_key: SensitiveField[Optional[str]]
      default_generation_parameters: Optional[Dict[str, Any]]
 
 The ``model_id`` field is required. The optional ``provider``, ``api_provider``, and ``api_type`` fields

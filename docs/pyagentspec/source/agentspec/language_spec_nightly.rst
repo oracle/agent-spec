@@ -540,7 +540,7 @@ We define a Component called LlmConfig that contains all the details:
      api_provider: Optional[str]
      api_type: Optional[str]
      url: Optional[str]
-     api_key: Optional[str]
+     api_key: SensitiveField[Optional[str]]
      default_generation_parameters: Optional[Dict[str, Any]]
      retry_policy: Optional[RetryPolicy]
 
@@ -548,7 +548,7 @@ The ``model_id`` field is required and identifies the model to use.
 The ``provider`` field is optional and identifies the model provider (e.g. ``"openai"``, ``"meta"``, ``"anthropic"``, ``"cohere"``).
 The ``api_provider`` field is optional and identifies the API provider serving the model (e.g. ``"openai"``, ``"oci"``, ``"vllm"``, ``"ollama"``, ``"aws_bedrock"``, ``"vertex_ai"``).
 The ``api_type`` field is optional and identifies the wire protocol to use (e.g. ``"chat_completions"``, ``"responses"``).
-The ``url`` field is optional and specifies the URL of the API endpoint (e.g. ``"https://api.openai.com/v1"``).
+The ``url`` field is optional and specifies the URL of the API endpoint (e.g. ``"https://api.openai.com/v1"``). If not specified, the default API URL of the API provider (if any) is used.
 The ``api_key`` field is optional and specifies an API key for the remote LLM. When the configuration is exported, the value is replaced by a reference.
 The ``default_generation_parameters`` field specifies the default generation parameters that should be used when prompting the LLM.
 These parameters are specified as a dictionary of parameter names and respective values.
@@ -2933,6 +2933,8 @@ See all the fields below that are considered sensitive fields:
 | OpenAiCompatibleConfig           | ca_file            |
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| LlmConfig                        | api_key            |
 +----------------------------------+--------------------+
 | GeminiAIStudioAuthConfig         | api_key            |
 +----------------------------------+--------------------+
