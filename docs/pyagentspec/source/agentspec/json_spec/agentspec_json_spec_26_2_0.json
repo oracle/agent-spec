@@ -3029,9 +3029,134 @@
         },
         {
           "$ref": "#/$defs/VllmConfig"
+        },
+        {
+          "additionalProperties": false,
+          "description": "A LLM configuration defines how to connect to a LLM to do generation requests.\n\nThis class can be used directly with the ``provider``, ``api_provider``, and ``api_type``\nfields to describe any LLM without a dedicated subclass. Concrete subclasses provide\nadditional configuration for specific LLM providers.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "model_id": {
+              "title": "Model Id",
+              "type": "string"
+            },
+            "provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Provider"
+            },
+            "api_provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Provider"
+            },
+            "api_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Type"
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Url"
+            },
+            "api_key": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Key"
+            },
+            "default_generation_parameters": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/LlmGenerationConfig"
+                }
+              ],
+              "default": null
+            },
+            "$referenced_components": {
+              "$ref": "#/$defs/ReferencedComponents"
+            },
+            "component_type": {
+              "const": "LlmConfig"
+            }
+          },
+          "required": [
+            "model_id",
+            "name"
+          ],
+          "title": "LlmConfig",
+          "type": "object"
         }
       ],
-      "x-abstract-component": true
+      "x-abstract-component": false
     },
     "BaseLlmNode": {
       "additionalProperties": false,
@@ -4556,14 +4681,6 @@
           "title": "Model Id",
           "type": "string"
         },
-        "compartment_id": {
-          "title": "Compartment Id",
-          "type": "string"
-        },
-        "serving_mode": {
-          "$ref": "#/$defs/ServingMode",
-          "default": "ON_DEMAND"
-        },
         "provider": {
           "anyOf": [
             {
@@ -4575,12 +4692,60 @@
           ],
           "default": null
         },
-        "client_config": {
-          "$ref": "#/$defs/OciClientConfig"
+        "api_provider": {
+          "default": "oci",
+          "title": "Api Provider",
+          "type": "string"
         },
         "api_type": {
           "$ref": "#/$defs/OciAPIType",
           "default": "oci"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "compartment_id": {
+          "title": "Compartment Id",
+          "type": "string"
+        },
+        "serving_mode": {
+          "$ref": "#/$defs/ServingMode",
+          "default": "ON_DEMAND"
+        },
+        "client_config": {
+          "$ref": "#/$defs/OciClientConfig"
         },
         "conversation_store_id": {
           "anyOf": [
@@ -4677,9 +4842,30 @@
           "title": "Model Id",
           "type": "string"
         },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "api_provider": {
+          "default": "ollama",
+          "title": "Api Provider",
+          "type": "string"
+        },
         "api_type": {
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
         },
         "api_key": {
           "anyOf": [
@@ -4692,6 +4878,17 @@
           ],
           "default": null,
           "title": "Api Key"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
         },
         "key_file": {
           "anyOf": [
@@ -4819,9 +5016,37 @@
               "title": "Model Id",
               "type": "string"
             },
+            "provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Provider"
+            },
+            "api_provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Provider"
+            },
             "api_type": {
               "$ref": "#/$defs/OpenAIAPIType",
               "default": "chat_completions"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
             },
             "api_key": {
               "anyOf": [
@@ -4834,6 +5059,17 @@
               ],
               "default": null,
               "title": "Api Key"
+            },
+            "default_generation_parameters": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/LlmGenerationConfig"
+                }
+              ],
+              "default": null
             },
             "key_file": {
               "anyOf": [
@@ -4951,9 +5187,31 @@
           "title": "Model Id",
           "type": "string"
         },
+        "provider": {
+          "default": "openai",
+          "title": "Provider",
+          "type": "string"
+        },
+        "api_provider": {
+          "default": "openai",
+          "title": "Api Provider",
+          "type": "string"
+        },
         "api_type": {
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
         },
         "api_key": {
           "anyOf": [
@@ -4966,6 +5224,17 @@
           ],
           "default": null,
           "title": "Api Key"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -6945,9 +7214,30 @@
           "title": "Model Id",
           "type": "string"
         },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "api_provider": {
+          "default": "vllm",
+          "title": "Api Provider",
+          "type": "string"
+        },
         "api_type": {
           "$ref": "#/$defs/OpenAIAPIType",
           "default": "chat_completions"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
         },
         "api_key": {
           "anyOf": [
@@ -6960,6 +7250,17 @@
           ],
           "default": null,
           "title": "Api Key"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
         },
         "key_file": {
           "anyOf": [
