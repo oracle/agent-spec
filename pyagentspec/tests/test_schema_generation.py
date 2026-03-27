@@ -71,6 +71,25 @@ def test_flow_schema_contains_all_concrete_node_types() -> None:
         assert component_type.__name__ in schema["$defs"]
 
 
+def test_bare_llmconfig_validates_in_parent_schema() -> None:
+    """When LlmConfig (concrete, non-abstract) is embedded in a parent component like Agent,
+    the parent schema must include LlmConfig itself plus all subclass schemas in $defs.
+    This tests the _ensure_subclass_schemas_exist path that fills missing subclass schemas
+    when the starting class for schema generation is NOT LlmConfig itself."""
+    schema = Agent.model_json_schema(mode="serialization")
+    # LlmConfig itself must appear as a valid option in the schema
+    assert "LlmConfig" in schema["$defs"]
+    # Serialized bare LlmConfig must validate against the Agent schema
+    serialized_agent = AgentSpecSerializer().to_yaml(
+        Agent(
+            name="test-agent",
+            llm_config=LlmConfig(name="test-llm", model_id="gpt-4o", api_provider="openai"),
+            system_prompt="test",
+        )
+    )
+    validate(yaml.safe_load(serialized_agent), schema)
+
+
 def test_agent_schema_contains_all_concrete_llm_types() -> None:
     schema = Agent.model_json_schema(mode="serialization")
     node_types = [
