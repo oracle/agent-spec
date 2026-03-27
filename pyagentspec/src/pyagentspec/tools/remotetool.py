@@ -55,6 +55,10 @@ class RemoteTool(Tool):
     """Additional headers for the API call.
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
+    timeout: Optional[float] = None
+    """Timeout in seconds for the HTTP request.
+       Defaults to None, which uses the httpx default timeout (5 seconds).
+       Set to a higher value for slow endpoints (e.g. transcription, inference)."""
 
     retry_policy: Optional[RetryPolicy] = None
     """Optional retry configuration for the HTTP call performed by this tool."""
