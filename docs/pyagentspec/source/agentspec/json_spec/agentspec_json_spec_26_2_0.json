@@ -3016,6 +3016,17 @@
           ],
           "default": null
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
