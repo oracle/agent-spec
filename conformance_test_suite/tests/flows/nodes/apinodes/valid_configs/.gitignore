@@ -1,0 +1,3 @@
+# TODO: Once test in `test_valid_configs_1_apinode_flow_multiple_outputs.py`
+# is fixed, remove this .gitignore file
+1_apinode_multiple_outputs_flow.yaml

@@ -1,0 +1,42 @@
+component_type: Agent
+description: An agent that provides assistance with tool usage.
+id: 0b0a2e06-7f9a-4e71-9e85-41c2a0c4c4b2
+inputs: []
+llm_config:
+  component_type: VllmConfig
+  default_generation_parameters:
+    max_tokens: null
+    temperature: 0.1
+    top_p: null
+  description: null
+  id: 6d8f1b6c-1b95-4e6f-86d7-5b7f5b0f2c2a
+  metadata: {}
+  model_id: Llama-4-Maverick
+  name: llama-maverick
+  url: http://localhost:5006
+metadata: {}
+name: Calculator agent with 1 client tool requiring confirmation
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: |
+  You are a helpful calculator agent.
+  Your duty is to compute the result of the given operation using tools, and to output the result.
+  It's important that you reply with the result only.
+tools:
+- component_type: ClientTool
+  description: Sum two numbers
+  id: sum_tool
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: sum_tool
+  outputs:
+  - title: result
+    type: number
+  requires_confirmation: true
+agentspec_version: 25.4.2
