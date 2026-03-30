@@ -120,6 +120,22 @@
                 "name": "pyagentspec.llms.OciGenAiConfig"
             },
             {
+                "path": "pyagentspec.llms.geminiconfig.GeminiConfig",
+                "name": "pyagentspec.llms.GeminiConfig"
+            },
+            {
+                "path": "pyagentspec.llms.geminiauthconfig.GeminiAuthConfig",
+                "name": "pyagentspec.llms.GeminiAuthConfig"
+            },
+            {
+                "path": "pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig",
+                "name": "pyagentspec.llms.GeminiAIStudioAuthConfig"
+            },
+            {
+                "path": "pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig",
+                "name": "pyagentspec.llms.GeminiVertexAIAuthConfig"
+            },
+            {
                 "path": "pyagentspec.llms.ociclientconfig.OciClientConfig",
                 "name": "pyagentspec.llms.OciClientConfig"
             },

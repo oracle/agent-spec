@@ -105,6 +105,13 @@ New features
 
   For more information read the :doc:`adapter page <adapters/wayflow/index>`.
 
+* **Gemini LLM configuration support**
+
+  Added ``GeminiConfig`` together with ``GeminiAIStudioAuthConfig`` and
+  ``GeminiVertexAIAuthConfig`` to represent Gemini models in Agent Spec.
+
+  For more information read the :doc:`API Reference <api/llmmodels>`.
+
 * **Added Microsoft Agent Framework adapter to pyagentspec:**
 
   The Microsoft Agent Framework adapter is now available as part of ``pyagentspec``.

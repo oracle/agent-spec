@@ -70,11 +70,12 @@ def auth_profile_contains_security_token(client_config):
 
 
 # Evaluate once at import-time for skip decorator
+_SEC_TOKEN_PROFILE_NAME = OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN or "DEFAULT"
 _SEC_TOKEN_PRESENT = auth_profile_contains_security_token(
     OciClientConfigWithSecurityToken(
         name="with_security_token",
         service_endpoint=OCI_SERVICE_ENDPOINT,
-        auth_profile=OCI_AUTH_PROFILE_WITH_SECURITY_TOKEN or "DEFAULT",
+        auth_profile=_SEC_TOKEN_PROFILE_NAME,
         auth_file_location=_oci_user_config_path(),
     )
 )
@@ -121,7 +122,7 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
     client_config = OciClientConfigWithSecurityToken(
         name="with_security_token",
         service_endpoint=OCI_SERVICE_ENDPOINT,
-        auth_profile="WEBAUTH",
+        auth_profile=_SEC_TOKEN_PROFILE_NAME,
         auth_file_location=_oci_user_config_path(),
     )
     llm_cfg = OciGenAiConfig(

@@ -44,11 +44,17 @@ from pyagentspec.flows.nodes import (
     ToolNode,
 )
 from pyagentspec.llms import (
+    GeminiConfig,
     OciGenAiConfig,
     OllamaConfig,
     OpenAiCompatibleConfig,
     OpenAiConfig,
     VllmConfig,
+)
+from pyagentspec.llms.geminiauthconfig import (
+    GeminiAIStudioAuthConfig,
+    GeminiAuthConfig,
+    GeminiVertexAIAuthConfig,
 )
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ociclientconfig import (
@@ -117,6 +123,10 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "OciClientConfigWithInstancePrincipal": OciClientConfigWithInstancePrincipal,
     "OciClientConfigWithResourcePrincipal": OciClientConfigWithResourcePrincipal,
     "OciClientConfigWithSecurityToken": OciClientConfigWithSecurityToken,
+    "GeminiAuthConfig": GeminiAuthConfig,
+    "GeminiAIStudioAuthConfig": GeminiAIStudioAuthConfig,
+    "GeminiVertexAIAuthConfig": GeminiVertexAIAuthConfig,
+    "GeminiConfig": GeminiConfig,
     "OciGenAiConfig": OciGenAiConfig,
     "OllamaConfig": OllamaConfig,
     "OpenAiCompatibleConfig": OpenAiCompatibleConfig,

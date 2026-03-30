@@ -243,6 +243,46 @@
         }
       ]
     },
+    "GeminiAIStudioAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "GeminiAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "GeminiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "GeminiVertexAIAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "HandoffMode": {
       "description": "Controls how agents in a Swarm may delegate work to one another.\n\nThis setting determines whether an agent is equipped with:\n\n  * *send_message* \u2014 a tool for asking another agent to perform a sub-task and reply back.\n\n  * *handoff_conversation* \u2014 a tool for transferring the full user\u2013agent conversation to another agent.\n\nDepending on the selected mode, agents have different capabilities for delegation and collaboration.",
       "enum": [
@@ -2856,6 +2896,243 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseGeminiAIStudioAuthConfig": {
+      "additionalProperties": false,
+      "description": "Authentication settings for Gemini via Google AI Studio.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "GeminiAIStudioAuthConfig"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "GeminiAIStudioAuthConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseGeminiAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GeminiAIStudioAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/GeminiVertexAIAuthConfig"
+        }
+      ],
+      "x-abstract-component": true
+    },
+    "BaseGeminiConfig": {
+      "additionalProperties": false,
+      "description": "Configure a connection to a Gemini LLM (AI Studio or Vertex AI).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "default_generation_parameters": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "auth": {
+          "$ref": "#/$defs/GeminiAuthConfig"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "GeminiConfig"
+        }
+      },
+      "required": [
+        "auth",
+        "model_id",
+        "name"
+      ],
+      "title": "GeminiConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseGeminiVertexAIAuthConfig": {
+      "additionalProperties": false,
+      "description": "Authentication settings for Gemini via Google Vertex AI.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Project Id"
+        },
+        "location": {
+          "default": "global",
+          "title": "Location",
+          "type": "string"
+        },
+        "credentials": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credentials"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "GeminiVertexAIAuthConfig"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "GeminiVertexAIAuthConfig",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseInMemoryCollectionDatastore": {
       "additionalProperties": false,
       "description": "In-memory datastore for testing and development purposes.",
@@ -3015,6 +3292,9 @@
     },
     "BaseLlmConfig": {
       "anyOf": [
+        {
+          "$ref": "#/$defs/GeminiConfig"
+        },
         {
           "$ref": "#/$defs/OciGenAiConfig"
         },
@@ -7081,6 +7361,18 @@
             "$ref": "#/$defs/BaseFlowNode"
           },
           {
+            "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseGeminiAuthConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseGeminiConfig"
+          },
+          {
+            "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
+          },
+          {
             "$ref": "#/$defs/BaseInMemoryCollectionDatastore"
           },
           {
@@ -7553,6 +7845,66 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseFlowNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedGeminiAIStudioAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiAIStudioAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedGeminiAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiAuthConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedGeminiConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiConfig"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedGeminiVertexAIAuthConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseGeminiVertexAIAuthConfig"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -8352,6 +8704,18 @@
     },
     {
       "$ref": "#/$defs/VersionedFlowNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedGeminiAIStudioAuthConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedGeminiAuthConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedGeminiConfig"
+    },
+    {
+      "$ref": "#/$defs/VersionedGeminiVertexAIAuthConfig"
     },
     {
       "$ref": "#/$defs/VersionedInMemoryCollectionDatastore"

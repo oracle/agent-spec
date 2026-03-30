@@ -66,6 +66,25 @@ OpenAI Models
 .. autoclass:: pyagentspec.llms.openaiconfig.OpenAiConfig
     :exclude-members: model_post_init, model_config
 
+Gemini Models
+^^^^^^^^^^^^^
+
+.. _geminiauthconfig:
+.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiAuthConfig
+    :exclude-members: model_post_init, model_config
+
+.. _geminiaistudioauthconfig:
+.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig
+    :exclude-members: model_post_init, model_config
+
+.. _geminivertexaiauthconfig:
+.. autoclass:: pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig
+    :exclude-members: model_post_init, model_config
+
+.. _geminiconfig:
+.. autoclass:: pyagentspec.llms.geminiconfig.GeminiConfig
+    :exclude-members: model_post_init, model_config
+
 OciGenAi Models
 ^^^^^^^^^^^^^^^
 
