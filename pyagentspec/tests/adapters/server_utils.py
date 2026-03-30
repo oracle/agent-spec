@@ -163,7 +163,7 @@ def start_uvicorn_server(
 ) -> Tuple[subprocess.Popen, str]:
     port = port or get_available_port()
     process_args = [
-        "python",
+        sys.executable,
         "-u",  # unbuffered output
         server_file_path,
         "--host",
