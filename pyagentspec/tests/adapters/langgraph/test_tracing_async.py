@@ -25,6 +25,7 @@ from pyagentspec.tracing.spans import (
     FlowExecutionSpan,
     LlmGenerationSpan,
     NodeExecutionSpan,
+    Span,
     ToolExecutionSpan,
 )
 from pyagentspec.tracing.trace import Trace
@@ -35,9 +36,7 @@ from .test_tracing import DummySpanProcessor
 CONFIGS = Path(__file__).parent / "configs"
 
 
-def _assert_agent_llm_tool_async(
-    proc: DummySpanProcessor, *, tool_tracing_is_async: bool = False
-) -> None:
+def _assert_agent_llm_tool_async(proc: DummySpanProcessor) -> None:
     # Sync startup/shutdown must not be used in async Trace
     assert proc.started_up is False
     assert proc.shut_down is False
@@ -71,22 +70,31 @@ def _assert_agent_llm_tool_async(
     assert not any(issubclass(t, ToolExecutionResponse) for t in sync_etypes)
 
 
-def _assert_flow_async(proc: DummySpanProcessor) -> None:
+def _assert_flow_async(
+    proc: DummySpanProcessor,
+    *,
+    flow_tracing_has_llm: bool = True,
+    expected_tool_response_outputs: dict[str, object] | None = None,
+) -> None:
     # Sync startup/shutdown must not be used in async Trace
     assert proc.started_up is False
     assert proc.shut_down is False
 
-    # Async spans (Flow + Node + LLM must be async)
+    # Async spans (Flow + Node must be async, LLM when present)
     started_types = [type(s) for s in proc.starts_async]
     ended_types = [type(s) for s in proc.ends_async]
     assert any(issubclass(t, FlowExecutionSpan) for t in started_types)
     assert any(issubclass(t, FlowExecutionSpan) for t in ended_types)
     assert any(issubclass(t, NodeExecutionSpan) for t in started_types)
     assert any(issubclass(t, NodeExecutionSpan) for t in ended_types)
-    assert any(issubclass(t, LlmGenerationSpan) for t in started_types)
-    assert any(issubclass(t, LlmGenerationSpan) for t in ended_types)
     assert any(issubclass(t, ToolExecutionSpan) for t in started_types)
     assert any(issubclass(t, ToolExecutionSpan) for t in ended_types)
+    if flow_tracing_has_llm:
+        assert any(issubclass(t, LlmGenerationSpan) for t in started_types)
+        assert any(issubclass(t, LlmGenerationSpan) for t in ended_types)
+    else:
+        assert not any(issubclass(t, LlmGenerationSpan) for t in started_types)
+        assert not any(issubclass(t, LlmGenerationSpan) for t in ended_types)
 
     # Async events
     etypes = [type(e) for (e, _s) in proc.events_async]
@@ -94,10 +102,14 @@ def _assert_flow_async(proc: DummySpanProcessor) -> None:
     assert any(issubclass(t, FlowExecutionEnd) for t in etypes)
     assert any(issubclass(t, NodeExecutionStart) for t in etypes)
     assert any(issubclass(t, NodeExecutionEnd) for t in etypes)
-    assert any(issubclass(t, LlmGenerationRequest) for t in etypes)
-    assert any(issubclass(t, LlmGenerationResponse) for t in etypes)
     assert any(issubclass(t, ToolExecutionRequest) for t in etypes)
     assert any(issubclass(t, ToolExecutionResponse) for t in etypes)
+    if flow_tracing_has_llm:
+        assert any(issubclass(t, LlmGenerationRequest) for t in etypes)
+        assert any(issubclass(t, LlmGenerationResponse) for t in etypes)
+    else:
+        assert not any(issubclass(t, LlmGenerationRequest) for t in etypes)
+        assert not any(issubclass(t, LlmGenerationResponse) for t in etypes)
 
     # Ensure flow-level key events are not emitted via sync API
     sync_etypes = [type(e) for (e, _s) in proc.events]
@@ -109,6 +121,15 @@ def _assert_flow_async(proc: DummySpanProcessor) -> None:
     assert not any(issubclass(t, LlmGenerationResponse) for t in sync_etypes)
     assert not any(issubclass(t, ToolExecutionRequest) for t in sync_etypes)
     assert not any(issubclass(t, ToolExecutionResponse) for t in sync_etypes)
+
+    if expected_tool_response_outputs is not None:
+        tool_response_events = [
+            event
+            for (event, _span) in proc.events_async
+            if isinstance(event, ToolExecutionResponse)
+        ]
+        assert len(tool_response_events) == 1
+        assert tool_response_events[0].outputs == expected_tool_response_outputs
 
 
 @pytest.mark.anyio
@@ -262,33 +283,61 @@ async def test_langgraph_ainvoke_tracing_emits_async_server_tool_events_for_flow
         response = await app.ainvoke(input={"inputs": {"x": 5}})
 
     assert response["outputs"] == {"result": 10}
+    _assert_flow_async(
+        proc,
+        flow_tracing_has_llm=False,
+        expected_tool_response_outputs={"result": 10},
+    )
 
-    started_types_async = [type(span) for span in proc.starts_async]
-    ended_types_async = [type(span) for span in proc.ends_async]
-    assert any(issubclass(span_type, FlowExecutionSpan) for span_type in started_types_async)
-    assert any(issubclass(span_type, FlowExecutionSpan) for span_type in ended_types_async)
-    assert any(issubclass(span_type, NodeExecutionSpan) for span_type in started_types_async)
-    assert any(issubclass(span_type, NodeExecutionSpan) for span_type in ended_types_async)
-    assert any(issubclass(span_type, ToolExecutionSpan) for span_type in started_types_async)
-    assert any(issubclass(span_type, ToolExecutionSpan) for span_type in ended_types_async)
 
-    event_types_async = [type(event) for (event, _span) in proc.events_async]
-    assert any(issubclass(event_type, FlowExecutionStart) for event_type in event_types_async)
-    assert any(issubclass(event_type, FlowExecutionEnd) for event_type in event_types_async)
-    assert any(issubclass(event_type, NodeExecutionStart) for event_type in event_types_async)
-    assert any(issubclass(event_type, NodeExecutionEnd) for event_type in event_types_async)
-    assert any(issubclass(event_type, ToolExecutionRequest) for event_type in event_types_async)
-    assert any(issubclass(event_type, ToolExecutionResponse) for event_type in event_types_async)
+@pytest.mark.anyio
+async def test_langgraph_ainvoke_tracing_falls_back_to_sync_tool_events_for_agent(
+    weather_agent_server_tool_yaml: str,
+) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
-    tool_response_events = [
-        event for (event, _span) in proc.events_async if isinstance(event, ToolExecutionResponse)
-    ]
-    assert len(tool_response_events) == 1
-    assert tool_response_events[0].outputs == {"result": 10}
+    # This verifies the async-tracing fallback in the LangGraph callback handler:
+    # tool events should use sync processor hooks when async tool-event hooks are not implemented,
+    # while the surrounding agent/LLM tracing continues to use async hooks.
+    class SyncToolEventFallbackSpanProcessor(DummySpanProcessor):
+        async def on_event_async(self, event: object, span: Span) -> None:
+            if isinstance(span, ToolExecutionSpan):
+                raise NotImplementedError
+            await super().on_event_async(event, span)
 
-    sync_event_types = [type(event) for (event, _span) in proc.events]
-    assert not any(issubclass(event_type, ToolExecutionRequest) for event_type in sync_event_types)
-    assert not any(issubclass(event_type, ToolExecutionResponse) for event_type in sync_event_types)
+    async def get_weather(city: str) -> str:
+        return f"The weather in {city} is sunny."
+
+    weather_agent = AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
+        weather_agent_server_tool_yaml
+    )
+
+    proc = SyncToolEventFallbackSpanProcessor()
+    async with Trace(
+        name="langgraph_tracing_async_server_tool_sync_fallback_test", span_processors=[proc]
+    ):
+        response = await weather_agent.ainvoke(
+            input={
+                "inputs": {},
+                "messages": [{"role": "user", "content": "What's the weather in Agadir?"}],
+            }
+        )
+        assert "sunny" in str(response).lower()
+
+    assert proc.started_up is False
+    assert proc.shut_down is False
+    assert proc.started_up_async is True
+    assert proc.shut_down_async is True
+
+    sync_event_types = [type(e) for (e, _s) in proc.events]
+    assert any(issubclass(t, ToolExecutionRequest) for t in sync_event_types)
+    assert any(issubclass(t, ToolExecutionResponse) for t in sync_event_types)
+
+    async_event_types = [type(e) for (e, _s) in proc.events_async]
+    assert any(issubclass(t, AgentExecutionStart) for t in async_event_types)
+    assert any(issubclass(t, LlmGenerationRequest) for t in async_event_types)
+    assert not any(issubclass(t, ToolExecutionRequest) for t in async_event_types)
+    assert not any(issubclass(t, ToolExecutionResponse) for t in async_event_types)
 
 
 @pytest.mark.anyio
@@ -314,4 +363,4 @@ async def test_langgraph_ainvoke_tracing_emits_agent_llm_and_async_server_tool_e
         )
         assert "sunny" in str(response).lower()
 
-    _assert_agent_llm_tool_async(proc, tool_tracing_is_async=True)
+    _assert_agent_llm_tool_async(proc)

@@ -270,6 +270,8 @@ def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):
 
     start_node = StartNode(name="start", inputs=start_inputs or tool_node.inputs)
     end_node = EndNode(name="end", outputs=end_outputs or tool_node.outputs)
+    input_name = start_node.inputs[0].title
+    output_name = end_node.outputs[0].title
 
     return Flow(
         name="flow",
@@ -283,19 +285,39 @@ def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):
             DataFlowEdge(
                 name="input_edge",
                 source_node=start_node,
-                source_output="x",
+                source_output=input_name,
                 destination_node=tool_node,
-                destination_input="x",
+                destination_input=input_name,
             ),
             DataFlowEdge(
                 name="output_edge",
                 source_node=tool_node,
-                source_output="result",
+                source_output=output_name,
                 destination_node=end_node,
-                destination_input="result",
+                destination_input=output_name,
             ),
         ],
     )
+
+
+def _make_langchain_tool_decorator_tool_and_server_tool(*, tool_name: str, infer_schema: bool):
+    from langchain.tools import tool
+
+    tool_decorator = tool(tool_name) if infer_schema else tool(tool_name, infer_schema=False)
+
+    @tool_decorator
+    def search(query: str) -> str:
+        """Search the web for information."""
+        return f"Results for: {query}"
+
+    server_tool = ServerTool(
+        name=tool_name,
+        description="Search the web for information.",
+        inputs=[Property(title="query", json_schema={"type": "string"})],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    return search, server_tool
 
 
 def _invoke_until_interrupt(app, payload, config):
@@ -817,6 +839,64 @@ async def test_async_server_structured_tool_registry_entry_uses_coroutine() -> N
     assert lang_tool.func is None
     assert lang_tool.coroutine is not None
     assert await lang_tool.ainvoke({"x": 5}) == 10
+
+
+@pytest.mark.parametrize(
+    ("tool_name", "registry_is_structured_tool"),
+    [
+        ("web_search", True),
+        ("simple_search", False),
+    ],
+)
+def test_server_tool_langchain_tool_decorator_registry_entry_converts_to_structured_tool(
+    tool_name: str,
+    registry_is_structured_tool: bool,
+) -> None:
+    from langchain_core.tools import Tool
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    registry_tool, server_tool = _make_langchain_tool_decorator_tool_and_server_tool(
+        tool_name=tool_name,
+        infer_schema=registry_is_structured_tool,
+    )
+
+    if registry_is_structured_tool:
+        assert isinstance(registry_tool, StructuredTool)
+    else:
+        assert isinstance(registry_tool, Tool)
+        assert not isinstance(registry_tool, StructuredTool)
+
+    lang_tool = AgentSpecLoader(tool_registry={tool_name: registry_tool}).load_component(
+        server_tool
+    )
+
+    assert isinstance(lang_tool, StructuredTool)
+    assert lang_tool.func is not None
+    assert lang_tool.coroutine is None
+    assert lang_tool.invoke({"query": "agent spec"}) == "Results for: agent spec"
+
+
+def test_flow_with_server_tool_langchain_tool_decorator_fallback_registry_entry() -> None:
+    from langchain_core.tools import Tool
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    simple_search, server_tool = _make_langchain_tool_decorator_tool_and_server_tool(
+        tool_name="simple_search",
+        infer_schema=False,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+
+    assert isinstance(simple_search, Tool)
+    assert not isinstance(simple_search, StructuredTool)
+
+    app = AgentSpecLoader(tool_registry={"simple_search": simple_search}).load_component(flow)
+    result = app.invoke({"inputs": {"query": "agent spec"}})
+
+    assert result["outputs"] == {"result": "Results for: agent spec"}
 
 
 def test_flow_with_server_structured_tool_prefers_func_in_invoke() -> None:
