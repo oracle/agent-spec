@@ -22,6 +22,7 @@ from typing import (
     TypeGuard,
     Union,
     cast,
+    overload,
 )
 from uuid import uuid4
 
@@ -779,6 +780,7 @@ class AgentSpecToLangGraphConverter:
             description=tool_description,
             args_schema=args_model,
             func=_remote_tool,
+            coroutine=_as_structured_tool_coroutine(_remote_tool),
             callbacks=[
                 AgentSpecToolCallbackHandler(tool=remote_tool),
             ],
@@ -898,6 +900,7 @@ class AgentSpecToLangGraphConverter:
             description=tool_description,
             args_schema=args_model,
             func=client_tool,
+            coroutine=_as_structured_tool_coroutine(client_tool),
             # We do not add the tool execution callback here as it's not expected for client tools
         )
         return structured_tool
@@ -1602,6 +1605,22 @@ def _confirm_tool_use(tool_name: str, **tool_arguments: Any) -> Tuple[bool, str]
     return (decision["type"] == "approve"), decision.get("reason", "No reason was provided.")
 
 
+@overload
+def _confirm_then(
+    func: Callable[..., Awaitable[Any]],
+    tool_name: str,
+    requires_confirmation: bool,
+) -> Callable[..., Awaitable[Any]]: ...
+
+
+@overload
+def _confirm_then(
+    func: Callable[..., Any],
+    tool_name: str,
+    requires_confirmation: bool,
+) -> Callable[..., Any]: ...
+
+
 def _confirm_then(
     func: Callable[..., Any],
     tool_name: str,
@@ -1613,31 +1632,45 @@ def _confirm_then(
 
     if _is_async_callable(func):
 
-        async def _wrapped_async(**kwargs: Any) -> Any:
-            confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
+        async def _wrapped_async(*args: Any, **kwargs: Any) -> Any:
+            confirmation_arguments = {"args": args, **kwargs} if args else kwargs
+            confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
             if not confirmed:
                 return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
 
-            return await func(**kwargs)
+            return await func(*args, **kwargs)
 
         return _wrapped_async
 
-    def _wrapped_sync(**kwargs: Any) -> Any:
-        confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
+    def _wrapped_sync(*args: Any, **kwargs: Any) -> Any:
+        confirmation_arguments = {"args": args, **kwargs} if args else kwargs
+        confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
         if not confirmed:
             return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
 
-        return func(**kwargs)
+        return func(*args, **kwargs)
 
     return _wrapped_sync
 
 
-def _is_async_callable(func: Callable[..., Any]) -> bool:
+def _is_async_callable(func: Callable[..., Any]) -> TypeGuard[Callable[..., Awaitable[Any]]]:
     return inspect.iscoroutinefunction(func) or inspect.iscoroutinefunction(
         getattr(func, "__call__", None)
     )
+
+
+def _as_structured_tool_coroutine(
+    func: Callable[..., Any],
+) -> Callable[..., Awaitable[Any]]:
+    if _is_async_callable(func):
+        return func
+
+    async def _wrapped_async(*args: Any, **kwargs: Any) -> Any:
+        return func(*args, **kwargs)
+
+    return _wrapped_async
 
 
 class StructuredToolCallableKwargs(TypedDict, total=False):
@@ -1647,50 +1680,51 @@ class StructuredToolCallableKwargs(TypedDict, total=False):
 
 def _get_structured_tool_callable_kwargs(
     tool_obj: Union[StructuredTool, Callable[..., Any]],
-    *,
-    tool_name: Optional[str] = None,
+    tool_name: str,
     requires_confirmation: bool = False,
 ) -> StructuredToolCallableKwargs:
-    tool_callable_kwargs: StructuredToolCallableKwargs = {}
-    if tool_name is not None:
-        resolved_tool_name = tool_name
-    else:
-        tool_obj_name = getattr(tool_obj, "name", None)
-        if isinstance(tool_obj_name, str):
-            resolved_tool_name = tool_obj_name
-        else:
-            callable_name = getattr(tool_obj, "__name__", None)
-            resolved_tool_name = callable_name if isinstance(callable_name, str) else "tool"
+    """Return the callables to pass to StructuredTool.
+
+    Bare callables map to exactly one field:
+    - sync callable -> func
+    - async callable -> coroutine
+
+    Existing StructuredTool instances may expose one or both fields already.
+    We preserve those fields as-is and only wrap them for confirmation.
+    """
+    structured_tool_callable_kwargs: StructuredToolCallableKwargs = {}
 
     if isinstance(tool_obj, StructuredTool):
         if tool_obj.func is not None:
-            wrapped_func = _confirm_then(
+            structured_tool_callable_kwargs["func"] = _confirm_then(
                 func=tool_obj.func,
-                tool_name=resolved_tool_name,
+                tool_name=tool_name,
                 requires_confirmation=requires_confirmation,
             )
-            tool_callable_kwargs["coroutine" if _is_async_callable(wrapped_func) else "func"] = (
-                wrapped_func
-            )
-        coroutine = getattr(tool_obj, "coroutine", None)
+
+        coroutine = tool_obj.coroutine
         if coroutine is not None:
-            wrapped_coroutine = _confirm_then(
+            structured_tool_callable_kwargs["coroutine"] = _confirm_then(
                 func=coroutine,
-                tool_name=resolved_tool_name,
+                tool_name=tool_name,
                 requires_confirmation=requires_confirmation,
             )
-            tool_callable_kwargs["coroutine"] = wrapped_coroutine
     elif callable(tool_obj):
         wrapped_tool = _confirm_then(
             func=tool_obj,
-            tool_name=resolved_tool_name,
+            tool_name=tool_name,
             requires_confirmation=requires_confirmation,
         )
-        tool_callable_kwargs["coroutine" if _is_async_callable(wrapped_tool) else "func"] = (
-            wrapped_tool
+        if _is_async_callable(wrapped_tool):
+            structured_tool_callable_kwargs["coroutine"] = wrapped_tool
+        else:
+            structured_tool_callable_kwargs["func"] = wrapped_tool
+    else:
+        raise TypeError(
+            f"Unsupported tool type for '{tool_name}': {type(tool_obj)}. Expected callable or StructuredTool."
         )
 
-    return tool_callable_kwargs
+    return structured_tool_callable_kwargs
 
 
 def _ensure_checkpointer_and_valid_tool_config(

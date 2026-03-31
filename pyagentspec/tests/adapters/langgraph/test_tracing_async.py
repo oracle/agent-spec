@@ -49,13 +49,6 @@ def _assert_agent_llm_tool_async(
     assert any(issubclass(t, AgentExecutionSpan) for t in ended_types)
     assert any(issubclass(t, LlmGenerationSpan) for t in started_types)
     assert any(issubclass(t, LlmGenerationSpan) for t in ended_types)
-
-    if tool_tracing_is_async:
-        started_types = [type(s) for s in proc.starts_async]
-        ended_types = [type(s) for s in proc.ends_async]
-    else:
-        started_types = [type(s) for s in proc.starts]
-        ended_types = [type(s) for s in proc.ends]
     assert any(issubclass(t, ToolExecutionSpan) for t in started_types)
     assert any(issubclass(t, ToolExecutionSpan) for t in ended_types)
 
@@ -65,11 +58,6 @@ def _assert_agent_llm_tool_async(
     assert any(issubclass(t, AgentExecutionEnd) for t in etypes)
     assert any(issubclass(t, LlmGenerationRequest) for t in etypes)
     assert any(issubclass(t, LlmGenerationResponse) for t in etypes)
-
-    if tool_tracing_is_async:
-        etypes = [type(e) for (e, _s) in proc.events_async]
-    else:
-        etypes = [type(e) for (e, _s) in proc.events]
     assert any(issubclass(t, ToolExecutionRequest) for t in etypes)
     assert any(issubclass(t, ToolExecutionResponse) for t in etypes)
 
@@ -79,9 +67,8 @@ def _assert_agent_llm_tool_async(
     assert not any(issubclass(t, AgentExecutionEnd) for t in sync_etypes)
     assert not any(issubclass(t, LlmGenerationRequest) for t in sync_etypes)
     assert not any(issubclass(t, LlmGenerationResponse) for t in sync_etypes)
-    if tool_tracing_is_async:
-        assert not any(issubclass(t, ToolExecutionRequest) for t in sync_etypes)
-        assert not any(issubclass(t, ToolExecutionResponse) for t in sync_etypes)
+    assert not any(issubclass(t, ToolExecutionRequest) for t in sync_etypes)
+    assert not any(issubclass(t, ToolExecutionResponse) for t in sync_etypes)
 
 
 def _assert_flow_async(proc: DummySpanProcessor) -> None:
@@ -98,10 +85,6 @@ def _assert_flow_async(proc: DummySpanProcessor) -> None:
     assert any(issubclass(t, NodeExecutionSpan) for t in ended_types)
     assert any(issubclass(t, LlmGenerationSpan) for t in started_types)
     assert any(issubclass(t, LlmGenerationSpan) for t in ended_types)
-
-    # Sync spans (Tool is sync)
-    started_types = [type(s) for s in proc.starts]
-    ended_types = [type(s) for s in proc.ends]
     assert any(issubclass(t, ToolExecutionSpan) for t in started_types)
     assert any(issubclass(t, ToolExecutionSpan) for t in ended_types)
 
@@ -113,9 +96,6 @@ def _assert_flow_async(proc: DummySpanProcessor) -> None:
     assert any(issubclass(t, NodeExecutionEnd) for t in etypes)
     assert any(issubclass(t, LlmGenerationRequest) for t in etypes)
     assert any(issubclass(t, LlmGenerationResponse) for t in etypes)
-
-    # Sync events
-    etypes = [type(e) for (e, _s) in proc.events]
     assert any(issubclass(t, ToolExecutionRequest) for t in etypes)
     assert any(issubclass(t, ToolExecutionResponse) for t in etypes)
 
@@ -180,15 +160,15 @@ async def test_langgraph_astream_tracing_emits_agent_llm_and_tool_events(json_se
 
 @pytest.mark.anyio
 async def test_langgraph_ainvoke_tracing_emits_flow_events(json_server: str) -> None:
-
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     json_content = (CONFIGS / "haiku_without_a_flow.json").read_text()
     final_json = _replace_config_placeholders(json_content, json_server)
 
-    flow = AgentSpecLoader(
-        tool_registry={"remove_a": lambda haiku: haiku.replace("a", "")}
-    ).load_json(final_json)
+    async def ahaiku(haiku):
+        return haiku.replace("a", "")
+
+    flow = AgentSpecLoader(tool_registry={"remove_a": ahaiku}).load_json(final_json)
 
     proc = DummySpanProcessor()
     async with Trace(name="langgraph_tracing_async_test", span_processors=[proc]):
@@ -202,15 +182,15 @@ async def test_langgraph_ainvoke_tracing_emits_flow_events(json_server: str) -> 
 
 @pytest.mark.anyio
 async def test_langgraph_astream_tracing_emits_flow_events(json_server: str) -> None:
-
     from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    async def ahaiku(haiku):
+        return haiku.replace("a", "")
 
     json_content = (CONFIGS / "haiku_without_a_flow.json").read_text()
     final_json = _replace_config_placeholders(json_content, json_server)
 
-    flow = AgentSpecLoader(
-        tool_registry={"remove_a": lambda haiku: haiku.replace("a", "")}
-    ).load_json(final_json)
+    flow = AgentSpecLoader(tool_registry={"remove_a": ahaiku}).load_json(final_json)
 
     proc = DummySpanProcessor()
     async with Trace(name="langgraph_tracing_async_test", span_processors=[proc]):

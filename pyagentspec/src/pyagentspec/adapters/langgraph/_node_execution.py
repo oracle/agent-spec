@@ -6,7 +6,6 @@
 
 import json
 import logging
-import sys
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
@@ -17,7 +16,6 @@ from pyagentspec.adapters._utils import render_nested_object_template, render_te
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     BaseMessage,
-    BaseTool,
     Checkpointer,
     CompiledStateGraph,
     ExecuteOutput,
@@ -27,6 +25,7 @@ from pyagentspec.adapters.langgraph._types import (
     NodeExecutionDetails,
     NodeOutputsType,
     RunnableConfig,
+    StructuredTool,
     interrupt,
     langchain_core_messages_content,
     langgraph_graph,
@@ -307,10 +306,14 @@ class BranchingNodeExecutor(NodeExecutor):
 class ToolNodeExecutor(NodeExecutor):
     node: AgentSpecToolNode
 
-    def __init__(self, node: AgentSpecToolNode, tool: LangGraphTool) -> None:
+    def __init__(self, node: AgentSpecToolNode, tool: StructuredTool) -> None:
         super().__init__(node)
         if not isinstance(self.node, AgentSpecToolNode):
             raise TypeError("ToolNodeExecutor can only be initialized with ToolNode")
+        if not isinstance(tool, StructuredTool):
+            raise TypeError(
+                f"ToolNodeExecutor expected a LangChain StructuredTool, but got {type(tool)}."
+            )
         self.tool_callable = tool
 
     def _format_tool_result(self, tool_output: Any) -> ExecuteOutput:
@@ -429,46 +432,27 @@ class ToolNodeExecutor(NodeExecutor):
         return [self._extract_value_from_block(block) for block in blocks]
 
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
-        # LangGraphTool = Union[BaseTool, Callable[..., Any]]
         tool = self.tool_callable
 
-        if isinstance(tool, BaseTool):
-            if getattr(tool, "coroutine", None) is None:
-                return tool.invoke(inputs)
-            else:
-                # Async tool (e.g., MCP tool) executed from sync context
-                async def arun():  # type: ignore
-                    return await tool.ainvoke(inputs)
+        if tool.func is not None:
+            return tool.invoke(inputs)
 
-                return _run_async_in_sync_simple(arun, method_name="arun")
-        else:
-            # Plain callable: call directly
-            return tool(**inputs)
+        if tool.coroutine is None:
+            raise TypeError(
+                f"StructuredTool '{tool.name}' has neither func nor coroutine and cannot be executed."
+            )
+
+        # Async-only tool executed from sync context.
+        async def arun():  # type: ignore
+            return await tool.ainvoke(inputs)
+
+        return _run_async_in_sync_simple(arun, method_name="arun")
 
     async def _invoke_tool_async(self, inputs: Dict[str, Any]) -> Any:
-        tool = self.tool_callable
-        if isinstance(tool, BaseTool):
-            if getattr(tool, "coroutine", None) is None:
-                # Sync tool executed in async context via thread offloading.
-                # On Python < 3.11, langgraph's interrupt/get_config relies on contextvars
-                # that are not propagated to worker threads by default. This can lead to
-                # a KeyError for '__pregel_scratchpad' inside langgraph.types.interrupt.
-                # Our tests expect a RuntimeError("Called get_config outside of a runnable context")
-                # in this scenario. Map the KeyError accordingly on Python 3.10.
-                if sys.version_info < (3, 11):
-                    try:
-                        return await anyio.to_thread.run_sync(lambda: tool.invoke(inputs))
-                    except KeyError as exc:
-                        # Match both repr and args variants of the missing key
-                        missing_key = getattr(exc, "args", [None])[0]
-                        if missing_key == "__pregel_scratchpad":
-                            raise RuntimeError("Called get_config outside of a runnable context")
-                        raise
-                return await anyio.to_thread.run_sync(lambda: tool.invoke(inputs))
-            else:
-                return await tool.ainvoke(inputs)
-        else:
-            return await anyio.to_thread.run_sync(lambda: tool(**inputs))
+        # LangChain's StructuredTool.ainvoke() already falls back to the sync
+        # implementation when coroutine is absent, so the async path can always
+        # delegate here directly. The reverse fallback does not exist for invoke().
+        return await self.tool_callable.ainvoke(inputs)
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         tool_output = self._invoke_tool_sync(inputs)
