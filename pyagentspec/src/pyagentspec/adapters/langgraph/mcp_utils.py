@@ -4,9 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-import asyncio
 import ssl
-import warnings
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from typing import Any, Awaitable, Callable, Optional, TypeVar
@@ -139,25 +137,3 @@ def run_async_in_sync(
             return future.result()
         case unsupported_context:
             raise NotImplementedError(f"Unsupported async context: {unsupported_context}")
-
-
-def _run_async_in_sync_simple(
-    async_function: Callable[..., Awaitable[T]], *args: Any, method_name: str = ""
-) -> T:
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        # No loop in this thread (e.g., run_in_executor worker): safe to create one
-        return asyncio.run(async_function(*args))  # type: ignore
-    else:
-        # We’re already on an event loop; blocking is dangerous. Warn and offload.
-        warnings.warn(
-            f"Calling async from sync on a running loop; prefer using {method_name} async.",
-            UserWarning,
-        )
-
-        def thread_target() -> T:
-            return asyncio.run(async_function(*args))  # type: ignore
-
-        with ThreadPoolExecutor(max_workers=1) as ex:
-            return ex.submit(thread_target).result()

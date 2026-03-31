@@ -107,6 +107,8 @@ def _assert_flow_async(proc: DummySpanProcessor) -> None:
     assert not any(issubclass(t, NodeExecutionEnd) for t in sync_etypes)
     assert not any(issubclass(t, LlmGenerationRequest) for t in sync_etypes)
     assert not any(issubclass(t, LlmGenerationResponse) for t in sync_etypes)
+    assert not any(issubclass(t, ToolExecutionRequest) for t in sync_etypes)
+    assert not any(issubclass(t, ToolExecutionResponse) for t in sync_etypes)
 
 
 @pytest.mark.anyio

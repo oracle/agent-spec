@@ -30,7 +30,7 @@ from pyagentspec.adapters.langgraph._types import (
     langchain_core_messages_content,
     langgraph_graph,
 )
-from pyagentspec.adapters.langgraph.mcp_utils import _run_async_in_sync_simple
+from pyagentspec.adapters.langgraph.mcp_utils import run_async_in_sync
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
@@ -446,7 +446,7 @@ class ToolNodeExecutor(NodeExecutor):
         async def arun():  # type: ignore
             return await tool.ainvoke(inputs)
 
-        return _run_async_in_sync_simple(arun, method_name="arun")
+        return run_async_in_sync(arun, method_name="arun")
 
     async def _invoke_tool_async(self, inputs: Dict[str, Any]) -> Any:
         # LangChain's StructuredTool.ainvoke() already falls back to the sync
