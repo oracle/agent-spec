@@ -88,6 +88,78 @@ def test_convert_react_agent_without_tools_to_agentspec(
     assert not agentspec_agent.tools
 
 
+def test_convert_async_structured_tool_to_agentspec_server_tool(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_core.tools import StructuredTool
+
+    from pyagentspec.tools import ServerTool as AgentSpecServerTool
+
+    class WeatherToolArgs(BaseModel):
+        city: str
+
+    async def get_weather_async(city: str) -> str:
+        return f"The weather in {city} is sunny."
+
+    tool = StructuredTool(
+        name="get_weather",
+        description="Returns the weather in a certain city",
+        args_schema=WeatherToolArgs,
+        coroutine=get_weather_async,
+    )
+
+    agentspec_tool = agentspec_exporter.to_component(tool)
+
+    assert isinstance(agentspec_tool, AgentSpecServerTool)
+    assert agentspec_tool.name == "get_weather"
+    assert agentspec_tool.description == "Returns the weather in a certain city"
+    assert len(agentspec_tool.inputs) == 1
+    assert agentspec_tool.inputs[0].title == "city"
+
+
+def test_convert_react_agent_with_async_structured_tool_to_agentspec(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_core.tools import StructuredTool
+    from langchain_openai.chat_models import ChatOpenAI
+
+    model_id = "Llama-3.1-70B-Instruct"
+    url = "url.to.my.llama.model"
+    model = ChatOpenAI(
+        model=model_id,
+        api_key=SecretStr("EMPTY"),
+        base_url=f"https://{url}/v1",
+    )
+
+    class WeatherToolArgs(BaseModel):
+        city: str
+
+    async def get_weather_async(city: str) -> str:
+        return f"The weather in {city} is sunny."
+
+    tool = StructuredTool(
+        name="get_weather",
+        description="Returns the weather in a certain city",
+        args_schema=WeatherToolArgs,
+        coroutine=get_weather_async,
+    )
+    agent = create_agent(model=model, tools=[tool])
+
+    agentspec_agent = agentspec_exporter.to_component(agent)
+
+    assert isinstance(agentspec_agent, AgentSpecAgent)
+    config = agentspec_agent.llm_config
+    assert isinstance(config, OpenAiCompatibleConfig)
+    assert config.model_id == model_id
+    assert config.url == f"https://{url}/v1"
+    assert len(agentspec_agent.tools) == 1
+    assert agentspec_agent.tools[0].name == "get_weather"
+    assert agentspec_agent.tools[0].description == "Returns the weather in a certain city"
+    assert len(agentspec_agent.tools[0].inputs) == 1
+    assert agentspec_agent.tools[0].inputs[0].title == "city"
+
+
 class SchemaTypedDict(TypedDict, total=False):
     language: str
     request: str

@@ -163,7 +163,10 @@ def start_uvicorn_server(
 ) -> Tuple[subprocess.Popen, str]:
     port = port or get_available_port()
     process_args = [
-        "python",
+        # Use the exact interpreter running pytest. Relying on "python" makes the
+        # spawned MCP test server depend on PATH, which can resolve to a different
+        # environment in CI and cause these tests to stall.
+        sys.executable,
         "-u",  # unbuffered output
         server_file_path,
         "--host",

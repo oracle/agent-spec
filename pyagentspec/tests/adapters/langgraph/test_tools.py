@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import threading
 from typing import Any
 from unittest.mock import patch
 
@@ -243,11 +244,35 @@ def test_remote_tool_actual_endpoint_with_langgraph(
     assert result["listofvalues"] == ["a", "test2", "c"]
 
 
+def test_remote_tool_converts_to_structured_tool_with_func_and_coroutine() -> None:
+    import inspect
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    remote_tool = RemoteTool(
+        name="remote_echo",
+        description="Echo",
+        url="https://example.com/echo",
+        http_method="POST",
+        data={"x": "{{x}}"},
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    assert lang_tool.func is not None
+    assert lang_tool.coroutine is not None
+    assert inspect.iscoroutinefunction(lang_tool.coroutine)
+
+
 def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):
     """Builds Start -> Tool -> End flow with x->x and result->result edges."""
 
     start_node = StartNode(name="start", inputs=start_inputs or tool_node.inputs)
     end_node = EndNode(name="end", outputs=end_outputs or tool_node.outputs)
+    input_name = start_node.inputs[0].title
+    output_name = end_node.outputs[0].title
 
     return Flow(
         name="flow",
@@ -261,19 +286,97 @@ def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):
             DataFlowEdge(
                 name="input_edge",
                 source_node=start_node,
-                source_output="x",
+                source_output=input_name,
                 destination_node=tool_node,
-                destination_input="x",
+                destination_input=input_name,
             ),
             DataFlowEdge(
                 name="output_edge",
                 source_node=tool_node,
-                source_output="result",
+                source_output=output_name,
                 destination_node=end_node,
-                destination_input="result",
+                destination_input=output_name,
             ),
         ],
     )
+
+
+def _make_langchain_tool_decorator_tool_and_server_tool(*, tool_name: str, infer_schema: bool):
+    from langchain.tools import tool
+
+    tool_decorator = tool(tool_name) if infer_schema else tool(tool_name, infer_schema=False)
+
+    @tool_decorator
+    def search(query: str) -> str:
+        """Search the web for information."""
+        return f"Results for: {query}"
+
+    server_tool = ServerTool(
+        name=tool_name,
+        description="Search the web for information.",
+        inputs=[Property(title="query", json_schema={"type": "string"})],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    return search, server_tool
+
+
+def _make_flow_app_with_dual_mode_server_structured_tool():
+    from pydantic import BaseModel
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    called = {"sync": 0, "async": 0}
+
+    class DoubleToolArgs(BaseModel):
+        x: int
+
+    def double_tool_func(x: int) -> int:
+        called["sync"] += 1
+        return x * 2
+
+    async def double_tool_coroutine(x: int) -> int:
+        called["async"] += 1
+        return x * 3
+
+    registered_tool = StructuredTool(
+        name="double_tool",
+        description="Doubles the input number",
+        args_schema=DoubleToolArgs,
+        func=double_tool_func,
+        coroutine=double_tool_coroutine,
+    )
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+    app = AgentSpecLoader(tool_registry={"double_tool": registered_tool}).load_component(flow)
+    return app, called
+
+
+def _make_flow_app_with_async_only_server_tool():
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    called = {"n": 0, "thread_ident": None}
+
+    async def double_tool_func(x: int) -> int:
+        called["n"] += 1
+        called["thread_ident"] = threading.get_ident()
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+    app = AgentSpecLoader(tool_registry={"double_tool": double_tool_func}).load_component(flow)
+    return app, called
 
 
 def _invoke_until_interrupt(app, payload, config):
@@ -428,6 +531,27 @@ def test_flow_with_client_tool_confirmation_reject_returns_denial_and_no_client_
     assert "__interrupt__" not in result  # should not proceed to client request
     assert "outputs" in result
     assert "denied execution" in str(result["outputs"])
+
+
+def test_client_tool_converts_to_structured_tool_with_func_and_coroutine() -> None:
+    import inspect
+
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    client_tool = ClientTool(
+        name="client_double",
+        description="Client doubles the number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader(checkpointer=MemorySaver()).load_component(client_tool)
+
+    assert lang_tool.func is not None
+    assert lang_tool.coroutine is not None
+    assert inspect.iscoroutinefunction(lang_tool.coroutine)
 
 
 def test_flow_with_remote_tool_confirmation_approve_executes_http_request() -> None:
@@ -611,6 +735,57 @@ def test_server_tool_confirmation_in_agent_reject_denies_and_does_not_execute() 
     assert "denied execution" in tool_result_message.content
 
 
+@pytest.mark.anyio
+async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
+    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.messages import AIMessage
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+
+    called = {"n": 0}
+
+    async def double_tool_func(x: int) -> int:
+        called["n"] += 1
+        return x * 2
+
+    fake_model = FakeMessagesListChatModel(
+        responses=[
+            AIMessage(
+                content="Calling tool",
+                tool_calls=[{"name": "double_tool", "args": {"x": 5}, "id": "call_1"}],
+            ),
+            AIMessage(content="Done"),
+        ]
+    )
+    agent_spec = Agent(
+        name="agent",
+        system_prompt="You are a helpful agent.",
+        llm_config=OpenAiCompatibleConfig(name="llm", model_id="fake", url="null"),
+        tools=[
+            ServerTool(
+                name="double_tool",
+                description="Doubles input",
+                inputs=[IntegerProperty(title="x")],
+                outputs=[Property(title="result", json_schema={})],
+            )
+        ],
+    )
+    with patch.object(FakeMessagesListChatModel, "bind_tools", return_value=fake_model):
+        with patch.object(
+            AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=fake_model
+        ):
+            app = AgentSpecLoader(tool_registry={"double_tool": double_tool_func}).load_component(
+                agent_spec
+            )
+            result = await app.ainvoke({"inputs": {"x": 5}})
+
+    assert called["n"] == 1
+    assert "messages" in result and len(result["messages"]) > 1
+    tool_result_message = result["messages"][-2]
+    assert "10" in str(tool_result_message.content)
+
+
 def test_requires_confirmation_without_checkpointer_raises_for_server_tool_in_flow() -> None:
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -661,6 +836,185 @@ def test_server_tool_missing_from_registry_raises() -> None:
 
     with pytest.raises(ValueError, match="does not appear in the tool registry"):
         AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+
+
+@pytest.mark.anyio
+async def test_async_server_tool_callable_converts_to_structured_tool_coroutine() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    called = {"n": 0}
+
+    async def double_tool_func(x: int) -> int:
+        called["n"] += 1
+        return x * 2
+
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader(tool_registry={"double_tool": double_tool_func}).load_component(
+        server_tool
+    )
+
+    assert lang_tool.func is None
+    assert lang_tool.coroutine is not None
+    assert await lang_tool.ainvoke({"x": 5}) == 10
+    assert called["n"] == 1
+
+
+@pytest.mark.anyio
+async def test_async_server_structured_tool_registry_entry_uses_coroutine() -> None:
+    from pydantic import BaseModel
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    class DoubleToolArgs(BaseModel):
+        x: int
+
+    async def double_tool_func(x: int) -> int:
+        return x * 2
+
+    registered_tool = StructuredTool(
+        name="double_tool",
+        description="Doubles the input number",
+        args_schema=DoubleToolArgs,
+        coroutine=double_tool_func,
+    )
+    server_tool = ServerTool(
+        name="double_tool",
+        description="Doubles the input number",
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader(tool_registry={"double_tool": registered_tool}).load_component(
+        server_tool
+    )
+
+    assert lang_tool.func is None
+    assert lang_tool.coroutine is not None
+    assert await lang_tool.ainvoke({"x": 5}) == 10
+
+
+@pytest.mark.parametrize(
+    ("tool_name", "registry_is_structured_tool"),
+    [
+        ("web_search", True),
+        ("simple_search", False),
+    ],
+)
+def test_server_tool_langchain_tool_decorator_registry_entry_converts_to_structured_tool(
+    tool_name: str,
+    registry_is_structured_tool: bool,
+) -> None:
+    from langchain_core.tools import Tool
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    registry_tool, server_tool = _make_langchain_tool_decorator_tool_and_server_tool(
+        tool_name=tool_name,
+        infer_schema=registry_is_structured_tool,
+    )
+
+    if registry_is_structured_tool:
+        assert isinstance(registry_tool, StructuredTool)
+    else:
+        assert isinstance(registry_tool, Tool)
+        assert not isinstance(registry_tool, StructuredTool)
+
+    lang_tool = AgentSpecLoader(tool_registry={tool_name: registry_tool}).load_component(
+        server_tool
+    )
+
+    assert isinstance(lang_tool, StructuredTool)
+    assert lang_tool.func is not None
+    assert lang_tool.coroutine is None
+    assert lang_tool.invoke({"query": "agent spec"}) == "Results for: agent spec"
+
+
+def test_flow_with_server_tool_langchain_tool_decorator_fallback_registry_entry() -> None:
+    from langchain_core.tools import Tool
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._types import StructuredTool
+
+    simple_search, server_tool = _make_langchain_tool_decorator_tool_and_server_tool(
+        tool_name="simple_search",
+        infer_schema=False,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="n", tool=server_tool))
+
+    assert isinstance(simple_search, Tool)
+    assert not isinstance(simple_search, StructuredTool)
+
+    app = AgentSpecLoader(tool_registry={"simple_search": simple_search}).load_component(flow)
+    result = app.invoke({"inputs": {"query": "agent spec"}})
+
+    assert result["outputs"] == {"result": "Results for: agent spec"}
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("use_ainvoke", "expected_outputs", "expected_called"),
+    [
+        pytest.param(
+            False,
+            {"result": 10},
+            {"sync": 1, "async": 0},
+            id="invoke-prefers-func",
+        ),
+        pytest.param(
+            True,
+            {"result": 15},
+            {"sync": 0, "async": 1},
+            id="ainvoke-prefers-coroutine",
+        ),
+    ],
+)
+async def test_flow_with_server_structured_tool_prefers_expected_callable(
+    use_ainvoke: bool,
+    expected_outputs: dict[str, int],
+    expected_called: dict[str, int],
+) -> None:
+    app, called = _make_flow_app_with_dual_mode_server_structured_tool()
+    if use_ainvoke:
+        result = await app.ainvoke({"inputs": {"x": 5}})
+    else:
+        result = app.invoke({"inputs": {"x": 5}})
+
+    assert result["outputs"] == expected_outputs
+    assert called == expected_called
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("use_ainvoke", "expected_outputs"),
+    [
+        pytest.param(False, {"result": 10}, id="invoke-falls-back-to-coroutine"),
+        pytest.param(True, {"result": 10}, id="ainvoke-awaits-coroutine"),
+    ],
+)
+async def test_flow_with_async_only_server_tool_executes_via_expected_entrypoint(
+    use_ainvoke: bool,
+    expected_outputs: dict[str, int],
+) -> None:
+    app, called = _make_flow_app_with_async_only_server_tool()
+    caller_thread_ident = threading.get_ident()
+    if use_ainvoke:
+        result = await app.ainvoke({"inputs": {"x": 5}})
+    else:
+        result = app.invoke({"inputs": {"x": 5}})
+
+    assert result["outputs"] == expected_outputs
+    assert called["n"] == 1
+    # ainvoke executes the coroutine on the caller's async thread, while invoke
+    # reaches the async-only tool via run_async_in_sync() and runs it on a different thread.
+    assert (called["thread_ident"] == caller_thread_ident) is use_ainvoke
 
 
 def test_invalid_confirmation_resume_payload_raises() -> None:

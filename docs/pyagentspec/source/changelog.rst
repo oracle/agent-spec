@@ -43,6 +43,11 @@ Improvements
   Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
   span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.
 
+* **Async server tools in LangGraph adapter**
+
+  The LangGraph adapter now converts async server-tool callables to ``StructuredTool(coroutine=...)``
+  instead of ``func=...``, so async tools execute correctly when loaded from Agent Spec.
+
 * **OCI GenAI model support in LangGraph adapter**
 
   The LangGraph adapter now supports loading/exporting OCI GenAI models.
