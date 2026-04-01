@@ -25,9 +25,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -41,7 +41,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "yaml": "^2.4.0",
+    "yaml": "^2.8.3",
     "zod": "^3.23.0"
   },
   "devDependencies": {
