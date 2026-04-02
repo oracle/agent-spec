@@ -472,16 +472,9 @@ class Component(AbstractableModel, abstract=True):
         JsonSchemaValue:
             The json schema specification for the chosen Agent Spec Component
         """
-        if cls._is_abstract:
-            all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
-            adapter = TypeAdapter(Union[all_subclasses])  # type: ignore
-            json_schema = adapter.json_schema(by_alias=by_alias, mode=mode)
-        elif getattr(cls, "_include_subclasses_in_schema", False):
-            all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
-            adapter = TypeAdapter(Union[tuple([cls, *all_subclasses])])  # type: ignore
-            json_schema = adapter.json_schema(by_alias=by_alias, mode=mode)
-        else:
-            json_schema = super().model_json_schema(by_alias=by_alias, mode=mode, **kwargs)
+        all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
+        adapter = TypeAdapter(Union[tuple([*all_subclasses] if cls._is_abstract else [cls, *all_subclasses])])  # type: ignore
+        json_schema = adapter.json_schema(by_alias=by_alias, mode=mode, **kwargs)
         json_schema_with_all_types = replace_abstract_models_and_hierarchical_definitions(
             json_schema, mode, only_core_components=only_core_components, by_alias=by_alias
         )
@@ -1273,30 +1266,6 @@ class Component(AbstractableModel, abstract=True):
         return cls._ensure_deserialized_component_type(deserialized)
 
 
-def _ensure_subclass_schemas_exist(
-    json_schema: JsonSchemaValue,
-    subclasses: list[type],
-    mode: JsonSchemaMode,
-    by_alias: bool,
-) -> None:
-    """Add missing subclass schemas to ``$defs``.
-
-    When a concrete class also serves as a base (e.g. ``LlmConfig``), Pydantic
-    only generates the parent schema. Phase 1 (abstract resolution) skips it
-    because it is not abstract, so subclass schemas are never added to ``$defs``.
-    This function generates and merges them so that ``$ref`` pointers created
-    afterwards are valid.
-    """
-    missing = [sc for sc in subclasses if sc.__name__ not in json_schema["$defs"]]
-    if not missing:
-        return
-    generated = TypeAdapter(Union[tuple(missing)]).json_schema(  # type: ignore
-        mode=mode, by_alias=by_alias
-    )
-    for name, definition in generated.get("$defs", {}).items():
-        json_schema["$defs"].setdefault(name, definition)
-
-
 def replace_abstract_models_and_hierarchical_definitions(
     json_schema: JsonSchemaValue,
     mode: JsonSchemaMode,
@@ -1406,9 +1375,6 @@ def replace_abstract_models_and_hierarchical_definitions(
                 only_core_components=only_core_components
             )
             if len(all_subclasses) > 0:
-                _ensure_subclass_schemas_exist(
-                    json_schema, all_subclasses, mode=mode, by_alias=by_alias
-                )
                 concrete_type_json_schema = json_schema["$defs"][component_type_name]
                 json_schema["$defs"][component_type_name] = {
                     "anyOf": [
