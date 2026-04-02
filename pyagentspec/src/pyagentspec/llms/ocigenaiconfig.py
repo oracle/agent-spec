@@ -52,6 +52,10 @@ class OciGenAiConfig(LlmConfig):
 
     model_id: str
     """The identifier of the model to use."""
+
+    api_provider: str = "oci"
+    """The API provider used to serve the model."""
+
     compartment_id: str
     """The OCI compartment ID where the model is hosted."""
     serving_mode: SerializeAsEnum[ServingMode] = ServingMode.ON_DEMAND
@@ -69,6 +73,10 @@ class OciGenAiConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # api_provider is frozen/implied by component_type
+        fields_to_exclude.add("api_provider")
+        fields_to_exclude.add("api_key")
+        fields_to_exclude.add("url")
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("conversation_store_id")

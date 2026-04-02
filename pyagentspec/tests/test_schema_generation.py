@@ -38,8 +38,8 @@ def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
     for component_type in llm_config_subtypes:
         assert component_type.__name__ in schema["$defs"]
     assert AgentSpecVersionEnum.__name__ in schema["$defs"]
-    # +1 because the schema includes ComponentReferenceWithNestedReferences
-    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 1
+    # +1 for ComponentReferenceWithNestedReferences, +1 for LlmConfig itself (concrete)
+    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 2
 
 
 def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:
@@ -69,6 +69,25 @@ def test_flow_schema_contains_all_concrete_node_types() -> None:
     ]
     for component_type in node_types:
         assert component_type.__name__ in schema["$defs"]
+
+
+def test_bare_llmconfig_validates_in_parent_schema() -> None:
+    """When LlmConfig (concrete, non-abstract) is embedded in a parent component like Agent,
+    the parent schema must include LlmConfig itself plus all subclass schemas in $defs.
+    This tests the _ensure_subclass_schemas_exist path that fills missing subclass schemas
+    when the starting class for schema generation is NOT LlmConfig itself."""
+    schema = Agent.model_json_schema(mode="serialization")
+    # LlmConfig itself must appear as a valid option in the schema
+    assert "LlmConfig" in schema["$defs"]
+    # Serialized bare LlmConfig must validate against the Agent schema
+    serialized_agent = AgentSpecSerializer().to_yaml(
+        Agent(
+            name="test-agent",
+            llm_config=LlmConfig(name="test-llm", model_id="gpt-4o", api_provider="openai"),
+            system_prompt="test",
+        )
+    )
+    validate(yaml.safe_load(serialized_agent), schema)
 
 
 def test_agent_schema_contains_all_concrete_llm_types() -> None:

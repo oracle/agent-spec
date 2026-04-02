@@ -472,12 +472,9 @@ class Component(AbstractableModel, abstract=True):
         JsonSchemaValue:
             The json schema specification for the chosen Agent Spec Component
         """
-        if cls._is_abstract:
-            all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
-            adapter = TypeAdapter(Union[all_subclasses])  # type: ignore
-            json_schema = adapter.json_schema(by_alias=by_alias, mode=mode)
-        else:
-            json_schema = super().model_json_schema(by_alias=by_alias, mode=mode, **kwargs)
+        all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
+        adapter = TypeAdapter(Union[tuple([*all_subclasses] if cls._is_abstract else [cls, *all_subclasses])])  # type: ignore
+        json_schema = adapter.json_schema(by_alias=by_alias, mode=mode, **kwargs)
         json_schema_with_all_types = replace_abstract_models_and_hierarchical_definitions(
             json_schema, mode, only_core_components=only_core_components, by_alias=by_alias
         )

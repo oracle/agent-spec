@@ -7,6 +7,22 @@
 # fmt: off
 # mypy: ignore-errors
 
+# .. llmconfig-start
+from pyagentspec.llms import LlmConfig
+from pyagentspec.llms import LlmGenerationConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7)
+
+llm = LlmConfig(
+    name="openai-gpt4o",
+    model_id="gpt-4o",
+    provider="openai",
+    api_provider="openai",
+    api_type="chat_completions",
+    default_generation_parameters=generation_config,
+)
+# .. llmconfig-end
+
 # .. oci-start
 from pyagentspec.llms import OciGenAiConfig
 from pyagentspec.llms import LlmGenerationConfig
@@ -136,6 +152,20 @@ llm = OllamaConfig(
 # .. ollama-end
 
 # .. full-code-start
+from pyagentspec.llms import LlmConfig
+from pyagentspec.llms import LlmGenerationConfig
+
+generation_config = LlmGenerationConfig(max_tokens=256, temperature=0.7)
+
+llm = LlmConfig(
+    name="openai-gpt4o",
+    model_id="gpt-4o",
+    provider="openai",
+    api_provider="openai",
+    api_type="chat_completions",
+    default_generation_parameters=generation_config,
+)
+
 from pyagentspec.llms import OciGenAiConfig
 from pyagentspec.llms import LlmGenerationConfig
 from pyagentspec.llms.ociclientconfig import OciClientConfigWithApiKey

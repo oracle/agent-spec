@@ -96,7 +96,20 @@ class AgentSpecToOpenAIConverter:
             client = AsyncOpenAI(api_key=llm.api_key or "", base_url=base_url)
             return OAChatCompletionsModel(llm.model_id, client)
         else:
-            raise NotImplementedError(f"Unsupported LlmConfig: {type(llm)}")
+            # Bare LlmConfig — dispatch on api_provider string
+            if llm.api_provider == "openai":
+                if llm.url is not None:
+                    from openai import AsyncOpenAI
+
+                    client = AsyncOpenAI(
+                        api_key=llm.api_key or "", base_url=llm.url
+                    )
+                    return OAChatCompletionsModel(llm.model_id, client)
+                return llm.model_id
+            raise NotImplementedError(
+                f"LlmConfig with api_provider='{llm.api_provider}' is not supported "
+                f"in openai-agents. Consider using a specific LlmConfig subclass instead."
+            )
 
     def _agent_convert_to_openai(
         self,
