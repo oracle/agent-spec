@@ -20,8 +20,21 @@ These types round-trip correctly between JSON/YAML and TypeScript objects:
 
 ## Installation
 
+This package is not published to npm. Install from source:
+
 ```bash
-npm install agentspec
+git clone https://github.com/oracle/agent-spec.git
+cd agent-spec/tsagentspec
+npm ci
+npm run build
+```
+
+To consume it from another local project, add it as a local path dependency in that project's `package.json`:
+
+```json
+"dependencies": {
+  "agentspec": "file:../agent-spec/tsagentspec"
+}
 ```
 
 ## Usage

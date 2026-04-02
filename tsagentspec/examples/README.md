@@ -17,16 +17,10 @@ These examples demonstrate how to use the `agentspec` TypeScript SDK to define A
 
 ## Running
 
-Build the SDK first, then run any example with `tsx`:
+Build the SDK first, then run any example with `npm run example`:
 
 ```bash
 # From the tsagentspec directory
 npm run build
-npx tsx examples/01-basic-agent.ts
-```
-
-Or use `ts-node` with ESM support:
-
-```bash
-npx ts-node --esm examples/01-basic-agent.ts
+npm run example examples/01-basic-agent.ts
 ```
