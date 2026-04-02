@@ -6,7 +6,7 @@
 
 """This module defines the base class for all LLM configuration component."""
 
-from typing import ClassVar, Optional
+from typing import Optional
 
 from pyagentspec.component import Component
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
@@ -23,8 +23,6 @@ class LlmConfig(Component):
     fields to describe any LLM without a dedicated subclass. Concrete subclasses provide
     additional configuration for specific LLM providers.
     """
-
-    _include_subclasses_in_schema: ClassVar[bool] = True
 
     model_id: str
     """ID of the model to use"""
