@@ -8,7 +8,7 @@ import { BUILTIN_SCHEMA_MAP } from "../component-registry.js";
 import type { ComponentBase } from "../component.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
 import type { SerializationContext } from "./serialization-context.js";
-import type { SerializedFields } from "./types.js";
+import { OPAQUE_FIELDS, sanitizeOpaqueField, type SerializedFields } from "./types.js";
 
 /** Fields that are internal and should not appear in serialized output */
 const EXCLUDED_FIELDS = new Set(["componentType"]);
@@ -38,7 +38,6 @@ export class BuiltinsComponentSerializationPlugin
     const serialized: SerializedFields = {};
     const componentType = component.componentType;
     const obj = component as unknown as Record<string, unknown>;
-
     for (const [fieldName, fieldValue] of Object.entries(obj)) {
       // Skip internal fields
       if (EXCLUDED_FIELDS.has(fieldName)) continue;
@@ -62,9 +61,18 @@ export class BuiltinsComponentSerializationPlugin
           fieldValue as Record<string, unknown>,
           MODEL_OBJECT_FIELDS[fieldName]!,
         );
-      } else {
-        serialized[snakeName] = context.dumpField(fieldValue);
+        continue;
       }
+
+      // Opaque fields (metadata, data, headers, queryParams, etc.) hold user-controlled
+      // data. Sanitize only (strip dangerous keys, enforce depth) — never treat nested
+      // objects as components or properties.
+      if (OPAQUE_FIELDS.has(fieldName)) {
+        serialized[snakeName] = sanitizeOpaqueField(fieldValue);
+        continue;
+      }
+
+      serialized[snakeName] = context.dumpField(fieldValue);
     }
 
     return serialized;

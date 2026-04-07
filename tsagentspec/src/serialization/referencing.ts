@@ -6,6 +6,7 @@
  * other locations use $component_ref pointers.
  */
 import { isComponent, type ComponentBase } from "../component.js";
+import { OPAQUE_FIELDS } from "./types.js";
 
 /** Extract Component children from a field value (handles arrays, single components, dicts) */
 export function getChildrenFromFieldValue(
@@ -46,6 +47,8 @@ export function getAllDirectChildren(
     const obj = current as unknown as Record<string, unknown>;
     for (const [key, value] of Object.entries(obj)) {
       if (key === "id" || key === "componentType") continue;
+      // Opaque fields hold user-controlled data — never traverse them for component children
+      if (OPAQUE_FIELDS.has(key)) continue;
       const innerChildren = getChildrenFromFieldValue(value);
       for (const child of innerChildren) {
         directChildren.push(child.id);

@@ -16,6 +16,7 @@ import {
   createLlmNode,
   createControlFlowEdge,
   createFlow,
+  createApiNode,
   FlowBuilder,
   stringProperty,
   integerProperty,
@@ -228,6 +229,97 @@ describe("Round-trip serialization", () => {
       const nodes = result["nodes"] as Record<string, unknown>[];
       // start + llm + end
       expect(nodes.length).toBeGreaterThanOrEqual(3);
+    });
+  });
+
+  describe("Opaque payload fields round-trip unchanged", () => {
+    it("should preserve metadata values that look like components", () => {
+      const componentLikeMetadata = {
+        id: "some-id",
+        name: "some-name",
+        componentType: "Agent",
+        nested: { component_type: "Flow", name: "inner" },
+      };
+      const agent = createAgent({
+        name: "agent-with-metadata",
+        llmConfig: createOpenAiCompatibleConfig({
+          name: "llm",
+          url: "http://localhost",
+          modelId: "gpt-4",
+        }),
+        systemPrompt: "Hello",
+        metadata: componentLikeMetadata,
+      });
+      const result = roundTrip(agent);
+      expect(result["metadata"]).toEqual(componentLikeMetadata);
+    });
+
+    it("should preserve ApiNode headers, queryParams, and data verbatim", () => {
+      const headers = {
+        Authorization: "Bearer token",
+        // a key that looks like a serialized component
+        "X-Meta": { component_type: "Agent", name: "fake" },
+      };
+      const queryParams = { page: 1, filter: { id: "x", name: "y", component_type: "Flow" } };
+      const data = { payload: { componentType: "LlmNode", id: "abc", name: "n" } };
+
+      const node = createApiNode({
+        name: "api",
+        url: "https://example.com",
+        httpMethod: "POST",
+        headers,
+        queryParams,
+        data,
+      });
+
+      const json = serializer.toJson(node) as string;
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
+
+      expect(result["componentType"]).toBe("ApiNode");
+      expect(result["headers"]).toEqual(headers);
+      expect(result["queryParams"]).toEqual(queryParams);
+      expect(result["data"]).toEqual(data);
+    });
+
+    it("should not treat metadata objects as component children during serialization", () => {
+      // Without opaque-field protection, component-shaped dicts in metadata would be
+      // pulled into $referenced_components, corrupting the referencing structure.
+      const agent = createAgent({
+        name: "agent",
+        llmConfig: createOpenAiCompatibleConfig({
+          name: "llm",
+          url: "http://localhost",
+          modelId: "gpt-4",
+        }),
+        systemPrompt: "Hello",
+        metadata: {
+          shadow: { id: "fake-id", name: "shadow-agent", componentType: "Agent" },
+        },
+      });
+      const json = serializer.toJson(agent) as string;
+      const parsed = JSON.parse(json);
+      expect("$referenced_components" in parsed).toBe(false);
+
+      const result = deserializer.fromJson(json) as Record<string, unknown>;
+      expect((result["metadata"] as Record<string, unknown>)["shadow"]).toEqual({
+        id: "fake-id",
+        name: "shadow-agent",
+        componentType: "Agent",
+      });
+    });
+
+    it("should preserve BuiltinTool configuration verbatim", () => {
+      const configuration = {
+        language: "python",
+        options: { component_type: "Tool", name: "fake" },
+      };
+      const tool = createBuiltinTool({
+        name: "code-runner",
+        toolType: "code_execution",
+        configuration,
+      });
+      const result = roundTrip(tool);
+      expect(result["configuration"]).toEqual(configuration);
     });
   });
 });

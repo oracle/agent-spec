@@ -113,7 +113,50 @@ export const DANGEROUS_KEYS = new Set([
   "prototype",
 ]);
 
+/**
+ * Fields that hold user-controlled data and must never be traversed for
+ * nested component detection, $component_ref resolution, or isComponent checks.
+ */
+export const OPAQUE_FIELDS = new Set([
+  "metadata",         // ComponentBase — present on every component
+  "data",             // ApiNode
+  "headers",          // ApiNode
+  "queryParams",      // ApiNode
+  "sensitiveHeaders", // ApiNode
+  "configuration",    // BuiltinTool
+]);
+
 /** Marker used during deserialization to detect circular dependencies */
 export class DeserializationInProgressMarker {
   readonly __marker = "DESERIALIZATION_IN_PROGRESS";
+}
+
+const OPAQUE_FIELD_MAX_DEPTH = 100;
+
+/**
+ * Recursively sanitize an opaque field value: strip DANGEROUS_KEYS from
+ * any nested plain objects, and enforce a maximum nesting depth.
+ *
+ * Used for fields like `metadata`, `data`, `headers`, `queryParams` that hold
+ * user-controlled data and must never be traversed for component detection.
+ */
+export function sanitizeOpaqueField(value: unknown, depth = 0): unknown {
+  if (depth > OPAQUE_FIELD_MAX_DEPTH) {
+    throw new Error(
+      `Serialization nesting depth exceeds maximum of ${OPAQUE_FIELD_MAX_DEPTH}`,
+    );
+  }
+  if (value === null || value === undefined) return null;
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeOpaqueField(item, depth + 1));
+  }
+  if (typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (DANGEROUS_KEYS.has(k)) continue;
+      result[k] = sanitizeOpaqueField(v, depth + 1);
+    }
+    return result;
+  }
+  return value;
 }

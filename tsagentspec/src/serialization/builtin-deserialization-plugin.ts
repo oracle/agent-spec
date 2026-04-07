@@ -15,8 +15,10 @@ import type { DeserializationContext } from "./deserialization-context.js";
 import {
   DANGEROUS_KEYS,
   ALL_PROTOCOL_FIELDS,
+  OPAQUE_FIELDS,
   isSerializedComponent,
   isComponentRef,
+  sanitizeOpaqueField,
   type SerializedDict,
 } from "./types.js";
 import { snakeToCamel } from "./serialization-context.js";
@@ -112,6 +114,17 @@ export class BuiltinsComponentDeserializationPlugin
         opts[camelKey] = useCamelCase
           ? value
           : convertObjectKeys(value as Record<string, unknown>);
+        continue;
+      }
+
+      // Opaque fields (metadata, data, headers, queryParams, etc.) hold user-controlled
+      // data. Sanitize only (strip dangerous keys) — never resolve nested component
+      // refs or deserialize nested objects as components. Omit null/undefined so that
+      // Zod's field defaults can apply.
+      if (OPAQUE_FIELDS.has(camelKey)) {
+        if (value !== null && value !== undefined) {
+          opts[camelKey] = sanitizeOpaqueField(value);
+        }
         continue;
       }
 
