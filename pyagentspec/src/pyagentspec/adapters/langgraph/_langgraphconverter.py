@@ -1753,13 +1753,3 @@ def _ensure_checkpointer_and_valid_tool_config(
     elif isinstance(agentspec_tool, AgentSpecClientTool) and checkpointer is None:
         raise ValueError(f"A Checkpointer is required when using ClientTool '{tool_name}'.")
 
-    tool_output = agentspec_tool.outputs or []
-    if agentspec_tool.requires_confirmation and (
-        len(tool_output) != 1 or "type" in tool_output[0].json_schema
-    ):
-        # TODO: refine to only raise output property does not support string
-        raise ValueError(
-            f"Invalid output schema for tool '{tool_name}' requiring tool confirmation: "
-            f"json schema should be left unspecified when using tool confirmation, was {tool_output}. "
-            f'Please use outputs=[Property(title="{tool_name}", json_schema={{}})]'
-        )
