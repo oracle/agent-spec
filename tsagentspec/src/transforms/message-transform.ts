@@ -4,6 +4,25 @@
 import { z } from "zod";
 import { ComponentBaseSchema } from "../component.js";
 import { LlmConfigUnion, type LlmConfig } from "../llms/index.js";
+import {
+  InMemoryCollectionDatastoreSchema,
+  OracleDatabaseDatastoreSchema,
+  PostgresDatabaseDatastoreSchema,
+  type InMemoryCollectionDatastore,
+  type OracleDatabaseDatastore,
+  type PostgresDatabaseDatastore,
+} from "../datastores/index.js";
+
+export const SupportedDatastoresSchema = z.discriminatedUnion("componentType", [
+  InMemoryCollectionDatastoreSchema,
+  OracleDatabaseDatastoreSchema,
+  PostgresDatabaseDatastoreSchema,
+]);
+
+export type SupportedDatastores =
+  | InMemoryCollectionDatastore
+  | OracleDatabaseDatastore
+  | PostgresDatabaseDatastore;
 
 export const MessageSummarizationTransformSchema = ComponentBaseSchema.extend({
   componentType: z.literal("MessageSummarizationTransform"),
@@ -21,7 +40,7 @@ export const MessageSummarizationTransformSchema = ComponentBaseSchema.extend({
   cacheCollectionName: z
     .string()
     .default("summarized_messages_cache"),
-  datastore: z.record(z.unknown()).optional(),
+  datastore: SupportedDatastoresSchema.optional(),
 });
 
 export type MessageSummarizationTransform = z.infer<
@@ -46,7 +65,7 @@ export const ConversationSummarizationTransformSchema =
     cacheCollectionName: z
       .string()
       .default("summarized_conversations_cache"),
-    datastore: z.record(z.unknown()).optional(),
+    datastore: SupportedDatastoresSchema.optional(),
   });
 
 export type ConversationSummarizationTransform = z.infer<
@@ -72,7 +91,7 @@ export function createMessageSummarizationTransform(opts: {
   maxCacheSize?: number | null;
   maxCacheLifetime?: number | null;
   cacheCollectionName?: string;
-  datastore?: Record<string, unknown>;
+  datastore?: SupportedDatastores;
 }): MessageSummarizationTransform {
   return Object.freeze(
     MessageSummarizationTransformSchema.parse({
@@ -95,7 +114,7 @@ export function createConversationSummarizationTransform(opts: {
   maxCacheSize?: number | null;
   maxCacheLifetime?: number | null;
   cacheCollectionName?: string;
-  datastore?: Record<string, unknown>;
+  datastore?: SupportedDatastores;
 }): ConversationSummarizationTransform {
   const parsed = ConversationSummarizationTransformSchema.parse({
     ...opts,

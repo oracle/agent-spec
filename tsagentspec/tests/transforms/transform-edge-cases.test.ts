@@ -3,6 +3,7 @@ import {
   createConversationSummarizationTransform,
   createMessageSummarizationTransform,
   createOpenAiCompatibleConfig,
+  createInMemoryCollectionDatastore,
 } from "../../src/index.js";
 
 function makeLlmConfig() {
@@ -37,12 +38,17 @@ describe("ConversationSummarizationTransform validation", () => {
   });
 
   it("should accept a custom datastore", () => {
+    const datastore = createInMemoryCollectionDatastore({
+      name: "conv-cache",
+      datastoreSchema: {},
+    });
     const transform = createConversationSummarizationTransform({
       name: "conv-summary",
       llm: makeLlmConfig(),
-      datastore: { type: "redis", host: "localhost" },
+      datastore,
     });
-    expect(transform.datastore).toEqual({ type: "redis", host: "localhost" });
+    expect(transform.datastore?.componentType).toBe("InMemoryCollectionDatastore");
+    expect(transform.datastore?.name).toBe("conv-cache");
   });
 
   it("should have default summarizedConversationTemplate", () => {
@@ -71,12 +77,17 @@ describe("ConversationSummarizationTransform validation", () => {
 
 describe("MessageSummarizationTransform edge cases", () => {
   it("should accept a custom datastore", () => {
+    const datastore = createInMemoryCollectionDatastore({
+      name: "msg-cache",
+      datastoreSchema: {},
+    });
     const transform = createMessageSummarizationTransform({
       name: "msg-summary",
       llm: makeLlmConfig(),
-      datastore: { type: "memory" },
+      datastore,
     });
-    expect(transform.datastore).toEqual({ type: "memory" });
+    expect(transform.datastore?.componentType).toBe("InMemoryCollectionDatastore");
+    expect(transform.datastore?.name).toBe("msg-cache");
   });
 
   it("should have default summarizedMessageTemplate", () => {
