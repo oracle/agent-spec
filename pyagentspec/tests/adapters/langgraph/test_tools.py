@@ -786,6 +786,48 @@ async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
     assert "10" in str(tool_result_message.content)
 
 
+def test_server_tool_confirmation_with_typed_outputs_works() -> None:
+    """Tools with requires_confirmation and typed output schemas should load
+    without error.  The output schema is metadata for the LLM, not a runtime
+    validation constraint, so it should not be rejected."""
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def bash_func(command: str) -> dict:
+        return {"stdout": "hello", "stderr": "", "exit_code": 0}
+
+    server_tool = ServerTool(
+        name="bash",
+        description="Run a shell command",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+        outputs=[
+            Property(title="stdout", json_schema={"title": "stdout", "type": "string"}),
+            Property(title="stderr", json_schema={"title": "stderr", "type": "string"}),
+            Property(title="exit_code", json_schema={"title": "exit_code", "type": "number"}),
+        ],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
+
+    # Should not raise ValueError about output schema
+    app = AgentSpecLoader(
+        tool_registry={"bash": bash_func},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "typed-out-1"}})
+
+    interrupt_payload = _invoke_until_interrupt(
+        app, {"inputs": {"command": "echo hello"}}, config=config
+    )
+    assert interrupt_payload["action_requests"][0]["name"] == "bash"
+
+    result = app.invoke(_approve_command(), config=config)
+    assert result["outputs"] is not None
+
+
 def test_requires_confirmation_without_checkpointer_raises_for_server_tool_in_flow() -> None:
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
