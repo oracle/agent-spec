@@ -34,6 +34,9 @@ LANGGRAPH_DEPS = [
     "anyio>=4.10.0,<4.12.0",
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
+    # langgraph-prebuilt 1.0.9 imports runtime symbols that are not present in
+    # the langgraph 1.0.x series we currently support.
+    "langgraph-prebuilt<1.0.9",
     "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
 ]
 
