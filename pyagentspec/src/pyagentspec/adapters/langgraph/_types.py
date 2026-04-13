@@ -78,17 +78,18 @@ class NodeExecutionDetails(TypedDict, total=False):
 
 NodeOutputsType: TypeAlias = Dict[str, Any]
 ExecuteOutput: TypeAlias = Tuple[NodeOutputsType, NodeExecutionDetails]
+NextNodeInputs: TypeAlias = Dict[str, Dict[str, Any]]
 
 
 class FlowStateSchema(TypedDict):
-    inputs: Dict[str, Dict[str, Any]]
+    inputs: NextNodeInputs
     outputs: NodeOutputsType
     messages: Messages
     node_execution_details: NodeExecutionDetails
 
 
 class FlowInputSchema(TypedDict):
-    inputs: Dict[str, Dict[str, Any]]
+    inputs: NextNodeInputs
     messages: Messages
 
 
@@ -118,6 +119,7 @@ __all__ = [
     "ControlFlow",
     "NodeOutputsType",
     "ExecuteOutput",
+    "NextNodeInputs",
     "CompiledStateGraph",
     "StateGraph",
     "StateNodeSpec",
