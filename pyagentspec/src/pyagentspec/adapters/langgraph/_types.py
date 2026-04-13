@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Tuple, TypedDict, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Tuple, TypedDict, Union
 
 from typing_extensions import TypeAlias
 
@@ -99,7 +99,10 @@ class FlowOutputSchema(TypedDict):
     node_execution_details: NodeExecutionDetails
 
 
-ControlFlow: TypeAlias = Dict[str, Dict[Any, str]]
+SourceNodeId: TypeAlias = str
+BranchName: TypeAlias = Hashable
+TargetNodeId: TypeAlias = str
+ControlFlow: TypeAlias = Dict[SourceNodeId, Dict[BranchName, TargetNodeId]]
 
 
 __all__ = [
@@ -116,6 +119,9 @@ __all__ = [
     "FlowStateSchema",
     "FlowInputSchema",
     "FlowOutputSchema",
+    "SourceNodeId",
+    "BranchName",
+    "TargetNodeId",
     "ControlFlow",
     "NodeOutputsType",
     "ExecuteOutput",
