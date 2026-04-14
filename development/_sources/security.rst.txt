@@ -110,6 +110,61 @@ Furthermore, follow these general best practices around credential management
 * Restrict network access and egress for components that hold credentials, especially tools calling external services.
 
 
+Considerations regarding OAuth tokens and session-bound credentials
+-------------------------------------------------------------------
+
+OAuth-based integrations introduce bearer credentials (access tokens and, optionally, refresh tokens).
+Anyone who obtains these tokens can typically act as the user (within the granted scopes) until expiry or revocation.
+The following guidance applies to runtimes and to developers deploying agents/tools that use ``OAuthConfig``.
+
+1. Treat tokens and resumption handles as sensitive secrets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Access tokens, refresh tokens, and authorization codes** MUST be treated as secrets:
+
+  - Do not log them.
+  - Do not include them in agent prompts, tool inputs/outputs, traces, telemetry, or error messages.
+  - Do not store them in exported agent/tool configuration artifacts.
+- **Conversation IDs / "previous response IDs" / resumption handles** can implicitly become bearer credentials
+  if your runtime caches tokens by conversation. If a conversation can be resumed by anyone who has the identifier
+  (e.g., link sharing, URL leakage, browser history, referrers), then **those tokens are effectively shared too**.
+
+**Implication:** For anything beyond local development, do not make "possession of a conversation ID" sufficient
+to regain an authenticated session.
+
+2. Don't tie token access to publicly accessible conversation context
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your runtime caches OAuth tokens in memory (or any persistence layer) keyed by conversation/session identifiers, then you MUST ensure the ability to resume that conversation is protected by a real authentication/authorization layer.
+
+Recommended controls:
+- **Authenticate the user** before allowing conversation continuation.
+- **Authorize access**: ensure only the same user (or a deliberately permitted group) can resume the session that holds tokens.
+- **Use strong, unguessable identifiers** (cryptographically random), with **expiration/TTL**, and consider **one-time-use** or rotation on resume.
+- Avoid embedding resumption identifiers in places that leak (URLs shared externally, referer headers, client-side logs). Prefer secure headers or server-managed sessions.
+
+3. Minimize token scope, lifetime, and blast radius
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Request the **minimum scopes** required (least privilege).
+- Prefer **short-lived access tokens**. Only request offline access / refresh tokens when needed.
+- Use **resource indicators / audience restriction** when supported (e.g., RFC 8707) to reduce token reuse
+  against unintended APIs.
+- Consider isolating credentials by environment (dev/test/prod) and by agent/service to limit impact of compromise.
+
+4. Secure OAuth flow mechanics (authorization code + PKCE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Runtimes implementing ``OAuthConfig`` SHOULD follow OAuth 2.x / OIDC best practices:
+
+- **Use PKCE (S256 preferred)** for authorization code flows; refuse flows that cannot meet policy when
+  ``pkce.required=true``.
+- **Validate ``state``** to prevent CSRF and callback injection.
+- **Strict redirect URI validation**: only allow pre-registered redirect URIs; prefer ``https://`` in production;
+  avoid wildcard redirects.
+- If discovery is used (``issuer``), validate issuer/metadata carefully and prefer HTTPS with proper certificate validation.
+
+
 Considerations regarding Resource-exhaustion vectors
 ----------------------------------------------------
 

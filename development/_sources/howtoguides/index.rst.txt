@@ -90,3 +90,14 @@ provide examples of features that can be implemented with the plugin system.
    :maxdepth: 1
 
    How to use custom components with the Plugin System <howto_plugin>
+
+
+Evaluation
+----------
+
+Agent Spec Eval standardizes how to evaluate agentic systems in a framework-agnostic way.
+
+.. toctree::
+   :maxdepth: 1
+
+   How to evaluate with Agent Spec Eval <howto_evaluation>

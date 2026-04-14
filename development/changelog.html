@@ -349,6 +349,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -382,6 +383,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -396,12 +398,14 @@
 <li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -518,6 +522,17 @@
 <section id="improvements">
 <h3>Improvements<a class="headerlink" href="#improvements" title="Permalink to this heading">#</a></h3>
 <ul>
+<li><p><strong>New xAI model provider for OciGenAiConfig</strong></p>
+<p>Introduced a new provider <cite>XAI</cite> for <code class="docutils literal notranslate"><span class="pre">OciGenAiConfig</span></code> LLMs.</p>
+</li>
+<li><p><strong>Convenience serialization APIs on Components</strong></p>
+<p>Components now expose direct serialization and deserialization helpers:
+<code class="docutils literal notranslate"><span class="pre">to_yaml()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_json()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_yaml()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">from_json()</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_dict()</span></code>.
+This provides a shorter API (e.g., <code class="docutils literal notranslate"><span class="pre">agent.to_json()</span></code>) while preserving
+compatibility with disaggregated configurations.</p>
+<p>We thank &#64;pullely-samuel for the contribution!</p>
+</li>
 <li><p><strong>Disaggregated configurations in LangGraph adapter</strong></p>
 <p>The LangGraph adapter now supports loading disaggregated components during deserialization.
 Use <cite>AgentSpecLoader.load_yaml/json(…, import_only_referenced_components=True)</cite> to import
@@ -536,6 +551,10 @@ It also adds tracing support for async APIs of LangGraph (e.g. <cite>ainvoke</ci
 Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
 span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.</p>
 </li>
+<li><p><strong>Async server tools in LangGraph adapter</strong></p>
+<p>The LangGraph adapter now converts async server-tool callables to <code class="docutils literal notranslate"><span class="pre">StructuredTool(coroutine=...)</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">func=...</span></code>, so async tools execute correctly when loaded from Agent Spec.</p>
+</li>
 <li><p><strong>OCI GenAI model support in LangGraph adapter</strong></p>
 <p>The LangGraph adapter now supports loading/exporting OCI GenAI models.
 Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
@@ -546,17 +565,48 @@ Install with <cite>pip install pyagentspec[langgraph-full]</cite> to access this
 <section id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this heading">#</a></h3>
 <ul>
+<li><p><strong>Retry policy for components doing remote calls:</strong></p>
+<p>Added <code class="docutils literal notranslate"><span class="pre">retry_policy</span></code> support to components doing remote calls to enable
+configuration of retries, backoff, and request timeouts across remote integrations.</p>
+<p>For more information read the guide on <a class="reference internal" href="howtoguides/howto_llm_from_different_providers.html#howto-llmwithretrypolicy"><span class="std std-ref">using LLM providers</span></a>.</p>
+</li>
+<li><p><strong>Certificate configuration for OpenAI-compatible LLMs</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAiCompatibleConfig</span></code> now supports optional <code class="docutils literal notranslate"><span class="pre">key_file</span></code>, <code class="docutils literal notranslate"><span class="pre">cert_file</span></code>, and <code class="docutils literal notranslate"><span class="pre">ca_file</span></code>
+fields for HTTPS and mTLS connections to private endpoints.</p>
+<p>For more information read the how-to guide on using <a class="reference internal" href="howtoguides/howto_llm_from_different_providers.html#howto-openaicompatibleconfig"><span class="std std-ref">LLM Providers</span></a>.</p>
+</li>
+<li><p><strong>New tool output streaming Event:</strong></p>
+<p>A new <a class="reference internal" href="api/tracing.html#toolexecutionstreamingchunkreceived"><span class="std std-ref">ToolExecutionStreamingChunkReceived</span></a>
+is introduced to enable surfacing intermediate tool chunks when executing a long-running tool.</p>
+</li>
+<li><p><strong>Swarm support in LangGraph adapter:</strong></p>
+<p>The LangGraph adapter now supports the conversion of the Swarm multi-agent pattern.</p>
+<p>To use this, install the optional extra <code class="docutils literal notranslate"><span class="pre">pyagentspec[langgraph]</span></code>.</p>
+</li>
 <li><p><strong>CatchExceptionNode:</strong></p>
 <p>Added a new node that executes a subflow and catches exceptions.
 When an exception is raised, it branches to <code class="docutils literal notranslate"><span class="pre">caught_exception_branch</span></code>
 and exposes an additional output string information <code class="docutils literal notranslate"><span class="pre">caught_exception_info</span></code>.</p>
 <p>For more information and security considerations, read the <a class="reference internal" href="api/flows.html#catchexceptionnode"><span class="std std-ref">API Reference</span></a>.</p>
 </li>
+<li><p><strong>Introduced Open Agent Specification Evaluation:</strong></p>
+<p>Open Agent Specification Evaluation (Agent Spec Eval) is an extension of
+Agent Spec that standardizes how agentic systems are evaluated in a framework-agnostic way.</p>
+<p>The Agent Spec Eval Python SDK is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+You can access its functionalities through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.evaluation</span></code> subpackage.
+It requires the <code class="docutils literal notranslate"><span class="pre">evaluation</span></code> extra dependency to be installed.</p>
+<p>For more information read the <a class="reference internal" href="agentspec/evaluation.html"><span class="doc">evaluation specification page</span></a>.</p>
+</li>
 <li><p><strong>Added WayFlow adapter to pyagentspec:</strong></p>
 <p>The WayFlow adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
 You can access its functionality through the <code class="docutils literal notranslate"><span class="pre">pyagentspec.adapters.wayflow</span></code> subpackage.
 It requires the <code class="docutils literal notranslate"><span class="pre">wayflow</span></code> extra dependency to be installed.</p>
 <p>For more information read the <a class="reference internal" href="adapters/wayflow/index.html"><span class="doc">adapter page</span></a>.</p>
+</li>
+<li><p><strong>Gemini LLM configuration support</strong></p>
+<p>Added <code class="docutils literal notranslate"><span class="pre">GeminiConfig</span></code> together with <code class="docutils literal notranslate"><span class="pre">GeminiAIStudioAuthConfig</span></code> and
+<code class="docutils literal notranslate"><span class="pre">GeminiVertexAIAuthConfig</span></code> to represent Gemini models in Agent Spec.</p>
+<p>For more information read the <a class="reference internal" href="api/llmmodels.html"><span class="doc">API Reference</span></a>.</p>
 </li>
 <li><p><strong>Added Microsoft Agent Framework adapter to pyagentspec:</strong></p>
 <p>The Microsoft Agent Framework adapter is now available as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
@@ -580,6 +630,10 @@ Datastores enable persistent storage and caching capabilities for agent workflow
 <li><p><strong>Context Summarization Transforms</strong></p>
 <p>Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
 We provide <a class="reference internal" href="api/transforms.html#id2"><span class="std std-ref">MessageSummarizationTransform</span></a> and <a class="reference internal" href="api/transforms.html#id3"><span class="std std-ref">ConversationSummarizationTransform</span></a> for handling long contexts through summarization.</p>
+</li>
+<li><p><strong>ToolBox with User Confirmation</strong></p>
+<p>ToolBoxes now have a new flag named <cite>requires_confirmation</cite>, which can be set to require user/operator approval before running any of the tools in the toolbox.
+For more information read the <a class="reference internal" href="api/tools.html"><span class="doc">API Reference</span></a>.</p>
 </li>
 </ul>
 </section>

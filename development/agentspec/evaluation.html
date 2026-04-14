@@ -1,0 +1,989 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Open Agent Specification Evaluation (Agent Spec Eval) &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'agentspec/evaluation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agent Spec specification (nightly version 26.2.0.dev1)" href="language_spec_nightly.html" />
+    <link rel="prev" title="Open Agent Specification Tracing (Agent Spec Tracing)" href="tracing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../api/index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agent Spec Specification</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Evaluation</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/evaluation.html">Evaluation</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Open Agent Specification Evaluation (Agent Spec Eval)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="open-agent-specification-evaluation-agent-spec-eval">
+<span id="agentspec-eval"></span><h1>Open Agent Specification Evaluation (Agent Spec Eval)<a class="headerlink" href="#open-agent-specification-evaluation-agent-spec-eval" title="Permalink to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>Open Agent Specification Evaluation (in short Agent Spec Eval) is an extension of
+Agent Spec that standardizes how agentic systems are evaluated in a framework-agnostic way.
+It defines a common semantic and minimal APIs for:</p>
+<ul class="simple">
+<li><p>Datasets: collections of samples to evaluate against.</p></li>
+<li><p>Metrics: reusable, composable measurements (LLM-based or deterministic) with retry and exception handling.</p></li>
+<li><p>Evaluators: orchestrators that apply metrics to datasets with concurrency control.</p></li>
+</ul>
+<p>Agent Spec Eval emphasizes
+- Separation of concerns (dataset vs. metrics vs. orchestration);
+- Evaluation transparency (details, timing, tokens, failed attempts);
+- Robustness to LLM non-determinism (retries, repetition, ensembles of judges, exception handling);
+- Parallelism controls to respect rate limits;
+- Portability across runtimes and agent frameworks.</p>
+<p>Where appropriate, Agent Spec Eval can interoperate with Agent Spec Tracing to collect traces of LLM/tool activity during evaluation
+(see <a class="reference internal" href="tracing.html#agentspec-tracing"><span class="std std-ref">Open Agent Specification Tracing (Agent Spec Tracing)</span></a>).</p>
+<p>The objectives of Agent Spec Eval are:
+- Provide a canonical set of evaluation components and their interfaces.
+- Define lifecycle and attribute schemas for metrics, datasets, and evaluators.
+- Offer a minimal, ergonomic API surface for producers and consumers as part of <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code>.
+- Remain neutral to storage/transport (files, UIs, notebooks) and to agent runtimes.</p>
+</section>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this heading">#</a></h2>
+<section id="sample">
+<h3>Sample<a class="headerlink" href="#sample" title="Permalink to this heading">#</a></h3>
+<p>A Sample is a dictionary-like structure containing features used by metrics.
+Samples should be identified by an <code class="docutils literal notranslate"><span class="pre">id</span></code>, and they can contain arbitrary data.
+Common keys include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code>: the user request or task.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">response</span></code>: the model/agent output to be evaluated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference</span></code>: a gold/ground-truth reference, when available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conversation</span></code> (optional): for multi-turn evaluations, the full interaction serialized, e.g., as a list of messages in OpenAI format</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;What&#39;s the weather like in Paris?&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;reference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cloudy&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;conversation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;What&#39;s the weather like in Paris?&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;assistant&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The weather in Paris is cloudy today.&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="dataset">
+<h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this heading">#</a></h3>
+<p>A Dataset is an abstraction over a collection of samples. It supports async access to enable IO-bound sources.</p>
+<p>Datasets play a fundamental role in Agent Spec Eval, as they represent the link between the Evaluation extension and the Agent Spec ecosystem.
+In particular, a Dataset could be obtained by distilling execution traces produced according to the Agent Spec Tracing specification.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Dataset</span><span class="p">:</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span> <span class="o">...</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span> <span class="o">...</span>
+
+  <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Datasets should provide convenient converters to load and prepare data for evaluation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">from_dict</span></code>: accepts a list[dict] (auto IDs: 0..N-1) or a dict[id, dict] (explicit IDs).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from_df</span></code>: accepts a pandas DataFrame (converted internally to a dict-based source).</p></li>
+</ul>
+<p>Moreover, datasets should provide a way to access data samples:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_sample</span></code>: returns the sample data corresponding to the given sample ID.</p></li>
+</ul>
+</section>
+<section id="metric">
+<h3>Metric<a class="headerlink" href="#metric" title="Permalink to this heading">#</a></h3>
+<p>A Metric measures one property of a sample.
+When called, a metric returns its value computed with the given (arbitrary) parameters. In case of failure, an exception can be raised.
+Metrics must support proper error handling, allowing retries or other types of recovery.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ExceptionHandlingStrategy</span><span class="p">:</span>
+  <span class="c1"># custom strategies can be implemented by users</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failed_attempts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">EvaluationException</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">     </span><span class="sd">&quot;&quot;&quot;The returned value is used as score for the metric.&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Metric</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">]]):</span>
+
+  <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">on_failure</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;set_none&quot;</span><span class="p">,</span> <span class="s2">&quot;set_zero&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">ExceptionHandlingStrategy</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span>
+
+  <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Orchestrates retries, timing, and exception handling around compute_metric.</span>
+<span class="sd">    Applies input_mapping (if provided) to map sample feature names to parameter names.</span>
+<span class="sd">    Returns (value_or_fallback, details).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Return value semantics:</p>
+<ul class="simple">
+<li><p>If the Metric call returns a value, it is considered a valid measurement (no retry triggered).</p></li>
+<li><p>If an attempt fails, raise an exception; the wrapper will retry up to <code class="docutils literal notranslate"><span class="pre">num_retries</span></code>.</p></li>
+<li><p>If all attempts fail, <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> decides the fallback:
+- <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>: propagate the exception, default behavior
+- <code class="docutils literal notranslate"><span class="pre">&quot;set_none&quot;</span></code>: return <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">details)</span></code>,
+- <code class="docutils literal notranslate"><span class="pre">&quot;set_zero&quot;</span></code>: return <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">details)</span></code>,
+- Custom strategy: user-defined behavior.</p></li>
+</ul>
+<section id="llm-based-metrics">
+<h4>Llm-based metrics<a class="headerlink" href="#llm-based-metrics" title="Permalink to this heading">#</a></h4>
+<p>LLM-based metrics depend on Agent Spec LLM configs (see <a class="reference internal" href="language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec specification (nightly version 26.2.0.dev1)</span></a>).
+They support standardized prompts and extraction patterns.
+They use an <code class="docutils literal notranslate"><span class="pre">LlmConfig</span></code> as per Agent Spec definition.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlmConfig</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LlmBasedMetric</span><span class="p">(</span><span class="n">Metric</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">]):</span>
+  <span class="n">llm_config</span><span class="p">:</span> <span class="n">LlmConfig</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="evaluators">
+<h3>Evaluators<a class="headerlink" href="#evaluators" title="Permalink to this heading">#</a></h3>
+<p>An Evaluator applies one or more metrics to each sample in a dataset. Each (sample, metric)
+pair is a task that can run concurrently, and it is subject to concurrency controls.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Evaluator</span><span class="p">:</span>
+  <span class="n">metrics</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Metric</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+  <span class="n">max_concurrency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+  <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResults</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_concurrency</span></code> controls how many metric computations run at once.
+- <code class="docutils literal notranslate"><span class="pre">-1</span></code> means “auto” (no explicit limiter by the Evaluator).
+- Use a positive integer to avoid rate-limit errors with LLM providers when using LLM-as-a-Judge metrics.</p></li>
+</ul>
+</section>
+<section id="evaluationresults">
+<h3>EvaluationResults<a class="headerlink" href="#evaluationresults" title="Permalink to this heading">#</a></h3>
+<p>Aggregates per-sample, per-metric values and details, and supports conversions to standard formats.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluationResults</span><span class="p">:</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span> <span class="o">...</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="aggregators">
+<h3>Aggregators<a class="headerlink" href="#aggregators" title="Permalink to this heading">#</a></h3>
+<p>Aggregators combine multiple Metric values into a single summary (used by repeat/ensemble wrappers).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Aggregator</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">,</span> <span class="n">AggregationType</span><span class="p">]):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AggregationType</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Examples include: mean, harmonic mean, pass&#64;k, user-defined strategies.</p>
+</section>
+<section id="repeat-and-ensemble-wrappers">
+<h3>Repeat and Ensemble wrappers<a class="headerlink" href="#repeat-and-ensemble-wrappers" title="Permalink to this heading">#</a></h3>
+<p>Metrics can make use of Aggregators to combine values of multiple runs.</p>
+<p>Repeat: recompute a metric multiple times and aggregate. Useful for noisy LLM-based metrics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RepeatMetric</span><span class="p">(</span><span class="n">Metric</span><span class="p">[</span><span class="n">AggregationType</span><span class="p">]):</span>
+  <span class="n">metric</span><span class="p">:</span> <span class="n">Metric</span><span class="p">[</span><span class="n">RepeatMetric</span><span class="p">]</span>
+  <span class="n">aggregator</span><span class="p">:</span> <span class="n">Aggregator</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">,</span> <span class="n">AggregationType</span><span class="p">]</span>
+  <span class="n">num_repeats</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>Ensemble: run semantically equivalent metrics and aggregate. Useful to use different LLMs or prompts for the same metric.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EnsembleMetric</span><span class="p">(</span><span class="n">Metric</span><span class="p">[</span><span class="n">AggregationType</span><span class="p">]):</span>
+  <span class="n">metrics</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Metric</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span>
+  <span class="n">aggregator</span><span class="p">:</span> <span class="n">Aggregator</span><span class="p">[</span><span class="n">MetricValueType</span><span class="p">,</span> <span class="n">AggregationType</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="intermediates">
+<h3>Intermediates<a class="headerlink" href="#intermediates" title="Permalink to this heading">#</a></h3>
+<p>Some metrics need similar intermediate values in order to be computed (e.g., a list of facts extracted from a response).
+Intermediates enable computing them once, and re-using them for all the different metrics that need them, leading to:</p>
+<ul class="simple">
+<li><p>Decomposition of complex metrics into simpler steps (Single Responsibility Principle).</p></li>
+<li><p>Caching and reuse across metrics and repetitions to reduce token and compute usage.</p></li>
+</ul>
+<p>Caching of intermediates is recommended.</p>
+</section>
+<section id="concurrency-control">
+<h3>Concurrency Control<a class="headerlink" href="#concurrency-control" title="Permalink to this heading">#</a></h3>
+<p>Uncontrolled concurrent evaluation can overwhelm LLM endpoints. Agent Spec Eval specifies:</p>
+<ul class="simple">
+<li><p>Evaluator-level concurrency limiter via <code class="docutils literal notranslate"><span class="pre">max_concurrency</span></code>.</p></li>
+<li><p>Concurrency is applied at the level of metric computations.</p></li>
+<li><p>This provides a runtime-agnostic upper bound on effective LLM request concurrency,
+while remaining simple to configure and reason about.</p></li>
+</ul>
+<p>Design Notes:</p>
+<ul class="simple">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">max_concurrency</span></code> is small, throughput is bounded but safer (fewer rate-limit errors).</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">-1</span></code>, concurrency is unconstrained by the Evaluator (relying on backend libraries or runtime limits).</p></li>
+</ul>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<section id="end-to-end-evaluation">
+<h3>End-to-end evaluation<a class="headerlink" href="#end-to-end-evaluation" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Evaluator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.implementations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactBinaryMatchMetric</span>
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the largest city of CH?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Zürich&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the capital of Switzerland?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the UN European HQ?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Geneva&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Genève&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ExactBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ExactBinaryMatchStrict&quot;</span><span class="p">),</span>
+            <span class="n">ExactBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ExactBinaryMatchRelaxed&quot;</span><span class="p">,</span> <span class="n">ignore_glyph</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">to_df</span><span class="p">())</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="standalone-llm-based-metric">
+<h3>Standalone LLM-based metric<a class="headerlink" href="#standalone-llm-based-metric" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.implementations</span><span class="w"> </span><span class="kn">import</span> <span class="n">SemanticBinaryMatchMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiConfig</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">llm_config</span> <span class="o">=</span> <span class="n">OpenAiConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;gpt-5-mini-config&quot;</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">llm_config</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">reference</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Zeurich&quot;</span><span class="p">,</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Beijing&quot;</span><span class="p">,</span> <span class="s2">&quot;Peking&quot;</span><span class="p">)]:</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">details</span> <span class="o">=</span> <span class="k">await</span> <span class="n">metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">details</span><span class="p">))</span>
+
+
+<span class="c1"># import asyncio</span>
+<span class="c1"># asyncio.run(main())</span>
+</pre></div>
+</div>
+</section>
+<section id="repeating-and-ensembles">
+<h3>Repeating and ensembles<a class="headerlink" href="#repeating-and-ensembles" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.aggregators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanAggregator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.implementations</span><span class="w"> </span><span class="kn">import</span> <span class="n">SemanticBinaryMatchMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleMetric</span><span class="p">,</span> <span class="n">RepeatMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlmConfig</span><span class="p">,</span> <span class="n">OciGenAiConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_llm_model</span><span class="p">(</span><span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LlmConfig</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">OciGenAiConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llama-config&quot;</span><span class="p">,</span>
+        <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
+        <span class="n">compartment_id</span><span class="o">=</span><span class="s2">&quot;COMPARTMENT-ID&quot;</span><span class="p">,</span>
+        <span class="n">client_config</span><span class="o">=</span><span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llama-client-config&quot;</span><span class="p">,</span>
+            <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span><span class="p">,</span>
+            <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
+            <span class="n">service_endpoint</span><span class="o">=</span><span class="s2">&quot;service-endpoint&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">repeat_metric</span> <span class="o">=</span> <span class="n">RepeatMetric</span><span class="p">(</span>
+        <span class="n">metric</span><span class="o">=</span><span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span>
+            <span class="n">get_llm_model</span><span class="p">(</span><span class="s2">&quot;oci/meta.llama-4-maverick-17b-128e-instruct-fp8&quot;</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">aggregator</span><span class="o">=</span><span class="n">MeanAggregator</span><span class="p">(),</span>
+        <span class="n">num_repeats</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">llms</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;llama_3&quot;</span><span class="p">:</span> <span class="s2">&quot;meta.llama-3.3-70b-instruct&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;llama_scout&quot;</span><span class="p">:</span> <span class="s2">&quot;meta.llama-4-scout-17b-16e-instruct&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;llama_maverick&quot;</span><span class="p">:</span> <span class="s2">&quot;meta.llama-4-maverick-17b-128e-instruct-fp8&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SemanticBinaryMatch-</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">get_llm_model</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">llms</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="n">ensemble_metric</span> <span class="o">=</span> <span class="n">EnsembleMetric</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SemanticBinaryMatch&quot;</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+        <span class="n">aggregator</span><span class="o">=</span><span class="n">MeanAggregator</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">reference</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Zeurich&quot;</span><span class="p">,</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Beijing&quot;</span><span class="p">,</span> <span class="s2">&quot;Peking&quot;</span><span class="p">)]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repeat:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">repeat_metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ensemble:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">ensemble_metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+
+
+<span class="c1"># import asyncio</span>
+<span class="c1"># asyncio.run(main())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec Eval inherits all security requirements from Agent Spec (see <a class="reference internal" href="../security.html#securityconsiderations"><span class="std std-ref">Security Considerations</span></a>).
+Evaluation frequently might include sensitive information (PII), including, but not limited to:</p>
+<ul class="simple">
+<li><p>Dataset contents (queries, references, conversations, responses);</p></li>
+<li><p>LLM prompts, completions, and tool I/O;</p></li>
+<li><p>Sensitive error messages.</p></li>
+</ul>
+<p>Guidelines:</p>
+<ul class="simple">
+<li><p>Treat dataset and metric details as sensitive; mask or omit by default in exports where appropriate.</p></li>
+<li><p>Avoid logging prompts and completions unless explicitly configured for trusted environments.</p></li>
+<li><p>When integrating with <a class="reference internal" href="tracing.html#agentspec-tracing"><span class="std std-ref">Open Agent Specification Tracing (Agent Spec Tracing)</span></a>, respect its Sensitive Field handling.</p></li>
+<li><p>Do not embed secrets in configurations. Use Agent Spec Sensitive Field references where applicable.</p></li>
+</ul>
+</section>
+<section id="design-notes-and-best-practices">
+<h2>Design Notes and Best Practices<a class="headerlink" href="#design-notes-and-best-practices" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Keep metrics small and composable; use Intermediates to share computed context.</p></li>
+<li><p>Prefer deterministic metrics when possible; for LLM-based metrics, use repetition/ensembles for robustness.</p></li>
+<li><p>Control concurrency to respect LLM endpoint rate limits and prevent cascading failures.</p></li>
+<li><p>Preserve transparency by returning details (timings, retries, token counts, justifications) in results.</p></li>
+<li><p>Keep the separation between Dataset, Metric, and Evaluator to maximize portability and testability.</p></li>
+</ul>
+</section>
+<section id="references-and-cross-links">
+<h2>References and Cross-links<a class="headerlink" href="#references-and-cross-links" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Agent Spec language specification: <a class="reference internal" href="language_spec_nightly.html#agentspecspec"><span class="std std-ref">Agent Spec specification (nightly version 26.2.0.dev1)</span></a></p></li>
+<li><p>Agent Spec Tracing specification: <a class="reference internal" href="tracing.html#agentspec-tracing"><span class="std std-ref">Open Agent Specification Tracing (Agent Spec Tracing)</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-concepts">Core Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sample">Sample</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset">Dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metric">Metric</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-based-metrics">Llm-based metrics</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluators">Evaluators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluationresults">EvaluationResults</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aggregators">Aggregators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat-and-ensemble-wrappers">Repeat and Ensemble wrappers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediates">Intermediates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#concurrency-control">Concurrency Control</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#end-to-end-evaluation">End-to-end evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#standalone-llm-based-metric">Standalone LLM-based metric</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#repeating-and-ensembles">Repeating and ensembles</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#security-considerations">Security Considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-notes-and-best-practices">Design Notes and Best Practices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references-and-cross-links">References and Cross-links</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

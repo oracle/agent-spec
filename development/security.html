@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -599,6 +603,60 @@ Hardcoding secrets in the representation increases the risk of accidental exposu
 <li><p>Monitor credential usage for anomalies (e.g., unexpected volume or access patterns).</p></li>
 <li><p>Restrict network access and egress for components that hold credentials, especially tools calling external services.</p></li>
 </ul>
+</section>
+<section id="considerations-regarding-oauth-tokens-and-session-bound-credentials">
+<h2>Considerations regarding OAuth tokens and session-bound credentials<a class="headerlink" href="#considerations-regarding-oauth-tokens-and-session-bound-credentials" title="Permalink to this heading">#</a></h2>
+<p>OAuth-based integrations introduce bearer credentials (access tokens and, optionally, refresh tokens).
+Anyone who obtains these tokens can typically act as the user (within the granted scopes) until expiry or revocation.
+The following guidance applies to runtimes and to developers deploying agents/tools that use <code class="docutils literal notranslate"><span class="pre">OAuthConfig</span></code>.</p>
+<section id="treat-tokens-and-resumption-handles-as-sensitive-secrets">
+<h3>1. Treat tokens and resumption handles as sensitive secrets<a class="headerlink" href="#treat-tokens-and-resumption-handles-as-sensitive-secrets" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Access tokens, refresh tokens, and authorization codes</strong> MUST be treated as secrets:</p>
+<ul>
+<li><p>Do not log them.</p></li>
+<li><p>Do not include them in agent prompts, tool inputs/outputs, traces, telemetry, or error messages.</p></li>
+<li><p>Do not store them in exported agent/tool configuration artifacts.</p></li>
+</ul>
+</li>
+<li><p><strong>Conversation IDs / “previous response IDs” / resumption handles</strong> can implicitly become bearer credentials
+if your runtime caches tokens by conversation. If a conversation can be resumed by anyone who has the identifier
+(e.g., link sharing, URL leakage, browser history, referrers), then <strong>those tokens are effectively shared too</strong>.</p></li>
+</ul>
+<p><strong>Implication:</strong> For anything beyond local development, do not make “possession of a conversation ID” sufficient
+to regain an authenticated session.</p>
+</section>
+<section id="don-t-tie-token-access-to-publicly-accessible-conversation-context">
+<h3>2. Don’t tie token access to publicly accessible conversation context<a class="headerlink" href="#don-t-tie-token-access-to-publicly-accessible-conversation-context" title="Permalink to this heading">#</a></h3>
+<p>If your runtime caches OAuth tokens in memory (or any persistence layer) keyed by conversation/session identifiers, then you MUST ensure the ability to resume that conversation is protected by a real authentication/authorization layer.</p>
+<p>Recommended controls:
+- <strong>Authenticate the user</strong> before allowing conversation continuation.
+- <strong>Authorize access</strong>: ensure only the same user (or a deliberately permitted group) can resume the session that holds tokens.
+- <strong>Use strong, unguessable identifiers</strong> (cryptographically random), with <strong>expiration/TTL</strong>, and consider <strong>one-time-use</strong> or rotation on resume.
+- Avoid embedding resumption identifiers in places that leak (URLs shared externally, referer headers, client-side logs). Prefer secure headers or server-managed sessions.</p>
+</section>
+<section id="minimize-token-scope-lifetime-and-blast-radius">
+<h3>3. Minimize token scope, lifetime, and blast radius<a class="headerlink" href="#minimize-token-scope-lifetime-and-blast-radius" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Request the <strong>minimum scopes</strong> required (least privilege).</p></li>
+<li><p>Prefer <strong>short-lived access tokens</strong>. Only request offline access / refresh tokens when needed.</p></li>
+<li><p>Use <strong>resource indicators / audience restriction</strong> when supported (e.g., RFC 8707) to reduce token reuse
+against unintended APIs.</p></li>
+<li><p>Consider isolating credentials by environment (dev/test/prod) and by agent/service to limit impact of compromise.</p></li>
+</ul>
+</section>
+<section id="secure-oauth-flow-mechanics-authorization-code-pkce">
+<h3>4. Secure OAuth flow mechanics (authorization code + PKCE)<a class="headerlink" href="#secure-oauth-flow-mechanics-authorization-code-pkce" title="Permalink to this heading">#</a></h3>
+<p>Runtimes implementing <code class="docutils literal notranslate"><span class="pre">OAuthConfig</span></code> SHOULD follow OAuth 2.x / OIDC best practices:</p>
+<ul class="simple">
+<li><p><strong>Use PKCE (S256 preferred)</strong> for authorization code flows; refuse flows that cannot meet policy when
+<code class="docutils literal notranslate"><span class="pre">pkce.required=true</span></code>.</p></li>
+<li><p><strong>Validate ``state``</strong> to prevent CSRF and callback injection.</p></li>
+<li><p><strong>Strict redirect URI validation</strong>: only allow pre-registered redirect URIs; prefer <code class="docutils literal notranslate"><span class="pre">https://</span></code> in production;
+avoid wildcard redirects.</p></li>
+<li><p>If discovery is used (<code class="docutils literal notranslate"><span class="pre">issuer</span></code>), validate issuer/metadata carefully and prefer HTTPS with proper certificate validation.</p></li>
+</ul>
+</section>
 </section>
 <section id="considerations-regarding-resource-exhaustion-vectors">
 <h2>Considerations regarding Resource-exhaustion vectors<a class="headerlink" href="#considerations-regarding-resource-exhaustion-vectors" title="Permalink to this heading">#</a></h2>
@@ -894,6 +952,13 @@ calls or sub-flows) may result in resource exhaustion—such as CPU, memory, API
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-network-communication">Considerations regarding network communication</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-api-keys-and-secrets-management">Considerations regarding API keys and secrets management</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-oauth-tokens-and-session-bound-credentials">Considerations regarding OAuth tokens and session-bound credentials</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#treat-tokens-and-resumption-handles-as-sensitive-secrets">1. Treat tokens and resumption handles as sensitive secrets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#don-t-tie-token-access-to-publicly-accessible-conversation-context">2. Don’t tie token access to publicly accessible conversation context</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimize-token-scope-lifetime-and-blast-radius">3. Minimize token scope, lifetime, and blast radius</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#secure-oauth-flow-mechanics-authorization-code-pkce">4. Secure OAuth flow mechanics (authorization code + PKCE)</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#considerations-regarding-resource-exhaustion-vectors">Considerations regarding Resource-exhaustion vectors</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaps-in-coverage-what-is-not-provided">Gaps in coverage (what is not provided)</a></li>
 </ul>

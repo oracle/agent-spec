@@ -36,7 +36,9 @@ These are just a few examples, many other components can benefit from this modul
     :start-after: # .. start-export-serialization:
     :end-before: # .. end-export-serialization:
 
-Now, in deserialization time, you can change the disaggregated components as shown:
+Now, at deserialization time, first import the referenced components using
+:ref:`AgentSpecDeserializer <deserialize>`, then load the main agent with
+``Agent.from_yaml(...)`` using the resulting ``components_registry``.
 
 .. literalinclude:: ../code_examples/howto_disaggregated_config.py
     :language: python
@@ -65,7 +67,7 @@ Here is what the **Agent Spec representation will look like: ↓** (first one is
 
          .. literalinclude:: ../agentspec_config_examples/howto_disaggregated_main_config.yaml
             :language: yaml
-        
+
          .. literalinclude:: ../agentspec_config_examples/howto_disaggregated_component_config.yaml
             :language: yaml
 

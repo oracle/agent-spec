@@ -536,10 +536,62 @@ We define a new Component called LlmConfig that contains all the details:
 
    class LlmConfig(Component):
      default_generation_parameters: Optional[Dict[str, Any]]
+     retry_policy: Optional[RetryPolicy]
 
 We require only to specify the default generation parameters that should be used by default when prompting the LLM.
 These parameters are specified as a dictionary of parameter names and respective values.
 The names are strings, while values can be of any type compatible with the JSON schema standard.
+Additionally, an optional Retry policy can be specified to configure the how remote LLM calls are retried
+in case of network failures.
+
+Retry Policy
+^^^^^^^^^^^^
+
+Users can provide an optional retry policy configuration for remote LLM calls.
+This policy is provider-agnostic and can be interpreted by runtimes to implement
+consistent retry behavior across different LLM providers.
+
+.. code-block:: python
+
+   class RetryPolicy:
+     max_attempts: int
+     request_timeout: Optional[float]
+     initial_retry_delay: float
+     max_retry_delay: float
+     backoff_factor: float
+     jitter: Optional[Literal["equal", "full", "full_and_equal_for_throttle", "decorrelated"]]
+     service_error_retry_on_any_5xx: bool
+     recoverable_statuses: Dict[str, List[str]]
+
+
+* ``max_attempts``: maximum number of retries for a request that fails with a recoverable status.
+* ``request_timeout``: timeout parameter to pass to underlying HTTP clients for slow endpoints such
+  as transcription or inference services, in seconds.
+* ``initial_retry_delay``: minimum amount of time to wait between retries in seconds.
+* ``max_retry_delay``: maximum amount of time to wait between retries in seconds.
+* ``backoff_factor``: for exponential backoff with jitter, the exponent which we will raise to the power
+  of the number of attempts.
+* ``jitter``: type of backoff we want to do. Defaults to ``"full_and_equal_for_throttle"``.
+
+  * ``None``: No jitter. ``t = min(min_wait * (backoff_factor ** attempts), max_wait)``
+  * ``"full"``: ``t = min(random(0, min_wait * (backoff_factor ** attempts)), max_wait)``
+  * ``"equal"``: ``t = min(min_wait * (backoff_factor ** attempts), max_wait) * (1 + random(0, 1)) / 2``
+  * ``"full_and_equal_for_throttle"``: full for 5xx errors and equal for 4xx errors
+  * ``"decorrelated"``: ``t = min(min_wait * (backoff_factor ** attempts) + random(0, 1), max_wait)``
+
+* ``service_error_retry_on_any_5xx``: whether to retry on all 5xx errors, except 501 (network errors).
+* ``recoverable_statuses``: configure what HTTP statuses (e.g. 429) to retry on and, optionally, whether
+  the textual code (e.g. TooManyRequests) matches a given value. The expected format is a dictionary where
+  the key is a string representing the HTTP status, and the value is a ``List[str]`` where we will test
+  if the textual code in the service error is a member of the list. If an empty list is provided, then
+  only the numeric status is checked for retry purposes.
+
+When all retries fail, an error is raised and the execution is interrupted.
+
+.. note::
+    Runtimes MUST NOT treat TLS/certificate verification errors as retryable.
+    Runtimes SHOULD NOT retry on authentication/authorization errors (e.g., HTTP 401/403)
+    or validation errors (e.g., HTTP 400/422).
 
 .. note::
 
@@ -618,7 +670,8 @@ This class of LLMs groups all the LLMs that are compatible with either the
 `OpenAI chat completions APIs <https://platform.openai.com/docs/api-reference/chat>`_ or the `OpenAI Responses APIs <https://platform.openai.com/docs/api-reference/responses>`_.
 The API type can be configured by using the ``api_type`` parameter, which takes one of 2 string values, namely
 ``chat_completions`` or ``responses``. By default, the API type is set to chat completions. Additionally, an optional
-``api_key`` can be set for the remote LLM model.
+``api_key`` can be set for the remote LLM model. OpenAI-compatible LLMs also support optional certificate
+configuration for HTTPS and mTLS connections to private endpoints.
 
 .. code-block:: python
 
@@ -627,6 +680,13 @@ The API type can be configured by using the ``api_type`` parameter, which takes 
      url: str
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      api_key: SensitiveField[Optional[str]] = None
+     key_file: SensitiveField[Optional[str]] = None
+     cert_file: SensitiveField[Optional[str]] = None
+     ca_file: SensitiveField[Optional[str]] = None
+
+* ``key_file`` is the path to an optional client private key file (PEM format).
+* ``cert_file`` is the path to an optional client certificate chain file (PEM format).
+* ``ca_file`` is the path to an optional trusted CA certificate file (PEM format) used to verify the server.
 
 Based on this class of LLMs, we provide two main implementations.
 
@@ -699,10 +759,14 @@ conversations when using the openai responses API.
      model_id: str
      compartment_id: str
      serving_mode: Literal["ON_DEMAND", "DEDICATED"] = "ON_DEMAND"
-     provider: Optional[Literal["META", "GROK", "COHERE", "OTHER"]] = None
+     provider: Optional[Literal["META", "XAI", "GROK", "COHERE", "OTHER"]] = None
      client_config: OciClientConfig
      api_type: Literal["chat_completions", "responses"] = "chat_completions"
      conversation_store_id: Optional[str] = None
+
+.. note::
+    While both ``GROK`` and ``XAI`` values for ``provider`` are supported and refer to xAI models, we recommend
+    to use the value ``XAI``.
 
 .. note::
     The authentication components must not contain any sensitive information about the authentication,
@@ -772,6 +836,58 @@ Client configuration that should be used if users want to use resource principal
 
     class OciClientConfigWithResourcePrincipal(OciClientConfig):
         auth_type: Literal["RESOURCE_PRINCIPAL"] = "RESOURCE_PRINCIPAL"
+
+Gemini
+^^^^^^
+
+This class of LLMs refers to the Gemini family of models offered by `Google <https://gemini.google/about/>`_.
+Google offers Gemini through two services: `AI Studio <https://aistudio.google.com/welcome/>`_ and `Vertex AI <https://cloud.google.com/vertex-ai/>`_.
+
+.. code-block:: python
+
+   class GeminiConfig(LlmConfig):
+     model_id: str
+     auth: SerializeAsAny[GeminiAuthConfig]
+
+.. code-block:: python
+
+   class GeminiAuthConfig(Component, abstract=True):
+     pass
+
+AI Studio uses API key-based authentication:
+
+.. code-block:: python
+
+   class GeminiAIStudioAuthConfig(GeminiAuthConfig):
+     api_key: SensitiveField[Optional[str]] = None
+
+When ``api_key`` is not specified, runtimes may try to load it from the ``GEMINI_API_KEY``
+environment variable.
+
+Meanwhile, the Vertex AI service can be authenticated with Google Cloud credentials. These credentials can be provided with a `service account JSON key <https://docs.cloud.google.com/iam/docs/keys-create-delete/>`_
+either inline or through a local file path. When omitted, runtimes may rely on Google Application Default Credentials (ADC), such as
+the ``GOOGLE_APPLICATION_CREDENTIALS`` environment variable, credentials made available through the local Google Cloud environment,
+or an attached service account. Even with ADC, the ``project_id`` may still need to be provided explicitly when it cannot be
+resolved from the local Google Cloud configuration:
+
+.. code-block:: python
+
+   class GeminiVertexAIAuthConfig(GeminiAuthConfig):
+     project_id: Optional[str] = None
+     location: str = "global"
+     credentials: SensitiveField[Optional[Union[str, Dict[str, Any]]]] = None
+
+Here, ``credentials`` accepts either a local file path (``str``) to a Google Cloud JSON
+credential file, such as a service-account key file, or an inline ``dict`` containing the
+parsed JSON contents of that file.
+
+See `Using Gemini API keys <https://ai.google.dev/gemini-api/docs/api-key>`_,
+`Application Default Credentials <https://cloud.google.com/docs/authentication/application-default-credentials>`_,
+and `Create and delete service account keys <https://cloud.google.com/iam/docs/keys-create-delete>`_
+for more details.
+``GeminiConfig.auth`` stays inline when serialized. If ``api_key`` or ``credentials`` of the auth object is
+specified, only that sensitive field is externalized. Otherwise, if ``api_key`` or ``credentials`` is
+unset, that field serializes as ``null``.
 
 Tools
 ~~~~~
@@ -850,6 +966,7 @@ the correct built-in tool.
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
      sensitive_headers: SensitiveField[Dict[str, Any]]
+     retry_policy: Optional[RetryPolicy]
 
    class MCPTool(Tool):
      client_transport: ClientTransport
@@ -903,6 +1020,7 @@ Like other tools, MCP Tools define inputs, outputs, and metadata but include a
 with mTLS) (details about the client transport can be found in
 :ref:`the MCP section <agentspecmcpspec_nightly>` below).
 
+
 .. code-block:: python
 
    class MCPTool(Tool):
@@ -930,10 +1048,15 @@ When the set of tools is dynamic, its content should be established just before 
 consuming component. ToolBoxes do not embed executable code or the full discovered tool list
 at serialization time. Discovery happens at runtime.
 
+A ToolBox also exposes a flag ``requires_confirmation`` (default to False); it exists to let users enforce
+confirmation for the entire toolbox without having to set ``requires_confirmation=True`` on every
+tool it provides. If the tool box does not require confirmation, confirmation is still required
+for individual tools which explicitly specify it.
+
 .. code-block:: python
 
    class ToolBox(Component):
-     pass
+     requires_confirmation: bool = False
 
 
 MCPToolBox
@@ -1534,6 +1657,11 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - retry_policy
+              - Optional retry policy configuration applied to this API call.
+              - RetryPolicy | null
+              - No
+              - null
 
       - Inferred from the json spec retrieved from API Spec URI, if available and reachable.
         Empty otherwise (users will have to manually specify them)
@@ -1905,15 +2033,15 @@ For more details on the A2A protocol, refer to the :ref:`A2A (Agent to Agent Pro
 
   class A2AAgent(AgenticComponent):
     agent_url: str
-    connection_config: A2AConnectionConfig # Parameters for HTTP connection settings, including timeouts and SSL/TLS security
-    session_parameters: Optional[Dict[str, Any]] # Parameters controlling session behavior such as polling timeouts and retry logic
+    connection_config: A2AConnectionConfig
+    session_parameters: Optional[Dict[str, Any]]
 
-- `agent_url`: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
-- `connection_config`: Contains HTTP connection details, including timeouts and SSL/TLS security settings, ensuring a secure and optimized connection with necessary certificates.
-- `session_parameters`: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
-                        These settings include `timeout`, specifying the maximum wait time in seconds before deeming a session unresponsive;
-                        `poll_interval`, defining the interval in seconds between polling attempts to check for server responses;
-                        and `max_retries`, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
+- ``agent_url``: Specifies the URL of the remote server agent for establishing a connection, serving as the endpoint for communications.
+- ``connection_config``: Contains HTTP connection details, including timeouts, SSL/TLS security settings, and optional retry policy configuration, ensuring a secure and optimized connection with necessary certificates.
+- ``session_parameters``: Defines session behavior settings such as polling timeouts and retry mechanisms, enabling precise control over interactions with the remote server to manage interruptions or delays.
+                        These settings include ``timeout``, specifying the maximum wait time in seconds before deeming a session unresponsive;
+                        ``poll_interval``, defining the interval in seconds between polling attempts to check for server responses;
+                        and ``max_retries``, indicating the maximum number of retry attempts to establish a connection or obtain a response before aborting.
 
 RemoteAgent
 ~~~~~~~~~~~
@@ -1935,6 +2063,12 @@ Oracle Cloud Infrastructure. It adds OCI-specific authentication and connection 
    class OciAgent(ComponentWithIO):
       agent_endpoint_id: str
       client_config: OciClientConfig  # contains all OCI authentication related configurations
+      retry_policy: Optional[RetryPolicy]  # Optional retry configuration for calls sent to the remote OCI agent
+
+- ``agent_endpoint_id`` identifies the OCI AI Agent endpoint that should receive the request.
+- ``client_config`` contains the OCI client and authentication configuration used to connect to the service.
+- ``retry_policy`` optionally specifies a ``RetryPolicy`` for outbound requests to the remote OCI agent.
+
 
 Swarm
 ~~~~~
@@ -2227,6 +2361,194 @@ but it should not be done in patch releases, unless required for security reason
 
 In any case, removed features must be announced in the release notes.
 
+
+.. _agentspecauthspec_nightly:
+
+
+Authentication
+~~~~~~~~~~~~~~
+
+Authentication configurations are used by components that communicate with remote services requiring
+credentials (this may include tools, nodes, remote agents, and other components). In order to make
+these tools usable in a secure and portable way, Agent Spec needs a standardized way for users to
+declare the authentication method and the information required by the execution runtime to apply it
+(for example, running an OAuth authorization flow to connect to a protected MCP Server).
+
+We define a new Component called ``AuthConfig`` that acts as the base type for all authentication configurations:
+
+.. code-block:: python
+
+    class AuthConfig(Component):
+        pass
+
+
+Concrete authentication mechanisms are represented as subclasses of ``AuthConfig``. Runtimes are
+responsible for interpreting these configurations, enforcing security best practices (such as treating
+secrets as sensitive fields), and performing any interactive steps required to obtain credentials.
+
+
+OAuth Authentication (``OAuthConfig``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+OAuth authentication enables components to obtain and refresh access tokens via an OAuth 2.x authorization
+server. ``OAuthConfig`` is intentionally generic so it can be used for MCP servers (per MCP authorization
+requirements) and for non-MCP tools and other compnoents (e.g., ``ApiNode``) that call standard OAuth-protected
+APIs.
+
+.. code-block:: python
+
+    class OAuthConfig(AuthConfig):
+        issuer: Optional[str]
+        endpoints: Optional[OAuthEndpoints]
+        client: OAuthClientConfig
+
+        redirect_uri: str
+        scopes: Optional[Union[str, List[str]]]
+        scope_policy: Optional[Literal["use_challenge_or_supported", "fixed"]]
+
+        pkce: Optional[PKCEPolicy]
+        resource: Optional[str]
+
+
+* ``issuer`` is the authorization server issuer URL used for discovery (e.g., OpenID Connect
+  (OIDC) discovery or RFC 8414). If provided, runtimes should discover endpoints and server
+  capabilities from this issuer.
+* ``endpoints`` provides explicit OAuth endpoints (authorization, token, refresh, etc.).
+  If provided, runtimes should use these endpoints directly instead of discovery.
+* ``client`` defines how the OAuth client identity is established (pre-registered client, client-id
+  metadata document, or dynamic client registration).
+
+* ``redirect_uri`` is the callback URI where the authorization server redirects the user agent
+  after consent (authorization code flow).
+* ``scopes`` optionally defines requested scopes as a space-delimited string or list of strings.
+* ``scope_policy`` specifies how the runtime selects scopes:
+
+  * ``"use_challenge_or_supported"`` means the runtime should prefer scopes indicated by runtime
+    challenges/metadata (for MCP, this aligns with using ``WWW-Authenticate`` scope when present,
+    otherwise metadata-supported scopes).
+  * ``"fixed"`` means the runtime should request exactly the provided ``scopes``.
+
+* ``pkce`` configures Proof Key for Code Exchange (PKCE) behavior. For MCP authorization code flows,
+  runtimes should require PKCE and should use ``S256`` when technically capable.
+* ``resource`` optionally sets a resource indicator (RFC 8707). For MCP this is typically derived
+  from the MCP server URL / protected resource metadata, but exposing it here allows explicit
+  configuration for non-MCP integrations or constrained environments.
+
+
+OAuth Client Configuration (``OAuthClientConfig``)
+''''''''''''''''''''''''''''''''''''''''''''''''''
+
+OAuth client configuration specifies how the runtime identifies itself to the authorization server
+and (optionally) how it registers as a client. This is used by ``OAuthConfig.client``.
+
+.. code-block:: python
+
+    class OAuthClientConfig(Component):
+        type: Literal["pre_registered", "client_id_metadata_document", "dynamic_registration"]
+
+        client_id: Optional[str]
+        client_secret: Optional[SensitiveField[str]]
+        token_endpoint_auth_method: Optional[str]
+
+        client_id_metadata_url: Optional[str]
+
+        registration_endpoint: Optional[str]
+
+* ``type`` selects the client identity / registration approach:
+
+  * ``"pre_registered"`` uses client credentials that were registered out-of-band with the authorization server.
+  * ``"client_id_metadata_document"`` uses a URL-formatted ``client_id`` pointing to a hosted client metadata
+    JSON document (Client ID Metadata Document approach).
+  * ``"dynamic_registration"`` uses OAuth dynamic client registration (RFC 7591) to obtain a client id at runtime.
+
+* ``client_id`` is the OAuth client identifier (used for ``"pre_registered"``).
+* ``client_secret`` is the client secret (used for confidential ``"pre_registered"`` clients). It SHOULD be omitted
+  for public clients.
+* ``token_endpoint_auth_method`` specifies how the client authenticates to the token endpoint (e.g., ``"client_secret_basic"``,
+  ``"client_secret_post"``, ``"private_key_jwt"``, or ``"none"``).
+
+* ``client_id_metadata_url`` is the HTTPS URL used as the OAuth ``client_id`` when ``type="client_id_metadata_document"``.
+  This URL points to the client metadata JSON document.
+
+* ``registration_endpoint`` optionally specifies the dynamic client registration endpoint when ``type="dynamic_registration"``.
+  If omitted, runtimes SHOULD obtain it from authorization server discovery metadata when available.
+
+
+OAuth Endpoints
+'''''''''''''''
+
+OAuth-based tools sometimes need explicit endpoints (manual configuration) instead of discovery. ``OAuthEndpoints``
+groups these URLs so ``OAuthConfig`` stays readable and reusable across MCP tools and non-MCP tools.
+
+.. code-block:: python
+
+   class OAuthEndpoints:
+     authorization_endpoint: str
+     token_endpoint: str
+     refresh_endpoint: Optional[str]
+     revocation_endpoint: Optional[str]
+     userinfo_endpoint: Optional[str]
+
+* ``authorization_endpoint`` is the authorization URL where the user agent is redirected to authenticate and grant consent.
+* ``token_endpoint`` is the endpoint where the client exchanges an authorization code (or a refresh token) for access
+  (and optionally refresh) tokens.
+* ``refresh_endpoint`` optionally overrides where refresh token requests are sent. If not provided, runtimes typically
+  reuse ``token_endpoint`` for refresh.
+* ``revocation_endpoint`` optionally specifies where tokens can be revoked.
+* ``userinfo_endpoint`` optionally specifies an OpenID Connect UserInfo endpoint when OIDC claims are needed.
+
+
+PKCE Policy
+'''''''''''
+
+The MCP authorization spec requires PKCE for authorization-code flows, and the reference ``OAuthClientProvider``
+enforces PKCE via server metadata (``code_challenge_methods_supported``).
+``PKCEPolicy`` makes that behavior explicit and reusable for non-MCP tools.
+
+.. code-block:: python
+
+   class PKCEPolicy:
+     required: bool
+     method: Literal["plain", "S256"]
+
+* ``required`` indicates whether the runtime must refuse to proceed if PKCE cannot be used/verified
+  via discovery metadata. Defaults to ``True``.
+* ``method`` identifies the PKCE code challenge method.
+
+  * with ``"plain"`` the code challenge is equal to code verifier.
+  * with ``"S256"`` the code verifier is hashed using SHA-256.
+
+  Runtimes SHOULD use ``"S256"`` when technically capable. Defaults to ``"S256"``.
+
+
+Token handling and session scope
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Runtimes that use ``AuthConfig`` (including ``OAuthConfig``) are responsible for obtaining, using,
+and protecting credentials (e.g., access/refresh tokens).
+
+To keep configurations portable and safe (find more information in the
+:ref:`security guidelines <securityconsiderations>`):
+
+- **Treat tokens as secrets**: never expose tokens in exported configurations, UI output, tool traces,
+  prompts, or error messages.
+- **Avoid URL-derived trust**: do not rely solely on a conversation/response identifier (especially
+  one that appears in a URL) as the "authentication" mechanism for accessing cached OAuth tokens.
+- **Bind tokens to an authenticated principal**: in non-development deployments, token caches **should**
+  be scoped to an authenticated end-user and protected by server-side authorization checks.
+- **Prefer short-lived access tokens** and use refresh tokens only when necessary; apply least-privilege
+  scopes and audience/resource restrictions.
+- **Support safe interactive flows**: enforce PKCE for authorization-code flows when applicable, validate
+  ``state``, and restrict/validate redirect URIs.
+- **Require user confirmation for discovered/auth-server trust & dynamic registration**: when using
+  discovery-based configuration (``issuer``) and/or ``client.type="dynamic_registration"``, runtimes/clients
+  **should** require an explicit user confirmation step. The prompt should clearly display the **authorization
+  server domain** and the **target resource/MCP server URL**, and warn when dynamic registration will create/modify
+  client state on the authorization server. Runtimes should also verify that discovered metadata corresponds to
+  the originally requested protected resource/server to reduce impersonation/phishing risk.
+
+
+
 .. _agentspecmcpspec_nightly:
 
 MCP (Model Context Protocol)
@@ -2283,22 +2605,29 @@ Remote MCP transports
 
 Another category of MCP client transports rely on remote connections to MCP servers.
 Those components should extend the ``RemoteTransport`` component and should support
-the ``url`` and ``headers`` fields.
+the ``url``, ``auth``, ``headers``, ``sensitive_headers`` and optional
+``retry_policy`` fields.
 
 .. code-block:: python
 
    class RemoteTransport(ClientTransport):
      url: str
+     auth: Optional[AuthConfig]
      headers: Dict[str, str]
      sensitive_headers: SensitiveField[Dict[str, str]]
+     retry_policy: Optional[RetryPolicy]
 
 
 - ``url`` is a string representing the URL to send the request.
+- ``auth`` optionally specifies an ``AuthConfig`` to authenticate requests sent to the remote
+  MCP server. When set, runtime should use this configuration to attach credentials to requests
+  and/or to initiate interactive authentication flows as required.
 - ``headers`` is a dictionary of additional headers to use in the client.
 - ``sensitive_headers`` are additional headers that should be merged with the ``headers`` provided
   when executing the request, but these headers are excluded from exported configuration thus they
   are better suited to contain sensitive information not intended to be shared as widely as the
   exported configuration.
+- ``retry_policy`` optionally specifies a ``RetryPolicy`` for requests sent through the remote MCP transport.
 
 
 SSE Transport
@@ -2383,8 +2712,12 @@ Agent to Agent Protocol (A2A) is a protocol designed to facilitate communication
 This protocol enables agents to exchange messages, delegate tasks, and collaborate effectively.
 It can also be used to establish a connection with a remote agent, allowing for distributed agentic systems.
 
-The connection to a remote agent or between agents is configured using `A2AConnectionConfig`, which defines the necessary parameters for establishing a secure and reliable HTTP connection.
-This includes settings such as timeouts, retry policies, and SSL/TLS security configurations to ensure encrypted and authenticated communication.
+The connection to a remote agent or between agents is configured using ``A2AConnectionConfig``,
+which defines the parameters for establishing a secure and reliable HTTP connection. Session
+behavior such as polling is configured with ``A2AAgent.session_parameters``, while request retry
+behavior can be configured with ``A2AConnectionConfig.retry_policy``. Together these settings
+cover timeouts, polling, retries, and SSL/TLS security for encrypted and authenticated
+communication.
 
 .. code-block:: python
 
@@ -2396,6 +2729,7 @@ This includes settings such as timeouts, retry policies, and SSL/TLS security co
      cert_file: Optional[str]  # Path to the client's certificate chain file
      ssl_ca_cert: Optional[str]  # Path to private key file
      ca_path: Optional[str]  # Path to the trusted CA certificate file
+     retry_policy: Optional[RetryPolicy]  # Optional retry configuration for requests sent through this A2A connection
 
 Ecosystem of plugins
 --------------------
@@ -2577,7 +2911,17 @@ See all the fields below that are considered sensitive fields:
 +==================================+====================+
 | OpenAiCompatibleConfig           | api_key            |
 +----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | key_file           |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | cert_file          |
++----------------------------------+--------------------+
+| OpenAiCompatibleConfig           | ca_file            |
++----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| GeminiAIStudioAuthConfig         | api_key            |
++----------------------------------+--------------------+
+| GeminiVertexAIAuthConfig         | credentials        |
 +----------------------------------+--------------------+
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+
@@ -2602,6 +2946,10 @@ See all the fields below that are considered sensitive fields:
 | StreamableHTTPmTLSTransport      | ca_file            |
 +----------------------------------+--------------------+
 
+For example, ``GeminiAIStudioAuthConfig.api_key`` or
+``GeminiVertexAIAuthConfig.credentials`` may become references while the enclosing
+``auth`` component remains inline.
+
 
 For example, the following component produced using the `pyagentspec` SDK:
 
@@ -2613,9 +2961,12 @@ For example, the following component produced using the `pyagentspec` SDK:
         url="https://some.api.com/v2",
         model_id="some_model_id",
         api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+        cert_file="/etc/certs/client.pem",
+        ca_file="/etc/certs/ca.pem",
     )
 
-should produce the following configuration, in which the sensitive ``api_key`` is replaced by a reference
+should produce the following configuration, in which sensitive fields are replaced by references
 
 .. code-block:: JSON5
 
@@ -2628,6 +2979,15 @@ should produce the following configuration, in which the sensitive ``api_key`` i
       "api_key" : {
         "$component_ref" : "llm-config-id.api_key"
       },
+      "key_file" : {
+        "$component_ref" : "llm-config-id.key_file"
+      },
+      "cert_file" : {
+        "$component_ref" : "llm-config-id.cert_file"
+      },
+      "ca_file" : {
+        "$component_ref" : "llm-config-id.ca_file"
+      },
     }
 
 Such a configuration would then require to pass the referenced sensitive information when loading, as
@@ -2637,7 +2997,12 @@ in the example code below:
 
     llm_config = AgentSpecDeserializer().from_json(
         serialized_llm,
-        components_registry={"llm-config-id.api_key": "THIS_IS_SECRET"},
+        components_registry={
+            "llm-config-id.api_key": "THIS_IS_SECRET",
+            "llm-config-id.key_file": "/etc/certs/client.key",
+            "llm-config-id.cert_file": "/etc/certs/client.pem",
+            "llm-config-id.ca_file": "/etc/certs/ca.pem",
+        },
     )
 
 
@@ -2651,9 +3016,7 @@ discussions, and included in future versions.
 Among them, we can highlight:
 
 - Memory
-- Data sources & search support (e.g., for easy RAG setup)
 - Planning
-- Multi-agent systems
 
 These topics will be covered in future versions of Agent Spec.
 
@@ -2753,7 +3116,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_25_4_2.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_2_0.json
         :language: json
 
 Note about serialization of components

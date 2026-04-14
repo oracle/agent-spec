@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -557,10 +561,11 @@
 <p>PyAgentSpec offers optional extra dependencies that can be installed to enable additional features.</p>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">autogen</span></code> extra dependency gives access to the AutoGen runtime adapter.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">langgraph</span></code>, <code class="docutils literal notranslate"><span class="pre">langgraph_mcp</span></code> extra dependencies give access to the LangGraph runtime adapter.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">langgraph</span></code>, <code class="docutils literal notranslate"><span class="pre">langgraph-full</span></code> extra dependencies give access to the LangGraph runtime adapter.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">wayflow</span></code>, <code class="docutils literal notranslate"><span class="pre">wayflow_oci</span></code>, <code class="docutils literal notranslate"><span class="pre">wayflow_a2a</span></code>, <code class="docutils literal notranslate"><span class="pre">wayflow_datastore</span></code> extra dependency gives access to the WayFlow runtime adapter.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">agent-framework</span></code> extra dependency gives access to the Microsoft Agent Framework runtime adapter.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">crewai</span></code> extra dependency gives access to the CrewAI runtime adapter. Note that this adapter might be incompatible with other adapters if installed in the same virtual environment due to conflicting dependencies.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">evaluation</span></code> extra dependency gives access to the Agent Spec Eval functionalities.</p></li>
 </ul>
 <p>To install extra dependencies, run the following command specifying the list of dependencies you want to install:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pyagentspec[extra-dep-1,extra-dep-2]==26.2.0.dev1&quot;</span>

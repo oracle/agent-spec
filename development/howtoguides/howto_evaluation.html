@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>How to Use OCI Generative AI Agents &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
+    <title>How to evaluate with Agent Spec Eval &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
   
   
   
@@ -54,9 +54,8 @@
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/js/fix-navigation.js"></script>
     <script src="../_static/announcement.js"></script>
-    <script src="../_static/tabs.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_ociagent';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howtoguides/howto_evaluation';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
@@ -69,8 +68,8 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to Use A2A Agents" href="howto_a2aagent.html" />
-    <link rel="prev" title="How to Build an Orchestrator-Workers Agents Pattern" href="howto_orchestrator_agent.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="How to use custom components with the Plugin System" href="howto_plugin.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -365,7 +364,7 @@
 <li class="toctree-l2"><a class="reference internal" href="howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_ociagent.html">Use OCI Generative AI Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_a2aagent.html">Use an A2A Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_swarm.html">Build a Swarm of Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
@@ -385,7 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -503,7 +502,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-to Guides</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Use OCI Generative AI Agents</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to evaluate with Agent Spec Eval</span></li>
   </ul>
 </nav>
 </div>
@@ -520,142 +519,177 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="how-to-use-oci-generative-ai-agents">
-<span id="top-howtoociagent"></span><h1>How to Use OCI Generative AI Agents<a class="headerlink" href="#how-to-use-oci-generative-ai-agents" title="Permalink to this heading">#</a></h1>
-<p><a class="reference external" href="https://www.oracle.com/artificial-intelligence/generative-ai/agents">OCI GenAI Agents</a> is a service
-to create agents in the OCI console. These agents are defined remotely, including their tools, prompts,
-and optional documents for retrieval-augmented generation (RAG), and can be used for inference.</p>
-<p>In this guide, you will learn how to use an OCI agent in Agent Spec using the <a class="reference internal" href="../api/remoteagent.html#ociagent"><span class="std std-ref">OciAgent</span></a>
-class from the <code class="docutils literal notranslate"><span class="pre">pyagentspec</span></code> package.</p>
-<section id="basic-usage">
-<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h2>
-<p>To get started, first create your OCI GenAI Agent in the OCI Console.
-Consult the <a class="reference external" href="https://docs.oracle.com/en-us/iaas/Content/generative-ai-agents/home.htm">OCI documentation</a> for detailed steps.</p>
-<p>Next, create an <code class="docutils literal notranslate"><span class="pre">OciClientConfig</span></code> object to configure the connection to the OCI service.
-See the <a class="reference internal" href="howto_llm_from_different_providers.html"><span class="doc">OCI LLM configuration</span></a> for detailed instructions how to configure this object.</p>
-<p>You will also need the <code class="docutils literal notranslate"><span class="pre">agent_endpoint_id</span></code> from the OCI Console.
-This ID points to the agent you want to connect to, while the client configuration is about connecting to the entire service.</p>
-<p>Once these are in place, you can create your agent in a few lines:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.ociagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciAgent</span>
-
-<span class="c1"># Typical service endpoint for OCI GenAI service inference</span>
-<span class="c1"># &lt;oci region&gt; can be &quot;us-chicago-1&quot; and can also be found in your ~/.oci/config file</span>
-<span class="n">OCIGENAI_ENDPOINT</span> <span class="o">=</span> <span class="s2">&quot;https://inference.generativeai.&lt;oci region&gt;.oci.oraclecloud.com&quot;</span>
-
-<span class="n">oci_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oci_client_config&quot;</span><span class="p">,</span>
-    <span class="n">service_endpoint</span><span class="o">=</span><span class="n">OCIGENAI_ENDPOINT</span><span class="p">,</span>
-    <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
-    <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">agent</span> <span class="o">=</span> <span class="n">OciAgent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oci_agent&quot;</span><span class="p">,</span>
-    <span class="n">agent_endpoint_id</span><span class="o">=</span><span class="s2">&quot;AGENT_ENDPOINT&quot;</span><span class="p">,</span>
-    <span class="n">client_config</span><span class="o">=</span><span class="n">oci_config</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
+  <section id="how-to-evaluate-with-agent-spec-eval">
+<h1>How to evaluate with Agent Spec Eval<a class="headerlink" href="#how-to-evaluate-with-agent-spec-eval" title="Permalink to this heading">#</a></h1>
+<div class="admonition-prerequisites admonition">
+<p class="admonition-title">Prerequisites</p>
+<p>This guide assumes you are familiar with the following concepts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="howto_agents.html"><span class="doc">Agents</span></a></p></li>
+</ul>
+<p>Additionally, you need to have <strong>Python 3.10+</strong> installed.</p>
 </div>
-<p>Note that the <code class="docutils literal notranslate"><span class="pre">OciAgent</span></code> is an extension of <code class="docutils literal notranslate"><span class="pre">RemoteAgent</span></code> in Agent Spec, which is considered an <code class="docutils literal notranslate"><span class="pre">AgenticComponent</span></code>.
-It follows that OCI agents can be used in <code class="docutils literal notranslate"><span class="pre">AgentNodes</span></code> inside Agent Spec flows.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>Agent Spec Eval is the evaluation extension of Agent Spec.
+It standardizes a minimal, framework-agnostic API for evaluating agentic systems with:</p>
+<ul class="simple">
+<li><p><strong>Datasets</strong>: collections of samples.</p></li>
+<li><p><strong>Metrics</strong>: reusable measurements (deterministic or LLM-based).</p></li>
+<li><p><strong>Evaluators</strong>: orchestrators that run metrics over datasets, with optional concurrency control.</p></li>
+</ul>
+<p>For the formal specification and background, see
+<a class="reference internal" href="../agentspec/evaluation.html"><span class="doc">Open Agent Specification Evaluation (Agent Spec Eval)</span></a>.</p>
 </section>
-<section id="agent-spec-serialization">
-<h2>Agent Spec Serialization<a class="headerlink" href="#agent-spec-serialization" title="Permalink to this heading">#</a></h2>
-<p>You can export the agent configuration using <a class="reference internal" href="../api/serialization.html#serialize"><span class="std std-ref">AgentSpecSerializer</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span>
+<section id="run-an-end-to-end-evaluation">
+<h2>Run an end-to-end evaluation<a class="headerlink" href="#run-an-end-to-end-evaluation" title="Permalink to this heading">#</a></h2>
+<p>Create a dataset from in-memory samples, configure one or more metrics, and run them
+with an <code class="docutils literal notranslate"><span class="pre">Evaluator</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Evaluator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.implementations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactBinaryMatchMetric</span>
 
-<span class="n">serialized_agent</span> <span class="o">=</span> <span class="n">AgentSpecSerializer</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the largest city of CH?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Zürich&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the capital of Switzerland?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Where is the UN European HQ?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="s2">&quot;Geneva&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Genève&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">serialized_agent</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">evaluator_example</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ExactBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ExactBinaryMatchStrict&quot;</span><span class="p">),</span>
+            <span class="n">ExactBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ExactBinaryMatchRelaxed&quot;</span><span class="p">,</span> <span class="n">ignore_glyph</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;as JSON:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;as DF:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">to_df</span><span class="p">())</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evaluator_example</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Here is what the <strong>Agent Spec representation will look like ↓</strong></p>
-<details class="summary-click-here-to-see-the-assistant-configuration">
-<summary>Click here to see the assistant configuration.</summary><div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">JSON</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">YAML</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OciAgent&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0a1817a0-2ed0-4fed-9c7b-87b5547d35e4&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oci_agent&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">    </span><span class="nt">&quot;agent_endpoint_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AGENT_ENDPOINT&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;client_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;component_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OciClientConfigWithApiKey&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;b7eb33c7-fecb-4f28-85bc-2d85f8baca5f&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oci_client_config&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">        </span><span class="nt">&quot;service_endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://inference.generativeai.&lt;oci region&gt;.oci.oraclecloud.com&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;auth_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API_KEY&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;auth_profile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;auth_file_location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;~/.oci/config&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;agentspec_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;25.4.1&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright © 2025 Oracle and/or its affiliates.</span>
-<span class="c1">#</span>
-<span class="c1"># This software is under the Apache License 2.0</span>
-<span class="c1"># (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License</span>
-<span class="c1"># (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.</span>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">EvaluationResults</span></code> can be exported as:</p>
+<ul class="simple">
+<li><p>Dictionary via <code class="docutils literal notranslate"><span class="pre">results.to_dict()</span></code> (includes the metric <code class="docutils literal notranslate"><span class="pre">value</span></code> and its <code class="docutils literal notranslate"><span class="pre">details</span></code>)</p></li>
+<li><p>a pandas DataFrame via <code class="docutils literal notranslate"><span class="pre">results.to_df()</span></code> (only the main metric values)</p></li>
+</ul>
+</section>
+<section id="use-different-dataset-field-names-input-mapping">
+<h2>Use different dataset field names (input mapping)<a class="headerlink" href="#use-different-dataset-field-names-input-mapping" title="Permalink to this heading">#</a></h2>
+<p>In practice, your dataset may use different keys than the defaults expected by a metric.
+For example, you may have <code class="docutils literal notranslate"><span class="pre">ground_truth</span></code> instead of <code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">answer</span></code> instead of <code class="docutils literal notranslate"><span class="pre">response</span></code>.</p>
+<p>Many metrics in <code class="docutils literal notranslate"><span class="pre">pyagentspec.evaluation.metrics.implementations</span></code> support mapping the
+dataset feature names to the metric’s expected parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mapped_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;ground_truth&quot;</span><span class="p">:</span> <span class="s2">&quot;Zürich&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;ground_truth&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;Bern&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;ground_truth&quot;</span><span class="p">:</span> <span class="s2">&quot;Geneva&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;Genève&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="n">mapped_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">mapped_data</span><span class="p">)</span>
 
-<span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OciAgent</span>
-<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">905c6f9a-3786-475c-83ac-a438563f0b86</span>
-<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oci_agent</span>
-<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-<span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="nt">agent_endpoint_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGENT_ENDPOINT</span>
-<span class="nt">client_config</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">component_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OciClientConfigWithApiKey</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2b24375c-cedc-46fc-bb4b-af2944a5f83a</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oci_client_config</span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">  </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-<span class="w">  </span><span class="nt">service_endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://inference.generativeai.&lt;oci region&gt;.oci.oraclecloud.com</span>
-<span class="w">  </span><span class="nt">auth_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API_KEY</span>
-<span class="w">  </span><span class="nt">auth_profile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEFAULT</span>
-<span class="w">  </span><span class="nt">auth_file_location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/.oci/config</span>
-<span class="nt">agentspec_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25.4.1</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">input_mapping_example</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">ExactBinaryMatchMetric</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ExactBinaryMatchStrict&quot;</span><span class="p">,</span>
+                <span class="n">reference_feature_name</span><span class="o">=</span><span class="s2">&quot;ground_truth&quot;</span><span class="p">,</span>
+                <span class="n">response_feature_name</span><span class="o">=</span><span class="s2">&quot;answer&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">mapped_dataset</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">to_df</span><span class="p">())</span>
 </pre></div>
 </div>
-</div></div>
-</details></section>
+</section>
+<section id="use-an-llm-based-metric">
+<h2>Use an LLM-based metric<a class="headerlink" href="#use-an-llm-based-metric" title="Permalink to this heading">#</a></h2>
+<p>Some metrics call an LLM to judge semantic equivalence (or other rubric-based criteria).
+These metrics take an Agent Spec LLM configuration.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.implementations</span><span class="w"> </span><span class="kn">import</span> <span class="n">SemanticBinaryMatchMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiConfig</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">llm_metric_example</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">llm_config</span> <span class="o">=</span> <span class="n">OpenAiConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;openai-config&quot;</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">llm_config</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">reference</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Zeurich&quot;</span><span class="p">,</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Beijing&quot;</span><span class="p">,</span> <span class="s2">&quot;Peking&quot;</span><span class="p">)]:</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">details</span> <span class="o">=</span> <span class="k">await</span> <span class="n">metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">details</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="reduce-llm-non-determinism-with-repeats-and-ensembles">
+<h2>Reduce LLM non-determinism with repeats and ensembles<a class="headerlink" href="#reduce-llm-non-determinism-with-repeats-and-ensembles" title="Permalink to this heading">#</a></h2>
+<p>LLM-based metrics can be noisy.
+Agent Spec Eval supports wrappers that run a metric multiple times (repeat) or run multiple
+semantically-equivalent metrics (ensemble), then aggregate the values.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.aggregators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanAggregator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.evaluation.metrics.wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleMetric</span><span class="p">,</span> <span class="n">RepeatMetric</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repeat_and_ensemble_example</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">llm_config</span> <span class="o">=</span> <span class="n">OpenAiConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;openai-config&quot;</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="n">repeat_metric</span> <span class="o">=</span> <span class="n">RepeatMetric</span><span class="p">(</span>
+        <span class="n">metric</span><span class="o">=</span><span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">llm_config</span><span class="p">),</span>
+        <span class="n">aggregator</span><span class="o">=</span><span class="n">MeanAggregator</span><span class="p">(),</span>
+        <span class="n">num_repeats</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ensemble_metric</span> <span class="o">=</span> <span class="n">EnsembleMetric</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SemanticBinaryMatch&quot;</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SemanticBinaryMatch-A&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">),</span>
+            <span class="n">SemanticBinaryMatchMetric</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SemanticBinaryMatch-B&quot;</span><span class="p">,</span> <span class="n">llm_config</span><span class="o">=</span><span class="n">llm_config</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">aggregator</span><span class="o">=</span><span class="n">MeanAggregator</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">reference</span><span class="p">,</span> <span class="n">response</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Zeurich&quot;</span><span class="p">,</span> <span class="s2">&quot;Zurich&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Beijing&quot;</span><span class="p">,</span> <span class="s2">&quot;Peking&quot;</span><span class="p">)]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repeat:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">repeat_metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ensemble:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">ensemble_metric</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
 <section id="recap">
 <h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
-<p>This how-to guide covered how to define an OCI Generative AI Agent in Agent Spec.</p>
-<details class="summary-below-is-the-complete-code-from-this-guide">
-<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.ociclientconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciClientConfigWithApiKey</span>
-<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.ociagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">OciAgent</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="c1"># Typical service endpoint for OCI GenAI service inference</span>
-<span class="linenos"> 5</span><span class="c1"># &lt;oci region&gt; can be &quot;us-chicago-1&quot; and can also be found in your ~/.oci/config file</span>
-<span class="linenos"> 6</span><span class="n">OCIGENAI_ENDPOINT</span> <span class="o">=</span> <span class="s2">&quot;https://inference.generativeai.&lt;oci region&gt;.oci.oraclecloud.com&quot;</span>
-<span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="n">oci_config</span> <span class="o">=</span> <span class="n">OciClientConfigWithApiKey</span><span class="p">(</span>
-<span class="linenos"> 9</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oci_client_config&quot;</span><span class="p">,</span>
-<span class="linenos">10</span>    <span class="n">service_endpoint</span><span class="o">=</span><span class="n">OCIGENAI_ENDPOINT</span><span class="p">,</span>
-<span class="linenos">11</span>    <span class="n">auth_profile</span><span class="o">=</span><span class="s2">&quot;DEFAULT&quot;</span><span class="p">,</span>
-<span class="linenos">12</span>    <span class="n">auth_file_location</span><span class="o">=</span><span class="s2">&quot;~/.oci/config&quot;</span><span class="p">,</span>
-<span class="linenos">13</span><span class="p">)</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span><span class="n">agent</span> <span class="o">=</span> <span class="n">OciAgent</span><span class="p">(</span>
-<span class="linenos">16</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oci_agent&quot;</span><span class="p">,</span>
-<span class="linenos">17</span>    <span class="n">agent_endpoint_id</span><span class="o">=</span><span class="s2">&quot;AGENT_ENDPOINT&quot;</span><span class="p">,</span>
-<span class="linenos">18</span>    <span class="n">client_config</span><span class="o">=</span><span class="n">oci_config</span><span class="p">,</span>
-<span class="linenos">19</span><span class="p">)</span>
-</pre></div>
-</div>
-</details></section>
+<p>This guide covered how to:</p>
+<ul class="simple">
+<li><p>Build a <a class="reference internal" href="../api/evaluation.html#pyagentspec.evaluation.Dataset" title="pyagentspec.evaluation.datasets.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.datasets.dataset.Dataset</span></code></a> from in-memory samples.</p></li>
+<li><p>Evaluate samples with deterministic and LLM-based metrics.</p></li>
+<li><p>Export results to JSON or pandas DataFrame.</p></li>
+<li><p>Map dataset feature names to metric inputs.</p></li>
+<li><p>Use repeat/ensemble wrappers to improve robustness.</p></li>
+</ul>
+</section>
 <section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
-<p>Now that you have learned how to use OCI agents in Agent Spec,
-you may proceed to <a class="reference internal" href="howto_orchestrator_agent.html"><span class="doc">How to Use Agents in Flows</span></a>.</p>
+<ul class="simple">
+<li><p>Check the Tracing specification of Agent Spec: <a class="reference internal" href="../agentspec/tracing.html"><span class="doc">Open Agent Specification Tracing</span></a>.</p></li>
+</ul>
 </section>
 </section>
 
@@ -682,8 +716,11 @@ you may proceed to <a class="reference internal" href="howto_orchestrator_agent.
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic usage</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-spec-serialization">Agent Spec Serialization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-an-end-to-end-evaluation">Run an end-to-end evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-different-dataset-field-names-input-mapping">Use different dataset field names (input mapping)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-an-llm-based-metric">Use an LLM-based metric</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduce-llm-non-determinism-with-repeats-and-ensembles">Reduce LLM non-determinism with repeats and ensembles</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
 </ul>

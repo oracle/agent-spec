@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -835,7 +839,7 @@ completes to transition to another node of the Flow.</p>
 
 <span class="target" id="apinode"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.flows.nodes.apinode.ApiNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.apinode.</span></span><span class="sig-name descname"><span class="pre">ApiNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.flows.nodes.apinode.</span></span><span class="sig-name descname"><span class="pre">ApiNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.flows.node.Node" title="pyagentspec.flows.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
 <p>Make an API call.</p>
 <p>This node is intended to be a part of a Flow.</p>
@@ -955,6 +959,7 @@ Allows placeholders in dict values, which can define inputs</p></li>
 <li><p><strong>sensitive_headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Additional headers for the API call.
 These headers are intended to be used for sensitive information such as
 authentication tokens and will be excluded form exported JSON configs.</p></li>
+<li><p><strong>retry_policy</strong> (<a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><em>RetryPolicy</em></a><em> | </em><em>None</em>) – Optional retry configuration for the API call performed by this node.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1001,6 +1006,12 @@ Allows placeholders, which can define inputs</p>
 <span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.query_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Query parameters for the API call.
 Allows placeholders in dict values, which can define inputs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.flows.nodes.apinode.ApiNode.retry_policy">
+<span class="sig-name descname"><span class="pre">retry_policy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><span class="pre">RetryPolicy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.flows.nodes.apinode.ApiNode.retry_policy" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional retry configuration for the API call performed by this node.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3033,6 +3044,7 @@ any node in any execution branch of the flow.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.headers"><code class="docutils literal notranslate"><span class="pre">ApiNode.headers</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.http_method"><code class="docutils literal notranslate"><span class="pre">ApiNode.http_method</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.query_params"><code class="docutils literal notranslate"><span class="pre">ApiNode.query_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.retry_policy"><code class="docutils literal notranslate"><span class="pre">ApiNode.retry_policy</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.sensitive_headers"><code class="docutils literal notranslate"><span class="pre">ApiNode.sensitive_headers</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.flows.nodes.apinode.ApiNode.url"><code class="docutils literal notranslate"><span class="pre">ApiNode.url</span></code></a></li>
 </ul>

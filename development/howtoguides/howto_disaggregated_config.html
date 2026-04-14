@@ -351,6 +351,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -384,6 +385,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -398,12 +400,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -531,11 +535,11 @@ This separation makes it easier to securely manage environment specific settings
 <section id="basic-implementation">
 <h2>Basic Implementation<a class="headerlink" href="#basic-implementation" title="Permalink to this heading">#</a></h2>
 <p>Let’s demonstrate by creating a weather agent that uses a client tool to fetch weather data. This example will show how disaggregation works in a simple scenario.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.vllmconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientTool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.vllmconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringProperty</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span><span class="p">,</span> <span class="n">AgentSpecDeserializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecDeserializer</span><span class="p">,</span> <span class="n">AgentSpecSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientTool</span>
 
 <span class="n">llm_config_dev</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm-dev&quot;</span><span class="p">,</span>
@@ -580,7 +584,9 @@ These are just a few examples, many other components can benefit from this modul
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Now, in deserialization time, you can change the disaggregated components as shown:</p>
+<p>Now, at deserialization time, first import the referenced components using
+<a class="reference internal" href="../api/serialization.html#deserialize"><span class="std std-ref">AgentSpecDeserializer</span></a>, then load the main agent with
+<code class="docutils literal notranslate"><span class="pre">Agent.from_yaml(...)</span></code> using the resulting <code class="docutils literal notranslate"><span class="pre">components_registry</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">deserializer</span> <span class="o">=</span> <span class="n">AgentSpecDeserializer</span><span class="p">()</span>
 <span class="n">component_registry</span> <span class="o">=</span> <span class="n">deserializer</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
     <span class="n">disagg_yaml</span><span class="p">,</span>
@@ -599,7 +605,7 @@ These are just a few examples, many other components can benefit from this modul
 <span class="c1"># The `client_weather_tool` remains the one that was deserialized from `disagg_yaml`</span>
 
 <span class="c1"># Load the agent with the updated component registry</span>
-<span class="n">loaded_agent</span> <span class="o">=</span> <span class="n">deserializer</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
+<span class="n">loaded_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
     <span class="n">main_yaml</span><span class="p">,</span>
     <span class="n">components_registry</span><span class="o">=</span><span class="n">component_registry</span><span class="p">,</span>
 <span class="p">)</span>
@@ -717,11 +723,11 @@ These are just a few examples, many other components can benefit from this modul
 <h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
 <p>In this guide, you’ve learned to split your agent setups into manageable, secure pieces using disaggregated configurations in Agent Spec.</p>
 <details class="summary-below-is-the-complete-code-from-this-guide">
-<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.vllmconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientTool</span>
+<summary>Below is the complete code from this guide.</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms.vllmconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAiCompatibleConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringProperty</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecSerializer</span><span class="p">,</span> <span class="n">AgentSpecDeserializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentSpecDeserializer</span><span class="p">,</span> <span class="n">AgentSpecSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientTool</span>
 
 <span class="n">llm_config_dev</span> <span class="o">=</span> <span class="n">OpenAiCompatibleConfig</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;llm-dev&quot;</span><span class="p">,</span>
@@ -776,7 +782,7 @@ These are just a few examples, many other components can benefit from this modul
 <span class="c1"># The `client_weather_tool` remains the one that was deserialized from `disagg_yaml`</span>
 
 <span class="c1"># Load the agent with the updated component registry</span>
-<span class="n">loaded_agent</span> <span class="o">=</span> <span class="n">deserializer</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
+<span class="n">loaded_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span>
     <span class="n">main_yaml</span><span class="p">,</span>
     <span class="n">components_registry</span><span class="o">=</span><span class="n">component_registry</span><span class="p">,</span>
 <span class="p">)</span>

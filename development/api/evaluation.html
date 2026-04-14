@@ -1,0 +1,1220 @@
+
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Evaluation &#8212; PyAgentSpec 26.2.0.dev1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dba54f56160742ef5599" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css-style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/core.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=dba54f56160742ef5599"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599" />
+
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/js/fix-navigation.js"></script>
+    <script src="../_static/announcement.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/evaluation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://oracle.github.io/agent-spec/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+  <script src="../_static/announcement.js"></script>
+
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agent Spec Adapters - LangGraph" href="../adapters/langgraph/index.html" />
+    <link rel="prev" title="Agent Spec Adapters" href="adapters.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><span><strong>New:</strong> The FlowBuilder API simplifies creating Agent Spec Flows. See API → Flows → Flow Builder and the Reference Sheet.</span><button id="close-announcement" aria-label="Close announcement" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1.15em;line-height:1">×</button></div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/agentspec-dark.svg" class="logo__image only-light" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+    <img src="../_static/agentspec-white.svg" class="logo__image only-dark pst-js-only" alt="PyAgentSpec 26.2.0.dev1 documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../docs_home.html">Open Agent Spec</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../agentspec/index.html">Specification</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="index.html">API Reference</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../changelog.html">Release Notes</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../adapters/langgraph/index.html">Adapters</a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link nav-internal" href="../ecosystem/integrations.html">Ecosystem</a>
+    </li>
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/oracle/agent-spec" title="Agent Spec GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../_static/icons/github-icon.svg" class="icon-link-image" alt="Agent Spec GitHub repository"/></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Spec</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../agentspec/index.html">Agent Spec Specification</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/intro_and_motivation.html">Introduction, motivation &amp; vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_nightly.html">Language specification (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_26_1_0.html">Language specification (v26.1.0 latest release)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtoguides/index.html">How-to guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agents.html">How to build a simple ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mcp.html">How to connect MCP tools to assistants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flow_with_conditional_branches.html">How to Develop a Flow with Conditional Branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_agent_with_remote_tools.html">How to Develop an Agent with Remote Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_mapnode.html">Do Map and Reduce Operations in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_orchestrator_agent.html">How to Build an Orchestrator-Workers Agents Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ociagent.html">Use OCI Generative AI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_a2aagent.html">Use an A2A Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_swarm.html">Build a Swarm of Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_managerworkers.html">Build a Manager-Worker Multi-Agent System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_structured_generation.html">Build Flows with Structured LLM Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_parallelflownode.html">Run Multiple Flows in Parallel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_flowbuilder.html">Build Flows with the Flow Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_catchexception.html">Catch Exceptions in Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_with_wayflow.html">How to Execute Agent Spec Configuration with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_execute_agentspec_across_frameworks.html">How to Execute Agent Spec Across Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_llm_from_different_providers.html">Use LLM from Different LLM Sources and Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_generation_config.html">Specify the Generation Configuration when Using LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_disaggregated_config.html">How to Use Disaggregated Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_datastores.html">How to Use Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_summarization_transforms.html">How to Use Summarization Transforms</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remoteagent.html">Remote Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flows.html">Flows &amp; Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llmmodels.html">LLMs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ioproperties.html">IO Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcp.html">MCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Evaluation</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Adapters</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/langgraph/index.html">LangGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/spec_to_langgraph.html">Run Agent Spec configurations with LangGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/langgraph/langgraph_to_spec.html">Convert LangGraph agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/wayflow/index.html">WayFlow</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/spec_to_wayflow.html">Run Agent Spec configurations with WayFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/wayflow/wayflow_to_spec.html">Convert WayFlow agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/crewai/index.html">CrewAI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/spec_to_crewai.html">Run Agent Spec configurations with CrewAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/crewai/crewai_to_spec.html">Convert CrewAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/autogen/index.html">AutoGen</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/spec_to_autogen.html">Run Agent Spec configurations with AutoGen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/autogen/autogen_to_spec.html">Convert AutoGen agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/agent-framework/index.html">Agent Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/spec_to_agent_framework.html">Run Agent Spec configurations with Microsoft Agent Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/agent-framework/agent_framework_to_spec.html">Convert Microsoft Agent Framework agents to Agent Spec</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../adapters/openai/index.html">OpenAI Agents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/spec_to_openai.html">Run Agent Spec configurations with OpenAI Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/openai/openai_to_spec.html">Convert OpenAI agents to Agent Spec</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem/collaborations.html">Collaborations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../misc/glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/reference_sheet.html">Reference Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security.html">Security Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faqs.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../docs_home.html" class="nav-link">Open Agent Specification (Agent Spec)</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Evaluation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="evaluation">
+<h1>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">#</a></h1>
+<p>Open Agent Specification Evaluation (short: Agent Spec Eval) is an extension of
+Agent Spec that standardizes how agentic systems are evaluated in a framework-agnostic way.</p>
+<section id="id1">
+<h2>Evaluation<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<span class="target" id="evaluation-dataset"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_data_source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_DataSource</span></code></p>
+<p>Concrete wrapper around <code class="docutils literal notranslate"><span class="pre">_DataSource</span></code> implementations used during evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_data_source</strong> (<em>_DataSource</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset.features">
+<span class="sig-name descname"><span class="pre">features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset.features" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the sequence of feature names provided by this data source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Names of all features available in samples.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sequence[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset.from_df">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset.from_df" title="Permalink to this definition">#</a></dt>
+<dd><p>Creating a dataset from a pandas dataframe. The dataframe must have a single level header.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – An instance of pandas dataframe.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dataset that wraps that dataframe.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If any of the columns headers is not string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset.from_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_consistency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'strict'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset.from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize a dataset with a collection of samples and determine feature consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Dict</em><em>[</em><em>Hashable</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>] or </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – The dataset. If a dictionary, keys are sample identifiers and values are feature dictionaries.
+If a list, each item is a feature dictionary and sample identifiers are assigned as sequential indices.</p></li>
+<li><p><strong>features_consistency</strong> (<em>{&quot;strict&quot;</em><em>, </em><em>&quot;relaxed&quot;</em><em>, </em><em>&quot;bypass&quot;}</em><em>, </em><em>default &quot;strict&quot;</em>) – <dl class="simple">
+<dt>Policy for validating feature keys consistency across samples:</dt><dd><ul>
+<li><p>”strict”: All samples must have identical feature keys.</p></li>
+<li><p>”relaxed”: Uses only the intersection of keys from all samples.</p></li>
+<li><p>”bypass”: Uses feature keys from the first sample only.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Bypass consistency control is solely for performance optimization.
+If there is an inconsistency in the dataset, it may later resulted into errors during evaluation.
+Use bypass only when you are sure about the consistency of your dataset.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the data input is neither a dict nor a sequence of feature dictionaries.</p></li>
+<li><p><strong>ValueError</strong> – If samples are missing, feature keys are inconsistent in “strict” mode, or no features are found.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyagentspec.evaluation.Dataset" title="pyagentspec.evaluation.datasets.dataset.Dataset"><em>Dataset</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset.get_sample">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset.get_sample" title="Permalink to this definition">#</a></dt>
+<dd><p>Asynchronously fetch a data sample given its identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>Hashable</em>) – Unique identifier for the sample to fetch.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing feature values for the sample.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Dataset.ids">
+<span class="sig-name descname"><span class="pre">ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Dataset.ids" title="Permalink to this definition">#</a></dt>
+<dd><p>Asynchronously yield all available sample identifiers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Hashable</em> – Unique identifier for a sample.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AsyncIterator</em>[<em>Hashable</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-evaluator"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Evaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.</span></span><span class="sig-name descname"><span class="pre">Evaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_concurrency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Evaluator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Evaluator orchestrates the execution of a set of metrics over input data,
+supporting optional concurrency control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metrics</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="#pyagentspec.evaluation.metrics.Metric" title="pyagentspec.evaluation.metrics.metrics.Metric"><em>Metric</em></a><em>[</em><em>Any</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>max_concurrency</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.Evaluator.evaluate">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.Evaluator.evaluate" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute every metric against <code class="docutils literal notranslate"><span class="pre">dataset</span></code> and collect the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<a class="reference internal" href="#pyagentspec.evaluation.Dataset" title="pyagentspec.evaluation.Dataset"><em>Dataset</em></a>) – Dataset exposing async <code class="docutils literal notranslate"><span class="pre">ids</span></code>/<code class="docutils literal notranslate"><span class="pre">get_sample</span></code> accessors. Each sample must provide the
+features required by the configured metrics.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Structured view over the metric values and their associated metadata.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyagentspec.evaluation.EvaluationResults" title="pyagentspec.evaluation.EvaluationResults">EvaluationResults</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Metrics run concurrently whenever <code class="docutils literal notranslate"><span class="pre">max_concurrency</span></code> permits.
+Any <code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.exceptions.EvaluationException</span></code> raised by an underlying
+metric propagates to the caller if the metric <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> behavior requires to raise.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-evaluation-results"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.</span></span><span class="sig-name descname"><span class="pre">EvaluationResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for storing and accessing evaluation metric results for multiple samples and metrics.</p>
+<p>This class provides utilities to work with evaluation results that are organized as a mapping between
+(sample_id, metric_name) pairs and their corresponding result values and details. It enables exporting
+the results to common formats such as JSON and pandas DataFrame for further analysis or reporting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<em>Dict</em><em>[</em><em>Tuple</em><em>[</em><em>Hashable</em><em>, </em><em>str</em><em>]</em><em>, </em><em>Tuple</em><em>[</em><em>Any</em><em>, </em><em>Dict</em><em>[</em><em>Hashable</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>sample_ids</strong> (<em>List</em><em>[</em><em>Hashable</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>metric_names</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults.results" title="Permalink to this definition">#</a></dt>
+<dd><p>Dictionary mapping (sample_id, metric_name) pairs to their metric result and related details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[Tuple[Hashable, str], Tuple[Any, Dict[str, Any]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults.sample_ids">
+<span class="sig-name descname"><span class="pre">sample_ids</span></span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults.sample_ids" title="Permalink to this definition">#</a></dt>
+<dd><p>List of sample identifiers present in the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Hashable]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults.metric_names">
+<span class="sig-name descname"><span class="pre">metric_names</span></span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults.metric_names" title="Permalink to this definition">#</a></dt>
+<dd><p>List of metric names present in the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults.to_df">
+<span class="sig-name descname"><span class="pre">to_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults.to_df" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the results as a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> indexed by sample id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame indexed by sample_id with columns as metric names.
+Each cell contains the main result value for the corresponding (sample_id, metric_name) pair</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.EvaluationResults.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.EvaluationResults.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the results keyed by sample and metric in dictionary form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nested mapping of the form {sample_id: {metric_name: result_dict, …}, …},
+where each result_dict has keys ‘value’ and ‘details’.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[Hashable, Dict[str, Dict[str, Any]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="aggregators">
+<h2>Aggregators<a class="headerlink" href="#aggregators" title="Permalink to this heading">#</a></h2>
+<span class="target" id="evaluation-aggregator"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.Aggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.aggregators.</span></span><span class="sig-name descname"><span class="pre">Aggregator</span></span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.Aggregator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricToAggregateValueType</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AggregatedValueType</span></code>]</p>
+<p>Combine a collection of metric values into a single aggregate result.</p>
+<p>Abstract base class for aggregating a collection of values into a single, aggregated value.</p>
+<p>This class provides a callable interface for aggregating values.
+Subclasses must implement the <code class="docutils literal notranslate"><span class="pre">aggregate</span></code> method to define the aggregation logic.
+When the instance is called, it invokes the <code class="docutils literal notranslate"><span class="pre">aggregate</span></code> method on the provided sequence of values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Call the aggregator instance directly (e.g., <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>) rather than calling method <code class="docutils literal notranslate"><span class="pre">aggregate</span></code> externally.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.Aggregator.aggregate">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.Aggregator.aggregate" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract method to aggregate a sequence of input values into a single value.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is intended for internal use. Users should not call it directly;
+instead, call the aggregator instance (i.e. <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>Collection</em><em>[</em><em>MetricToAggregateValueType</em><em>]</em>) – The collection of values to aggregate.
+Subclasses may choose to preprocess these values if needed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The aggregated value resulting from applying the aggregation logic to the inputs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AggregatedValueType</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-harmonic-mean-aggregator"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.HarmonicMeanAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.aggregators.</span></span><span class="sig-name descname"><span class="pre">HarmonicMeanAggregator</span></span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.evaluation.aggregators.Aggregator" title="pyagentspec.evaluation.aggregators.aggregator.Aggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Aggregator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+<p>Aggregator that computes the harmonic mean of a collection of non-negative numerical values.</p>
+<p>Call an instance of this class with a sequence of non-negative numbers (bool, int, or float) to obtain their harmonic mean.</p>
+<p>If any value is zero, the result is zero.
+Negative values will raise a ValueError.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Call the aggregator instance directly (e.g., <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>) rather than calling method <code class="docutils literal notranslate"><span class="pre">aggregate</span></code> externally.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the harmonic mean of the provided non-negative values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>Collection</em><em>[</em><em>bool</em><em> | </em><em>float</em><em> | </em><em>int</em><em>]</em>) – Iterable of non-negative numeric values. <code class="docutils literal notranslate"><span class="pre">bool</span></code> entries are coerced to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Harmonic mean defined as <code class="docutils literal notranslate"><span class="pre">len(values)</span> <span class="pre">/</span> <span class="pre">sum(1</span> <span class="pre">/</span> <span class="pre">v</span> <span class="pre">for</span> <span class="pre">v</span> <span class="pre">in</span> <span class="pre">values)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Users should not invoke <a class="reference internal" href="#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate" title="pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate()</span></code></a> directly. Call the instance itself instead
+(e.g. <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-mean-aggregator"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.MeanAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.aggregators.</span></span><span class="sig-name descname"><span class="pre">MeanAggregator</span></span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.MeanAggregator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.evaluation.aggregators.Aggregator" title="pyagentspec.evaluation.aggregators.aggregator.Aggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Aggregator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+<p>Aggregator that computes the arithmetic mean of a collection of numerical values.</p>
+<p>Call an instance of this class with a sequence of numbers (bool, int, or float) to obtain their arithmetic mean.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Call the aggregator instance directly (e.g., <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>) rather than calling method <code class="docutils literal notranslate"><span class="pre">aggregate</span></code> externally.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.aggregators.MeanAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.aggregators.MeanAggregator.aggregate" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the arithmetic mean for the provided numeric values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>Collection</em><em>[</em><em>bool</em><em> | </em><em>float</em><em> | </em><em>int</em><em>]</em>) – Finite collection of numeric values. <code class="docutils literal notranslate"><span class="pre">bool</span></code> entries are coerced to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
+to match Python’s arithmetic semantics.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Arithmetic mean computed as <code class="docutils literal notranslate"><span class="pre">sum(values)</span> <span class="pre">/</span> <span class="pre">len(values)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Users should not invoke <a class="reference internal" href="#pyagentspec.evaluation.aggregators.MeanAggregator.aggregate" title="pyagentspec.evaluation.aggregators.MeanAggregator.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate()</span></code></a> directly. Call the aggregator instance itself,
+e.g. <code class="docutils literal notranslate"><span class="pre">aggregator(values)</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="intermediates">
+<h2>Intermediates<a class="headerlink" href="#intermediates" title="Permalink to this heading">#</a></h2>
+<span class="target" id="evaluation-intermediate"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.intermediates.Intermediate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.intermediates.</span></span><span class="sig-name descname"><span class="pre">Intermediate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.intermediates.Intermediate" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">IntermediateValueType</span></code>]</p>
+<p>Base abstraction for reusable intermediate values shared across metrics.</p>
+<p>Intermediates compute auxiliary artefacts (for example embeddings or
+normalised text) that multiple metrics may depend on. They expose a uniform
+<code class="docutils literal notranslate"><span class="pre">compute_value</span></code> coroutine to materialise the result and a <code class="docutils literal notranslate"><span class="pre">__call__</span></code>
+wrapper that handles keyword binding and input name mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>input_mapping</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.intermediates.Intermediate.compute_value">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.intermediates.Intermediate.compute_value" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the intermediate value and return it with metadata details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<em>IntermediateValueType</em>, <em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
+<span class="target" id="evaluation-metric"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.Metric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">Metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_retries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.Metric" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricValueType</span></code>]</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Metric</span></code> class serves as the base for implementing both metrics and metric wrappers.
+To define a custom metric, inherit from this class and implement the <code class="docutils literal notranslate"><span class="pre">compute_metric</span></code> method.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Metric</span></code> class is generically typed.
+The generic type parameter should correspond to the return type of the metric.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not call the <code class="docutils literal notranslate"><span class="pre">compute_metric</span></code> method directly; instead, use the instance itself as it is callable.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>input_mapping</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>num_retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>on_failure</strong> (<em>Literal</em><em>[</em><em>'raise'</em><em>, </em><em>'set_none'</em><em>, </em><em>'set_zero'</em><em>] </em><em>| </em><em>~pyagentspec.evaluation.exceptions.handling_strategies.ExceptionHandlingStrategy</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.Metric.compute_metric">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.Metric.compute_metric" title="Permalink to this definition">#</a></dt>
+<dd><p>Implements the logic for computing the metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forms</strong> (<em>The method signature can take one</em><em> of </em><em>the following</em>) – <ul>
+<li><p>Accepts the attributes necessary to compute the metric. For example: <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">compute_metric(self,</span> <span class="pre">reference:</span> <span class="pre">str,</span> <span class="pre">response:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">...</span></code>.</p></li>
+<li><p>May be defined as <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">compute_metric(self,</span> <span class="pre">*args:</span> <span class="pre">Any,</span> <span class="pre">**kwargs:</span> <span class="pre">Any)</span> <span class="pre">-&gt;</span> <span class="pre">...</span></code> if the metric serves as a wrapper for other metric(s).</p></li>
+</ul>
+</p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>EvaluationException</strong> – Raised if the evaluation attempt fails for any reason. The exception must include an informative message and the underlying error.
+    This method must never return None or a placeholder value.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>value</em> – The computed value of the metric for the input sample.</p></li>
+<li><p><em>value_details</em> – Additional information about the value, such as justification, reasoning, or further details.
+Keys with a leading double underscore are reserved for system use.</p></li>
+<li><p><em>.. warning::</em> – Any value returned by this method is considered a valid metric measurement.
+Never return <code class="docutils literal notranslate"><span class="pre">None</span></code> or a placeholder value; instead, raise an <code class="docutils literal notranslate"><span class="pre">EvaluationException</span></code> and use the <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> strategy.
+If you return a value, retries will not be triggered.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<em>MetricValueType</em>, <em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-llm-based-metric"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">LlmBasedMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_retries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.evaluation.metrics.Metric" title="pyagentspec.evaluation.metrics.metrics.Metric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metric</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricValueType</span></code>]</p>
+<p>Metric base class for scoring via a Language Model invocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>input_mapping</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>num_retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>on_failure</strong> (<em>Literal</em><em>[</em><em>'raise'</em><em>, </em><em>'set_none'</em><em>, </em><em>'set_zero'</em><em>] </em><em>| </em><em>~pyagentspec.evaluation.exceptions.handling_strategies.ExceptionHandlingStrategy</em>) – </p></li>
+<li><p><strong>llm_config</strong> (<a class="reference internal" href="llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><em>LlmConfig</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric.CONTENT">
+<span class="sig-name descname"><span class="pre">CONTENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'content'</span></em><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.CONTENT" title="Permalink to this definition">#</a></dt>
+<dd><p>Key for content in an LLM conversation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric.ROLE">
+<span class="sig-name descname"><span class="pre">ROLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'role'</span></em><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.ROLE" title="Permalink to this definition">#</a></dt>
+<dd><p>Key for role in an LLM conversation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric.SYSTEM">
+<span class="sig-name descname"><span class="pre">SYSTEM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'system'</span></em><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.SYSTEM" title="Permalink to this definition">#</a></dt>
+<dd><p>System role in an LLM conversation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric.USER">
+<span class="sig-name descname"><span class="pre">USER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user'</span></em><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.USER" title="Permalink to this definition">#</a></dt>
+<dd><p>User role in an LLM conversation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmBasedMetric.ask_llm">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ask_llm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.ask_llm" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the assistant message text and token usage from the LLM provider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>conversation</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[str, <em>Tuple</em>[int, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="evaluation-llm-as-judge-metric"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmAsAJudgeMetric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">LlmAsAJudgeMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_retries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_prompt_template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_patterns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_transformer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.evaluation.metrics.LlmBasedMetric" title="pyagentspec.evaluation.metrics.llm_based_metric.LlmBasedMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">LlmBasedMetric</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricValueType</span></code>]</p>
+<p>Base class for metrics that rely on an LLM as the judge.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> encodes the rubric, whereas <code class="docutils literal notranslate"><span class="pre">user_prompt_template</span></code> is
+rendered per sample. Subclasses configure regex patterns for extracting the
+final value and optional metadata fields from the LLM response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>input_mapping</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>num_retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>on_failure</strong> (<em>Literal</em><em>[</em><em>'raise'</em><em>, </em><em>'set_none'</em><em>, </em><em>'set_zero'</em><em>] </em><em>| </em><em>~pyagentspec.evaluation.exceptions.handling_strategies.ExceptionHandlingStrategy</em>) – </p></li>
+<li><p><strong>llm_config</strong> (<a class="reference internal" href="llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig" title="pyagentspec.llms.llmconfig.LlmConfig"><em>LlmConfig</em></a>) – </p></li>
+<li><p><strong>system_prompt</strong> (<em>str</em>) – </p></li>
+<li><p><strong>user_prompt_template</strong> (<em>str</em>) – </p></li>
+<li><p><strong>value_pattern</strong> (<em>str</em>) – </p></li>
+<li><p><strong>metadata_patterns</strong> (<em>Collection</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>output_transformer</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>MetricValueType</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyagentspec.evaluation.metrics.LlmAsAJudgeMetric.compute_metric">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric.compute_metric" title="Permalink to this definition">#</a></dt>
+<dd><p>Ask the LLM to judge the sample and parse the response into value/details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<em>MetricValueType</em>, <em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Evaluation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset.features"><code class="docutils literal notranslate"><span class="pre">Dataset.features()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset.from_df"><code class="docutils literal notranslate"><span class="pre">Dataset.from_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset.from_dict"><code class="docutils literal notranslate"><span class="pre">Dataset.from_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset.get_sample"><code class="docutils literal notranslate"><span class="pre">Dataset.get_sample()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Dataset.ids"><code class="docutils literal notranslate"><span class="pre">Dataset.ids()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Evaluator"><code class="docutils literal notranslate"><span class="pre">Evaluator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.Evaluator.evaluate"><code class="docutils literal notranslate"><span class="pre">Evaluator.evaluate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults"><code class="docutils literal notranslate"><span class="pre">EvaluationResults</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults.results"><code class="docutils literal notranslate"><span class="pre">EvaluationResults.results</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults.sample_ids"><code class="docutils literal notranslate"><span class="pre">EvaluationResults.sample_ids</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults.metric_names"><code class="docutils literal notranslate"><span class="pre">EvaluationResults.metric_names</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults.to_df"><code class="docutils literal notranslate"><span class="pre">EvaluationResults.to_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.EvaluationResults.to_dict"><code class="docutils literal notranslate"><span class="pre">EvaluationResults.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aggregators">Aggregators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.Aggregator"><code class="docutils literal notranslate"><span class="pre">Aggregator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.Aggregator.aggregate"><code class="docutils literal notranslate"><span class="pre">Aggregator.aggregate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator"><code class="docutils literal notranslate"><span class="pre">HarmonicMeanAggregator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate"><code class="docutils literal notranslate"><span class="pre">HarmonicMeanAggregator.aggregate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.MeanAggregator"><code class="docutils literal notranslate"><span class="pre">MeanAggregator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.aggregators.MeanAggregator.aggregate"><code class="docutils literal notranslate"><span class="pre">MeanAggregator.aggregate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediates">Intermediates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.intermediates.Intermediate"><code class="docutils literal notranslate"><span class="pre">Intermediate</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.intermediates.Intermediate.compute_value"><code class="docutils literal notranslate"><span class="pre">Intermediate.compute_value()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.Metric"><code class="docutils literal notranslate"><span class="pre">Metric</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.Metric.compute_metric"><code class="docutils literal notranslate"><span class="pre">Metric.compute_metric()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.CONTENT"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric.CONTENT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.ROLE"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric.ROLE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.SYSTEM"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric.SYSTEM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.USER"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric.USER</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmBasedMetric.ask_llm"><code class="docutils literal notranslate"><span class="pre">LlmBasedMetric.ask_llm()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric"><code class="docutils literal notranslate"><span class="pre">LlmAsAJudgeMetric</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric.compute_metric"><code class="docutils literal notranslate"><span class="pre">LlmAsAJudgeMetric.compute_metric()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=dba54f56160742ef5599"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=dba54f56160742ef5599"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Oracle and/or its affiliates..
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

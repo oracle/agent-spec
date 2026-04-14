@@ -69,7 +69,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Components" href="components.html" />
-    <link rel="prev" title="How to use custom components with the Plugin System" href="../howtoguides/howto_plugin.html" />
+    <link rel="prev" title="How to evaluate with Agent Spec Eval" href="../howtoguides/howto_evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -644,6 +648,18 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig" title="pyagentspec.llms.ocigenaiconfig.OciGenAiConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.OciGenAiConfig</span></code></a></p></td>
 <td><p>Class to configure a connection to a OCI GenAI hosted model.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.geminiconfig.GeminiConfig" title="pyagentspec.llms.geminiconfig.GeminiConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.GeminiConfig</span></code></a></p></td>
+<td><p>Configure a connection to a Gemini LLM (AI Studio or Vertex AI).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiAuthConfig" title="pyagentspec.llms.geminiauthconfig.GeminiAuthConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.GeminiAuthConfig</span></code></a></p></td>
+<td><p>Base class for Gemini authentication configuration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig" title="pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.GeminiAIStudioAuthConfig</span></code></a></p></td>
+<td><p>Authentication settings for Gemini via Google AI Studio.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig" title="pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.GeminiVertexAIAuthConfig</span></code></a></p></td>
+<td><p>Authentication settings for Gemini via Google Vertex AI.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="llmmodels.html#pyagentspec.llms.ociclientconfig.OciClientConfig" title="pyagentspec.llms.ociclientconfig.OciClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.llms.OciClientConfig</span></code></a></p></td>
 <td><p>Base abstract class for OCI client config.</p></td>
 </tr>
@@ -840,6 +856,39 @@
 </table>
 </div>
 </section>
+<section id="connectivity-resilience">
+<h2><a class="reference internal" href="connectivity_and_resilience.html"><span class="doc">Connectivity &amp; Resilience</span></a><a class="headerlink" href="#connectivity-resilience" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.AuthConfig" title="pyagentspec.auth.AuthConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.AuthConfig</span></code></a></p></td>
+<td><p>Base class for Auth configurations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints" title="pyagentspec.auth.OAuthEndpoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.OAuthEndpoints</span></code></a></p></td>
+<td><p>Explicit OAuth endpoint configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.PKCEMethod" title="pyagentspec.auth.PKCEMethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.PKCEMethod</span></code></a></p></td>
+<td><p>No documentation available</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.PKCEPolicy" title="pyagentspec.auth.PKCEPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.PKCEPolicy</span></code></a></p></td>
+<td><p>Policy configuration for Proof Key for Code Exchange (PKCE).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig" title="pyagentspec.auth.OAuthClientConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.OAuthClientConfig</span></code></a></p></td>
+<td><p>OAuth client identity / registration configuration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.ScopePolicy" title="pyagentspec.auth.ScopePolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.ScopePolicy</span></code></a></p></td>
+<td><p>No documentation available</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig" title="pyagentspec.auth.OAuthConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.auth.OAuthConfig</span></code></a></p></td>
+<td><p>Configure OAuth-based authentication for a tool or transport.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.retrypolicy.RetryPolicy</span></code></a></p></td>
+<td><p>Create a new model by parsing and validating input data from keyword arguments.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="datastores">
 <h2><a class="reference internal" href="datastores.html"><span class="doc">Datastores</span></a><a class="headerlink" href="#datastores" title="Permalink to this heading">#</a></h2>
 <p><strong>Classes</strong></p>
@@ -933,6 +982,18 @@
 </table>
 </div>
 </section>
+<section id="version">
+<h2><a class="reference internal" href="version.html"><span class="doc">Version</span></a><a class="headerlink" href="#version" title="Permalink to this heading">#</a></h2>
+<p><strong>Classes</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.versioning.AgentSpecVersionEnum</span></code></a></p></td>
+<td><p>An Enumeration for different versions of Agent Spec.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="adapters">
 <h2><a class="reference internal" href="adapters.html"><span class="doc">Adapters</span></a><a class="headerlink" href="#adapters" title="Permalink to this heading">#</a></h2>
 <p><strong>Classes</strong></p>
@@ -972,13 +1033,40 @@
 </table>
 </div>
 </section>
-<section id="version">
-<h2><a class="reference internal" href="version.html"><span class="doc">Version</span></a><a class="headerlink" href="#version" title="Permalink to this heading">#</a></h2>
+<section id="evaluation">
+<h2><a class="reference internal" href="evaluation.html"><span class="doc">Evaluation</span></a><a class="headerlink" href="#evaluation" title="Permalink to this heading">#</a></h2>
 <p><strong>Classes</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.versioning.AgentSpecVersionEnum</span></code></a></p></td>
-<td><p>An Enumeration for different versions of Agent Spec.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.Dataset" title="pyagentspec.evaluation.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.Dataset</span></code></a></p></td>
+<td><p>Concrete wrapper around ``_DataSource`` implementations used during evaluation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.Evaluator" title="pyagentspec.evaluation.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.Evaluator</span></code></a></p></td>
+<td><p>Evaluator orchestrates the execution of a set of metrics over input data,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.EvaluationResults" title="pyagentspec.evaluation.EvaluationResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.EvaluationResults</span></code></a></p></td>
+<td><p>Container for storing and accessing evaluation metric results for multiple samples and metrics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.aggregators.Aggregator" title="pyagentspec.evaluation.aggregators.Aggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.aggregators.Aggregator</span></code></a></p></td>
+<td><p>Combine a collection of metric values into a single aggregate result.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator" title="pyagentspec.evaluation.aggregators.HarmonicMeanAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.aggregators.HarmonicMeanAggregator</span></code></a></p></td>
+<td><p>Aggregator that computes the harmonic mean of a collection of non-negative numerical values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.aggregators.MeanAggregator" title="pyagentspec.evaluation.aggregators.MeanAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.aggregators.MeanAggregator</span></code></a></p></td>
+<td><p>Aggregator that computes the arithmetic mean of a collection of numerical values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.intermediates.Intermediate" title="pyagentspec.evaluation.intermediates.Intermediate"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.intermediates.Intermediate</span></code></a></p></td>
+<td><p>Base abstraction for reusable intermediate values shared across metrics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.metrics.Metric" title="pyagentspec.evaluation.metrics.Metric"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.metrics.Metric</span></code></a></p></td>
+<td><p>The ``Metric`` class serves as the base for implementing both metrics and metric wrappers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric" title="pyagentspec.evaluation.metrics.LlmBasedMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.metrics.LlmBasedMetric</span></code></a></p></td>
+<td><p>Metric base class for scoring via a Language Model invocation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="evaluation.html#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric" title="pyagentspec.evaluation.metrics.LlmAsAJudgeMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyagentspec.evaluation.metrics.LlmAsAJudgeMetric</span></code></a></p></td>
+<td><p>Base class for metrics that rely on an LLM as the judge.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1022,12 +1110,14 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-deserialization"><span class="xref std std-doc">Serialization / Deserialization</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-patterns"><span class="xref std std-doc">Agentic Patterns</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-specialization"><span class="xref std std-doc">Agent Specialization</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectivity-resilience"><span class="xref std std-doc">Connectivity &amp; Resilience</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datastores"><span class="xref std std-doc">Datastores</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transforms"><span class="xref std std-doc">Transforms</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing"><span class="xref std std-doc">Tracing</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a2a"><span class="xref std std-doc">A2A</span></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapters"><span class="xref std std-doc">Adapters</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version"><span class="xref std std-doc">Version</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapters"><span class="xref std std-doc">Adapters</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation"><span class="xref std std-doc">Evaluation</span></a></li>
 </ul>
   </nav></div>
 
