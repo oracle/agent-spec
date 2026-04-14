@@ -387,6 +387,7 @@
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -444,6 +445,16 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.agentnode.AgentNode">AgentNode (class in pyagentspec.flows.nodes.agentnode)</a>
 </li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.agentspec_to_runtime_converter">agentspec_to_runtime_converter (pyagentspec.adapters.agent_framework.AgentSpecLoader property)</a>
+
+      <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.agentspec_to_runtime_converter">(pyagentspec.adapters.autogen.AgentSpecLoader property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.agentspec_to_runtime_converter">(pyagentspec.adapters.crewai.AgentSpecLoader property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.agentspec_to_runtime_converter">(pyagentspec.adapters.langgraph.AgentSpecLoader property)</a>
+</li>
+      </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializationcontext.SerializationContext.agentspec_version">agentspec_version (pyagentspec.serialization.serializationcontext.SerializationContext attribute)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer">AgentSpecDeserializer (class in pyagentspec.serialization.deserializer)</a>
@@ -474,19 +485,31 @@
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader">(class in pyagentspec.adapters.wayflow)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer">AgentSpecSerializer (class in pyagentspec.serialization.serializer)</a>
 </li>
       <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum">AgentSpecVersionEnum (class in pyagentspec.versioning)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.Aggregator.aggregate">aggregate() (pyagentspec.evaluation.aggregators.Aggregator method)</a>
+
+      <ul>
+        <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator.aggregate">(pyagentspec.evaluation.aggregators.HarmonicMeanAggregator method)</a>
+</li>
+        <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.MeanAggregator.aggregate">(pyagentspec.evaluation.aggregators.MeanAggregator method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.Aggregator">Aggregator (class in pyagentspec.evaluation.aggregators)</a>
 </li>
       <li><a href="api/agenticpatterns.html#pyagentspec.swarm.HandoffMode.ALWAYS">ALWAYS (pyagentspec.swarm.HandoffMode attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.UnionProperty.any_of">any_of (pyagentspec.property.UnionProperty attribute)</a>
 </li>
-      <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.api_key">api_key (pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig.api_key">api_key (pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.api_key">(pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.api_key">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
 </li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaiconfig.OpenAiConfig.api_key">(pyagentspec.llms.openaiconfig.OpenAiConfig attribute)</a>
@@ -498,7 +521,7 @@
     api_key:
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[3]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-26">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-33">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-8">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[4]</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.api_spec_uri">api_spec_uri (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
@@ -523,7 +546,7 @@
     api_type:
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-13">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-20">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_type">[3]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-13">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-30">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_type">[3]</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode">ApiNode (class in pyagentspec.flows.nodes.apinode)</a>
@@ -534,6 +557,25 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.ToolCall.arguments">arguments (pyagentspec.tracing.events.llmgeneration.ToolCall attribute)</a>
 </li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric.ask_llm">ask_llm() (pyagentspec.evaluation.metrics.LlmBasedMetric method)</a>
+</li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiconfig.GeminiConfig.auth">auth (pyagentspec.llms.geminiconfig.GeminiConfig attribute)</a>
+
+      <ul>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport.auth">(pyagentspec.mcp.clienttransport.RemoteTransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport.auth">(pyagentspec.mcp.clienttransport.SSETransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.auth">(pyagentspec.mcp.clienttransport.StreamableHTTPTransport attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    auth:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth">command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey.auth_file_location">auth_file_location (pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey attribute)</a>
 
       <ul>
@@ -579,6 +621,10 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth_type">command line option</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.AuthConfig">AuthConfig (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints.authorization_endpoint">authorization_endpoint (pyagentspec.auth.OAuthEndpoints attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.AVERAGE">AVERAGE (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
   </ul></td>
@@ -587,6 +633,8 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.backoff_factor">backoff_factor (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
       <li><a href="api/ioproperties.html#pyagentspec.property.BooleanProperty">BooleanProperty (class in pyagentspec.property)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.endnode.EndNode.branch_name">branch_name (pyagentspec.flows.nodes.endnode.EndNode attribute)</a>
@@ -623,10 +671,23 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.ca_file">ca_file (pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.ca_file">ca_file (pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.ca_file">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.ca_file">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.ca_file">(pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+</li>
         <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.ca_file">(pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    ca_file:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-ca_file">command line option</a>
 </li>
       </ul></li>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.cache_collection_name">cache_collection_name (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
@@ -641,13 +702,28 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode.CAUGHT_EXCEPTION_BRANCH">CAUGHT_EXCEPTION_BRANCH (pyagentspec.flows.nodes.catchexceptionnode.CatchExceptionNode attribute)</a>
 </li>
-      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.cert_file">cert_file (pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.cert_file">cert_file (pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.cert_file">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.cert_file">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.cert_file">(pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+</li>
         <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.cert_file">(pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport attribute)</a>
 </li>
       </ul></li>
+      <li>
+    cert_file:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-cert_file">command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.CHAT_COMPLETIONS">CHAT_COMPLETIONS (pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.client">client (pyagentspec.auth.OAuthConfig attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.client_config">client_config (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
 
@@ -662,6 +738,12 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">command line option</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.client_id">client_id (pyagentspec.auth.OAuthClientConfig attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.client_id_metadata_url">client_id_metadata_url (pyagentspec.auth.OAuthClientConfig attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.client_secret">client_secret (pyagentspec.auth.OAuthClientConfig attribute)</a>
+</li>
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPTool.client_transport">client_transport (pyagentspec.mcp.tools.MCPTool attribute)</a>
 
       <ul>
@@ -680,9 +762,11 @@
     command line option
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">api_key:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[3]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">api_key:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-26">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-33">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-8">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[4]</a>
 </li>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-13">api_type:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-20">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_type">[3]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-13">api_type:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-30">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_type">[3]</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth">auth:</a>
 </li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth_file_location">auth_file_location:</a>
 </li>
@@ -690,21 +774,33 @@
 </li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-auth_type">auth_type:</a>
 </li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-ca_file">ca_file:</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-cert_file">cert_file:</a>
+</li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">client_config:</a>
 </li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-compartment_id">compartment_id:</a>
 </li>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">default_generation_parameters:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[4]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-credentials">credentials:</a>
 </li>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-1">model_id:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-11">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-18">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-5">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-model_id">[4]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">default_generation_parameters:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-24">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-31">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[5]</a>
 </li>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">null</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[5]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[6]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[7]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">[8]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[9]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-key_file">key_file:</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-location">location:</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-1">model_id:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-12">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-28">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-5">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-model_id">[5]</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">null</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-24">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-26">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-31">[5]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-33">[6]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[7]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-8">[8]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[9]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-ca_file">[10]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-cert_file">[11]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">[12]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-credentials">[13]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[14]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-key_file">[15]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-project_id">[16]</a>
+</li>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-project_id">project_id:</a>
 </li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-service_endpoint">service_endpoint:</a>
 </li>
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-serving_mode">serving_mode:</a>
 </li>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-12">url:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-url">[2]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-22">url:</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-29">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-url">[2]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -734,6 +830,14 @@
 </li>
       <li><a href="api/components.html#pyagentspec.component.ComponentWithIO">ComponentWithIO (class in pyagentspec.component)</a>
 </li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric.compute_metric">compute_metric() (pyagentspec.evaluation.metrics.LlmAsAJudgeMetric method)</a>
+
+      <ul>
+        <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.Metric.compute_metric">(pyagentspec.evaluation.metrics.Metric method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.intermediates.Intermediate.compute_value">compute_value() (pyagentspec.evaluation.intermediates.Intermediate method)</a>
+</li>
       <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.config_dir">config_dir (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool.configuration">configuration (pyagentspec.tools.builtintool.BuiltinTool attribute)</a>
@@ -746,6 +850,8 @@
         <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore.connection_config">(pyagentspec.datastores.postgres.PostgresDatabaseDatastore attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric.CONTENT">CONTENT (pyagentspec.evaluation.metrics.LlmBasedMetric attribute)</a>
+</li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest.content">content (pyagentspec.tracing.events.humanintheloop.HumanInTheLoopRequest attribute)</a>
 
       <ul>
@@ -755,15 +861,28 @@
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.content">(pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.content">(pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived attribute)</a>
+</li>
         <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.content">(pyagentspec.tracing.messages.message.Message attribute)</a>
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge">ControlFlowEdge (class in pyagentspec.flows.edges.controlflowedge)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.state.StateSnapshotEmitted.conversation_id">conversation_id (pyagentspec.tracing.events.state.StateSnapshotEmitted attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.conversation_store_id">conversation_store_id (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
 </li>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform">ConversationSummarizationTransform (class in pyagentspec.transforms)</a>
 </li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig.credentials">credentials (pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig attribute)</a>
+</li>
+      <li>
+    credentials:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-credentials">command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/version.html#pyagentspec.versioning.AgentSpecVersionEnum.current_version">current_version (pyagentspec.versioning.AgentSpecVersionEnum attribute)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.cwd">cwd (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
@@ -781,6 +900,8 @@
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.dataflowedge.DataFlowEdge">DataFlowEdge (class in pyagentspec.flows.edges.dataflowedge)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset">Dataset (class in pyagentspec.evaluation)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.Datastore">Datastore (class in pyagentspec.datastores)</a>
 </li>
@@ -812,7 +933,7 @@
     default_generation_parameters:
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[4]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-24">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-31">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[5]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -875,12 +996,20 @@
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.endnode.EndNode">EndNode (class in pyagentspec.flows.nodes.endnode)</a>
 </li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.endpoints">endpoints (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport.env">env (pyagentspec.mcp.clienttransport.StdioTransport attribute)</a>
 </li>
-      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event">Event (class in pyagentspec.tracing.events.event)</a>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Evaluator.evaluate">evaluate() (pyagentspec.evaluation.Evaluator method)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults">EvaluationResults (class in pyagentspec.evaluation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Evaluator">Evaluator (class in pyagentspec.evaluation)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.event.Event">Event (class in pyagentspec.tracing.events.event)</a>
+</li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan.events">events (pyagentspec.tracing.spans.root.RootSpan attribute)</a>
 
       <ul>
@@ -899,12 +1028,18 @@
 </li>
       <li><a href="api/tools.html#pyagentspec.tools.builtintool.BuiltinTool.executor_name">executor_name (pyagentspec.tools.builtintool.BuiltinTool attribute)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.state.StateSnapshotEmitted.extra_state">extra_state (pyagentspec.tracing.events.state.StateSnapshotEmitted attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset.features">features() (pyagentspec.evaluation.Dataset method)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.ScopePolicy.FIXED">FIXED (pyagentspec.auth.ScopePolicy attribute)</a>
+</li>
       <li><a href="api/ioproperties.html#pyagentspec.property.FloatProperty">FloatProperty (class in pyagentspec.property)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.flow.Flow">Flow (class in pyagentspec.flows.flow)</a>
@@ -923,42 +1058,68 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spans.flow.FlowExecutionSpan">FlowExecutionSpan (class in pyagentspec.tracing.spans.flow)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.flow.FlowExecutionStart">FlowExecutionStart (class in pyagentspec.tracing.events.flow)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.flownode.FlowNode">FlowNode (class in pyagentspec.flows.nodes.flownode)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.from_branch">from_branch (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
 </li>
-      <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_dict">from_dict() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset.from_df">from_df() (pyagentspec.evaluation.Dataset static method)</a>
 </li>
-      <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_json">from_json() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
+      <li><a href="api/components.html#pyagentspec.component.Component.from_dict">from_dict() (pyagentspec.component.Component class method)</a>
+
+      <ul>
+        <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset.from_dict">(pyagentspec.evaluation.Dataset static method)</a>
 </li>
+        <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_dict">(pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/components.html#pyagentspec.component.Component.from_json">from_json() (pyagentspec.component.Component class method)</a>
+
+      <ul>
+        <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_json">(pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
+</li>
+      </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.edges.controlflowedge.ControlFlowEdge.from_node">from_node (pyagentspec.flows.edges.controlflowedge.ControlFlowEdge attribute)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_partial_dict">from_partial_dict() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
 </li>
-      <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_yaml">from_yaml() (pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
+      <li><a href="api/components.html#pyagentspec.component.Component.from_yaml">from_yaml() (pyagentspec.component.Component class method)</a>
+
+      <ul>
+        <li><a href="api/serialization.html#pyagentspec.serialization.deserializer.AgentSpecDeserializer.from_yaml">(pyagentspec.serialization.deserializer.AgentSpecDeserializer method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig">GeminiAIStudioAuthConfig (class in pyagentspec.llms.geminiauthconfig)</a>
+</li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiAuthConfig">GeminiAuthConfig (class in pyagentspec.llms.geminiauthconfig)</a>
+</li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiconfig.GeminiConfig">GeminiConfig (class in pyagentspec.llms.geminiconfig)</a>
+</li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig">GeminiVertexAIAuthConfig (class in pyagentspec.llms.geminiauthconfig)</a>
+</li>
       <li><a href="api/components.html#pyagentspec.component.Component.get_class_from_name">get_class_from_name() (pyagentspec.component.Component static method)</a>
 </li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext.get_component_type">get_component_type() (pyagentspec.serialization.deserializationcontext.DeserializationContext method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.get_entity_definition">get_entity_definition() (pyagentspec.transforms.ConversationSummarizationTransform static method)</a>
 
       <ul>
         <li><a href="api/transforms.html#pyagentspec.transforms.MessageSummarizationTransform.get_entity_definition">(pyagentspec.transforms.MessageSummarizationTransform static method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset.get_sample">get_sample() (pyagentspec.evaluation.Dataset method)</a>
+</li>
       <li><a href="api/components.html#pyagentspec.component.Component.get_validation_errors">get_validation_errors() (pyagentspec.component.Component class method)</a>
 </li>
       <li><a href="api/components.html#pyagentspec.component.Component.get_versioned_model_fields">get_versioned_model_fields() (pyagentspec.component.Component method)</a>
@@ -974,6 +1135,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/agenticpatterns.html#pyagentspec.swarm.HandoffMode">HandoffMode (class in pyagentspec.swarm)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.HarmonicMeanAggregator">HarmonicMeanAggregator (class in pyagentspec.evaluation.aggregators)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.headers">headers (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
 
@@ -1007,6 +1170,10 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.Dataset.ids">ids() (pyagentspec.evaluation.Dataset method)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.initial_retry_delay">initial_retry_delay (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
       <li><a href="api/datastores.html#pyagentspec.datastores.InMemoryCollectionDatastore">InMemoryCollectionDatastore (class in pyagentspec.datastores)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse.input_tokens">input_tokens (pyagentspec.tracing.events.llmgeneration.LlmGenerationResponse attribute)</a>
@@ -1035,7 +1202,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.IntegerProperty">IntegerProperty (class in pyagentspec.property)</a>
 </li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.intermediates.Intermediate">Intermediate (class in pyagentspec.evaluation.intermediates)</a>
+</li>
       <li><a href="api/tracing.html#pyagentspec.tracing.trace.Trace.is_async_mode_active">is_async_mode_active() (pyagentspec.tracing.trace.Trace method)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.issuer">issuer (pyagentspec.auth.OAuthConfig attribute)</a>
 </li>
       <li><a href="api/ioproperties.html#pyagentspec.property.ListProperty.item_type">item_type (pyagentspec.property.ListProperty attribute)</a>
 </li>
@@ -1045,6 +1216,10 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.jitter">jitter (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ioproperties.html#pyagentspec.property.Property.json_schema_is_valid">json_schema_is_valid() (pyagentspec.property.Property class method)</a>
 </li>
   </ul></td>
@@ -1053,10 +1228,25 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.key_file">key_file (pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.key_file">key_file (pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.key_file">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
+</li>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.vllmconfig.VllmConfig.key_file">(pyagentspec.llms.vllmconfig.VllmConfig attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSEmTLSTransport.key_file">(pyagentspec.mcp.clienttransport.SSEmTLSTransport attribute)</a>
+</li>
         <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport.key_file">(pyagentspec.mcp.clienttransport.StreamableHTTPmTLSTransport attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    key_file:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-key_file">command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1087,6 +1277,10 @@
       </ul></li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.llm_generation_config">llm_generation_config (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
 </li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmAsAJudgeMetric">LlmAsAJudgeMetric (class in pyagentspec.evaluation.metrics)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric">LlmBasedMetric (class in pyagentspec.evaluation.metrics)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmconfig.LlmConfig">LlmConfig (class in pyagentspec.llms.llmconfig)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived">LlmGenerationChunkReceived (class in pyagentspec.tracing.events.llmgeneration)</a>
@@ -1101,15 +1295,9 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode">LlmNode (class in pyagentspec.flows.nodes.llmnode)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_component">load_component() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_component">load_component() (pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
 
       <ul>
-        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_component">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
-</li>
-        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.load_component">(pyagentspec.adapters.crewai.AgentSpecLoader method)</a>
-</li>
-        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_component">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
-</li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecLoader.load_component">(pyagentspec.adapters.wayflow.AgentSpecLoader method)</a>
 </li>
       </ul></li>
@@ -1117,6 +1305,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext.load_config_dict">load_config_dict() (pyagentspec.serialization.deserializationcontext.DeserializationContext method)</a>
 </li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_dict">load_dict() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
+
+      <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.load_dict">(pyagentspec.adapters.autogen.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.load_dict">(pyagentspec.adapters.crewai.AgentSpecLoader method)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.load_dict">(pyagentspec.adapters.langgraph.AgentSpecLoader method)</a>
+</li>
+      </ul></li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationcontext.DeserializationContext.load_field">load_field() (pyagentspec.serialization.deserializationcontext.DeserializationContext method)</a>
 </li>
       <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.load_json">load_json() (pyagentspec.adapters.agent_framework.AgentSpecLoader method)</a>
@@ -1145,6 +1343,15 @@
       </ul></li>
       <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.loc">loc (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
 </li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig.location">location (pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig attribute)</a>
+</li>
+      <li>
+    location:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-location">command line option</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1173,6 +1380,8 @@
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.MAX">MAX (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.max_attempts">max_attempts (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.max_cache_lifetime">max_cache_lifetime (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
 
       <ul>
@@ -1191,6 +1400,8 @@
 </li>
       <li><a href="api/a2a.html#pyagentspec.a2aagent.A2ASessionParameters.max_retries">max_retries (pyagentspec.a2aagent.A2ASessionParameters attribute)</a>
 </li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.max_retry_delay">max_retry_delay (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig.max_tokens">max_tokens (pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig attribute)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPTool">MCPTool (class in pyagentspec.mcp.tools)</a>
@@ -1198,6 +1409,8 @@
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPToolBox">MCPToolBox (class in pyagentspec.mcp.tools)</a>
 </li>
       <li><a href="api/tools.html#pyagentspec.mcp.tools.MCPToolSpec">MCPToolSpec (class in pyagentspec.mcp.tools)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.aggregators.MeanAggregator">MeanAggregator (class in pyagentspec.evaluation.aggregators)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message">Message (class in pyagentspec.tracing.messages.message)</a>
 </li>
@@ -1221,6 +1434,12 @@
         <li><a href="api/tracing.html#pyagentspec.tracing.spans.span.Span.metadata">(pyagentspec.tracing.spans.span.Span attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEPolicy.method">method (pyagentspec.auth.PKCEPolicy attribute)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.Metric">Metric (class in pyagentspec.evaluation.metrics)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults.metric_names">metric_names (pyagentspec.evaluation.EvaluationResults attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod.MIN">MIN (pyagentspec.flows.nodes.mapnode.ReductionMethod attribute)</a>
 </li>
       <li><a href="api/transforms.html#pyagentspec.transforms.ConversationSummarizationTransform.min_num_messages">min_num_messages (pyagentspec.transforms.ConversationSummarizationTransform attribute)</a>
@@ -1258,6 +1477,8 @@
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.node.NodeExecutionStart.model_config">(pyagentspec.tracing.events.node.NodeExecutionStart attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.state.StateSnapshotEmitted.model_config">(pyagentspec.tracing.events.state.StateSnapshotEmitted attribute)</a>
+</li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.model_config">(pyagentspec.tracing.events.swarm.SwarmExecutionEnd attribute)</a>
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart.model_config">(pyagentspec.tracing.events.swarm.SwarmExecutionStart attribute)</a>
@@ -1269,6 +1490,8 @@
         <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionRequest.model_config">(pyagentspec.tracing.events.tool.ToolExecutionRequest attribute)</a>
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.model_config">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
+</li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.model_config">(pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived attribute)</a>
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.model_config">(pyagentspec.tracing.messages.message.Message attribute)</a>
 </li>
@@ -1295,9 +1518,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/components.html#pyagentspec.component.Component.model_fields_set">model_fields_set (pyagentspec.component.Component property)</a>
 </li>
-      <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id">model_id (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiconfig.GeminiConfig.model_id">model_id (pyagentspec.llms.geminiconfig.GeminiConfig attribute)</a>
 
       <ul>
+        <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.model_id">(pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
+</li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.ollamaconfig.OllamaConfig.model_id">(pyagentspec.llms.ollamaconfig.OllamaConfig attribute)</a>
 </li>
         <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig.model_id">(pyagentspec.llms.openaicompatibleconfig.OpenAiCompatibleConfig attribute)</a>
@@ -1311,7 +1536,7 @@
     model_id:
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-1">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-11">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-18">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-5">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-model_id">[4]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-1">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-12">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-28">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-5">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-model_id">[5]</a>
 </li>
       </ul></li>
       <li><a href="api/components.html#pyagentspec.component.Component.model_json_schema">model_json_schema() (pyagentspec.component.Component class method)</a>
@@ -1374,7 +1599,7 @@
     null
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-16">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-21">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-23">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-7">[5]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-9">[6]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[7]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">[8]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[9]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-14">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-24">[2]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-26">[3]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-3">[4]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-31">[5]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-33">[6]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-6">[7]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-8">[8]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-api_key">[9]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-ca_file">[10]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-cert_file">[11]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-client_config">[12]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-credentials">[13]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-default_generation_parameters">[14]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-key_file">[15]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-project_id">[16]</a>
 </li>
       </ul></li>
       <li><a href="api/ioproperties.html#pyagentspec.property.NullProperty">NullProperty (class in pyagentspec.property)</a>
@@ -1387,6 +1612,12 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig">OAuthClientConfig (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig">OAuthConfig (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints">OAuthEndpoints (class in pyagentspec.auth)</a>
+</li>
       <li><a href="api/ioproperties.html#pyagentspec.property.ObjectProperty">ObjectProperty (class in pyagentspec.property)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OCI">OCI (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
@@ -1421,12 +1652,12 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_start">on_start() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.on_start_async">on_start_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_CHAT_COMPLETIONS">OPENAI_CHAT_COMPLETIONS (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciAPIType.OPENAI_RESPONSES">OPENAI_RESPONSES (pyagentspec.llms.ocigenaiconfig.OciAPIType attribute)</a>
 </li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType">OpenAIAPIType (class in pyagentspec.llms.openaicompatibleconfig)</a>
@@ -1485,6 +1716,14 @@
         <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.password">(pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.pkce">pkce (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEMethod">PKCEMethod (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEPolicy">PKCEPolicy (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEMethod.PLAIN">PLAIN (pyagentspec.auth.PKCEMethod attribute)</a>
+</li>
       <li><a href="api/serialization.html#pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin.plugin_name">plugin_name (pyagentspec.serialization.deserializationplugin.ComponentDeserializationPlugin property)</a>
 
       <ul>
@@ -1513,6 +1752,15 @@
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.PostgresDatabaseDatastore">PostgresDatabaseDatastore (class in pyagentspec.datastores.postgres)</a>
 </li>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig.project_id">project_id (pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig attribute)</a>
+</li>
+      <li>
+    project_id:
+
+      <ul>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-project_id">command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.prompt">prompt (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.llmnode.LlmNode.prompt_template">prompt_template (pyagentspec.flows.nodes.llmnode.LlmNode attribute)</a>
@@ -1549,6 +1797,10 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.recoverable_statuses">recoverable_statuses (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.redirect_uri">redirect_uri (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.MapNode.reducers">reducers (pyagentspec.flows.nodes.mapnode.MapNode attribute)</a>
 
       <ul>
@@ -1556,6 +1808,10 @@
 </li>
       </ul></li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.mapnode.ReductionMethod">ReductionMethod (class in pyagentspec.flows.nodes.mapnode)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints.refresh_endpoint">refresh_endpoint (pyagentspec.auth.OAuthEndpoints attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.registration_endpoint">registration_endpoint (pyagentspec.auth.OAuthClientConfig attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.RelationalDatastore">RelationalDatastore (class in pyagentspec.datastores)</a>
 </li>
@@ -1584,21 +1840,79 @@
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.request_id">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.request_id">(pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived attribute)</a>
+</li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.request_timeout">request_timeout (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEPolicy.required">required (pyagentspec.auth.PKCEPolicy attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.resource">resource (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType.RESPONSES">RESPONSES (pyagentspec.llms.openaicompatibleconfig.OpenAIAPIType attribute)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults.results">results (pyagentspec.evaluation.EvaluationResults attribute)</a>
+</li>
+      <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.retry_policy">retry_policy (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
+
+      <ul>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.RemoteTransport.retry_policy">(pyagentspec.mcp.clienttransport.RemoteTransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.SSETransport.retry_policy">(pyagentspec.mcp.clienttransport.SSETransport attribute)</a>
+</li>
+        <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StreamableHTTPTransport.retry_policy">(pyagentspec.mcp.clienttransport.StreamableHTTPTransport attribute)</a>
+</li>
+        <li><a href="api/remoteagent.html#pyagentspec.ociagent.OciAgent.retry_policy">(pyagentspec.ociagent.OciAgent attribute)</a>
+</li>
+        <li><a href="api/tools.html#pyagentspec.tools.remotetool.RemoteTool.retry_policy">(pyagentspec.tools.remotetool.RemoteTool attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy">RetryPolicy (class in pyagentspec.retrypolicy)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints.revocation_endpoint">revocation_endpoint (pyagentspec.auth.OAuthEndpoints attribute)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric.ROLE">ROLE (pyagentspec.evaluation.metrics.LlmBasedMetric attribute)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.role">role (pyagentspec.tracing.messages.message.Message attribute)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spans.root.RootSpan">RootSpan (class in pyagentspec.tracing.spans.root)</a>
 </li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.runtime_to_agentspec_converter">runtime_to_agentspec_converter (pyagentspec.adapters.agent_framework.AgentSpecExporter property)</a>
+
+      <ul>
+        <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecLoader.runtime_to_agentspec_converter">(pyagentspec.adapters.agent_framework.AgentSpecLoader property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.runtime_to_agentspec_converter">(pyagentspec.adapters.autogen.AgentSpecExporter property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecLoader.runtime_to_agentspec_converter">(pyagentspec.adapters.autogen.AgentSpecLoader property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.runtime_to_agentspec_converter">(pyagentspec.adapters.crewai.AgentSpecExporter property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecLoader.runtime_to_agentspec_converter">(pyagentspec.adapters.crewai.AgentSpecLoader property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.runtime_to_agentspec_converter">(pyagentspec.adapters.langgraph.AgentSpecExporter property)</a>
+</li>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecLoader.runtime_to_agentspec_converter">(pyagentspec.adapters.langgraph.AgentSpecLoader property)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.PKCEMethod.S256">S256 (pyagentspec.auth.PKCEMethod attribute)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults.sample_ids">sample_ids (pyagentspec.evaluation.EvaluationResults attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.scope_policy">scope_policy (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.ScopePolicy">ScopePolicy (class in pyagentspec.auth)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthConfig.scopes">scopes (pyagentspec.auth.OAuthConfig attribute)</a>
+</li>
       <li><a href="api/tracing.html#pyagentspec.tracing.messages.message.Message.sender">sender (pyagentspec.tracing.messages.message.Message attribute)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.apinode.ApiNode.sensitive_headers">sensitive_headers (pyagentspec.flows.nodes.apinode.ApiNode attribute)</a>
@@ -1634,6 +1948,8 @@
         <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-service_endpoint">command line option</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy.service_error_retry_on_any_5xx">service_error_retry_on_any_5xx (pyagentspec.retrypolicy.RetryPolicy attribute)</a>
+</li>
       <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.OciGenAiConfig.serving_mode">serving_mode (pyagentspec.llms.ocigenaiconfig.OciGenAiConfig attribute)</a>
 </li>
       <li>
@@ -1677,10 +1993,10 @@
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcert">sslcert (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
-      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcrl">sslcrl (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslcrl">sslcrl (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
+</li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslkey">sslkey (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.sslmode">sslmode (pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
@@ -1702,6 +2018,10 @@
       <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.startup">startup() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spanprocessor.SpanProcessor.startup_async">startup_async() (pyagentspec.tracing.spanprocessor.SpanProcessor method)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.state.StateSnapshotEmitted.state_snapshot">state_snapshot (pyagentspec.tracing.events.state.StateSnapshotEmitted attribute)</a>
+</li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.state.StateSnapshotEmitted">StateSnapshotEmitted (class in pyagentspec.tracing.events.state)</a>
 </li>
       <li><a href="api/mcp.html#pyagentspec.mcp.clienttransport.StdioTransport">StdioTransport (class in pyagentspec.mcp.clienttransport)</a>
 </li>
@@ -1761,6 +2081,8 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.swarm.SwarmExecutionStart">SwarmExecutionStart (class in pyagentspec.tracing.events.swarm)</a>
 </li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric.SYSTEM">SYSTEM (pyagentspec.evaluation.metrics.LlmBasedMetric attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1775,20 +2097,26 @@
 </li>
       <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig">TlsPostgresDatabaseConnectionConfig (class in pyagentspec.datastores.postgres)</a>
 </li>
-      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_component">to_component() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
+      <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_component">to_component() (pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
+</li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults.to_df">to_df() (pyagentspec.evaluation.EvaluationResults method)</a>
+</li>
+      <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_dict">to_dict() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
-        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_component">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
+        <li><a href="api/adapters.html#pyagentspec.adapters.autogen.AgentSpecExporter.to_dict">(pyagentspec.adapters.autogen.AgentSpecExporter method)</a>
 </li>
-        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.to_component">(pyagentspec.adapters.crewai.AgentSpecExporter method)</a>
+        <li><a href="api/adapters.html#pyagentspec.adapters.crewai.AgentSpecExporter.to_dict">(pyagentspec.adapters.crewai.AgentSpecExporter method)</a>
 </li>
-        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_component">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
+        <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_dict">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
 </li>
-        <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_component">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
+        <li><a href="api/components.html#pyagentspec.component.Component.to_dict">(pyagentspec.component.Component method)</a>
+</li>
+        <li><a href="api/evaluation.html#pyagentspec.evaluation.EvaluationResults.to_dict">(pyagentspec.evaluation.EvaluationResults method)</a>
+</li>
+        <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_dict">(pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
       </ul></li>
-      <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_dict">to_dict() (pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
-</li>
       <li><a href="api/adapters.html#pyagentspec.adapters.agent_framework.AgentSpecExporter.to_json">to_json() (pyagentspec.adapters.agent_framework.AgentSpecExporter method)</a>
 
       <ul>
@@ -1799,6 +2127,8 @@
         <li><a href="api/adapters.html#pyagentspec.adapters.langgraph.AgentSpecExporter.to_json">(pyagentspec.adapters.langgraph.AgentSpecExporter method)</a>
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_json">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
+</li>
+        <li><a href="api/components.html#pyagentspec.component.Component.to_json">(pyagentspec.component.Component method)</a>
 </li>
         <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_json">(pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
@@ -1816,9 +2146,17 @@
 </li>
         <li><a href="api/adapters.html#pyagentspec.adapters.wayflow.AgentSpecExporter.to_yaml">(pyagentspec.adapters.wayflow.AgentSpecExporter method)</a>
 </li>
+        <li><a href="api/components.html#pyagentspec.component.Component.to_yaml">(pyagentspec.component.Component method)</a>
+</li>
         <li><a href="api/serialization.html#pyagentspec.serialization.serializer.AgentSpecSerializer.to_yaml">(pyagentspec.serialization.serializer.AgentSpecSerializer method)</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints.token_endpoint">token_endpoint (pyagentspec.auth.OAuthEndpoints attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.token_endpoint_auth_method">token_endpoint_auth_method (pyagentspec.auth.OAuthClientConfig attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tools.html#pyagentspec.tools.tool.Tool">Tool (class in pyagentspec.tools.tool)</a>
 </li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.toolnode.ToolNode.tool">tool (pyagentspec.flows.nodes.toolnode.ToolNode attribute)</a>
@@ -1832,11 +2170,11 @@
 </li>
         <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionResponse.tool">(pyagentspec.tracing.events.tool.ToolExecutionResponse attribute)</a>
 </li>
+        <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.tool">(pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived attribute)</a>
+</li>
         <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan.tool">(pyagentspec.tracing.spans.tool.ToolExecutionSpan attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived.tool_calls">tool_calls (pyagentspec.tracing.events.llmgeneration.LlmGenerationChunkReceived attribute)</a>
 
       <ul>
@@ -1871,6 +2209,8 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.spans.tool.ToolExecutionSpan">ToolExecutionSpan (class in pyagentspec.tracing.spans.tool)</a>
 </li>
+      <li><a href="api/tracing.html#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived">ToolExecutionStreamingChunkReceived (class in pyagentspec.tracing.events.tool)</a>
+</li>
       <li><a href="api/flows.html#pyagentspec.flows.nodes.toolnode.ToolNode">ToolNode (class in pyagentspec.flows.nodes.toolnode)</a>
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest.tools">tools (pyagentspec.tracing.events.llmgeneration.LlmGenerationRequest attribute)</a>
@@ -1879,8 +2219,12 @@
 </li>
       <li><a href="api/tracing.html#pyagentspec.tracing.trace.Trace">Trace (class in pyagentspec.tracing.trace)</a>
 </li>
-      <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.type">type (pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthClientConfig.type">type (pyagentspec.auth.OAuthClientConfig attribute)</a>
+
+      <ul>
+        <li><a href="api/serialization.html#pyagentspec.validation_helpers.PyAgentSpecErrorDetails.type">(pyagentspec.validation_helpers.PyAgentSpecErrorDetails attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1915,15 +2259,21 @@
     url:
 
       <ul>
-        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-12">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-19">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-url">[2]</a>
+        <li><a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-22">command line option</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-29">[1]</a>, <a href="howtoguides/howto_llm_from_different_providers.html#cmdoption-arg-url">[2]</a>
 </li>
       </ul></li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.ScopePolicy.USE_CHALLENGE_OR_SUPPORTED">USE_CHALLENGE_OR_SUPPORTED (pyagentspec.auth.ScopePolicy attribute)</a>
+</li>
       <li><a href="api/datastores.html#pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig.user">user (pyagentspec.datastores.oracle.TlsOracleDatabaseConnectionConfig attribute)</a>
 
       <ul>
         <li><a href="api/datastores.html#pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig.user">(pyagentspec.datastores.postgres.TlsPostgresDatabaseConnectionConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/evaluation.html#pyagentspec.evaluation.metrics.LlmBasedMetric.USER">USER (pyagentspec.evaluation.metrics.LlmBasedMetric attribute)</a>
+</li>
+      <li><a href="api/connectivity_and_resilience.html#pyagentspec.auth.OAuthEndpoints.userinfo_endpoint">userinfo_endpoint (pyagentspec.auth.OAuthEndpoints attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1963,6 +2313,14 @@
       <li><a href="api/datastores.html#pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig.wallet_password">wallet_password (pyagentspec.datastores.oracle.MTlsOracleDatabaseConnectionConfig attribute)</a>
 </li>
       <li><a href="api/agenticpatterns.html#pyagentspec.managerworkers.ManagerWorkers.workers">workers (pyagentspec.managerworkers.ManagerWorkers attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/llmmodels.html#pyagentspec.llms.ocigenaiconfig.ModelProvider.XAI">XAI (pyagentspec.llms.ocigenaiconfig.ModelProvider attribute)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -180,6 +180,28 @@ Here is what the **Agent Spec representation will look like ↓**
             :language: yaml
 
 
+Advanced use: Use OAuth in MCP Tools
+====================================
+
+For more information about OAuth with MCP servers, visit the
+`official MCP documentation <https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization>`_
+
+Some MCP servers require OAuth (for example, to authorize access to user data).
+In that case, attach an :ref:`OAuthConfig <oauthconfig>` to the remote transport used by
+your MCP client (e.g., :ref:`SSETransport <ssetransport>` or :ref:`StreamableHTTPTransport <streamablehttptransport>`).
+
+.. literalinclude:: ../code_examples/howto_mcp.py
+    :language: python
+    :start-after: .. start-##_OAuth_in_MCP_Tools
+    :end-before: .. end-##_OAuth_in_MCP_Tools
+
+.. note::
+
+    * Configure ``pkce`` when required by the server.
+    * Use ``scope_policy="use_challenge_or_supported"`` to let the runtime pick compatible scopes from server metadata.
+    * You can also specify ``issuer`` or explicit ``endpoints`` on ``OAuthConfig`` depending on what your runtime supports.
+
+
 
 Next steps
 ==========

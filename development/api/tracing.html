@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -1676,6 +1680,51 @@
 
 </dd></dl>
 
+<span class="target" id="toolexecutionstreamingchunkreceived"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tracing.events.tool.</span></span><span class="sig-name descname"><span class="pre">ToolExecutionStreamingChunkReceived</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.tracing.events.event.Event" title="pyagentspec.tracing.events.event.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a></p>
+<p>A tool streams a portion of the output during its execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>description</strong> (<em>str</em>) – </p></li>
+<li><p><strong>timestamp</strong> (<em>int</em>) – </p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p></li>
+<li><p><strong>tool</strong> (<a class="reference internal" href="tools.html#pyagentspec.tools.tool.Tool" title="pyagentspec.tools.tool.Tool"><em>Tool</em></a>) – </p></li>
+<li><p><strong>request_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>content</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.content">
+<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.content" title="Permalink to this definition">#</a></dt>
+<dd><p>A streamed portion of the tool’s output emitted during execution</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.model_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.request_id">
+<span class="sig-name descname"><span class="pre">request_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.request_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Identifier of the tool execution request</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.tool">
+<span class="sig-name descname"><span class="pre">tool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="tools.html#pyagentspec.tools.tool.Tool" title="pyagentspec.tools.tool.Tool"><span class="pre">Tool</span></a></em><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.tool" title="Permalink to this definition">#</a></dt>
+<dd><p>The Tool being executed</p>
+</dd></dl>
+
+</dd></dl>
+
 <span class="target" id="toolconfirmationrequest"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.tracing.events.tool.ToolConfirmationRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tracing.events.tool.</span></span><span class="sig-name descname"><span class="pre">ToolConfirmationRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_execution_request_id=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tracing.events.tool.ToolConfirmationRequest" title="Permalink to this definition">#</a></dt>
@@ -2210,6 +2259,61 @@
 </dd></dl>
 
 </section>
+<section id="state-events">
+<h3>State Events<a class="headerlink" href="#state-events" title="Permalink to this heading">#</a></h3>
+<p>State events expose runtime snapshots that can be consumed by UIs, observability
+tools, or resumability mechanisms.</p>
+<span class="target" id="statesnapshotemitted"></span><dl class="py class">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.state.StateSnapshotEmitted">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tracing.events.state.</span></span><span class="sig-name descname"><span class="pre">StateSnapshotEmitted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_snapshot=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_state=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyagentspec.tracing.events.event.Event" title="pyagentspec.tracing.events.event.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a></p>
+<p>A runtime emits a state snapshot for downstream consumers.</p>
+<p>This event carries a JSON-serializable snapshot of the current
+logical conversation or thread state. The exact schema of <code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code>
+is intentionally runtime-defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>description</strong> (<em>str</em>) – </p></li>
+<li><p><strong>timestamp</strong> (<em>int</em>) – </p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p></li>
+<li><p><strong>conversation_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>state_snapshot</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>extra_state</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.state.StateSnapshotEmitted.conversation_id">
+<span class="sig-name descname"><span class="pre">conversation_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.conversation_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Stable identifier of the logical conversation or thread this snapshot refers to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.state.StateSnapshotEmitted.extra_state">
+<span class="sig-name descname"><span class="pre">extra_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.extra_state" title="Permalink to this definition">#</a></dt>
+<dd><p>Developer-defined JSON-serializable state such as UI or application state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.state.StateSnapshotEmitted.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.model_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tracing.events.state.StateSnapshotEmitted.state_snapshot">
+<span class="sig-name descname"><span class="pre">state_snapshot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.state_snapshot" title="Permalink to this definition">#</a></dt>
+<dd><p>Runtime-defined JSON-serializable snapshot content for the current state.</p>
+<p>This payload may contain opaque runtime-owned state needed for resuming or
+reconstructing execution later.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="other-events">
 <h3>Other Events<a class="headerlink" href="#other-events" title="Permalink to this heading">#</a></h3>
 <span class="target" id="exceptionraised"></span><dl class="py class">
@@ -2522,6 +2626,13 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionResponse.tool"><code class="docutils literal notranslate"><span class="pre">ToolExecutionResponse.tool</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived"><code class="docutils literal notranslate"><span class="pre">ToolExecutionStreamingChunkReceived</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.content"><code class="docutils literal notranslate"><span class="pre">ToolExecutionStreamingChunkReceived.content</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.model_config"><code class="docutils literal notranslate"><span class="pre">ToolExecutionStreamingChunkReceived.model_config</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.request_id"><code class="docutils literal notranslate"><span class="pre">ToolExecutionStreamingChunkReceived.request_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolExecutionStreamingChunkReceived.tool"><code class="docutils literal notranslate"><span class="pre">ToolExecutionStreamingChunkReceived.tool</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolConfirmationRequest"><code class="docutils literal notranslate"><span class="pre">ToolConfirmationRequest</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolConfirmationRequest.model_config"><code class="docutils literal notranslate"><span class="pre">ToolConfirmationRequest.model_config</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.tool.ToolConfirmationRequest.request_id"><code class="docutils literal notranslate"><span class="pre">ToolConfirmationRequest.request_id</span></code></a></li>
@@ -2609,6 +2720,16 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.model_config"><code class="docutils literal notranslate"><span class="pre">SwarmExecutionEnd.model_config</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.outputs"><code class="docutils literal notranslate"><span class="pre">SwarmExecutionEnd.outputs</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.swarm.SwarmExecutionEnd.swarm"><code class="docutils literal notranslate"><span class="pre">SwarmExecutionEnd.swarm</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-events">State Events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted"><code class="docutils literal notranslate"><span class="pre">StateSnapshotEmitted</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.conversation_id"><code class="docutils literal notranslate"><span class="pre">StateSnapshotEmitted.conversation_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.extra_state"><code class="docutils literal notranslate"><span class="pre">StateSnapshotEmitted.extra_state</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.model_config"><code class="docutils literal notranslate"><span class="pre">StateSnapshotEmitted.model_config</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tracing.events.state.StateSnapshotEmitted.state_snapshot"><code class="docutils literal notranslate"><span class="pre">StateSnapshotEmitted.state_snapshot</span></code></a></li>
 </ul>
 </li>
 </ul>

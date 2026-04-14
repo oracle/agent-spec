@@ -7,6 +7,20 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **New xAI model provider for OciGenAiConfig**
+
+  Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
+
+* **Convenience serialization APIs on Components**
+
+  Components now expose direct serialization and deserialization helpers:
+  ``to_yaml()``, ``to_json()``, ``to_dict()``, ``from_yaml()``,
+  ``from_json()``, and ``from_dict()``.
+  This provides a shorter API (e.g., ``agent.to_json()``) while preserving
+  compatibility with disaggregated configurations.
+
+  We thank @pullely-samuel for the contribution!
+
 * **Disaggregated configurations in LangGraph adapter**
 
   The LangGraph adapter now supports loading disaggregated components during deserialization.
@@ -29,6 +43,11 @@ Improvements
   Note that this PR might break existing downstream LangGraph tracing span processors if they run in ab async environment;
   span processors will need to implement the async APIs (e.g. async def on_event_async) to properly use the async tracing mode.
 
+* **Async server tools in LangGraph adapter**
+
+  The LangGraph adapter now converts async server-tool callables to ``StructuredTool(coroutine=...)``
+  instead of ``func=...``, so async tools execute correctly when loaded from Agent Spec.
+
 * **OCI GenAI model support in LangGraph adapter**
 
   The LangGraph adapter now supports loading/exporting OCI GenAI models.
@@ -39,6 +58,31 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **Retry policy for components doing remote calls:**
+
+  Added ``retry_policy`` support to components doing remote calls to enable
+  configuration of retries, backoff, and request timeouts across remote integrations.
+
+  For more information read the guide on :ref:`using LLM providers <howto-llmwithretrypolicy>`.
+
+* **Certificate configuration for OpenAI-compatible LLMs**
+
+  ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``
+  fields for HTTPS and mTLS connections to private endpoints.
+
+  For more information read the how-to guide on using :ref:`LLM Providers <howto-openaicompatibleconfig>`.
+
+* **New tool output streaming Event:**
+
+  A new :ref:`ToolExecutionStreamingChunkReceived <toolexecutionstreamingchunkreceived>`
+  is introduced to enable surfacing intermediate tool chunks when executing a long-running tool.
+
+* **Swarm support in LangGraph adapter:**
+
+  The LangGraph adapter now supports the conversion of the Swarm multi-agent pattern.
+
+  To use this, install the optional extra ``pyagentspec[langgraph]``.
+
 * **CatchExceptionNode:**
 
   Added a new node that executes a subflow and catches exceptions.
@@ -47,6 +91,17 @@ New features
 
   For more information and security considerations, read the :ref:`API Reference <catchexceptionnode>`.
 
+* **Introduced Open Agent Specification Evaluation:**
+
+  Open Agent Specification Evaluation (Agent Spec Eval) is an extension of
+  Agent Spec that standardizes how agentic systems are evaluated in a framework-agnostic way.
+
+  The Agent Spec Eval Python SDK is now available as part of ``pyagentspec``.
+  You can access its functionalities through the ``pyagentspec.evaluation`` subpackage.
+  It requires the ``evaluation`` extra dependency to be installed.
+
+  For more information read the :doc:`evaluation specification page <agentspec/evaluation>`.
+
 * **Added WayFlow adapter to pyagentspec:**
 
   The WayFlow adapter is now available as part of ``pyagentspec``.
@@ -54,6 +109,13 @@ New features
   It requires the ``wayflow`` extra dependency to be installed.
 
   For more information read the :doc:`adapter page <adapters/wayflow/index>`.
+
+* **Gemini LLM configuration support**
+
+  Added ``GeminiConfig`` together with ``GeminiAIStudioAuthConfig`` and
+  ``GeminiVertexAIAuthConfig`` to represent Gemini models in Agent Spec.
+
+  For more information read the :doc:`API Reference <api/llmmodels>`.
 
 * **Added Microsoft Agent Framework adapter to pyagentspec:**
 
@@ -84,6 +146,12 @@ New features
 
   Introduced transforms in Agent Spec that allow applying transformations on conversations before being passed to the underlying LLM.
   We provide :ref:`MessageSummarizationTransform <messagesummarizationtransform>` and :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>` for handling long contexts through summarization.
+
+* **ToolBox with User Confirmation**
+
+  ToolBoxes now have a new flag named `requires_confirmation`, which can be set to require user/operator approval before running any of the tools in the toolbox.
+  For more information read the :doc:`API Reference <api/tools>`.
+
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

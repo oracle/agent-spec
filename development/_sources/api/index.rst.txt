@@ -116,6 +116,14 @@ Click on the components and section names to access the complete API documentati
 
 :class:`pyagentspec.llms.OciGenAiConfig <pyagentspec.llms.ocigenaiconfig.OciGenAiConfig>`                                              :docstring:`pyagentspec.llms.ocigenaiconfig.OciGenAiConfig`
 
+:class:`pyagentspec.llms.GeminiConfig <pyagentspec.llms.geminiconfig.GeminiConfig>`                                                    :docstring:`pyagentspec.llms.geminiconfig.GeminiConfig`
+
+:class:`pyagentspec.llms.GeminiAuthConfig <pyagentspec.llms.geminiauthconfig.GeminiAuthConfig>`                                        :docstring:`pyagentspec.llms.geminiauthconfig.GeminiAuthConfig`
+
+:class:`pyagentspec.llms.GeminiAIStudioAuthConfig <pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig>`                        :docstring:`pyagentspec.llms.geminiauthconfig.GeminiAIStudioAuthConfig`
+
+:class:`pyagentspec.llms.GeminiVertexAIAuthConfig <pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig>`                        :docstring:`pyagentspec.llms.geminiauthconfig.GeminiVertexAIAuthConfig`
+
 :class:`pyagentspec.llms.OciClientConfig <pyagentspec.llms.ociclientconfig.OciClientConfig>`                                           :docstring:`pyagentspec.llms.ociclientconfig.OciClientConfig`
 
 :class:`pyagentspec.llms.OciClientConfigWithApiKey <pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey>`                       :docstring:`pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey`
@@ -270,6 +278,32 @@ Click on the components and section names to access the complete API documentati
 
 ==================================================================== ========================================================================
 
+:doc:`Connectivity & Resilience <connectivity_and_resilience>`
+--------------------------------------------------------------
+
+**Classes**
+
+
+============================================ ================================================
+
+:class:`pyagentspec.auth.AuthConfig`         :docstring:`pyagentspec.auth.AuthConfig`
+
+:class:`pyagentspec.auth.OAuthEndpoints`     :docstring:`pyagentspec.auth.OAuthEndpoints`
+
+:class:`pyagentspec.auth.PKCEMethod`         :docstring:`pyagentspec.auth.PKCEMethod`
+
+:class:`pyagentspec.auth.PKCEPolicy`         :docstring:`pyagentspec.auth.PKCEPolicy`
+
+:class:`pyagentspec.auth.OAuthClientConfig`  :docstring:`pyagentspec.auth.OAuthClientConfig`
+
+:class:`pyagentspec.auth.ScopePolicy`        :docstring:`pyagentspec.auth.ScopePolicy`
+
+:class:`pyagentspec.auth.OAuthConfig`        :docstring:`pyagentspec.auth.OAuthConfig`
+
+:class:`pyagentspec.retrypolicy.RetryPolicy` :docstring:`pyagentspec.retrypolicy.RetryPolicy`
+
+============================================ ================================================
+
 :doc:`Datastores <datastores>`
 ------------------------------
 
@@ -348,6 +382,18 @@ Click on the components and section names to access the complete API documentati
 
 ================================================== ======================================================
 
+:doc:`Version <version>`
+------------------------
+
+**Classes**
+
+
+==================================================== ========================================================
+
+:class:`pyagentspec.versioning.AgentSpecVersionEnum` :docstring:`pyagentspec.versioning.AgentSpecVersionEnum`
+
+==================================================== ========================================================
+
 :doc:`Adapters <adapters>`
 --------------------------
 
@@ -378,17 +424,35 @@ Click on the components and section names to access the complete API documentati
 
 =============================================================== ===================================================================
 
-:doc:`Version <version>`
-------------------------
+:doc:`Evaluation <evaluation>`
+------------------------------
 
 **Classes**
 
 
-==================================================== ========================================================
+================================================================== ======================================================================
 
-:class:`pyagentspec.versioning.AgentSpecVersionEnum` :docstring:`pyagentspec.versioning.AgentSpecVersionEnum`
+:class:`pyagentspec.evaluation.Dataset`                            :docstring:`pyagentspec.evaluation.Dataset`
 
-==================================================== ========================================================
+:class:`pyagentspec.evaluation.Evaluator`                          :docstring:`pyagentspec.evaluation.Evaluator`
+
+:class:`pyagentspec.evaluation.EvaluationResults`                  :docstring:`pyagentspec.evaluation.EvaluationResults`
+
+:class:`pyagentspec.evaluation.aggregators.Aggregator`             :docstring:`pyagentspec.evaluation.aggregators.Aggregator`
+
+:class:`pyagentspec.evaluation.aggregators.HarmonicMeanAggregator` :docstring:`pyagentspec.evaluation.aggregators.HarmonicMeanAggregator`
+
+:class:`pyagentspec.evaluation.aggregators.MeanAggregator`         :docstring:`pyagentspec.evaluation.aggregators.MeanAggregator`
+
+:class:`pyagentspec.evaluation.intermediates.Intermediate`         :docstring:`pyagentspec.evaluation.intermediates.Intermediate`
+
+:class:`pyagentspec.evaluation.metrics.Metric`                     :docstring:`pyagentspec.evaluation.metrics.Metric`
+
+:class:`pyagentspec.evaluation.metrics.LlmBasedMetric`             :docstring:`pyagentspec.evaluation.metrics.LlmBasedMetric`
+
+:class:`pyagentspec.evaluation.metrics.LlmAsAJudgeMetric`          :docstring:`pyagentspec.evaluation.metrics.LlmAsAJudgeMetric`
+
+================================================================== ======================================================================
 
 
 .. toctree::
@@ -406,9 +470,11 @@ Click on the components and section names to access the complete API documentati
    Serialization / Deserialization <serialization>
    Agentic Patterns <agenticpatterns>
    Agent Specialization <agent_specialization>
+   Connectivity & Resilience <connectivity_and_resilience>
    Datastores <datastores>
    Transforms <transforms>
    Tracing <tracing>
    A2A <a2a>
-   Adapters <adapters>
    Version <version>
+   Adapters <adapters>
+   Evaluation <evaluation>

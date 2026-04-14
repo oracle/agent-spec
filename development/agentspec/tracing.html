@@ -68,7 +68,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Agent Spec specification (nightly version 26.2.0.dev1)" href="language_spec_nightly.html" />
+    <link rel="next" title="Open Agent Specification Evaluation (Agent Spec Eval)" href="evaluation.html" />
     <link rel="prev" title="Positioning of Agent Spec in the agentic ecosystem" href="positioning.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -1273,6 +1277,65 @@ should be considered as the delta compared to the last chunk received.</p></td>
 </table>
 </div>
 </section>
+<section id="toolexecutionstreamingchunkreceived">
+<h4>ToolExecutionStreamingChunkReceived<a class="headerlink" href="#toolexecutionstreamingchunkreceived" title="Permalink to this heading">#</a></h4>
+<p>A streamed chunk was received during Tool execution.</p>
+<p>This event is emitted only for streaming-capable tools (e.g., tools implemented as async
+generators or tools whose runtime supports progressive updates). One event is emitted per
+chunk produced during execution. The authoritative final tool output is not sent via
+streaming chunks; it is returned in the <code class="docutils literal notranslate"><span class="pre">ToolExecutionResponse</span></code> event.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tool</p></td>
+<td><p>The Tool being executed</p></td>
+<td><p>Tool</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>request_id</p></td>
+<td><p>Identifier of the tool execution request</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>content</p></td>
+<td><p>A streamed portion of the tool’s output emitted during execution.
+Each event carries one chunk as produced by the tool (e.g., text
+segment or partial structured data). Chunks are not guaranteed to
+be deltas or directly mergeable; the final tool result is provided
+in ToolExecutionResponse.</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="toolconfirmationrequest">
 <h4>ToolConfirmationRequest<a class="headerlink" href="#toolconfirmationrequest" title="Permalink to this heading">#</a></h4>
 <p>A tool confirmation is requested (e.g., human-in-the-loop approval before execution).</p>
@@ -1829,8 +1892,8 @@ should be considered as the delta compared to the last chunk received.</p></td>
 </div>
 </section>
 </section>
-<section id="conversation-and-control-events">
-<h3>Conversation and control events<a class="headerlink" href="#conversation-and-control-events" title="Permalink to this heading">#</a></h3>
+<section id="conversation-state-and-control-events">
+<h3>Conversation, state, and control events<a class="headerlink" href="#conversation-state-and-control-events" title="Permalink to this heading">#</a></h3>
 <section id="conversationmessageadded">
 <h4>ConversationMessageAdded<a class="headerlink" href="#conversationmessageadded" title="Permalink to this heading">#</a></h4>
 <p>A message was added to the conversation.</p>
@@ -1863,6 +1926,63 @@ should be considered as the delta compared to the last chunk received.</p></td>
 </tbody>
 </table>
 </div>
+</section>
+<section id="statesnapshotemitted">
+<h4>StateSnapshotEmitted<a class="headerlink" href="#statesnapshotemitted" title="Permalink to this heading">#</a></h4>
+<p>A runtime emitted a point-in-time snapshot of the current logical conversation or thread state.</p>
+<p>This event is intended for downstream consumers such as UIs, debuggers, resumability
+systems, or observability processors. Agent Spec standardizes the event envelope, but
+the exact structure of <code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code> and the frequency at which snapshots are
+emitted remain runtime-defined. <code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code> is not limited to a lightweight
+inspection-only view: runtimes can use it to carry opaque runtime-owned state that
+is sufficient to resume or reconstruct execution later. Runtimes that do not
+implement state snapshots may never emit this event.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 43.6%" />
+<col style="width: 16.4%" />
+<col style="width: 10.9%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default/Optional</p></th>
+<th class="head"><p>Sensitive</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>conversation_id</p></td>
+<td><p>Stable identifier of the logical conversation or thread this snapshot refers to</p></td>
+<td><p>str</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>state_snapshot</p></td>
+<td><p>Runtime-defined JSON-serializable snapshot of the current state; may include opaque runtime-owned resumable state and any runtime-local identifiers</p></td>
+<td><p>Optional[dict[str, any]]</p></td>
+<td><p>null</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>extra_state</p></td>
+<td><p>Developer-defined JSON-serializable state such as UI or application state</p></td>
+<td><p>Optional[dict[str, any]]</p></td>
+<td><p>null</p></td>
+<td><p>yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>At least one of <code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code> or <code class="docutils literal notranslate"><span class="pre">extra_state</span></code> must be present. The
+<code class="docutils literal notranslate"><span class="pre">conversation_id</span></code> identifies the logical conversation or thread across all related
+snapshots; runtime-local execution identifiers, if needed, should be carried inside
+<code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code>. Runtime-defined resumability payloads should also be carried in
+<code class="docutils literal notranslate"><span class="pre">state_snapshot</span></code> rather than <code class="docutils literal notranslate"><span class="pre">extra_state</span></code>.</p>
 </section>
 <section id="exceptionraised">
 <h4>ExceptionRaised<a class="headerlink" href="#exceptionraised" title="Permalink to this heading">#</a></h4>
@@ -1999,6 +2119,7 @@ should be considered as the delta compared to the last chunk received.</p></td>
 <li><p>request_id: unique identifier of a single LLM or Tool execution request within a Span.</p></li>
 <li><p>completion_id: identifier of a completion (LLM message or tool-call) which may receive streaming chunks.</p></li>
 <li><p>tool_execution_request_id: identifier of a tool execution for confirmation.</p></li>
+<li><p>conversation_id: stable identifier used to associate state snapshots with the same logical conversation or thread.</p></li>
 </ul>
 <p>Runtimes SHOULD ensure uniqueness within a Span and consistency across all related events.</p>
 </section>
@@ -2093,6 +2214,7 @@ Additionally, tracing frequently includes potentially sensitive information (PII
 <li><p>Tool inputs/outputs</p></li>
 <li><p>Exception messages and stacktraces</p></li>
 <li><p>Conversation messages</p></li>
+<li><p>State snapshots and extra application state</p></li>
 </ul>
 <section id="implementing-a-spanprocessor">
 <h3>Implementing a SpanProcessor<a class="headerlink" href="#implementing-a-spanprocessor" title="Permalink to this heading">#</a></h3>
@@ -2211,6 +2333,7 @@ execution-environment spans or include environment metadata on Trace.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-events">Tool events</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionrequest">ToolExecutionRequest</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionresponse">ToolExecutionResponse</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolexecutionstreamingchunkreceived">ToolExecutionStreamingChunkReceived</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolconfirmationrequest">ToolConfirmationRequest</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#toolconfirmationresponse">ToolConfirmationResponse</a></li>
 </ul>
@@ -2231,8 +2354,9 @@ execution-environment spans or include environment metadata on Trace.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nodeexecutionend">NodeExecutionEnd</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conversation-and-control-events">Conversation and control events</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conversation-state-and-control-events">Conversation, state, and control events</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conversationmessageadded">ConversationMessageAdded</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#statesnapshotemitted">StateSnapshotEmitted</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptionraised">ExceptionRaised</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#humaninthelooprequest">HumanInTheLoopRequest</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#humanintheloopresponse">HumanInTheLoopResponse</a></li>

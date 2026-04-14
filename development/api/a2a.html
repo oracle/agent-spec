@@ -68,7 +68,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Agent Spec Adapters" href="adapters.html" />
+    <link rel="next" title="Version" href="version.html" />
     <link rel="prev" title="Tracing" href="tracing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -522,7 +526,7 @@
 <h2>Connection Config<a class="headerlink" href="#connection-config" title="Permalink to this heading">#</a></h2>
 <span class="target" id="connectionconfig"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.a2aagent.A2AConnectionConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.a2aagent.</span></span><span class="sig-name descname"><span class="pre">A2AConnectionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout=600.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_ca_cert=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.a2aagent.A2AConnectionConfig" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.a2aagent.</span></span><span class="sig-name descname"><span class="pre">A2AConnectionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout=600.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_ca_cert=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.a2aagent.A2AConnectionConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>Class to specify configuration settings for establishing a connection in A2A communication.</p>
 <dl class="field-list simple">
@@ -542,6 +546,7 @@ If False, disables SSL verification (not recommended for production environments
 <li><p><strong>key_file</strong> (<em>str</em><em> | </em><em>None</em>) – Path to the client’s private key file in PEM format, used for mTLS authentication.</p></li>
 <li><p><strong>cert_file</strong> (<em>str</em><em> | </em><em>None</em>) – Path to the client’s certificate chain file in PEM format, used for mTLS authentication.</p></li>
 <li><p><strong>ssl_ca_cert</strong> (<em>str</em><em> | </em><em>None</em>) – Path to the trusted CA certificate file in PEM format, used to verify the server’s identity.</p></li>
+<li><p><strong>retry_policy</strong> (<a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><em>RetryPolicy</em></a><em> | </em><em>None</em>) – Optional retry configuration for requests sent through this A2A connection.</p></li>
 </ul>
 </dd>
 </dl>

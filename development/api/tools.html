@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtoguides/howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -574,7 +578,7 @@ It can be used in a flow by a dedicated tool execution step</p>
 <h2>Remote Tool<a class="headerlink" href="#remote-tool" title="Permalink to this heading">#</a></h2>
 <span class="target" id="remotetool"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.tools.remotetool.RemoteTool">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tools.remotetool.</span></span><span class="sig-name descname"><span class="pre">RemoteTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_confirmation=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tools.remotetool.RemoteTool" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tools.remotetool.</span></span><span class="sig-name descname"><span class="pre">RemoteTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_confirmation=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_spec_uri=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensitive_headers=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tools.remotetool.RemoteTool" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.tools.tool.Tool" title="pyagentspec.tools.tool.Tool"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tool</span></code></a></p>
 <p>A tool that is run remotely and called through REST.</p>
 <dl class="field-list simple">
@@ -610,6 +614,7 @@ Allows placeholders in dict values, which can define inputs</p></li>
 <li><p><strong>sensitive_headers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Additional headers for the API call.
 These headers are intended to be used for sensitive information such as
 authentication tokens and will be excluded form exported JSON configs.</p></li>
+<li><p><strong>retry_policy</strong> (<a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><em>RetryPolicy</em></a><em> | </em><em>None</em>) – Optional retry configuration for the HTTP call performed by this tool.</p></li>
 </ul>
 </dd>
 </dl>
@@ -650,6 +655,12 @@ Allows placeholders, which can define inputs</p>
 <span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyagentspec.tools.remotetool.RemoteTool.query_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Query parameters for the API call.
 Allows placeholders in dict values, which can define inputs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyagentspec.tools.remotetool.RemoteTool.retry_policy">
+<span class="sig-name descname"><span class="pre">retry_policy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="connectivity_and_resilience.html#pyagentspec.retrypolicy.RetryPolicy" title="pyagentspec.retrypolicy.RetryPolicy"><span class="pre">RetryPolicy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyagentspec.tools.remotetool.RemoteTool.retry_policy" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional retry configuration for the HTTP call performed by this tool.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -784,7 +795,7 @@ Allows placeholders, which can define inputs</p>
 <h2>ToolBox<a class="headerlink" href="#toolbox" title="Permalink to this heading">#</a></h2>
 <span class="target" id="id1"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.tools.toolbox.ToolBox">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tools.toolbox.</span></span><span class="sig-name descname"><span class="pre">ToolBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tools.toolbox.ToolBox" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.tools.toolbox.</span></span><span class="sig-name descname"><span class="pre">ToolBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_confirmation=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.tools.toolbox.ToolBox" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="components.html#pyagentspec.component.Component" title="pyagentspec.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 <p>A ToolBox is a component that exposes one or more tools to agentic components.</p>
 <dl class="field-list simple">
@@ -796,6 +807,7 @@ Allows placeholders, which can define inputs</p>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
 <li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>requires_confirmation</strong> (<em>bool</em>) – Flag to make tool require user confirmation before execution. If set to True, should ask for confirmation for all tools in the ToolBox.</p></li>
 </ul>
 </dd>
 </dl>
@@ -828,7 +840,7 @@ Allows placeholders, which can define inputs</p>
 
 <span class="target" id="mcptoolbox"></span><dl class="py class">
 <dt class="sig sig-object py" id="pyagentspec.mcp.tools.MCPToolBox">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.tools.</span></span><span class="sig-name descname"><span class="pre">MCPToolBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_transport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_filter=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.tools.MCPToolBox" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyagentspec.mcp.tools.</span></span><span class="sig-name descname"><span class="pre">MCPToolBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_agentspec_version=AgentSpecVersionEnum.v25_4_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agentspec_version=AgentSpecVersionEnum.v26_2_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_confirmation=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_transport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_filter=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyagentspec.mcp.tools.MCPToolBox" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyagentspec.tools.toolbox.ToolBox" title="pyagentspec.tools.toolbox.ToolBox"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolBox</span></code></a></p>
 <p>Class to dynamically expose a list of tools from a MCP Server.</p>
 <dl class="field-list simple">
@@ -840,6 +852,7 @@ Allows placeholders, which can define inputs</p>
 <li><p><strong>metadata</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Optional, additional metadata related to this Component</p></li>
 <li><p><strong>min_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
 <li><p><strong>max_agentspec_version</strong> (<a class="reference internal" href="version.html#pyagentspec.versioning.AgentSpecVersionEnum" title="pyagentspec.versioning.AgentSpecVersionEnum"><em>AgentSpecVersionEnum</em></a>) – </p></li>
+<li><p><strong>requires_confirmation</strong> (<em>bool</em>) – Flag to make tool require user confirmation before execution. If set to True, should ask for confirmation for all tools in the ToolBox.</p></li>
 <li><p><strong>client_transport</strong> (<a class="reference internal" href="mcp.html#pyagentspec.mcp.clienttransport.ClientTransport" title="pyagentspec.mcp.clienttransport.ClientTransport"><em>ClientTransport</em></a>) – Transport to use for establishing and managing connections to the MCP server.</p></li>
 <li><p><strong>tool_filter</strong> (<em>List</em><em>[</em><a class="reference internal" href="#pyagentspec.mcp.tools.MCPToolSpec" title="pyagentspec.mcp.tools.MCPToolSpec"><em>MCPToolSpec</em></a><em> | </em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
 </ul>
@@ -915,6 +928,7 @@ Allows placeholders, which can define inputs</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.headers"><code class="docutils literal notranslate"><span class="pre">RemoteTool.headers</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.http_method"><code class="docutils literal notranslate"><span class="pre">RemoteTool.http_method</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.query_params"><code class="docutils literal notranslate"><span class="pre">RemoteTool.query_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.retry_policy"><code class="docutils literal notranslate"><span class="pre">RemoteTool.retry_policy</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.sensitive_headers"><code class="docutils literal notranslate"><span class="pre">RemoteTool.sensitive_headers</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pyagentspec.tools.remotetool.RemoteTool.url"><code class="docutils literal notranslate"><span class="pre">RemoteTool.url</span></code></a></li>
 </ul>

@@ -350,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/language_spec_25_4_1.html">Language specification (v25.4.1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/positioning.html">Positioning in the agentic ecosystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agentspec/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agentspec/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,6 +384,7 @@
 
 <li class="toctree-l2"><a class="reference internal" href="howto_ag_ui.html">How to Use AG-UI with Agent Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="howto_plugin.html">How to use custom components with the Plugin System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto_evaluation.html">How to evaluate with Agent Spec Eval</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -397,12 +399,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/serialization.html">Serialization / Deserialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agenticpatterns.html">Agentic Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/agent_specialization.html">Agent Specialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/connectivity_and_resilience.html">Connectivity &amp; Resilience</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/datastores.html">Datastores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/transforms.html">Transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/a2a.html">A2A</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/version.html">Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/adapters.html">Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/evaluation.html">Evaluation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -562,6 +566,29 @@ You can pass the <code class="docutils literal notranslate"><span class="pre">ge
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>If you also need resilience for remote LLM calls, configure <code class="docutils literal notranslate"><span class="pre">retry_policy</span></code> on
+the same LLM configuration. For more details, see <a class="reference internal" href="howto_llm_from_different_providers.html#howto-llmwithretrypolicy"><span class="std std-ref">Configure retry behavior for remote LLM calls</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryPolicy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec.llms</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlmGenerationConfig</span><span class="p">,</span> <span class="n">VllmConfig</span>
+
+<span class="n">retry_policy</span> <span class="o">=</span> <span class="n">RetryPolicy</span><span class="p">(</span>
+    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">request_timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+    <span class="n">initial_retry_delay</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">max_retry_delay</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">llm_config_with_retry_policy</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vllm-llama-4-maverick-with-retries&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.vllm.server/llama4mav&quot;</span><span class="p">,</span>
+    <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">LlmGenerationConfig</span><span class="p">(</span>
+        <span class="n">max_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">),</span>
+    <span class="n">retry_policy</span><span class="o">=</span><span class="n">retry_policy</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>API keys should not be stored anywhere in the Agent Spec representation of an agent.</p>
@@ -637,6 +664,25 @@ llm used by a node.</p>
     <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
     <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.vllm.server/llama4mav&quot;</span><span class="p">,</span>
     <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">generation_config</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryPolicy</span>
+
+<span class="n">retry_policy</span> <span class="o">=</span> <span class="n">RetryPolicy</span><span class="p">(</span>
+    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">request_timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+    <span class="n">initial_retry_delay</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">max_retry_delay</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">llm_config_with_retry_policy</span> <span class="o">=</span> <span class="n">VllmConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vllm-llama-4-maverick-with-retries&quot;</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">&quot;llama-4-maverick&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url.to.my.vllm.server/llama4mav&quot;</span><span class="p">,</span>
+    <span class="n">default_generation_parameters</span><span class="o">=</span><span class="n">LlmGenerationConfig</span><span class="p">(</span>
+        <span class="n">max_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">),</span>
+    <span class="n">retry_policy</span><span class="o">=</span><span class="n">retry_policy</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyagentspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
