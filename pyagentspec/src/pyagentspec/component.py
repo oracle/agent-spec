@@ -6,6 +6,7 @@
 
 """This module defines the base class for all components in Agent Spec."""
 
+import functools
 import uuid
 from collections import Counter, deque
 from copy import deepcopy
@@ -73,6 +74,36 @@ if TYPE_CHECKING:
 EnumType = TypeVar("EnumType", bound=Enum)
 SerializeAsEnum = Annotated[EnumType, PlainSerializer(lambda x: x.value)]
 ComponentT = TypeVar("ComponentT", bound="Component")
+
+
+@functools.lru_cache(maxsize=256)
+def _get_class_from_name_cached(class_name: str) -> Optional[Type["Component"]]:
+    queue = deque([Component])
+    while queue:
+        new_subclasses = queue.pop().__subclasses__()
+        subclass_found = next(
+            (subclass for subclass in new_subclasses if subclass.__name__ == class_name), None
+        )
+        if subclass_found is not None:
+            return subclass_found
+        queue.extend(new_subclasses)
+    return None
+
+
+@functools.lru_cache(maxsize=128)
+def _get_all_subclasses_cached(
+    cls: Type["Component"], only_core_components: bool = False
+) -> Tuple[Type["Component"], ...]:
+    queue, all_subclasses = deque([cls]), set()
+    while queue:
+        new_subclasses = queue.pop().__subclasses__()
+        queue.extend(new_subclasses)
+        all_subclasses.update(new_subclasses)
+    return tuple(
+        s
+        for s in sorted(all_subclasses, key=lambda subclass: subclass.__name__)
+        if not only_core_components or s._is_builtin_component()
+    )
 
 
 def _unwrap_optional(annotation: Any) -> Any:
@@ -157,12 +188,9 @@ class Component(AbstractableModel, abstract=True):
     model_config = ConfigDict(extra="forbid")
 
     def __init_subclass__(cls: Type["Component"], **kwargs: Any) -> None:
-        """
-        Registry pattern for serializable models, compatible with pydantic.
-
-        See https://github.com/pydantic/pydantic/issues/5124 for more info
-        """
         super().__init_subclass__(**kwargs)
+        _get_class_from_name_cached.cache_clear()
+        _get_all_subclasses_cached.cache_clear()
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), frozen=True)
     """A unique identifier for this Component"""
@@ -321,46 +349,13 @@ class Component(AbstractableModel, abstract=True):
 
     @staticmethod
     def get_class_from_name(class_name: str) -> Optional[Type["Component"]]:
-        """
-        Given the class name of a component, return the respective class.
-
-        Parameters
-        ----------
-        class_name:
-            The name of the component's class to retrieve
-
-        Returns
-        -------
-        Component:
-            The component's class
-        """
-        # We start from the top level component, and we look for the subclass with the given name
-        # This solution makes us support also components that are not builtin (e.g., plugin components)
-        queue = deque([Component])
-        while queue:
-            new_subclasses = queue.pop().__subclasses__()
-            subclass_found = next(
-                (subclass for subclass in new_subclasses if subclass.__name__ == class_name), None
-            )
-            if subclass_found is not None:
-                return subclass_found
-            queue.extend(new_subclasses)
-        return None
+        return _get_class_from_name_cached(class_name)
 
     @classmethod
     def _get_all_subclasses(
         cls: Type["Component"], only_core_components: bool = False
     ) -> Tuple[Type["Component"], ...]:
-        queue, all_subclasses = deque([cls]), set()
-        while queue:
-            new_subclasses = queue.pop().__subclasses__()
-            queue.extend(new_subclasses)
-            all_subclasses.update(new_subclasses)
-        return tuple(
-            s
-            for s in sorted(all_subclasses, key=lambda subclass: subclass.__name__)
-            if not only_core_components or s._is_builtin_component()
-        )
+        return _get_all_subclasses_cached(cls, only_core_components)
 
     def _is_equal(self, other: Any, fields_to_exclude: Optional[List[str]] = None) -> bool:
         # The default __eq__ of pydantic's BaseModel has worst case exponential time complexity.
