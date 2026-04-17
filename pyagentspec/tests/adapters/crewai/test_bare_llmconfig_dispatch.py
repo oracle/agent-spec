@@ -11,13 +11,11 @@ import pytest
 from pyagentspec.llms import LlmConfig
 
 
-@pytest.fixture
-def bare_llmconfig_openai() -> LlmConfig:
+def _get_bare_llmconfig_openai() -> LlmConfig:
     return LlmConfig(name="test", model_id="gpt-4o", api_provider="openai")
 
 
-@pytest.fixture
-def bare_llmconfig_openai_with_base_url() -> LlmConfig:
+def _get_bare_llmconfig_openai_with_base_url() -> LlmConfig:
     return LlmConfig(
         name="test",
         model_id="gpt-4o",
@@ -27,40 +25,38 @@ def bare_llmconfig_openai_with_base_url() -> LlmConfig:
     )
 
 
-@pytest.fixture
-def bare_llmconfig_unsupported() -> LlmConfig:
+def _get_bare_llmconfig_unsupported() -> LlmConfig:
     return LlmConfig(name="test", model_id="some-model", api_provider="unsupported_provider")
 
 
-class TestCrewAiDispatch:
-    def test_openai_provider_returns_llm(self, bare_llmconfig_openai: LlmConfig) -> None:
-        from crewai import LLM
+def test_openai_provider_returns_llm() -> None:
+    from crewai import LLM
 
-        from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
+    from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
 
-        converter = CrewAiConverter()
-        result = converter._llm_convert_to_crewai(bare_llmconfig_openai, tool_registry={})
-        assert isinstance(result, LLM)
-        assert result.model == "openai/gpt-4o"
+    converter = CrewAiConverter()
+    result = converter._llm_convert_to_crewai(_get_bare_llmconfig_openai(), tool_registry={})
+    assert isinstance(result, LLM)
+    assert result.model == "openai/gpt-4o"
 
-    def test_openai_provider_with_base_url_and_api_key(
-        self, bare_llmconfig_openai_with_base_url: LlmConfig
-    ) -> None:
-        from crewai import LLM
 
-        from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
+def test_openai_provider_with_base_url_and_api_key() -> None:
+    from crewai import LLM
 
-        converter = CrewAiConverter()
-        result = converter._llm_convert_to_crewai(
-            bare_llmconfig_openai_with_base_url, tool_registry={}
-        )
-        assert isinstance(result, LLM)
-        assert result.model == "openai/gpt-4o"
-        assert result.api_key == "sk-test-key"
+    from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
 
-    def test_unsupported_provider_raises(self, bare_llmconfig_unsupported: LlmConfig) -> None:
-        from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
+    converter = CrewAiConverter()
+    result = converter._llm_convert_to_crewai(
+        _get_bare_llmconfig_openai_with_base_url(), tool_registry={}
+    )
+    assert isinstance(result, LLM)
+    assert result.model == "openai/gpt-4o"
+    assert result.api_key == "sk-test-key"
 
-        converter = CrewAiConverter()
-        with pytest.raises(NotImplementedError, match="unsupported_provider"):
-            converter._llm_convert_to_crewai(bare_llmconfig_unsupported, tool_registry={})
+
+def test_unsupported_provider_raises() -> None:
+    from pyagentspec.adapters.crewai._crewaiconverter import CrewAiConverter
+
+    converter = CrewAiConverter()
+    with pytest.raises(NotImplementedError, match="unsupported_provider"):
+        converter._llm_convert_to_crewai(_get_bare_llmconfig_unsupported(), tool_registry={})

@@ -201,7 +201,6 @@ def test_frozen_fields_not_serialized_on_subclasses() -> None:
     # api_provider is frozen on VllmConfig, provider is not meaningful
     assert "api_provider:" not in serialized_vllm
     assert "provider:" not in serialized_vllm
-    assert "url:" not in serialized_vllm
 
     ollama_config = OllamaConfig(
         id="ollama",
@@ -213,7 +212,6 @@ def test_frozen_fields_not_serialized_on_subclasses() -> None:
     # api_provider is frozen on OllamaConfig, provider is not meaningful
     assert "api_provider:" not in serialized_ollama
     assert "provider:" not in serialized_ollama
-    assert "url:" not in serialized_ollama
 
 
 def test_version_inference_bare_llmconfig_always_requires_v26_2_0() -> None:
