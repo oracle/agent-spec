@@ -59,7 +59,7 @@ or when you want a simple, portable configuration.
 
 .. option:: api_type: str, null
 
-  The wire protocol to use (e.g. ``"chat_completions"``, ``"responses"``).
+  The API format to use to interact with the LLM (e.g. ``"chat_completions"``, ``"responses"``).
 
 .. option:: url: str, null
 
