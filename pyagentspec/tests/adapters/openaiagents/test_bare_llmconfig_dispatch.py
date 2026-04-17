@@ -11,13 +11,11 @@ import pytest
 from pyagentspec.llms import LlmConfig
 
 
-@pytest.fixture
-def bare_llmconfig_openai() -> LlmConfig:
+def _get_bare_llmconfig_openai() -> LlmConfig:
     return LlmConfig(name="test", model_id="gpt-4o", api_provider="openai")
 
 
-@pytest.fixture
-def bare_llmconfig_openai_with_base_url() -> LlmConfig:
+def _get_bare_llmconfig_openai_with_base_url() -> LlmConfig:
     return LlmConfig(
         name="test",
         model_id="gpt-4o",
@@ -27,34 +25,36 @@ def bare_llmconfig_openai_with_base_url() -> LlmConfig:
     )
 
 
-@pytest.fixture
-def bare_llmconfig_unsupported() -> LlmConfig:
+def _get_bare_llmconfig_unsupported() -> LlmConfig:
     return LlmConfig(name="test", model_id="some-model", api_provider="unsupported_provider")
 
 
-class TestOpenAiAgentsDispatch:
-    def test_openai_provider_returns_model_id(self, bare_llmconfig_openai: LlmConfig) -> None:
-        from pyagentspec.adapters.openaiagents._openaiagentsconverter import OpenAiAgentsConverter
+def test_openai_provider_returns_model_id() -> None:
+    from pyagentspec.adapters.openaiagents._openaiagentsconverter import (
+        AgentSpecToOpenAIConverter,
+    )
 
-        converter = OpenAiAgentsConverter()
-        result = converter._llm_convert_to_openai(bare_llmconfig_openai)
-        assert result == "gpt-4o"
+    converter = AgentSpecToOpenAIConverter()
+    result = converter._llm_convert_to_openai(_get_bare_llmconfig_openai())
+    assert result == "gpt-4o"
 
-    def test_openai_provider_with_base_url_returns_model(
-        self, bare_llmconfig_openai_with_base_url: LlmConfig
-    ) -> None:
-        from agents.models.chatcmpl_model import ChatCmplModel
 
-        from pyagentspec.adapters.openaiagents._openaiagentsconverter import OpenAiAgentsConverter
+def test_openai_provider_with_base_url_returns_model() -> None:
+    from pyagentspec.adapters.openaiagents._openaiagentsconverter import (
+        AgentSpecToOpenAIConverter,
+    )
+    from pyagentspec.adapters.openaiagents._types import OAChatCompletionsModel
 
-        converter = OpenAiAgentsConverter()
-        result = converter._llm_convert_to_openai(bare_llmconfig_openai_with_base_url)
-        # When base_url is set, should return a ChatCmplModel (OAChatCompletionsModel) not a string
-        assert isinstance(result, ChatCmplModel)
+    converter = AgentSpecToOpenAIConverter()
+    result = converter._llm_convert_to_openai(_get_bare_llmconfig_openai_with_base_url())
+    assert isinstance(result, OAChatCompletionsModel)
 
-    def test_unsupported_provider_raises(self, bare_llmconfig_unsupported: LlmConfig) -> None:
-        from pyagentspec.adapters.openaiagents._openaiagentsconverter import OpenAiAgentsConverter
 
-        converter = OpenAiAgentsConverter()
-        with pytest.raises(NotImplementedError, match="unsupported_provider"):
-            converter._llm_convert_to_openai(bare_llmconfig_unsupported)
+def test_unsupported_provider_raises() -> None:
+    from pyagentspec.adapters.openaiagents._openaiagentsconverter import (
+        AgentSpecToOpenAIConverter,
+    )
+
+    converter = AgentSpecToOpenAIConverter()
+    with pytest.raises(NotImplementedError, match="unsupported_provider"):
+        converter._llm_convert_to_openai(_get_bare_llmconfig_unsupported())

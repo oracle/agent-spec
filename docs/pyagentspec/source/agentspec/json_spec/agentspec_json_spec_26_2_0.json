@@ -3029,6 +3029,63 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "default": "google",
+          "title": "Provider",
+          "type": "string"
+        },
+        "api_provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Provider"
+        },
+        "api_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Type"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -3050,10 +3107,6 @@
             }
           ],
           "default": null
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
         },
         "auth": {
           "$ref": "#/$defs/GeminiAuthConfig"
@@ -3441,6 +3494,17 @@
                 },
                 {
                   "$ref": "#/$defs/LlmGenerationConfig"
+                }
+              ],
+              "default": null
+            },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
                 }
               ],
               "default": null
@@ -4959,28 +5023,6 @@
           ],
           "title": "Metadata"
         },
-        "default_generation_parameters": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/LlmGenerationConfig"
-            }
-          ],
-          "default": null
-        },
-        "retry_policy": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/RetryPolicy"
-            }
-          ],
-          "default": null
-        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
@@ -5036,6 +5078,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null
@@ -5116,32 +5169,6 @@
           ],
           "title": "Metadata"
         },
-        "default_generation_parameters": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/LlmGenerationConfig"
-            }
-          ],
-          "default": null
-        },
-        "retry_policy": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/RetryPolicy"
-            }
-          ],
-          "default": null
-        },
-        "url": {
-          "title": "Url",
-          "type": "string"
-        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
@@ -5190,6 +5217,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null
@@ -5290,32 +5328,6 @@
               ],
               "title": "Metadata"
             },
-            "default_generation_parameters": {
-              "anyOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/$defs/LlmGenerationConfig"
-                }
-              ],
-              "default": null
-            },
-            "retry_policy": {
-              "anyOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/$defs/RetryPolicy"
-                }
-              ],
-              "default": null
-            },
-            "url": {
-              "title": "Url",
-              "type": "string"
-            },
             "model_id": {
               "title": "Model Id",
               "type": "string"
@@ -5371,6 +5383,17 @@
                 },
                 {
                   "$ref": "#/$defs/LlmGenerationConfig"
+                }
+              ],
+              "default": null
+            },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
                 }
               ],
               "default": null
@@ -5465,28 +5488,6 @@
           ],
           "title": "Metadata"
         },
-        "default_generation_parameters": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/LlmGenerationConfig"
-            }
-          ],
-          "default": null
-        },
-        "retry_policy": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/RetryPolicy"
-            }
-          ],
-          "default": null
-        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
@@ -5536,6 +5537,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null
@@ -7488,32 +7500,6 @@
           ],
           "title": "Metadata"
         },
-        "default_generation_parameters": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/LlmGenerationConfig"
-            }
-          ],
-          "default": null
-        },
-        "retry_policy": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/RetryPolicy"
-            }
-          ],
-          "default": null
-        },
-        "url": {
-          "title": "Url",
-          "type": "string"
-        },
         "model_id": {
           "title": "Model Id",
           "type": "string"
@@ -7562,6 +7548,17 @@
             },
             {
               "$ref": "#/$defs/LlmGenerationConfig"
+            }
+          ],
+          "default": null
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
             }
           ],
           "default": null

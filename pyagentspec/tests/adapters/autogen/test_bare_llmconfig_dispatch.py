@@ -11,13 +11,11 @@ import pytest
 from pyagentspec.llms import LlmConfig
 
 
-@pytest.fixture
-def bare_llmconfig_openai() -> LlmConfig:
+def _get_bare_llmconfig_openai() -> LlmConfig:
     return LlmConfig(name="test", model_id="gpt-4o", api_provider="openai")
 
 
-@pytest.fixture
-def bare_llmconfig_openai_with_base_url() -> LlmConfig:
+def _get_bare_llmconfig_openai_with_base_url() -> LlmConfig:
     return LlmConfig(
         name="test",
         model_id="gpt-4o",
@@ -27,35 +25,45 @@ def bare_llmconfig_openai_with_base_url() -> LlmConfig:
     )
 
 
-@pytest.fixture
-def bare_llmconfig_unsupported() -> LlmConfig:
+def _get_bare_llmconfig_unsupported() -> LlmConfig:
     return LlmConfig(name="test", model_id="some-model", api_provider="unsupported_provider")
 
 
-class TestAutogenDispatch:
-    def test_openai_provider_returns_client(self, bare_llmconfig_openai: LlmConfig) -> None:
-        from autogen_ext.models.openai import OpenAIChatCompletionClient
+def test_openai_provider_returns_client() -> None:
+    from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-        from pyagentspec.adapters.autogen._autogenconverter import AutogenConverter
+    from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
 
-        converter = AutogenConverter()
-        result = converter._llm_convert_to_autogen(bare_llmconfig_openai)
-        assert isinstance(result, OpenAIChatCompletionClient)
+    converter = AgentSpecToAutogenConverter()
+    result = converter._llm_convert_to_autogen(
+        _get_bare_llmconfig_openai(),
+        tool_registry={},
+        converted_components={},
+    )
+    assert isinstance(result, OpenAIChatCompletionClient)
 
-    def test_openai_provider_with_base_url_and_api_key(
-        self, bare_llmconfig_openai_with_base_url: LlmConfig
-    ) -> None:
-        from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-        from pyagentspec.adapters.autogen._autogenconverter import AutogenConverter
+def test_openai_provider_with_base_url_and_api_key() -> None:
+    from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-        converter = AutogenConverter()
-        result = converter._llm_convert_to_autogen(bare_llmconfig_openai_with_base_url)
-        assert isinstance(result, OpenAIChatCompletionClient)
+    from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
 
-    def test_unsupported_provider_raises(self, bare_llmconfig_unsupported: LlmConfig) -> None:
-        from pyagentspec.adapters.autogen._autogenconverter import AutogenConverter
+    converter = AgentSpecToAutogenConverter()
+    result = converter._llm_convert_to_autogen(
+        _get_bare_llmconfig_openai_with_base_url(),
+        tool_registry={},
+        converted_components={},
+    )
+    assert isinstance(result, OpenAIChatCompletionClient)
 
-        converter = AutogenConverter()
-        with pytest.raises(NotImplementedError, match="unsupported_provider"):
-            converter._llm_convert_to_autogen(bare_llmconfig_unsupported)
+
+def test_unsupported_provider_raises() -> None:
+    from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
+
+    converter = AgentSpecToAutogenConverter()
+    with pytest.raises(NotImplementedError, match="unsupported_provider"):
+        converter._llm_convert_to_autogen(
+            _get_bare_llmconfig_unsupported(),
+            tool_registry={},
+            converted_components={},
+        )

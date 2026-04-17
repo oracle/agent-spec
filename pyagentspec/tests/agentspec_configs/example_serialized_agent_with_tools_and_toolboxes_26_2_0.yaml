@@ -14,6 +14,7 @@ outputs: []
 transforms: []
 llm_config:
   component_type: VllmConfig
+  provider: null
   api_key: null
   ca_file: null
   cert_file: null

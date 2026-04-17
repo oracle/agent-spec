@@ -50,9 +50,6 @@ class OciGenAiConfig(LlmConfig):
     Requires to specify the model id and the client configuration to the OCI GenAI service.
     """
 
-    model_id: str
-    """The identifier of the model to use."""
-
     api_provider: str = "oci"
     """The API provider used to serve the model."""
 
@@ -73,6 +70,12 @@ class OciGenAiConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # First, we reintroduce the attributes that were introduced in 26.2.0 LlmConfig, but were
+        # already here before that version. Then the rest of the logic will handle older versions.
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.remove("api_type")
+            fields_to_exclude.remove("provider")
+            fields_to_exclude.remove("model_id")
         # api_provider is frozen/implied by component_type
         fields_to_exclude.add("api_provider")
         fields_to_exclude.add("api_key")

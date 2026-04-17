@@ -53,9 +53,15 @@ class LlmConfig(Component):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
-        # `retry_policy` was introduced in Agent Spec 26.2.0.
+        # All these attributes were introduced in Agent Spec 26.2.0.
         if agentspec_version < AgentSpecVersionEnum.v26_2_0:
             fields_to_exclude.add("retry_policy")
+            fields_to_exclude.add("provider")
+            fields_to_exclude.add("api_key")
+            fields_to_exclude.add("api_type")
+            fields_to_exclude.add("api_provider")
+            fields_to_exclude.add("url")
+            fields_to_exclude.add("model_id")
         return fields_to_exclude
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
