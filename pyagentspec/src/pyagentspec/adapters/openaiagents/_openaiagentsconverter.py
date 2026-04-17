@@ -101,9 +101,7 @@ class AgentSpecToOpenAIConverter:
                 if llm.url is not None:
                     from openai import AsyncOpenAI
 
-                    client = AsyncOpenAI(
-                        api_key=llm.api_key or "", base_url=llm.url
-                    )
+                    client = AsyncOpenAI(api_key=llm.api_key or "", base_url=llm.url)
                     return OAChatCompletionsModel(llm.model_id, client)
                 return llm.model_id
             raise NotImplementedError(

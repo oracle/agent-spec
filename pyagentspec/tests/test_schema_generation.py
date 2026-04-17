@@ -99,7 +99,9 @@ def test_agent_schema_contains_all_concrete_llm_types() -> None:
 
 
 def test_nested_plain_llmconfig_schema_contains_all_concrete_llm_types() -> None:
-    schema = ConversationSummarizationTransform.model_json_schema(mode="serialization", only_core_components=True)
+    schema = ConversationSummarizationTransform.model_json_schema(
+        mode="serialization", only_core_components=True
+    )
     component_types = [
         component_type
         for component_type in BUILTIN_CLASS_MAP.values()
