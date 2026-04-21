@@ -188,6 +188,22 @@ def _create_agent_state_typed_dict(
 
 
 class AgentSpecToLangGraphConverter:
+    def __init__(self, middleware: Optional[List[Any]] = None) -> None:
+        """Create a converter.
+
+        Parameters
+        ----------
+        middleware
+            Optional list of LangChain agent middleware instances forwarded
+            to ``langchain_agents.create_agent(middleware=...)`` when
+            building a ReAct agent for an Agent Spec ``Agent``. Order is
+            preserved (index ``0`` is outermost). When ``None`` or empty,
+            the ``middleware`` keyword is omitted from the ``create_agent``
+            call, preserving the byte-identical behavior of earlier
+            releases.
+        """
+        self._middleware: List[Any] = list(middleware or [])
+
     def convert(
         self,
         agentspec_component: AgentSpecComponent,
@@ -1113,7 +1129,7 @@ class AgentSpecToLangGraphConverter:
                 inputs=inputs,
             )
 
-        compiled_graph = langchain_agents.create_agent(
+        create_agent_kwargs: Dict[str, Any] = dict(
             name=name,
             model=model,
             tools=langgraph_tools,
@@ -1122,6 +1138,11 @@ class AgentSpecToLangGraphConverter:
             response_format=output_model,
             state_schema=state_schema,
         )
+        # Omit the keyword when no middleware was supplied so the call is
+        # byte-identical to earlier releases.
+        if self._middleware:
+            create_agent_kwargs["middleware"] = self._middleware
+        compiled_graph = langchain_agents.create_agent(**create_agent_kwargs)
 
         # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
 
