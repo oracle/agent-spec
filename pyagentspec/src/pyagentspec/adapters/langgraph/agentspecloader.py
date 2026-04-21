@@ -49,6 +49,13 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         type names match only the exact serialized component type. When allow and
         block entries both match, the closest match in the component class hierarchy
         wins; block entries win same-distance ties.
+    middleware:
+        Optional list of LangChain agent middleware instances forwarded verbatim to
+        ``langchain_agents.create_agent(middleware=...)`` when compiling an Agent Spec
+        ``Agent`` into a ReAct graph. Order is preserved — index ``0`` is the outermost
+        middleware. When ``None`` or an empty list, the ``middleware`` keyword is
+        omitted entirely from the ``create_agent`` call and behavior is identical to
+        earlier releases.
     """
 
     def __init__(
@@ -60,6 +67,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         *,
         allowed_components: Optional[ComponentPolicyInput] = None,
         blocked_components: Optional[ComponentPolicyInput] = None,
+        middleware: Optional[List[Any]] = None,
     ) -> None:
         super().__init__(
             plugins=plugins,
@@ -69,10 +77,11 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         )
         self.checkpointer = checkpointer
         self.config = config
+        self._middleware: List[Any] = list(middleware or [])
 
     @property
     def agentspec_to_runtime_converter(self) -> AgentSpecToLangGraphConverter:
-        return AgentSpecToLangGraphConverter()
+        return AgentSpecToLangGraphConverter(middleware=self._middleware)
 
     @property
     def runtime_to_agentspec_converter(self) -> LangGraphToAgentSpecConverter:
