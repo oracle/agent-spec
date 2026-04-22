@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
     from langchain_core.outputs import ChatGenerationChunk, GenerationChunk, LLMResult
     from langchain_core.runnables import RunnableConfig, RunnableLambda
-    from langchain_core.tools import BaseTool, StructuredTool
+    from langchain_core.tools import BaseTool, InjectedToolCallId, StructuredTool
     from langgraph.graph import StateGraph
     from langgraph.graph._branch import BranchSpec
     from langgraph.graph._node import StateNodeSpec
@@ -44,6 +44,7 @@ else:
     # We need to import the classes this way because it's the only one accepted by the lazy loader
     BaseTool = LazyLoader("langchain_core.tools").BaseTool
     StructuredTool = LazyLoader("langchain_core.tools").StructuredTool
+    InjectedToolCallId = LazyLoader("langchain_core.tools").InjectedToolCallId
     Checkpointer = LazyLoader("langgraph.types").Checkpointer
     interrupt = LazyLoader("langgraph.types").interrupt
     StateGraph = langgraph_graph.StateGraph
@@ -130,6 +131,7 @@ __all__ = [
     "StateGraph",
     "StateNodeSpec",
     "StructuredTool",
+    "InjectedToolCallId",
     "BaseTool",
     "RunnableLambda",
     "SystemMessage",

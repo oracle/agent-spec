@@ -8,6 +8,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from uuid import uuid4
 
 import anyio
 import httpx
@@ -20,6 +21,7 @@ from pyagentspec.adapters.langgraph._types import (
     CompiledStateGraph,
     ExecuteOutput,
     FlowStateSchema,
+    InjectedToolCallId,
     LangGraphTool,
     Messages,
     NodeExecutionDetails,
@@ -57,6 +59,29 @@ from pyagentspec.tracing.spans.span import get_current_span
 MessageLike = Union[BaseMessage, List[str], Tuple[str, str], str, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
+
+
+def _schema_has_injected_tool_call_id(args_schema: Any) -> bool:
+    """True if ``args_schema`` declares any ``Annotated[..., InjectedToolCallId]``
+    field. Used to decide whether a flow-driven tool invocation must be wrapped
+    in a ToolCall envelope for LangChain to populate the injected argument."""
+    if args_schema is None:
+        return False
+    try:
+        from langchain_core.tools.base import (
+            _is_injected_arg_type,
+            get_all_basemodel_annotations,
+        )
+    except ImportError:  # pragma: no cover - defensive guard for API drift
+        return False
+    try:
+        annotations = get_all_basemodel_annotations(args_schema)
+    except Exception:  # pragma: no cover - unknown schema shape
+        return False
+    return any(
+        _is_injected_arg_type(ann, injected_type=InjectedToolCallId)
+        for ann in annotations.values()
+    )
 
 
 class NodeExecutor(ABC):
@@ -434,6 +459,27 @@ class ToolNodeExecutor(NodeExecutor):
     def _invoke_tool_sync(self, inputs: Dict[str, Any]) -> Any:
         tool = self.tool_callable
 
+        # When the tool's args_schema declares an ``InjectedToolCallId`` field,
+        # LangChain's ``StructuredTool.invoke`` requires a full ToolCall
+        # envelope and returns a ``ToolMessage`` (coercing non-string payloads
+        # to strings, which loses structure for dict/list returns). Flow
+        # ToolNodes have no upstream ToolCall context — they're driven by
+        # plain flow inputs — so call the underlying callable directly with a
+        # synthesized id. The flow's node schema already validated ``inputs``.
+        if _schema_has_injected_tool_call_id(getattr(tool, "args_schema", None)):
+            tool_call_id = str(uuid4())
+            if tool.func is not None:
+                return tool.func(tool_call_id=tool_call_id, **inputs)
+            if tool.coroutine is None:
+                raise TypeError(
+                    f"StructuredTool '{tool.name}' has neither func nor coroutine and cannot be executed."
+                )
+
+            async def arun_injected():  # type: ignore
+                return await tool.coroutine(tool_call_id=tool_call_id, **inputs)
+
+            return run_async_in_sync(arun_injected, method_name="arun_injected")
+
         if tool.func is not None:
             return tool.invoke(inputs)
 
@@ -449,10 +495,23 @@ class ToolNodeExecutor(NodeExecutor):
         return run_async_in_sync(arun, method_name="arun")
 
     async def _invoke_tool_async(self, inputs: Dict[str, Any]) -> Any:
+        tool = self.tool_callable
+
+        # See ``_invoke_tool_sync`` for rationale.
+        if _schema_has_injected_tool_call_id(getattr(tool, "args_schema", None)):
+            tool_call_id = str(uuid4())
+            if tool.coroutine is not None:
+                return await tool.coroutine(tool_call_id=tool_call_id, **inputs)
+            if tool.func is not None:
+                return tool.func(tool_call_id=tool_call_id, **inputs)
+            raise TypeError(
+                f"StructuredTool '{tool.name}' has neither func nor coroutine and cannot be executed."
+            )
+
         # LangChain's StructuredTool.ainvoke() already falls back to the sync
         # implementation when coroutine is absent, so the async path can always
         # delegate here directly. The reverse fallback does not exist for invoke().
-        return await self.tool_callable.ainvoke(inputs)
+        return await tool.ainvoke(inputs)
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         tool_output = self._invoke_tool_sync(inputs)

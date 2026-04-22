@@ -10,6 +10,7 @@ import logging
 import sys
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Any,
     AsyncGenerator,
     Awaitable,
@@ -26,7 +27,7 @@ from typing import (
 )
 from uuid import uuid4
 
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, SecretStr, create_model
 from typing_extensions import NotRequired, Required, TypedDict
 
 from pyagentspec import Component as AgentSpecComponent
@@ -51,6 +52,7 @@ from pyagentspec.adapters.langgraph._types import (
     FlowInputSchema,
     FlowOutputSchema,
     FlowStateSchema,
+    InjectedToolCallId,
     LangGraphTool,
     RunnableConfig,
     StateGraph,
@@ -898,7 +900,11 @@ class AgentSpecToLangGraphConverter:
         tool_description = agentspec_client_tool.description or ""
         requires_confirmation = agentspec_client_tool.requires_confirmation
 
-        def client_tool(*args: Any, **kwargs: Any) -> Any:
+        def client_tool(
+            tool_call_id: Annotated[str, InjectedToolCallId],
+            *args: Any,
+            **kwargs: Any,
+        ) -> Any:
             if requires_confirmation:
                 if args:
                     raise ValueError("Args are not supported, please only use kwargs")
@@ -910,6 +916,7 @@ class AgentSpecToLangGraphConverter:
             tool_request = {
                 "type": "client_tool_request",
                 "name": tool_name,
+                "tool_call_id": tool_call_id,
                 "description": tool_description,
                 "inputs": {
                     "args": args,
@@ -919,10 +926,20 @@ class AgentSpecToLangGraphConverter:
             response = interrupt(tool_request)
             return response
 
-        # Use a Pydantic model for args_schema
-        args_model = create_pydantic_model_from_properties(
+        # Build args_schema from the declared ClientTool inputs, then extend
+        # it with an injected ``tool_call_id`` so langchain's StructuredTool
+        # populates it at invocation time from the ToolCall envelope without
+        # exposing it to the model. Callers can then correlate a frontend-
+        # supplied tool result back to the specific parked interrupt via
+        # ``Command(resume={interrupt_id: content, ...})``.
+        base_args_model = create_pydantic_model_from_properties(
             f"{tool_name}Args",
             agentspec_client_tool.inputs or [],
+        )
+        args_model = create_model(
+            f"{tool_name}Args",
+            __base__=base_args_model,
+            tool_call_id=(Annotated[str, InjectedToolCallId], ...),
         )
 
         structured_tool = StructuredTool(
