@@ -674,8 +674,12 @@ def test_server_tool_confirmation_in_agent_approve_executes_tool() -> None:
     config = RunnableConfig({"configurable": {"thread_id": "ag1"}})
 
     interrupt_payload = _invoke_until_interrupt(app, {"inputs": {"x": 5}}, config=config)
+    # In the react-agent path, confirmation is now driven by LangChain's
+    # HumanInTheLoopMiddleware, which uses the standard ActionRequest
+    # ``args`` field (not pyagentspec's ``arguments`` alias used by the
+    # per-tool ``_confirm_tool_use`` path that still backs flows).
     assert interrupt_payload["action_requests"][0]["name"] == "double_tool"
-    assert interrupt_payload["action_requests"][0]["arguments"] == {"x": 5}
+    assert interrupt_payload["action_requests"][0]["args"] == {"x": 5}
 
     result = app.invoke(_approve_command(), config=config)
 
@@ -732,7 +736,10 @@ def test_server_tool_confirmation_in_agent_reject_denies_and_does_not_execute() 
     assert called["n"] == 0
     assert "messages" in result and len(result["messages"]) > 1
     tool_result_message = result["messages"][-2]
-    assert "denied execution" in tool_result_message.content
+    # HITL middleware's rejection message (vs the pyagentspec "denied execution"
+    # wording used by the per-tool ``_confirm_tool_use`` path that still backs
+    # flow ToolNodes).
+    assert "rejected" in tool_result_message.content
 
 
 @pytest.mark.anyio
