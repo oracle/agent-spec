@@ -221,6 +221,9 @@ nitpick_ignore_regex = [
     ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
     ("py:class", r"pyagentspec.serialization.serializationcontext.T"),
     ("py:class", r"pyagentspec.property._empty_default"),
+    # Internal typing aliases/typevars used in Component signatures are not public API targets
+    ("py:class", r"ComponentAsDictT|DisaggregatedComponentsAsDictT|DisaggregatedComponentsConfigT"),
+    ("py:class", r"ComponentT|pyagentspec\.component\.ComponentT"),
     # Private adapter internals used in type annotations and inheritance docs
     ("py:.*", r"pyagentspec\.adapters\._agentspecexporter\..*"),
     ("py:.*", r"pyagentspec\.adapters\._agentspecloader\..*"),

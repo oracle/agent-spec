@@ -18,7 +18,7 @@ Agent Spec supports **Summarization Transforms** that help manage long conversat
 There are two types of summarization transforms:
 
 - :ref:`MessageSummarizationTransform <messagesummarizationtransform>`: Summarizes individual messages that exceed a specified character limit
-- :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>`: Summarizes conversation history when the total number of messages exceeds a threshold
+- :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>`: Summarizes conversation history when the total number of messages or total number of characters exceeds a threshold
 
 .. note::
     By default, summarization transforms use an in-memory datastore for caching summarized content. You can specify your own datastore by providing a ``Datastore`` parameter. For information on how to configure different types of datastores such as :ref:`Oracle <oracledatabasedatastore>` or :ref:`PostgreSQL <postgresdatabasedatastore>`, see :doc:`How to Use Datastores <howto_datastores>`.
@@ -57,6 +57,16 @@ In this section, we will create both transforms with appropriate thresholds and 
     :end-before: .. end-transforms
 
 API Reference: :ref:`MessageSummarizationTransform <messagesummarizationtransform>`, :ref:`ConversationSummarizationTransform <conversationsummarizationtransform>`
+
+If you prefer a character-based threshold for conversations, set ``max_num_messages=None``
+explicitly and use ``max_num_characters`` instead. ``max_num_characters`` measures the total
+number of characters in the conversation, can still be combined with ``min_num_messages`` to keep
+the latest messages unsummarized, and cannot be used at the same time as ``max_num_messages``:
+
+.. literalinclude:: ../code_examples/howto_summarization_transforms.py
+    :language: python
+    :start-after: .. start-conversation-character-threshold
+    :end-before: .. end-conversation-character-threshold
 
 
 3. Use transforms in agents

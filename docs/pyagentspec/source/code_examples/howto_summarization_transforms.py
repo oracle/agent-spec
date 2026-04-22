@@ -39,6 +39,19 @@ conversation_summarizer = ConversationSummarizationTransform(
 )
 # .. end-transforms
 
+# .. start-conversation-character-threshold
+conversation_summarizer_by_characters = ConversationSummarizationTransform(
+    id="conversation_summarizer_by_characters",
+    name="conversation_summarizer_by_characters",
+    llm=llm_config,
+    max_num_messages=None,  # Explicitly disable the message-count threshold
+    max_num_characters=20_000,  # Summarize once the total conversation size gets too large in characters
+    min_num_messages=10,  # Still keep the latest 10 messages unsummarized
+    summarization_instructions="Summarize this conversation thread once its character footprint grows too large.",
+    summarized_conversation_template="Conversation summary: {{summary}}",
+)
+# .. end-conversation-character-threshold
+
 # .. start-agent-with-transforms
 from pyagentspec.agent import Agent
 

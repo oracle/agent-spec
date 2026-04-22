@@ -7,7 +7,7 @@
 
 from typing import ClassVar, Optional, Union
 
-from pydantic import Field, ValidationInfo, field_validator
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from pyagentspec.datastores.datastore import Entity, InMemoryCollectionDatastore
 from pyagentspec.datastores.oracle import OracleDatabaseDatastore
@@ -175,7 +175,8 @@ class MessageSummarizationTransform(MessageTransform):
 
 class ConversationSummarizationTransform(MessageTransform):
     """
-    Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``.
+    Summarizes conversations exceeding a configured size threshold using an LLM and caches
+    conversation summaries in a ``Datastore``.
 
     This is useful to reduce long conversation history into a concise context for downstream LLM calls.
 
@@ -196,19 +197,31 @@ class ConversationSummarizationTransform(MessageTransform):
     llm: LlmConfig
     """LLM configuration for conversation summarization."""
 
-    max_num_messages: int = 50
+    max_num_messages: Optional[int] = Field(default=50, gt=0)
     """Maximum number of messages before triggering summarization.
 
     When the conversation exceeds this number of messages, the older messages will be summarized,
-    except the most recent ``min_num_messages`` ones who are kept unsummarized.
+    except the most recent ``min_num_messages`` ones who are kept unsummarized. Set this to
+    ``None`` when using ``max_num_characters`` instead. This threshold is mutually exclusive with
+    ``max_num_characters``.
     """
 
-    min_num_messages: int = 10
+    max_num_characters: Optional[int] = Field(default=None, gt=0)
+    """Maximum total number of characters in the conversation before triggering summarization.
+
+    This is a conversation-level threshold, not a per-message threshold. It can be used together
+    with ``min_num_messages`` to keep the most recent messages unsummarized, but it is mutually
+    exclusive with ``max_num_messages``. To use a character-based threshold, set
+    ``max_num_messages=None`` explicitly.
+    """
+
+    min_num_messages: int = Field(default=10, gt=0)
     """Minimum number of recent messages to keep unsummarized.
 
     For example, if ``min_num_messages`` is 10 and ``max_num_messages`` is 50, then with a conversation
     of 20 messages, the conversation will not be summarized, but if the conversation has 51 messages,
     the last 10 won't be summarized, the 41 others will (in one or more summarization messages).
+    The same rule applies when ``max_num_characters`` is used instead of ``max_num_messages``.
     """
 
     summarization_instructions: str = (
@@ -220,10 +233,10 @@ class ConversationSummarizationTransform(MessageTransform):
     summarized_conversation_template: str = "Summarized conversation: {{summary}}"
     """Template for formatting the summarized conversation output."""
 
-    max_cache_size: Optional[int] = 10_000
+    max_cache_size: Optional[int] = Field(default=10_000, gt=0)
     """Maximum number of cache entries to keep."""
 
-    max_cache_lifetime: Optional[int] = 4 * 3600
+    max_cache_lifetime: Optional[int] = Field(default=4 * 3600, gt=0)
     """Maximum lifetime of cache entries in seconds."""
 
     cache_collection_name: str = DEFAULT_COLLECTION_NAME
@@ -248,41 +261,19 @@ class ConversationSummarizationTransform(MessageTransform):
             }
         )
 
-    @field_validator("max_num_messages", mode="before")
-    @classmethod
-    def _validate_max_num_messages(cls, value: int) -> int:
-        if value <= 0:
-            raise ValueError("max_num_messages must be greater than 0")
-        return value
-
-    @field_validator("min_num_messages", mode="before")
-    @classmethod
-    def _validate_min_num_messages(cls, value: int) -> int:
-        if value <= 0:
-            raise ValueError("min_num_messages must be greater than 0")
-        return value
-
-    @field_validator("max_cache_size", mode="before")
-    @classmethod
-    def _validate_max_cache_size(cls, value: Optional[int]) -> Optional[int]:
-        if value is not None and value <= 0:
-            raise ValueError("max_cache_size must be greater than 0")
-        return value
-
-    @field_validator("max_cache_lifetime", mode="before")
-    @classmethod
-    def _validate_max_cache_lifetime(cls, value: Optional[int]) -> Optional[int]:
-        if value is not None and value <= 0:
-            raise ValueError("max_cache_lifetime must be greater than 0")
-        return value
-
-    @field_validator("max_num_messages", mode="after")
-    @classmethod
-    def _validate_max_greater_than_min(cls, value: int, info: ValidationInfo) -> int:
-        min_num_messages = info.data.get("min_num_messages")
-        if min_num_messages is not None and value <= min_num_messages:
+    @model_validator(mode="after")
+    def _validate_conversation_thresholds(self) -> "ConversationSummarizationTransform":
+        if self.max_num_messages is not None and self.max_num_characters is not None:
+            raise ValueError("max_num_messages and max_num_characters cannot both be provided")
+        if self.max_num_messages is None and self.max_num_characters is None:
+            raise ValueError("One of max_num_messages or max_num_characters must be provided")
+        if (
+            self.max_num_messages is not None
+            and self.min_num_messages is not None
+            and self.max_num_messages <= self.min_num_messages
+        ):
             raise ValueError("max_num_messages must be greater than min_num_messages")
-        return value
+        return self
 
     @field_validator("datastore", mode="after")
     @classmethod
