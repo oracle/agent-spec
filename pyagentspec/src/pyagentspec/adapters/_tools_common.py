@@ -51,6 +51,7 @@ def _create_remote_tool_func(remote_tool: AgentSpecRemoteTool) -> Callable[..., 
             data=data,
             json=json_data,
             content=content,
+            timeout=remote_tool.timeout,
         )
         return response.json()
 
