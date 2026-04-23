@@ -2277,8 +2277,9 @@ Summarizes conversations exceeding a given number of messages using an LLM and c
 
     class ConversationSummarizationTransform(MessageTransform):
         llm: LlmConfig  # LLM to use for the summarization.
-        max_num_messages: int  # Number of message after which we trigger summarization.
-        min_num_messages: int  # Number of recent messages to keep from summarizing.
+        max_num_messages: Optional[int]  # Conversation-level message-count threshold. Mutually exclusive with ``max_num_characters``.
+        max_num_characters: Optional[int]  # Total number of characters in the conversation after which we trigger summarization. Can be used together with ``min_num_messages``, but not with ``max_num_messages``.
+        min_num_messages: int  # Number of recent messages to keep from summarizing, regardless of whether summarization is triggered by ``max_num_messages`` or ``max_num_characters``.
         summarization_instructions: str  # Instruction for the LLM on how to summarize the conversation.
         summarized_conversation_template: str  # Jinja2 template on how to present the summary (with variable ``summary``) to the agent using the transform.
         datastore: Optional[Datastore]  # Datastore on which to store the cache. If None, no caching happens.

@@ -2398,7 +2398,7 @@
     },
     "BaseConversationSummarizationTransform": {
       "additionalProperties": false,
-      "description": "Summarizes conversations exceeding a given number of messages using an LLM and caches conversation summaries in a ``Datastore``.\n\nThis is useful to reduce long conversation history into a concise context for downstream LLM calls.\n\nExamples\n--------\n>>> from pyagentspec.transforms import ConversationSummarizationTransform\n>>> summarization_transform = ConversationSummarizationTransform(\n...     name=\"conversation-summarizer\",\n...     llm=llm_config,\n...     max_num_messages=30,\n...     min_num_messages=10\n... )",
+      "description": "Summarizes conversations exceeding a configured size threshold using an LLM and caches\nconversation summaries in a ``Datastore``.\n\nThis is useful to reduce long conversation history into a concise context for downstream LLM calls.\n\nExamples\n--------\n>>> from pyagentspec.transforms import ConversationSummarizationTransform\n>>> summarization_transform = ConversationSummarizationTransform(\n...     name=\"conversation-summarizer\",\n...     llm=llm_config,\n...     max_num_messages=30,\n...     min_num_messages=10\n... )",
       "properties": {
         "id": {
           "title": "Id",
@@ -2436,12 +2436,34 @@
           "$ref": "#/$defs/LlmConfig"
         },
         "max_num_messages": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "default": 50,
-          "title": "Max Num Messages",
-          "type": "integer"
+          "title": "Max Num Messages"
+        },
+        "max_num_characters": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Num Characters"
         },
         "min_num_messages": {
           "default": 10,
+          "exclusiveMinimum": 0,
           "title": "Min Num Messages",
           "type": "integer"
         },
@@ -2458,6 +2480,7 @@
         "max_cache_size": {
           "anyOf": [
             {
+              "exclusiveMinimum": 0,
               "type": "integer"
             },
             {
@@ -2470,6 +2493,7 @@
         "max_cache_lifetime": {
           "anyOf": [
             {
+              "exclusiveMinimum": 0,
               "type": "integer"
             },
             {

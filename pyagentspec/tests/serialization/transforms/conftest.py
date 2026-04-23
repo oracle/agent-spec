@@ -59,6 +59,25 @@ def create_conversation_summarization_transform(datastore):
     )
 
 
+def create_conversation_summarization_transform_with_character_limit(datastore):
+    return ConversationSummarizationTransform(
+        id="test_conv_summarizer_by_characters",
+        name="test_conversation_summarizer_by_characters",
+        llm=create_test_llm_config(),
+        max_num_messages=None,
+        max_num_characters=20_000,
+        min_num_messages=25,
+        summarization_instructions=(
+            "Summarize this conversation once the accumulated character count gets too large."
+        ),
+        summarized_conversation_template="Character-based conversation summary: {{summary}}",
+        datastore=datastore,
+        max_cache_size=5_000,
+        max_cache_lifetime=12 * 3600,
+        cache_collection_name=TESTING_CONVERSATIONS_COLLECTION,
+    )
+
+
 def parametrize_transform_and_datastore(f):
     f = pytest.mark.parametrize(
         "datastore, sensitive_fields",
@@ -69,6 +88,7 @@ def parametrize_transform_and_datastore(f):
         [
             create_message_summarization_transform,
             create_conversation_summarization_transform,
+            create_conversation_summarization_transform_with_character_limit,
         ],
     )(f)
     return f
