@@ -1,0 +1,69 @@
+component_type: Agent
+id: 2155d8b5-c407-4b8e-9d0d-b1f96ac82d59
+name: Agent with multiple tools to do summations or find animals per country
+description: An agent that provides assistance with tool usage.
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: c092c073-34d3-4ac9-9174-db7e248ffba3
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: 'You are a helpful agent.
+
+  Your duty is to compute the result of the given operation or to find the animal
+  given the country given using tools, and to output the result.
+
+  It''s important that you reply with the result only.
+
+  '
+tools:
+- component_type: RemoteTool
+  id: 3bd0467f-c8f9-4749-b5c5-4d0d7792bfb1
+  name: sum_tool
+  description: Sum two numbers
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+  url: http://localhost:5008/calculator/sum
+  http_method: POST
+  api_spec_uri: null
+  data:
+    a: '{{a}}'
+    b: '{{b}}'
+  query_params: {}
+  headers: {}
+- component_type: RemoteTool
+  id: bba1a54d-a655-451e-9c24-281e56acec7d
+  name: animal_tool
+  description: find animal per country
+  metadata: {}
+  inputs:
+  - title: country
+    type: string
+  outputs:
+  - title: animal
+    type: string
+  url: http://localhost:5008/animalFinder
+  http_method: POST
+  api_spec_uri: null
+  data:
+    country: '{{country}}'
+  query_params: {}
+  headers: {}
+agentspec_version: 25.4.1
