@@ -23,7 +23,16 @@ class GeminiConfig(LlmConfig):
         exclude=True,
     )
 
-    model_id: str
-    """Identifier of the Gemini model to use."""
     auth: SerializeAsAny[GeminiAuthConfig]
     """Authentication configuration used to connect to the Gemini service."""
+    provider: str = "google"
+    """The provider of the model."""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # provider is frozen/implied by component_type
+        fields_to_exclude.add("provider")
+        fields_to_exclude.add("url")
+        return fields_to_exclude
