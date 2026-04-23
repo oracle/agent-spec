@@ -15,7 +15,7 @@ from pydantic import BaseModel, SecretStr
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
-from pyagentspec.flows.nodes import AgentNode, BranchingNode, FlowNode, ToolNode
+from pyagentspec.flows.nodes import AgentNode, BranchingNode, FlowNode, LlmNode, ToolNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 
 from .conftest import get_weather
@@ -34,6 +34,11 @@ def agentspec_exporter() -> "AgentSpecExporter":
 def _property_titles(properties: list[Any] | None) -> list[str]:
     """Return the exported property titles in declaration order."""
     return [property_.title for property_ in properties or []]
+
+
+def _json_schema_property_titles(property_: Any) -> list[str]:
+    """Return the top-level field titles exposed by one exported property schema."""
+    return list((property_.json_schema.get("properties") or {}).keys())
 
 
 def _data_edge_signatures(flow: AgentSpecFlow) -> set[tuple[str, str, str, str]]:
@@ -447,153 +452,7 @@ def test_convert_graph_flow_wrapped_react_agent_node_to_agentspec_agent_node(
     }
 
 
-def test_convert_graph_flow_wrapped_react_agent_node_with_ainvoke_to_agentspec_agent_node(
-    agentspec_exporter: "AgentSpecExporter",
-) -> None:
-    from langchain.agents import create_agent
-    from langchain_openai.chat_models import ChatOpenAI
-    from langgraph.graph import END, START, StateGraph
-
-    class InputState(TypedDict):
-        topic: str
-
-    class OutputState(TypedDict):
-        answer: str
-
-    class GraphState(TypedDict, total=False):
-        topic: str
-        answer: str
-
-    class InternalState(TypedDict):
-        messages: list[dict[str, str]]
-        remaining_steps: int
-
-    wrapped_agent = create_agent(
-        model=ChatOpenAI(
-            base_url="http://example.invalid/v1",
-            model="openai/gpt-oss-test",
-            api_key=SecretStr("t"),
-        ),
-        tools=[],
-        state_schema=InternalState,
-        system_prompt="You are helpful about {{topic}}.",
-        name="subagent",
-    )
-
-    async def run_agent(_agent: Any, state: InputState) -> OutputState:
-        await _agent.ainvoke(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": state["topic"],
-                    }
-                ]
-            }
-        )
-        return {"answer": state["topic"]}
-
-    graph = StateGraph(
-        GraphState,
-        input_schema=InputState,
-        output_schema=OutputState,
-    )
-    graph.add_node(
-        "call_agent",
-        partial(run_agent, wrapped_agent),
-        input_schema=InputState,
-    )
-    graph.add_edge(START, "call_agent")
-    graph.add_edge("call_agent", END)
-
-    flow = cast(
-        AgentSpecFlow,
-        agentspec_exporter.to_component(graph.compile(name="Wrapped Async Agent Flow")),
-    )
-    agent_node = _find_node(flow, "call_agent")
-
-    assert isinstance(agent_node, AgentNode)
-    assert isinstance(agent_node.agent, AgentSpecAgent)
-    assert agent_node.agent.name == "subagent"
-    assert _property_titles(agent_node.inputs) == ["topic"]
-    assert _property_titles(agent_node.outputs) == ["answer"]
-
-
-def test_convert_graph_flow_wrapped_react_agent_node_with_keyword_bound_partial_to_agentspec_agent_node(
-    agentspec_exporter: "AgentSpecExporter",
-) -> None:
-    from langchain.agents import create_agent
-    from langchain_openai.chat_models import ChatOpenAI
-    from langgraph.graph import END, START, StateGraph
-
-    class InputState(TypedDict):
-        topic: str
-
-    class OutputState(TypedDict):
-        answer: str
-
-    class GraphState(TypedDict, total=False):
-        topic: str
-        answer: str
-
-    class InternalState(TypedDict):
-        messages: list[dict[str, str]]
-        remaining_steps: int
-
-    wrapped_agent = create_agent(
-        model=ChatOpenAI(
-            base_url="http://example.invalid/v1",
-            model="openai/gpt-oss-test",
-            api_key=SecretStr("t"),
-        ),
-        tools=[],
-        state_schema=InternalState,
-        system_prompt="You are helpful about {{topic}}.",
-        name="subagent",
-    )
-
-    def run_agent(state: InputState, _agent: Any) -> OutputState:
-        _agent.invoke(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": state["topic"],
-                    }
-                ]
-            }
-        )
-        return {"answer": state["topic"]}
-
-    graph = StateGraph(
-        GraphState,
-        input_schema=InputState,
-        output_schema=OutputState,
-    )
-    graph.add_node("call_agent", partial(run_agent, _agent=wrapped_agent))
-    graph.add_edge(START, "call_agent")
-    graph.add_edge("call_agent", END)
-
-    flow = cast(
-        AgentSpecFlow,
-        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow Keyword Partial")),
-    )
-    agent_node = _find_node(flow, "call_agent")
-
-    assert isinstance(agent_node, AgentNode)
-    assert isinstance(agent_node.agent, AgentSpecAgent)
-    assert agent_node.agent.name == "subagent"
-    assert _property_titles(agent_node.inputs) == ["topic"]
-    assert _property_titles(agent_node.outputs) == ["answer"]
-    assert _property_titles(agent_node.agent.inputs) == ["topic"]
-    assert _property_titles(agent_node.agent.outputs) == ["answer"]
-    assert _data_edge_signatures(flow) == {
-        ("__start__", "topic", "call_agent", "topic"),
-        ("call_agent", "answer", "__end__", "answer"),
-    }
-
-
-def test_convert_graph_flow_wrapped_react_agent_node_requires_matching_prompt_inputs(
+def test_convert_graph_flow_wrapped_react_agent_node_falls_back_to_tool_node_on_prompt_input_mismatch(
     agentspec_exporter: "AgentSpecExporter",
 ) -> None:
     from langchain.agents import create_agent
@@ -652,11 +511,93 @@ def test_convert_graph_flow_wrapped_react_agent_node_requires_matching_prompt_in
     graph.add_edge(START, "call_agent")
     graph.add_edge("call_agent", END)
 
-    with pytest.raises(
-        ValueError,
-        match=r"wrapper node inputs \['topic'\] do not match the wrapped agent prompt placeholders \[\]",
-    ):
-        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow"))
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow")),
+    )
+    node = _find_node(flow, "call_agent")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, AgentNode)
+    assert _property_titles(node.inputs) == ["topic"]
+    assert _property_titles(node.outputs) == ["answer"]
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_with_python_format_prompt_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful about {topic}.",
+        name="subagent",
+    )
+
+    def run_agent(_agent: Any, state: InputState) -> OutputState:
+        _agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": state["topic"],
+                    }
+                ]
+            }
+        )
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "call_agent",
+        partial(run_agent, wrapped_agent),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(
+            graph.compile(name="Wrapped Agent Flow Python Format Prompt")
+        ),
+    )
+    node = _find_node(flow, "call_agent")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, AgentNode)
+    assert _property_titles(node.inputs) == ["topic"]
+    assert _property_titles(node.outputs) == ["answer"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "topic", "call_agent", "topic"),
+        ("call_agent", "answer", "__end__", "answer"),
+    }
 
 
 def test_convert_graph_flow_wrapped_react_agent_node_without_invoke_stays_tool_node(
@@ -720,6 +661,454 @@ def test_convert_graph_flow_wrapped_react_agent_node_without_invoke_stays_tool_n
     assert _property_titles(node.outputs) == ["answer"]
 
 
+def test_convert_graph_flow_wrapped_llm_node_to_agentspec_llm_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    from pyagentspec.adapters._utils import render_template
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    prompt = "Extract structured search parameters.\nQuery: {{user_query}}"
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+        temperature=0.25,
+        max_tokens=123,
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> OutputState:
+        rendered_prompt = render_template(_prompt, state)
+        _llm.invoke([("user", rendered_prompt)])
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Llm Flow")),
+    )
+    llm_node = _find_node(flow, "parse_query")
+
+    assert isinstance(llm_node, LlmNode)
+    assert _property_titles(llm_node.inputs) == ["user_query"]
+    assert _property_titles(llm_node.outputs) == ["semantic_request"]
+    assert llm_node.prompt_template == (
+        "Extract structured search parameters.\nQuery: {{user_query}}"
+    )
+    assert isinstance(llm_node.llm_config, OpenAiCompatibleConfig)
+    assert llm_node.llm_config.model_id == "openai/gpt-oss-test"
+    assert llm_node.llm_config.url == "http://example.invalid/v1"
+    assert llm_node.llm_config.default_generation_parameters is not None
+    assert llm_node.llm_config.default_generation_parameters.temperature == 0.25
+    assert llm_node.llm_config.default_generation_parameters.max_tokens == 123
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "user_query", "parse_query", "user_query"),
+        ("parse_query", "semantic_request", "__end__", "semantic_request"),
+    }
+
+
+def test_convert_graph_flow_wrapped_llm_node_with_python_format_prompt_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    prompt = "Extract structured search parameters.\nQuery: {user_query}"
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> OutputState:
+        rendered_prompt = _prompt.format(user_query=state["user_query"])
+        _llm.invoke([("user", rendered_prompt)])
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(
+            graph.compile(name="Wrapped Llm Flow Python Format Prompt")
+        ),
+    )
+    node = _find_node(flow, "parse_query")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, LlmNode)
+    assert _property_titles(node.inputs) == ["user_query"]
+    assert _property_titles(node.outputs) == ["semantic_request"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "user_query", "parse_query", "user_query"),
+        ("parse_query", "semantic_request", "__end__", "semantic_request"),
+    }
+
+
+def test_convert_graph_flow_wrapped_llm_node_without_invoke_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    prompt = "Extract structured search parameters.\nQuery: {user_query}"
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> OutputState:
+        _ = _llm
+        _ = _prompt
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Tool Flow No Invoke")),
+    )
+    node = _find_node(flow, "parse_query")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, LlmNode)
+    assert _property_titles(node.inputs) == ["user_query"]
+    assert _property_titles(node.outputs) == ["semantic_request"]
+
+
+def test_convert_graph_flow_wrapped_llm_node_without_prompt_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any) -> OutputState:
+        _llm.invoke([("user", state["user_query"])])
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node("parse_query", partial(run_llm, _llm=llm), input_schema=InputState)
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Tool Flow")),
+    )
+    node = _find_node(flow, "parse_query")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, LlmNode)
+    assert _property_titles(node.inputs) == ["user_query"]
+    assert _property_titles(node.outputs) == ["semantic_request"]
+
+
+def test_convert_graph_flow_wrapped_llm_node_falls_back_to_tool_node_on_prompt_input_mismatch(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    from pyagentspec.adapters._utils import render_template
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    prompt = "Extract structured search parameters.\nQuery: {{topic}}"
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> OutputState:
+        rendered_prompt = render_template(_prompt, {"topic": state["user_query"]})
+        _llm.invoke([("user", rendered_prompt)])
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Llm Flow")),
+    )
+    node = _find_node(flow, "parse_query")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, LlmNode)
+    assert _property_titles(node.inputs) == ["user_query"]
+    assert _property_titles(node.outputs) == ["semantic_request"]
+
+
+def test_convert_graph_flow_wrapped_llm_node_supports_static_prompt_without_inputs(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class GraphState(TypedDict, total=False):
+        generated_text: str
+
+    class OutputState(TypedDict):
+        generated_text: str
+
+    prompt = "Write a haiku about exports.\nRespond with just the poem."
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: dict[str, Any], *, _llm: Any, _prompt: Any) -> dict[str, str]:
+        _ = state
+        rendered_prompt = _prompt.format()
+        _llm.invoke([("user", rendered_prompt)])
+        return {"generated_text": "poem"}
+
+    graph = StateGraph(
+        GraphState,
+        output_schema=OutputState,
+    )
+    graph.add_node("parse_query", partial(run_llm, _llm=llm, _prompt=prompt))
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Llm Flow Static Prompt")),
+    )
+    llm_node = _find_node(flow, "parse_query")
+
+    assert isinstance(llm_node, LlmNode)
+    assert _property_titles(llm_node.inputs) == []
+    assert _property_titles(llm_node.outputs) == ["generated_text"]
+    assert llm_node.prompt_template == "Write a haiku about exports.\nRespond with just the poem."
+    assert _data_edge_signatures(flow) == {
+        ("parse_query", "generated_text", "__end__", "generated_text"),
+    }
+
+
+def test_convert_graph_flow_wrapped_llm_node_defaults_unstructured_output_name(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    from pyagentspec.adapters._utils import render_template
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        generated_text: str
+
+    class OutputState(TypedDict):
+        generated_text: str
+
+    prompt = "Extract structured search parameters.\nQuery: {{user_query}}"
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> dict[str, str]:
+        rendered_prompt = render_template(_prompt, state)
+        _llm.invoke([("user", rendered_prompt)])
+        return {"generated_text": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Llm Flow Default Output")),
+    )
+    llm_node = _find_node(flow, "parse_query")
+
+    assert isinstance(llm_node, LlmNode)
+    assert _property_titles(llm_node.inputs) == ["user_query"]
+    assert _property_titles(llm_node.outputs) == ["generated_text"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "user_query", "parse_query", "user_query"),
+        ("parse_query", "generated_text", "__end__", "generated_text"),
+    }
+
+
+def test_convert_graph_flow_wrapped_llm_node_with_chat_prompt_template_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        user_query: str
+
+    class OutputState(TypedDict):
+        semantic_request: str
+
+    class GraphState(TypedDict, total=False):
+        user_query: str
+        semantic_request: str
+
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", "Extract structured search parameters."),
+            ("human", "Query: {user_query}"),
+        ]
+    )
+    llm = ChatOpenAI(
+        model="openai/gpt-oss-test",
+        api_key=SecretStr("EMPTY"),
+        base_url="http://example.invalid/v1",
+    )
+
+    def run_llm(state: InputState, *, _llm: Any, _prompt: Any) -> OutputState:
+        messages = _prompt.format_messages(user_query=state["user_query"])
+        _llm.invoke(messages)
+        return {"semantic_request": state["user_query"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "parse_query",
+        partial(run_llm, _llm=llm, _prompt=prompt),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "parse_query")
+    graph.add_edge("parse_query", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Tool Flow Chat Prompt")),
+    )
+    node = _find_node(flow, "parse_query")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, LlmNode)
+    assert _property_titles(node.inputs) == ["user_query"]
+    assert _property_titles(node.outputs) == ["semantic_request"]
+
+
 def test_convert_graph_flow_falls_back_to_state_for_shared_state_dependency(
     agentspec_exporter: "AgentSpecExporter",
 ) -> None:
@@ -765,6 +1154,10 @@ def test_convert_graph_flow_falls_back_to_state_for_shared_state_dependency(
         agentspec_exporter.to_component(shared_state_graph.compile(name="Shared State Flow")),
     )
     _assert_state_wired_flow(shared_state_flow)
+    assert shared_state_flow.inputs is not None
+    assert shared_state_flow.outputs is not None
+    assert _json_schema_property_titles(shared_state_flow.inputs[0]) == ["city"]
+    assert _json_schema_property_titles(shared_state_flow.outputs[0]) == ["response"]
     _assert_state_wired_nodes(
         shared_state_flow,
         "__start__",
@@ -772,6 +1165,12 @@ def test_convert_graph_flow_falls_back_to_state_for_shared_state_dependency(
         "format_weather",
         "__end__",
     )
+    start_node = _find_node(shared_state_flow, "__start__")
+    end_node = _find_node(shared_state_flow, "__end__")
+    assert start_node.outputs is not None
+    assert end_node.inputs is not None
+    assert _json_schema_property_titles(start_node.outputs[0]) == ["city"]
+    assert _json_schema_property_titles(end_node.inputs[0]) == ["response"]
     _assert_state_wired_edges(
         shared_state_flow,
         {

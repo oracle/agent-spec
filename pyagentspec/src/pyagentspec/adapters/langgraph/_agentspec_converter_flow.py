@@ -27,6 +27,7 @@ from pydantic import BaseModel, TypeAdapter, create_model
 
 from pyagentspec import Property
 from pyagentspec.adapters.langgraph._types import (
+    BaseChatModel,
     BranchSpec,
     CompiledStateGraph,
     LangGraphComponent,
@@ -40,8 +41,11 @@ from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.node import Node as AgentSpecNode
 from pyagentspec.flows.nodes import AgentNode as AgentSpecAgentNode
-from pyagentspec.flows.nodes import BranchingNode, EndNode, FlowNode, StartNode
+from pyagentspec.flows.nodes import BranchingNode, EndNode, FlowNode
+from pyagentspec.flows.nodes import LlmNode as AgentSpecLlmNode
+from pyagentspec.flows.nodes import StartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
+from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.property import StringProperty, UnionProperty
 from pyagentspec.templating import get_placeholders_from_json_object
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
@@ -89,6 +93,8 @@ def _langgraph_graph_convert_to_agentspec(
     exported graph stays structurally valid and internally consistent.
     """
     flow_name, normalized_graph = _prepare_langgraph_graph_for_export(graph)
+    # Build field-wired nodes/edges in an isolated reference map first so a later fallback does
+    # not leave partially converted field-wired objects mixed into the opaque `state` export.
     field_wiring_referenced_objects = dict(referenced_objects)
     try:
         converted_flow = _FieldWiringFlowExporter(
@@ -462,15 +468,11 @@ class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
             subgraph_flow_name,
             {},
         ).build()
-        opaque_property = _build_opaque_property_from_schema(
-            self._graph.state_schema,
-            title=GRAPH_STATE_PROPERTY_TITLE,
-        )
         return FlowNode(
             name=node_name,
             subflow=subflow,
-            inputs=[opaque_property],
-            outputs=[opaque_property],
+            inputs=[self._build_state_wired_input_property(node.input_schema)],
+            outputs=[self._build_state_wired_output_property(node_name)],
         )
 
     def _build_tool_node(
@@ -478,19 +480,17 @@ class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
         node_name: str,
         node: "StateNodeSpec[Any]",
     ) -> AgentSpecNode:
-        opaque_property = _build_opaque_property_from_schema(
-            self._graph.state_schema,
-            title=GRAPH_STATE_PROPERTY_TITLE,
-        )
+        input_property = self._build_state_wired_input_property(node.input_schema)
+        output_property = self._build_state_wired_output_property(node_name)
         return AgentSpecToolNode(
             name=node_name,
             tool=AgentSpecServerTool(
                 name=node_name + "_tool",
-                inputs=[opaque_property],
-                outputs=[opaque_property],
+                inputs=[input_property],
+                outputs=[output_property],
             ),
-            inputs=[opaque_property],
-            outputs=[opaque_property],
+            inputs=[input_property],
+            outputs=[output_property],
         )
 
     def _get_start_end_node_properties(
@@ -498,9 +498,10 @@ class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
         start_end_node_name: str,
         public_schema: Any,
     ) -> List[Property]:
+        schema = public_schema if public_schema is not None else self._graph.state_schema
         return [
             _build_opaque_property_from_schema(
-                self._graph.state_schema,
+                schema,
                 title=GRAPH_STATE_PROPERTY_TITLE,
             )
         ]
@@ -510,12 +511,65 @@ class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
         source_node_name: str,
         branch: BranchSpec,
     ) -> List[Property]:
+        schema = getattr(branch, "input_schema", None)
+        if schema is None:
+            if source_node_name in self._graph.nodes:
+                schema = self._graph.nodes[source_node_name].input_schema
+            else:
+                schema = self._graph.input_schema or self._graph.state_schema
         return [
             _build_opaque_property_from_schema(
-                self._graph.state_schema,
+                schema,
                 title=GRAPH_STATE_PROPERTY_TITLE,
             )
         ]
+
+    def _build_state_wired_input_property(self, schema: Any) -> Property:
+        return _build_opaque_property_from_schema(
+            schema if schema is not None else self._graph.state_schema,
+            title=GRAPH_STATE_PROPERTY_TITLE,
+        )
+
+    def _build_state_wired_output_property(self, node_name: str) -> Property:
+        target_node_names = [
+            to_node_name
+            for from_node_name, to_node_name in self._graph.edges
+            if from_node_name != to_node_name and from_node_name == node_name
+        ]
+        if target_node_names in ([], [END]):
+            return _build_opaque_property_from_schema(
+                self._graph.output_schema or self._graph.state_schema,
+                title=GRAPH_STATE_PROPERTY_TITLE,
+            )
+        if len(target_node_names) == 1:
+            target_node_name = target_node_names[0]
+            target_schema = (
+                self._graph.output_schema
+                if target_node_name == END
+                else self._graph.nodes[target_node_name].input_schema
+            )
+            return _build_opaque_property_from_schema(
+                target_schema or self._graph.state_schema,
+                title=GRAPH_STATE_PROPERTY_TITLE,
+            )
+
+        target_properties: List[Property] = []
+        for target_node_name in target_node_names:
+            target_schema = (
+                self._graph.output_schema
+                if target_node_name == END
+                else self._graph.nodes[target_node_name].input_schema
+            )
+            target_properties.append(
+                _build_opaque_property_from_schema(
+                    target_schema or self._graph.state_schema,
+                    title=GRAPH_STATE_PROPERTY_TITLE,
+                )
+            )
+        return _build_opaque_union_property(
+            target_properties,
+            title=GRAPH_STATE_PROPERTY_TITLE,
+        )
 
 
 class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
@@ -536,6 +590,25 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
                 node,
             )
         )
+        llm_node_export_target = _get_partial_bound_llm_and_prompt_from_node(node)
+        if llm_node_export_target is not None:
+            bound_llm, bound_prompt = llm_node_export_target
+            # Keep Python `str.format(...)` prompts as ToolNodes so export never changes prompt
+            # rendering semantics by silently translating `{field}` into Agent Spec placeholders.
+            if not self._converter._contains_python_format_fields(bound_prompt):
+                try:
+                    return self._build_llm_node(
+                        node_name,
+                        bound_llm,
+                        bound_prompt,
+                        declared_input_properties,
+                        declared_output_properties,
+                    )
+                except ValueError:
+                    # Keep export best-effort: if promotion to a richer LlmNode shape cannot
+                    # preserve the wrapper contract exactly, degrade to a plain ToolNode instead
+                    # of failing the whole flow conversion.
+                    pass
         # A leaf callable can still export as AgentNode when it is a `partial(...)` with one
         # bound react agent and the underlying callable visibly invokes that parameter.
         agent_node_export_target = _get_partial_bound_react_agent_invoke_target_from_node(
@@ -543,12 +616,21 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
             node,
         )
         if agent_node_export_target is not None:
-            return self._build_agent_node(
-                node_name,
-                agent_node_export_target,
-                declared_input_properties,
-                declared_output_properties,
+            wrapped_agent_prompt = self._converter._extract_prompt_from_react_agent(
+                agent_node_export_target
             )
+            if not self._converter._contains_python_format_fields(wrapped_agent_prompt):
+                try:
+                    return self._build_agent_node(
+                        node_name,
+                        agent_node_export_target,
+                        declared_input_properties,
+                        declared_output_properties,
+                    )
+                except ValueError:
+                    # Keep export best-effort: if AgentNode promotion would require a stricter
+                    # interface than the wrapper actually exposes, fall back to ToolNode export.
+                    pass
         return self._build_tool_node(
             node_name,
             node,
@@ -680,6 +762,10 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
             wrapped_react_agent,
             self._referenced_objects,
         )
+        # AgentNode inputs are the wrapped agent's detected Agent Spec prompt variables, so
+        # require the wrapper node's declared input fields to match that double-curly placeholder
+        # contract exactly. Single-curly `{...}` text is ignored here because it is not part of
+        # the exported Agent Spec input interface.
         wrapped_agent_prompt_inputs = set(
             get_placeholders_from_json_object(wrapped_agentspec_agent.system_prompt)
         )
@@ -706,6 +792,52 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
                 inputs=declared_input_properties,
                 outputs=declared_output_properties,
             ),
+        )
+
+    def _build_llm_node(
+        self,
+        node_name: str,
+        bound_llm: BaseChatModel,
+        bound_prompt: str,
+        declared_input_properties: Optional[List[Property]],
+        declared_output_properties: Optional[List[Property]],
+    ) -> AgentSpecLlmNode:
+        prompt_template, prompt_variables = self._converter._normalize_prompt_template_string(
+            bound_prompt
+        )
+        input_properties_by_title = {
+            property_.title: property_ for property_ in declared_input_properties or []
+        }
+        node_input_titles = set(input_properties_by_title)
+        # LlmNode inputs are defined by detected Agent Spec `{{variable}}` placeholders. If the
+        # LangGraph node already declares a named input schema, require it to match that contract
+        # exactly so we do not silently drop wrapper inputs or invent a narrower Agent Spec
+        # interface. Single-curly `{...}` text is preserved as-is and does not participate in the
+        # exported input signature.
+        if declared_input_properties is not None and node_input_titles != set(prompt_variables):
+            raise ValueError(
+                f"Unable to export `{node_name}` as an LlmNode because the wrapper node "
+                f"inputs {sorted(node_input_titles)} do not match the wrapped LLM prompt "
+                f"placeholders {sorted(prompt_variables)}."
+            )
+
+        input_properties: List[Property]
+        if declared_input_properties is None:
+            input_properties = [StringProperty(title=variable) for variable in prompt_variables]
+        else:
+            input_properties = [
+                input_properties_by_title[variable] for variable in prompt_variables
+            ]
+
+        return AgentSpecLlmNode(
+            name=node_name,
+            llm_config=cast(
+                "AgentSpecLlmConfig",
+                self._converter.convert(bound_llm, self._referenced_objects),
+            ),
+            prompt_template=prompt_template,
+            inputs=input_properties,
+            outputs=declared_output_properties,
         )
 
     def _get_start_end_node_properties(
@@ -987,11 +1119,73 @@ def _get_langgraph_node_declared_properties(
     return input_properties, output_properties
 
 
+def _get_partial_bound_llm_and_prompt_from_node(
+    node: "StateNodeSpec[Any]",
+) -> Optional[Tuple[BaseChatModel, str]]:
+    """Return the bound LLM and prompt string when a node is authored as a prompt+model partial."""
+    partial_bound_arguments = _get_partial_bound_arguments_from_node(node)
+    if partial_bound_arguments is None:
+        return None
+
+    unwrapped_callable, bound_arguments = partial_bound_arguments
+
+    bound_llms = [
+        (argument_name, argument_value)
+        for argument_name, argument_value in bound_arguments.arguments.items()
+        if isinstance(argument_value, BaseChatModel)
+    ]
+    if len(bound_llms) != 1:
+        return None
+    llm_parameter_name, bound_llm = bound_llms[0]
+    if not _callable_has_invoke_call_on_parameter(unwrapped_callable, llm_parameter_name):
+        return None
+
+    bound_prompt_arguments = [
+        argument_value
+        for argument_name, argument_value in bound_arguments.arguments.items()
+        if isinstance(argument_value, str)
+        # Treat only explicitly named prompt/template strings as prompt candidates so unrelated
+        # bound strings do not cause a generic partial wrapper to be promoted to LlmNode.
+        and any(token in argument_name.lower() for token in ("prompt", "template"))
+    ]
+    if len(bound_prompt_arguments) != 1:
+        return None
+
+    return bound_llm, bound_prompt_arguments[0]
+
+
 def _get_partial_bound_react_agent_invoke_target_from_node(
     converter: "LangGraphToAgentSpecConverter",
     node: "StateNodeSpec[Any]",
 ) -> Optional[LangGraphComponent]:
     """Return the partial-bound react agent when the callable directly invokes it."""
+    partial_bound_arguments = _get_partial_bound_arguments_from_node(node)
+    if partial_bound_arguments is None:
+        return None
+
+    unwrapped_callable, bound_arguments = partial_bound_arguments
+    react_agent_bound_arguments = [
+        (argument_name, argument_value)
+        for argument_name, argument_value in bound_arguments.arguments.items()
+        if isinstance(argument_value, (StateGraph, CompiledStateGraph))
+        and converter._is_react_agent(argument_value)
+    ]
+    # We only promote the wrapper when exactly one bound argument is a react agent and the
+    # callable visibly invokes that same parameter.
+    if len(react_agent_bound_arguments) != 1:
+        return None
+
+    agent_parameter_name, agent_node_export_target = react_agent_bound_arguments[0]
+    if not _callable_has_invoke_call_on_parameter(unwrapped_callable, agent_parameter_name):
+        return None
+
+    return agent_node_export_target
+
+
+def _get_partial_bound_arguments_from_node(
+    node: "StateNodeSpec[Any]",
+) -> Optional[Tuple[Any, inspect.BoundArguments]]:
+    """Return the unwrapped callable and final bound arguments for a partial-authored node."""
     runnable = getattr(node, "runnable", None)
     wrapped_callable = _get_langgraph_runnable_callable(runnable)
     if not isinstance(wrapped_callable, partial):
@@ -1015,6 +1209,8 @@ def _get_partial_bound_react_agent_invoke_target_from_node(
         bound_arguments_keyword.update(partial_layer.keywords or {})
 
     try:
+        # `bind_partial()` mirrors how nested `partial(...)` objects accumulate arguments without
+        # requiring the wrapper to have already bound every remaining parameter on the callable.
         bound_arguments = inspect.signature(unwrapped_callable).bind_partial(
             *bound_arguments_positional,
             **bound_arguments_keyword,
@@ -1022,22 +1218,7 @@ def _get_partial_bound_react_agent_invoke_target_from_node(
     except (TypeError, ValueError):
         return None
 
-    react_agent_bound_arguments = [
-        (argument_name, argument_value)
-        for argument_name, argument_value in bound_arguments.arguments.items()
-        if isinstance(argument_value, (StateGraph, CompiledStateGraph))
-        and converter._is_react_agent(argument_value)
-    ]
-    # We only promote the wrapper when exactly one bound argument is a react agent and the
-    # callable visibly invokes that same parameter.
-    if len(react_agent_bound_arguments) != 1:
-        return None
-
-    agent_parameter_name, agent_node_export_target = react_agent_bound_arguments[0]
-    if not _callable_has_invoke_call_on_parameter(unwrapped_callable, agent_parameter_name):
-        return None
-
-    return agent_node_export_target
+    return unwrapped_callable, bound_arguments
 
 
 def _callable_has_invoke_call_on_parameter(callable_obj: Any, parameter_name: str) -> bool:
@@ -1130,6 +1311,11 @@ def _build_data_flow_edges_for_node_pair(
 
     source_outputs = source_node.outputs or []
     destination_inputs = destination_node.inputs or []
+
+    # Some nodes legitimately do not consume any data from their predecessor (for example,
+    # static-prompt LlmNodes). In that case we keep only the control-flow edge.
+    if len(destination_inputs) == 0 or len(source_outputs) == 0:
+        return []
 
     # Fall back to one opaque-port edge when both nodes only expose a single opaque port.
     if (
