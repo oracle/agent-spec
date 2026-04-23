@@ -4,7 +4,10 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import ast
+import dis
 import inspect
+import textwrap
 from dataclasses import is_dataclass
 from functools import partial
 from typing import (
@@ -31,13 +34,16 @@ from pyagentspec.adapters.langgraph._types import (
     StateNodeSpec,
     langgraph_graph,
 )
+from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.node import Node as AgentSpecNode
+from pyagentspec.flows.nodes import AgentNode as AgentSpecAgentNode
 from pyagentspec.flows.nodes import BranchingNode, EndNode, FlowNode, StartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import StringProperty, UnionProperty
+from pyagentspec.templating import get_placeholders_from_json_object
 from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
 
 if TYPE_CHECKING:
@@ -515,6 +521,41 @@ class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
 class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
     """Exporter that preserves direct field wiring only for directly representable flows."""
 
+    def _build_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        """Dispatch field-wired nodes directly by exported Agent Spec node kind."""
+        if self._is_graph_backed_node(node):
+            return self._build_flow_node(node_name, node)
+
+        declared_input_properties, declared_output_properties = (
+            _get_langgraph_node_declared_properties(
+                self._graph,
+                node,
+            )
+        )
+        # A leaf callable can still export as AgentNode when it is a `partial(...)` with one
+        # bound react agent and the underlying callable visibly invokes that parameter.
+        agent_node_export_target = _get_partial_bound_react_agent_invoke_target_from_node(
+            self._converter,
+            node,
+        )
+        if agent_node_export_target is not None:
+            return self._build_agent_node(
+                node_name,
+                agent_node_export_target,
+                declared_input_properties,
+                declared_output_properties,
+            )
+        return self._build_tool_node(
+            node_name,
+            node,
+            declared_input_properties=declared_input_properties,
+            declared_output_properties=declared_output_properties,
+        )
+
     def _build_flow_node(
         self,
         node_name: str,
@@ -532,13 +573,17 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
         self,
         node_name: str,
         node: "StateNodeSpec[Any]",
+        declared_input_properties: Optional[List[Property]] = None,
+        declared_output_properties: Optional[List[Property]] = None,
     ) -> AgentSpecNode:
-        declared_input_properties, declared_output_properties = (
-            _get_langgraph_node_declared_properties(
-                self._graph,
-                node,
+        if declared_input_properties is None and declared_output_properties is None:
+            declared_input_properties, declared_output_properties = (
+                _get_langgraph_node_declared_properties(
+                    self._graph,
+                    node,
+                )
             )
-        )
+
         input_properties = declared_input_properties or [
             _build_opaque_property_from_schema(
                 node.input_schema,
@@ -608,6 +653,59 @@ class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
             ),
             inputs=input_properties,
             outputs=output_properties,
+        )
+
+    def _build_agent_node(
+        self,
+        node_name: str,
+        wrapped_react_agent: LangGraphComponent,
+        declared_input_properties: Optional[List[Property]],
+        declared_output_properties: Optional[List[Property]],
+    ) -> AgentSpecAgentNode:
+        if not declared_input_properties:
+            raise ValueError(
+                f"Unable to export `{node_name}` as an AgentNode because wrapped LangGraph "
+                "agents require named input fields. Define `input_schema=` on the node or "
+                "annotate the callable's `state` parameter with a TypedDict, dataclass, or "
+                "Pydantic model that has named fields."
+            )
+        if not declared_output_properties:
+            raise ValueError(
+                f"Unable to export `{node_name}` as an AgentNode because wrapped LangGraph "
+                "agents require named output fields. Add a return annotation or output schema "
+                "using a TypedDict, dataclass, or Pydantic model with named fields."
+            )
+
+        wrapped_agentspec_agent = self._converter._langgraph_agent_convert_to_agentspec(
+            wrapped_react_agent,
+            self._referenced_objects,
+        )
+        wrapped_agent_prompt_inputs = set(
+            get_placeholders_from_json_object(wrapped_agentspec_agent.system_prompt)
+        )
+        node_input_titles = {property_.title for property_ in declared_input_properties}
+        if wrapped_agent_prompt_inputs != node_input_titles:
+            raise ValueError(
+                f"Unable to export `{node_name}` as an AgentNode because the wrapper node "
+                f"inputs {sorted(node_input_titles)} do not match the wrapped agent prompt "
+                f"placeholders {sorted(wrapped_agent_prompt_inputs)}."
+            )
+
+        return AgentSpecAgentNode(
+            name=node_name,
+            agent=AgentSpecAgent(
+                name=wrapped_agentspec_agent.name,
+                description=wrapped_agentspec_agent.description,
+                metadata=dict(wrapped_agentspec_agent.metadata or {}),
+                llm_config=wrapped_agentspec_agent.llm_config,
+                system_prompt=wrapped_agentspec_agent.system_prompt,
+                tools=list(wrapped_agentspec_agent.tools),
+                toolboxes=list(wrapped_agentspec_agent.toolboxes),
+                human_in_the_loop=wrapped_agentspec_agent.human_in_the_loop,
+                transforms=list(wrapped_agentspec_agent.transforms),
+                inputs=declared_input_properties,
+                outputs=declared_output_properties,
+            ),
         )
 
     def _get_start_end_node_properties(
@@ -784,6 +882,15 @@ def _is_opaque_property(property_: Property) -> bool:
     return isinstance(property_, (_OpaquePortProperty, _OpaqueUnionProperty))
 
 
+def _get_langgraph_runnable_callable(runnable: Any) -> Any:
+    """Return the callable stored on a LangGraph runnable, preferring sync then async wrappers."""
+    if callable(getattr(runnable, "func", None)):
+        return runnable.func
+    if callable(getattr(runnable, "afunc", None)):
+        return runnable.afunc
+    return runnable
+
+
 def _get_named_field_properties_from_schema(schema: Any) -> Optional[List[Property]]:
     """Return one property per schema field when the schema exposes named fields."""
     # Convert a structured schema into one Agent Spec property per field so later conversion
@@ -820,11 +927,15 @@ def _get_langgraph_node_declared_properties(
     # Infer the named-field inputs and outputs a LangGraph node declares so leaf nodes can
     # expose concrete ports like "user_query" or "answer" instead of only the whole graph state.
     runnable = getattr(node, "runnable", None)
-    unwrapped_callable = getattr(runnable, "func", runnable)
+    unwrapped_callable = _get_langgraph_runnable_callable(runnable)
+    bound_positional_arguments = 0
+    bound_keyword_arguments: set[str] = set()
     # LangGraph may store node callables in wrappers or `functools.partial(...)`.
     # We currently unwrap those layers only to recover annotations when an explicit
     # named-field input schema is not already available on the node itself.
     while isinstance(unwrapped_callable, partial):
+        bound_positional_arguments += len(unwrapped_callable.args)
+        bound_keyword_arguments.update((unwrapped_callable.keywords or {}).keys())
         unwrapped_callable = unwrapped_callable.func
 
     type_hints: Dict[str, Any] = {}
@@ -848,11 +959,17 @@ def _get_langgraph_node_declared_properties(
         except (TypeError, ValueError):
             pass
         else:
+            positional_parameter_index = 0
             for parameter in signature.parameters.values():
+                if parameter.name in bound_keyword_arguments:
+                    continue
                 if parameter.kind not in (
                     inspect.Parameter.POSITIONAL_ONLY,
                     inspect.Parameter.POSITIONAL_OR_KEYWORD,
                 ):
+                    continue
+                if positional_parameter_index < bound_positional_arguments:
+                    positional_parameter_index += 1
                     continue
                 annotation = type_hints.get(parameter.name, parameter.annotation)
                 if annotation is not inspect.Signature.empty:
@@ -868,6 +985,108 @@ def _get_langgraph_node_declared_properties(
         )
 
     return input_properties, output_properties
+
+
+def _get_partial_bound_react_agent_invoke_target_from_node(
+    converter: "LangGraphToAgentSpecConverter",
+    node: "StateNodeSpec[Any]",
+) -> Optional[LangGraphComponent]:
+    """Return the partial-bound react agent when the callable directly invokes it."""
+    runnable = getattr(node, "runnable", None)
+    wrapped_callable = _get_langgraph_runnable_callable(runnable)
+    if not isinstance(wrapped_callable, partial):
+        return None
+
+    partial_layers: List[Any] = []
+    unwrapped_callable: Any = wrapped_callable
+    # Flatten nested partials so we can recover the original function signature and the final
+    # set of bound arguments LangGraph will call it with.
+    while isinstance(unwrapped_callable, partial):
+        partial_layers.append(unwrapped_callable)
+        unwrapped_callable = unwrapped_callable.func
+
+    if not callable(unwrapped_callable):
+        return None
+
+    bound_arguments_positional: List[Any] = []
+    bound_arguments_keyword: Dict[str, Any] = {}
+    for partial_layer in reversed(partial_layers):
+        bound_arguments_positional.extend(partial_layer.args)
+        bound_arguments_keyword.update(partial_layer.keywords or {})
+
+    try:
+        bound_arguments = inspect.signature(unwrapped_callable).bind_partial(
+            *bound_arguments_positional,
+            **bound_arguments_keyword,
+        )
+    except (TypeError, ValueError):
+        return None
+
+    react_agent_bound_arguments = [
+        (argument_name, argument_value)
+        for argument_name, argument_value in bound_arguments.arguments.items()
+        if isinstance(argument_value, (StateGraph, CompiledStateGraph))
+        and converter._is_react_agent(argument_value)
+    ]
+    # We only promote the wrapper when exactly one bound argument is a react agent and the
+    # callable visibly invokes that same parameter.
+    if len(react_agent_bound_arguments) != 1:
+        return None
+
+    agent_parameter_name, agent_node_export_target = react_agent_bound_arguments[0]
+    if not _callable_has_invoke_call_on_parameter(unwrapped_callable, agent_parameter_name):
+        return None
+
+    return agent_node_export_target
+
+
+def _callable_has_invoke_call_on_parameter(callable_obj: Any, parameter_name: str) -> bool:
+    """Return whether the callable source contains `<parameter>.invoke(...)` or `.ainvoke(...)`."""
+    try:
+        callable_source = inspect.getsource(callable_obj)
+    except (OSError, TypeError):
+        callable_source = None
+
+    if callable_source is not None:
+        try:
+            parsed_source = ast.parse(textwrap.dedent(callable_source))
+        except SyntaxError:
+            pass
+        else:
+            # Prefer source inspection because it keeps the heuristic straightforward and works
+            # across normal `def`/`async def` wrappers.
+            for ast_node in ast.walk(parsed_source):
+                if not isinstance(ast_node, ast.Call):
+                    continue
+                called_function = ast_node.func
+                if not isinstance(called_function, ast.Attribute):
+                    continue
+                if called_function.attr not in {"invoke", "ainvoke"}:
+                    continue
+                if (
+                    isinstance(called_function.value, ast.Name)
+                    and called_function.value.id == parameter_name
+                ):
+                    return True
+
+    try:
+        instructions = list(dis.get_instructions(callable_obj))
+    except TypeError:
+        return False
+
+    # Some callables do not have retrievable source (for example interactive definitions), so
+    # fall back to bytecode and look for `<parameter>.<invoke-like-attr>` loads there.
+    for current_instruction, next_instruction in zip(instructions, instructions[1:]):
+        if not current_instruction.opname.startswith("LOAD_FAST"):
+            continue
+        if current_instruction.argval != parameter_name:
+            continue
+        if next_instruction.opname not in {"LOAD_ATTR", "LOAD_METHOD"}:
+            continue
+        if next_instruction.argval in {"invoke", "ainvoke"}:
+            return True
+
+    return False
 
 
 def _langgraph_edge_convert_to_agentspec_ctrl_flow(

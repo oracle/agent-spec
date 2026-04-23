@@ -6,6 +6,7 @@
 
 
 from dataclasses import dataclass
+from functools import partial
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypedDict, cast
 
 import pytest
@@ -14,7 +15,7 @@ from pydantic import BaseModel, SecretStr
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
-from pyagentspec.flows.nodes import BranchingNode, FlowNode, ToolNode
+from pyagentspec.flows.nodes import AgentNode, BranchingNode, FlowNode, ToolNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 
 from .conftest import get_weather
@@ -358,6 +359,365 @@ def test_convert_graph_flow_to_agentspec_multi_schemas(
         ("get_weather", "weather_data", "llm_node", "weather_data"),
         ("llm_node", "response", "__end__", "response"),
     }
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_to_agentspec_agent_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful about {{topic}}.",
+        name="subagent",
+    )
+
+    def run_agent(_agent: Any, state: InputState) -> OutputState:
+        _agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": state["topic"],
+                    }
+                ]
+            }
+        )
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "call_agent",
+        partial(run_agent, wrapped_agent),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow")),
+    )
+
+    assert _property_titles(flow.inputs) == ["topic"]
+    assert _property_titles(flow.outputs) == ["answer"]
+
+    start_node = _find_node(flow, "__start__")
+    end_node = _find_node(flow, "__end__")
+    agent_node = _find_node(flow, "call_agent")
+
+    assert _property_titles(start_node.outputs) == ["topic"]
+    assert _property_titles(end_node.inputs) == ["answer"]
+    assert isinstance(agent_node, AgentNode)
+    assert isinstance(agent_node.agent, AgentSpecAgent)
+    assert agent_node.agent.name == "subagent"
+    assert _property_titles(agent_node.inputs) == ["topic"]
+    assert _property_titles(agent_node.outputs) == ["answer"]
+    assert _property_titles(agent_node.agent.inputs) == ["topic"]
+    assert _property_titles(agent_node.agent.outputs) == ["answer"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "topic", "call_agent", "topic"),
+        ("call_agent", "answer", "__end__", "answer"),
+    }
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_with_ainvoke_to_agentspec_agent_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful about {{topic}}.",
+        name="subagent",
+    )
+
+    async def run_agent(_agent: Any, state: InputState) -> OutputState:
+        await _agent.ainvoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": state["topic"],
+                    }
+                ]
+            }
+        )
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "call_agent",
+        partial(run_agent, wrapped_agent),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Async Agent Flow")),
+    )
+    agent_node = _find_node(flow, "call_agent")
+
+    assert isinstance(agent_node, AgentNode)
+    assert isinstance(agent_node.agent, AgentSpecAgent)
+    assert agent_node.agent.name == "subagent"
+    assert _property_titles(agent_node.inputs) == ["topic"]
+    assert _property_titles(agent_node.outputs) == ["answer"]
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_with_keyword_bound_partial_to_agentspec_agent_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful about {{topic}}.",
+        name="subagent",
+    )
+
+    def run_agent(state: InputState, _agent: Any) -> OutputState:
+        _agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": state["topic"],
+                    }
+                ]
+            }
+        )
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node("call_agent", partial(run_agent, _agent=wrapped_agent))
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow Keyword Partial")),
+    )
+    agent_node = _find_node(flow, "call_agent")
+
+    assert isinstance(agent_node, AgentNode)
+    assert isinstance(agent_node.agent, AgentSpecAgent)
+    assert agent_node.agent.name == "subagent"
+    assert _property_titles(agent_node.inputs) == ["topic"]
+    assert _property_titles(agent_node.outputs) == ["answer"]
+    assert _property_titles(agent_node.agent.inputs) == ["topic"]
+    assert _property_titles(agent_node.agent.outputs) == ["answer"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "topic", "call_agent", "topic"),
+        ("call_agent", "answer", "__end__", "answer"),
+    }
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_requires_matching_prompt_inputs(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful.",
+        name="subagent",
+    )
+
+    def run_agent(_agent: Any, state: InputState) -> OutputState:
+        _agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": state["topic"],
+                    }
+                ]
+            }
+        )
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "call_agent",
+        partial(run_agent, wrapped_agent),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    with pytest.raises(
+        ValueError,
+        match=r"wrapper node inputs \['topic'\] do not match the wrapped agent prompt placeholders \[\]",
+    ):
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow"))
+
+
+def test_convert_graph_flow_wrapped_react_agent_node_without_invoke_stays_tool_node(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langchain.agents import create_agent
+    from langchain_openai.chat_models import ChatOpenAI
+    from langgraph.graph import END, START, StateGraph
+
+    class InputState(TypedDict):
+        topic: str
+
+    class OutputState(TypedDict):
+        answer: str
+
+    class GraphState(TypedDict, total=False):
+        topic: str
+        answer: str
+
+    class InternalState(TypedDict):
+        messages: list[dict[str, str]]
+        remaining_steps: int
+
+    wrapped_agent = create_agent(
+        model=ChatOpenAI(
+            base_url="http://example.invalid/v1",
+            model="openai/gpt-oss-test",
+            api_key=SecretStr("t"),
+        ),
+        tools=[],
+        state_schema=InternalState,
+        system_prompt="You are helpful about {{topic}}.",
+        name="subagent",
+    )
+
+    def run_agent(_agent: Any, state: InputState) -> OutputState:
+        return {"answer": state["topic"]}
+
+    graph = StateGraph(
+        GraphState,
+        input_schema=InputState,
+        output_schema=OutputState,
+    )
+    graph.add_node(
+        "call_agent",
+        partial(run_agent, wrapped_agent),
+        input_schema=InputState,
+    )
+    graph.add_edge(START, "call_agent")
+    graph.add_edge("call_agent", END)
+
+    flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(graph.compile(name="Wrapped Agent Flow")),
+    )
+    node = _find_node(flow, "call_agent")
+
+    assert isinstance(node, ToolNode)
+    assert not isinstance(node, AgentNode)
+    assert _property_titles(node.inputs) == ["topic"]
+    assert _property_titles(node.outputs) == ["answer"]
 
 
 def test_convert_graph_flow_falls_back_to_state_for_shared_state_dependency(
