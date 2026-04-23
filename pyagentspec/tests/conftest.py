@@ -179,9 +179,11 @@ def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[U
         # Crew AI sometimes attempts to read in some folders, we need to take that into account
         from crewai.cli.shared.token_manager import TokenManager
 
-        crewai_read_dirs = [
-            TokenManager.get_secure_storage_path(),
-        ]
+        # crewai may have either method depending on the version
+        crewai_read_dirs_method = getattr(TokenManager, "get_secure_storage_path", None) or getattr(
+            TokenManager, "_get_secure_storage_path"
+        )
+        crewai_read_dirs = [crewai_read_dirs_method()]
     except ImportError:
         crewai_read_dirs = []
     return (

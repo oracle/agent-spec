@@ -6,6 +6,7 @@
 
 
 import pytest
+from pydantic import ValidationError
 
 from pyagentspec.datastores.datastore import InMemoryCollectionDatastore
 from pyagentspec.property import ObjectProperty, StringProperty
@@ -94,3 +95,46 @@ def test_transforms_with_incorrect_schema_raises(transform_cls):
     )
     with pytest.raises(ValueError):
         transform_cls(id="test", name="test", llm=create_test_llm_config(), datastore=datastore)
+
+
+def test_conversation_summarization_transform_requires_explicit_message_threshold_disable():
+    with pytest.raises(
+        ValueError, match="max_num_messages and max_num_characters cannot both be provided"
+    ):
+        ConversationSummarizationTransform(
+            id="test",
+            name="test",
+            llm=create_test_llm_config(),
+            max_num_characters=20_000,
+        )
+
+
+def test_conversation_summarization_transform_requires_one_threshold():
+    with pytest.raises(
+        ValueError, match="One of max_num_messages or max_num_characters must be provided"
+    ):
+        ConversationSummarizationTransform(
+            id="test",
+            name="test",
+            llm=create_test_llm_config(),
+            max_num_messages=None,
+            max_num_characters=None,
+        )
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"max_num_messages": 0},
+        {"max_num_messages": None, "max_num_characters": 0},
+        {"min_num_messages": 0},
+    ],
+)
+def test_conversation_summarization_transform_positive_threshold_constraints(kwargs):
+    with pytest.raises(ValidationError):
+        ConversationSummarizationTransform(
+            id="test",
+            name="test",
+            llm=create_test_llm_config(),
+            **kwargs,
+        )
