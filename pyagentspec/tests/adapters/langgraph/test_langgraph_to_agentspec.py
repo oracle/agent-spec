@@ -5,7 +5,6 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
-import typing
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypedDict, cast
 
@@ -15,7 +14,7 @@ from pydantic import BaseModel, SecretStr
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
-from pyagentspec.flows.nodes import BranchingNode, FlowNode
+from pyagentspec.flows.nodes import BranchingNode, FlowNode, ToolNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 
 from .conftest import get_weather
@@ -29,6 +28,55 @@ def agentspec_exporter() -> "AgentSpecExporter":
     from pyagentspec.adapters.langgraph import AgentSpecExporter
 
     return AgentSpecExporter()
+
+
+def _property_titles(properties: list[Any] | None) -> list[str]:
+    """Return the exported property titles in declaration order."""
+    return [property_.title for property_ in properties or []]
+
+
+def _data_edge_signatures(flow: AgentSpecFlow) -> set[tuple[str, str, str, str]]:
+    """Return a stable signature for each exported data edge."""
+    return {
+        (
+            edge.source_node.name,
+            edge.source_output,
+            edge.destination_node.name,
+            edge.destination_input,
+        )
+        for edge in flow.data_flow_connections or []
+    }
+
+
+def _find_node(flow: AgentSpecFlow, node_name: str) -> Any:
+    """Return the exported node with the given name."""
+    return next(node for node in flow.nodes if node.name == node_name)
+
+
+def _assert_state_wired_flow(flow: AgentSpecFlow) -> None:
+    """Assert that a flow falls back to opaque `state` wiring."""
+    assert _property_titles(flow.inputs) == ["state"]
+    assert _property_titles(flow.outputs) == ["state"]
+
+
+def _assert_state_wired_nodes(flow: AgentSpecFlow, *node_names: str) -> None:
+    """Assert that the named nodes expose only the opaque `state` interface."""
+    for node_name in node_names:
+        node = _find_node(flow, node_name)
+        assert _property_titles(node.inputs) == ["state"]
+        assert _property_titles(node.outputs) == ["state"]
+
+
+def _assert_state_wired_edges(
+    flow: AgentSpecFlow,
+    edge_pairs: set[tuple[str, str]],
+    extra_edges: set[tuple[str, str, str, str]] | None = None,
+) -> None:
+    """Assert the exported data edges for a state-wired flow."""
+    expected_edges = {(source, "state", destination, "state") for source, destination in edge_pairs}
+    if extra_edges is not None:
+        expected_edges.update(extra_edges)
+    assert _data_edge_signatures(flow) == expected_edges
 
 
 def test_convert_react_agent_with_tools_to_agentspec(
@@ -287,56 +335,177 @@ def test_convert_graph_flow_to_agentspec_multi_schemas(
     assert isinstance(flow, AgentSpecFlow)
     assert len(flow.nodes) == len(graph.nodes) + 2  # get_weather + llm_node + __start__ + __end__
     assert len(flow.control_flow_connections) == len(graph.edges)
-    assert flow.data_flow_connections and len(flow.data_flow_connections) == len(
-        graph.edges
-    )  # Not always true but for this case yes
     assert flow.name == assistant_name
-    # TODO: assert input and output properties of the various nodes
+    assert [property_.title for property_ in flow.inputs or []] == ["city"]
+    assert [property_.title for property_ in flow.outputs or []] == ["response"]
+
+    start_node = next(node for node in flow.nodes if node.name == "__start__")
+    end_node = next(node for node in flow.nodes if node.name == "__end__")
+    get_weather_node = next(node for node in flow.nodes if node.name == "get_weather")
+    llm_node = next(node for node in flow.nodes if node.name == "llm_node")
+
+    assert [property_.title for property_ in start_node.outputs or []] == ["city"]
+    assert [property_.title for property_ in end_node.inputs or []] == ["response"]
+    assert isinstance(get_weather_node, ToolNode)
+    assert [property_.title for property_ in get_weather_node.inputs or []] == ["city"]
+    assert [property_.title for property_ in get_weather_node.outputs or []] == ["weather_data"]
+    assert isinstance(llm_node, ToolNode)
+    assert [property_.title for property_ in llm_node.inputs or []] == ["weather_data"]
+    assert [property_.title for property_ in llm_node.outputs or []] == ["response"]
+
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "city", "get_weather", "city"),
+        ("get_weather", "weather_data", "llm_node", "weather_data"),
+        ("llm_node", "response", "__end__", "response"),
+    }
+
+
+def test_convert_graph_flow_falls_back_to_state_for_shared_state_dependency(
+    agentspec_exporter: "AgentSpecExporter",
+) -> None:
+    from langgraph.graph import END, START, StateGraph
+
+    class OutputSchema(TypedDict):
+        response: str
+
+    class InputSchema(TypedDict):
+        city: str
+
+    class SharedState(TypedDict, total=False):
+        city: str
+        weather_data: str
+        response: str
+
+    class WeatherPatch(TypedDict):
+        weather_data: str
+
+    class FormatterInput(TypedDict):
+        city: str
+        weather_data: str
+
+    def patch_weather(state: InputSchema) -> WeatherPatch:
+        return {"weather_data": f"The weather in {state['city']} is sunny."}
+
+    def format_with_city(state: FormatterInput) -> OutputSchema:
+        return {"response": f"{state['city']}: {state['weather_data']}"}
+
+    shared_state_graph = StateGraph(
+        SharedState,
+        input_schema=InputSchema,
+        output_schema=OutputSchema,
+    )
+    shared_state_graph.add_node("get_weather", patch_weather)
+    shared_state_graph.add_node("format_weather", format_with_city)
+    shared_state_graph.add_edge(START, "get_weather")
+    shared_state_graph.add_edge("get_weather", "format_weather")
+    shared_state_graph.add_edge("format_weather", END)
+
+    shared_state_flow = cast(
+        AgentSpecFlow,
+        agentspec_exporter.to_component(shared_state_graph.compile(name="Shared State Flow")),
+    )
+    _assert_state_wired_flow(shared_state_flow)
+    _assert_state_wired_nodes(
+        shared_state_flow,
+        "__start__",
+        "get_weather",
+        "format_weather",
+        "__end__",
+    )
+    _assert_state_wired_edges(
+        shared_state_flow,
+        {
+            ("__start__", "get_weather"),
+            ("get_weather", "format_weather"),
+            ("format_weather", "__end__"),
+        },
+    )
 
 
 def test_convert_graph_with_subgraph_flow_to_agentspec(
     agentspec_exporter: "AgentSpecExporter",
 ) -> None:
-    from langgraph.graph import START, StateGraph
+    from langgraph.graph import END, START, StateGraph
 
-    class State(TypedDict):
+    class ParentState(TypedDict, total=False):
+        foo: str
+        bar: str
+
+    class ParentInput(TypedDict):
         foo: str
 
-    # Subgraph
+    class ParentOutput(TypedDict):
+        bar: str
 
-    def subgraph_node_1(state: State):
-        return {"foo": "hi! " + state["foo"]}
+    class SubgraphState(TypedDict, total=False):
+        foo: str
+        bar: str
 
-    subgraph_builder = StateGraph(State)
-    subgraph_builder.add_node(subgraph_node_1)
+    class SubgraphInput(TypedDict):
+        foo: str
+
+    class SubgraphOutput(TypedDict):
+        bar: str
+
+    def subgraph_node_1(state: SubgraphInput) -> SubgraphOutput:
+        return {"bar": "hi! " + state["foo"]}
+
+    # Keep both parent and subgraph field-addressable so this test covers nested subgraph export
+    # on the direct field-wiring path, not the separate opaque `state` fallback behavior.
+    subgraph_builder = StateGraph(
+        SubgraphState,
+        input_schema=SubgraphInput,
+        output_schema=SubgraphOutput,
+    )
+    subgraph_builder.add_node("subgraph_node_1", subgraph_node_1)
     subgraph_builder.add_edge(START, "subgraph_node_1")
+    subgraph_builder.add_edge("subgraph_node_1", END)
     subgraph = subgraph_builder.compile()
 
-    # Parent graph
-
-    builder = StateGraph(State)
+    builder = StateGraph(
+        ParentState,
+        input_schema=ParentInput,
+        output_schema=ParentOutput,
+    )
     builder.add_node("node_1", subgraph)
     builder.add_edge(START, "node_1")
+    builder.add_edge("node_1", END)
     assistant_name = "GraphWithSubgraph"
     compiled_graph = builder.compile(name=assistant_name)
     exporter = agentspec_exporter
-    flow = exporter.to_component(compiled_graph)
+    flow = cast(AgentSpecFlow, exporter.to_component(compiled_graph))
     assert isinstance(flow, AgentSpecFlow)
-    subflows = [node.subflow for node in flow.nodes if isinstance(node, FlowNode)]
-    assert len(subflows) == 1
-    subflow_nodes = [node for subflow in subflows for node in subflow.nodes]
-    subflow_control_flow_edges = [
-        edge for subflow in subflows for edge in subflow.control_flow_connections
-    ]
-
-    # __start__ + node_1 + __end__ + __start__ + subgraph_node1 + __end__
-    assert len(flow.nodes) + len(subflow_nodes) == len(compiled_graph.nodes) + 2 + 2
-    implicit_edges_to_end_nodes = 2
-    assert (
-        len(flow.control_flow_connections) + len(subflow_control_flow_edges)
-        == len(builder.edges) + len(subgraph_builder.edges) + implicit_edges_to_end_nodes
-    )
     assert flow.name == assistant_name
+    assert _property_titles(flow.inputs) == ["foo"]
+    assert _property_titles(flow.outputs) == ["bar"]
+
+    start_node = _find_node(flow, "__start__")
+    end_node = _find_node(flow, "__end__")
+    flow_node = _find_node(flow, "node_1")
+    assert isinstance(flow_node, FlowNode)
+    assert _property_titles(start_node.outputs) == ["foo"]
+    assert _property_titles(end_node.inputs) == ["bar"]
+    assert _property_titles(flow_node.inputs) == ["foo"]
+    assert _property_titles(flow_node.outputs) == ["bar"]
+    assert _data_edge_signatures(flow) == {
+        ("__start__", "foo", "node_1", "foo"),
+        ("node_1", "bar", "__end__", "bar"),
+    }
+
+    subflow = flow_node.subflow
+    assert _property_titles(subflow.inputs) == ["foo"]
+    assert _property_titles(subflow.outputs) == ["bar"]
+    subflow_start_node = _find_node(subflow, "__start__")
+    subflow_end_node = _find_node(subflow, "__end__")
+    subgraph_node = _find_node(subflow, "subgraph_node_1")
+    assert _property_titles(subflow_start_node.outputs) == ["foo"]
+    assert _property_titles(subflow_end_node.inputs) == ["bar"]
+    assert _property_titles(subgraph_node.inputs) == ["foo"]
+    assert _property_titles(subgraph_node.outputs) == ["bar"]
+    assert _data_edge_signatures(subflow) == {
+        ("__start__", "foo", "subgraph_node_1", "foo"),
+        ("subgraph_node_1", "bar", "__end__", "bar"),
+    }
 
 
 Conditionals: TypeAlias = Literal["lowercase", "uppercase", "messycase"]
@@ -372,25 +541,53 @@ def test_conditional_graph(agentspec_exporter: "AgentSpecExporter") -> None:
         return {"response": "The sentence you gave me is messy."}
 
     graph = StateGraph(InternalState, input_schema=InputSchema, output_schema=OutputSchema)
-    graph.add_node(lowercase)
-    graph.add_node(uppercase)
-    graph.add_node(messycase)
-    graph.add_conditional_edges(START, check_capitalized)
+    graph.add_node("lowercase_node", lowercase)
+    graph.add_node("uppercase_node", uppercase)
+    graph.add_node("messycase_node", messycase)
+    graph.add_conditional_edges(
+        START,
+        check_capitalized,
+        {
+            "lowercase": "lowercase_node",
+            "uppercase": "uppercase_node",
+            "messycase": "messycase_node",
+        },
+    )
 
     graph_name = "Casecheck Flow"
     flow = graph.compile(name=graph_name)
-    exporter = agentspec_exporter
-    agentspec_flow = cast(AgentSpecFlow, exporter.to_component(flow))
+    agentspec_flow = cast(AgentSpecFlow, agentspec_exporter.to_component(flow))
 
     branching_node = next(
         (node for node in agentspec_flow.nodes if isinstance(node, BranchingNode)), None
     )
-    langgraph_mapping = {v: v for v in {*typing.get_args(Conditionals)}}
+    branch_edges = {
+        (
+            edge.to_node.name,
+            edge.from_branch,
+        )
+        for edge in agentspec_flow.control_flow_connections
+        if edge.from_node is branching_node
+    }
 
     assert agentspec_flow.name == graph_name
     assert branching_node is not None
-    assert branching_node.mapping == langgraph_mapping
+    assert branching_node.mapping == {
+        "lowercase": "lowercase_node",
+        "uppercase": "uppercase_node",
+        "messycase": "messycase_node",
+    }
     assert set(branching_node.branches) == {
         BranchingNode.DEFAULT_BRANCH,
-        *typing.get_args(Conditionals),
+        "lowercase_node",
+        "uppercase_node",
+        "messycase_node",
+    }
+    # Compare `(destination node name, from_branch)` pairs. BranchingNode branches are the mapped
+    # target names in Agent Spec, so the non-default branch labels match their destination nodes.
+    assert branch_edges == {
+        ("lowercase_node", "lowercase_node"),
+        ("uppercase_node", "uppercase_node"),
+        ("messycase_node", "messycase_node"),
+        ("__end__", BranchingNode.DEFAULT_BRANCH),
     }

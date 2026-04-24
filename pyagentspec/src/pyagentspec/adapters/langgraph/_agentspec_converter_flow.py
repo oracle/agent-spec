@@ -1,12 +1,24 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-
+import inspect
 from dataclasses import is_dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, cast
+from functools import partial
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Collection,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    cast,
+    get_type_hints,
+)
 
 from pydantic import BaseModel, TypeAdapter, create_model
 
@@ -33,15 +45,29 @@ if TYPE_CHECKING:
 
 END = langgraph_graph.END
 START = langgraph_graph.START
+GRAPH_STATE_PROPERTY_TITLE = "state"
+OPAQUE_INPUT_PROPERTY_TITLE = "input"
+OPAQUE_OUTPUT_PROPERTY_TITLE = "output"
 
 
-def _validate_conditional_edges_support(graph: LangGraphComponent) -> None:
-    if isinstance(graph, CompiledStateGraph):
-        graph = graph.builder
+class _FieldWiringFallbackRequired(ValueError):
+    """Raised when a LangGraph flow is valid but not exactly representable with field wiring."""
+
+
+class _OpaquePortProperty(Property):
+    """Private marker for adapter-generated opaque ports."""
+
+
+class _OpaqueUnionProperty(UnionProperty):
+    """Private marker for opaque union ports."""
+
+
+def _validate_conditional_edges_support(graph: StateGraph[Any, Any, Any]) -> None:
     for branch_specs in graph.branches.values():
         if len(branch_specs) > 1:
             raise ValueError(
-                "Conversion of multiple conditional edges with the same source node is not yet supported"
+                "Conversion of multiple conditional edges with the same source node "
+                "is not yet supported"
             )
 
 
@@ -50,133 +76,276 @@ def _langgraph_graph_convert_to_agentspec(
     graph: LangGraphComponent,
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> AgentSpecFlow:
-    _validate_conditional_edges_support(graph)
-    nodes: List[AgentSpecNode] = []
+    """Convert a LangGraph state graph into an Agent Spec flow.
+
+    The exporter first tries field wiring. If any required adjacent data edge cannot be
+    represented exactly in Agent Spec, the whole flow falls back to opaque `state` wiring so the
+    exported graph stays structurally valid and internally consistent.
+    """
+    flow_name, normalized_graph = _prepare_langgraph_graph_for_export(graph)
+    field_wiring_referenced_objects = dict(referenced_objects)
+    try:
+        converted_flow = _FieldWiringFlowExporter(
+            converter,
+            normalized_graph,
+            flow_name,
+            field_wiring_referenced_objects,
+        ).build()
+    except _FieldWiringFallbackRequired:
+        return _StateWiringFlowExporter(
+            converter,
+            normalized_graph,
+            flow_name,
+            referenced_objects,
+        ).build()
+
+    referenced_objects.update(field_wiring_referenced_objects)
+    return converted_flow
+
+
+def _prepare_langgraph_graph_for_export(
+    graph: LangGraphComponent,
+) -> Tuple[str, StateGraph[Any, Any, Any]]:
+    """Normalize and validate one LangGraph graph before export."""
     flow_name = graph.name if isinstance(graph, CompiledStateGraph) else "LangGraph Flow"
-    if isinstance(graph, CompiledStateGraph):
-        graph = graph.builder
-    for node_name, node in graph.nodes.items():
-        if node_name in (START, END):
-            continue
-        if isinstance(node.runnable, (StateGraph, CompiledStateGraph)):
-            subgraph_node = cast(AgentSpecFlow, converter.convert(node.runnable, {}))
-            flow_node = FlowNode(
-                name=node_name,
-                subflow=subgraph_node,
-            )
-            referenced_objects[node_name] = flow_node
-            nodes.append(flow_node)
-        else:
-            nodes.append(
-                _langgraph_node_convert_to_agentspec(graph, node_name, node, referenced_objects)
-            )
+    normalized_graph = graph.builder if isinstance(graph, CompiledStateGraph) else graph
+    _validate_conditional_edges_support(normalized_graph)
+    return flow_name, normalized_graph
 
-    start_node, end_node = _get_start_end_nodes(graph, referenced_objects)
-    nodes.append(start_node)
-    nodes.append(end_node)
 
-    control_flow_edges: List[ControlFlowEdge] = []
-    data_flow_edges: List[DataFlowEdge] = []
-    for edge in graph.edges:
-        control_flow_edges.append(
-            _langgraph_edges_convert_to_agentspec_ctrl_flow(edge, referenced_objects)
-        )
-        data_flow_edges.append(
-            _langgraph_edges_convert_to_agentspec_data_flow(graph, edge, referenced_objects)
-        )
+class _BaseLangGraphFlowExporter:
+    """Shared flow assembly for the field-wiring and state-wiring export strategies."""
 
-    for branch in graph.branches.items():
-        source_node, branch_specs = branch
-        additional_nodes, additional_ctrl_flows, additional_data_flows = (
-            _langgraph_branch_convert_to_agentspec(
-                source_node, branch_specs, graph, referenced_objects
-            )
-        )
-        nodes.extend(additional_nodes)
-        control_flow_edges.extend(additional_ctrl_flows)
-        data_flow_edges.extend(additional_data_flows)
+    def __init__(
+        self,
+        converter: "LangGraphToAgentSpecConverter",
+        graph: StateGraph[Any, Any, Any],
+        flow_name: str,
+        referenced_objects: Dict[str, AgentSpecComponent],
+    ) -> None:
+        self._converter = converter
+        self._graph = graph
+        self._flow_name = flow_name
+        self._referenced_objects = referenced_objects
 
-    # Add missing edges towards END nodes for nodes with no outgoing edges
-    for agentspec_node in nodes:
-        if agentspec_node.name == START or agentspec_node.name == END:
-            continue
-        if not any(
-            ctrl_flow.from_node.name == agentspec_node.name for ctrl_flow in control_flow_edges
-        ):
-            edge = agentspec_node.name, END
+    def build(self) -> AgentSpecFlow:
+        nodes: List[AgentSpecNode] = []
+        for node_name, node in self._graph.nodes.items():
+            if node_name in (START, END):
+                continue
+            nodes.append(self._convert_node(node_name, node))
+
+        start_node, end_node = self._build_start_end_nodes()
+        nodes.append(start_node)
+        nodes.append(end_node)
+
+        control_flow_edges: List[ControlFlowEdge] = []
+        data_flow_edges: List[DataFlowEdge] = []
+        for edge in self._graph.edges:
+            from_, to = edge
             control_flow_edges.append(
-                _langgraph_edges_convert_to_agentspec_ctrl_flow(edge, referenced_objects)
+                _langgraph_edge_convert_to_agentspec_ctrl_flow(edge, self._referenced_objects)
             )
-            data_flow_edges.append(
-                _langgraph_edges_convert_to_agentspec_data_flow(graph, edge, referenced_objects)
+            data_flow_edges.extend(
+                _build_data_flow_edges_for_node_pair(
+                    source_node=cast(AgentSpecNode, self._referenced_objects[from_]),
+                    destination_node=cast(AgentSpecNode, self._referenced_objects[to]),
+                    edge_name_prefix=f"{from_}_to_{to}",
+                )
             )
 
-    return AgentSpecFlow(
-        name=flow_name,
-        start_node=start_node,
-        nodes=nodes,
-        control_flow_connections=control_flow_edges,
-        data_flow_connections=data_flow_edges,
-    )
+        for source_node_name, branch_specs in self._graph.branches.items():
+            for conditional_node_name, branch in branch_specs.items():
+                additional_nodes, additional_ctrl_flows, additional_data_flows = (
+                    self._build_conditional_branch(
+                        source_node_name,
+                        conditional_node_name,
+                        branch,
+                    )
+                )
+                nodes.extend(additional_nodes)
+                control_flow_edges.extend(additional_ctrl_flows)
+                data_flow_edges.extend(additional_data_flows)
 
+        # Add missing edges towards END nodes for nodes with no outgoing edges.
+        for agentspec_node in nodes:
+            if agentspec_node.name == START or agentspec_node.name == END:
+                continue
+            if not any(
+                ctrl_flow.from_node.name == agentspec_node.name for ctrl_flow in control_flow_edges
+            ):
+                edge = agentspec_node.name, END
+                from_, to = edge
+                control_flow_edges.append(
+                    _langgraph_edge_convert_to_agentspec_ctrl_flow(
+                        edge,
+                        self._referenced_objects,
+                    )
+                )
+                data_flow_edges.extend(
+                    _build_data_flow_edges_for_node_pair(
+                        source_node=cast(AgentSpecNode, self._referenced_objects[from_]),
+                        destination_node=cast(AgentSpecNode, self._referenced_objects[to]),
+                        edge_name_prefix=f"{from_}_to_{to}",
+                    )
+                )
 
-def _langgraph_branch_convert_to_agentspec(
-    source_node: str,
-    branch_specs: Dict[str, BranchSpec],
-    graph: StateGraph[Any, Any, Any, Any],
-    referenced_objects: Dict[str, AgentSpecComponent],
-) -> Tuple[List[AgentSpecNode], List[ControlFlowEdge], List[DataFlowEdge]]:
-    additional_nodes: List[AgentSpecNode] = []
-    additional_ctrl_flows: List[ControlFlowEdge] = []
-    additional_data_flows: List[DataFlowEdge] = []
+        self._validate_data_flow_edges(nodes, data_flow_edges)
 
-    for conditional_node_name, branch_spec in branch_specs.items():
-        mapping: Dict[str, str]
-        if branch_spec.ends is None:
+        return AgentSpecFlow(
+            name=self._flow_name,
+            start_node=start_node,
+            nodes=nodes,
+            control_flow_connections=control_flow_edges,
+            data_flow_connections=data_flow_edges,
+        )
+
+    def _convert_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        """Convert one LangGraph node under the current private export strategy."""
+        converted_node = self._referenced_objects.get(node_name)
+        if converted_node is not None:
+            if not isinstance(converted_node, AgentSpecNode):
+                raise TypeError(
+                    f"expected node {converted_node} to be of type {AgentSpecNode}, "
+                    f"got: {converted_node.__class__}"
+                )
+            return converted_node
+
+        converted_node = self._build_node(node_name, node)
+        self._referenced_objects[node_name] = converted_node
+        return converted_node
+
+    def _build_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        """Dispatch one LangGraph node to the corresponding Agent Spec node kind."""
+        if self._is_graph_backed_node(node):
+            return self._build_flow_node(node_name, node)
+        return self._build_tool_node(node_name, node)
+
+    def _is_graph_backed_node(self, node: "StateNodeSpec[Any]") -> bool:
+        """Return whether the LangGraph node wraps another graph-backed component."""
+        return isinstance(node.runnable, (StateGraph, CompiledStateGraph))
+
+    def _build_start_end_nodes(self) -> Tuple[AgentSpecNode, AgentSpecNode]:
+        """Return the exported START and END nodes under the current export strategy."""
+        return (
+            self._get_or_build_start_end_node(
+                START,
+                self._graph.input_schema,
+                StartNode,
+            ),
+            self._get_or_build_start_end_node(
+                END,
+                self._graph.output_schema,
+                EndNode,
+            ),
+        )
+
+    def _get_or_build_start_end_node(
+        self,
+        start_end_node_name: str,
+        public_schema: Any,
+        start_end_node_class: Type[Any],
+    ) -> AgentSpecNode:
+        """Return the exported START/END node, building it on first use."""
+        converted_node = self._referenced_objects.get(start_end_node_name)
+        if converted_node is not None:
+            if not isinstance(converted_node, AgentSpecNode):
+                raise TypeError(
+                    f"expected node {converted_node} to be of type {AgentSpecNode}, "
+                    f"got: {converted_node.__class__}"
+                )
+            return converted_node
+        if start_end_node_name in self._graph.nodes:
+            return self._convert_node(
+                start_end_node_name,
+                self._graph.nodes[start_end_node_name],
+            )
+
+        start_end_node_properties = self._get_start_end_node_properties(
+            start_end_node_name,
+            public_schema,
+        )
+        start_end_node = cast(
+            AgentSpecNode,
+            start_end_node_class(
+                name=start_end_node_name,
+                inputs=start_end_node_properties,
+                outputs=list(start_end_node_properties),
+            ),
+        )
+        self._referenced_objects[start_end_node_name] = start_end_node
+        return start_end_node
+
+    def _build_conditional_branch(
+        self,
+        source_node_name: str,
+        conditional_node_name: str,
+        branch: BranchSpec,
+    ) -> Tuple[List[AgentSpecNode], List[ControlFlowEdge], List[DataFlowEdge]]:
+        """Build the Agent Spec helper nodes and edges for one LangGraph conditional branch."""
+        additional_nodes: List[AgentSpecNode] = []
+        additional_ctrl_flows: List[ControlFlowEdge] = []
+        additional_data_flows: List[DataFlowEdge] = []
+
+        if branch.ends is None:
             raise TypeError(f"""Mapping for {conditional_node_name} not found.
-            Make sure to add proper return type hints to the branching function.""")
-        mapping = {str(k): v for k, v in branch_spec.ends.items()}
+                Make sure to add proper return type hints to the branching function.""")
 
-        # Create the conditional node to compute which branch to go to
-        conditional_node_input = _resolve_output_properties(graph, [source_node])
+        mapping = {
+            str(route_token): target_node_name
+            for route_token, target_node_name in branch.ends.items()
+        }
+        source_node = cast(AgentSpecNode, self._referenced_objects[source_node_name])
+        conditional_node_name = _dedupe_name(
+            conditional_node_name,
+            self._referenced_objects.keys(),
+        )
+
         conditional_node = AgentSpecToolNode(
             name=conditional_node_name,
             tool=AgentSpecServerTool(
                 name=f"{conditional_node_name}_tool",
-                inputs=[conditional_node_input],
+                inputs=self._resolve_conditional_node_inputs(source_node_name, branch),
                 outputs=[StringProperty(title=BranchingNode.DEFAULT_INPUT)],
             ),
         )
         additional_nodes.append(conditional_node)
-        referenced_objects[conditional_node_name] = conditional_node
+        self._referenced_objects[conditional_node_name] = conditional_node
 
-        # The source node goes to the conditional node to compute which
-        # branch to go to
-        source_node_to_conditional_node_ctrl_flow = ControlFlowEdge(
-            name=f"{source_node}_to_{conditional_node_name}",
-            from_node=cast(AgentSpecNode, referenced_objects[source_node]),
-            to_node=conditional_node,
+        additional_ctrl_flows.append(
+            ControlFlowEdge(
+                name=f"{source_node_name}_to_{conditional_node_name}",
+                from_node=source_node,
+                to_node=conditional_node,
+            )
         )
-        additional_ctrl_flows.append(source_node_to_conditional_node_ctrl_flow)
-        source_node_to_conditional_node_data_flow = DataFlowEdge(
-            name=f"{source_node}_to_{conditional_node_name}_data_edge",
-            source_node=cast(AgentSpecNode, referenced_objects[source_node]),
-            source_output=conditional_node_input.title,
-            destination_node=conditional_node,
-            destination_input=conditional_node_input.title,
+        additional_data_flows.extend(
+            _build_data_flow_edges_for_node_pair(
+                source_node=source_node,
+                destination_node=conditional_node,
+                edge_name_prefix=f"{source_node_name}_to_{conditional_node_name}",
+            )
         )
-        additional_data_flows.append(source_node_to_conditional_node_data_flow)
 
-        # Create the branching node for the current conditional edge
-        branching_node_name = f"{conditional_node_name}_branching_node"
+        branching_node_name = _dedupe_name(
+            f"{conditional_node_name}_branching_node",
+            self._referenced_objects.keys(),
+        )
         branching_node = BranchingNode(
             name=branching_node_name,
             mapping=mapping,
         )
         additional_nodes.append(branching_node)
-        referenced_objects[branching_node_name] = branching_node
+        self._referenced_objects[branching_node_name] = branching_node
 
-        # Create ControlFlowEdge to go from the conditional node to the branching node
         additional_ctrl_flows.append(
             ControlFlowEdge(
                 name=f"{conditional_node_name}_to_{branching_node_name}",
@@ -194,206 +363,573 @@ def _langgraph_branch_convert_to_agentspec(
             )
         )
 
-        # For each different target node, we create a control flow edge
-        # that goes from the branching node to the target node if `from_branch == branch_name`
-        for branch_name, target_node_name in mapping.items():
+        # BranchingNode selects the mapping value as the outgoing Agent Spec branch name, so we
+        # materialize one explicit edge per distinct target node, not per route token.
+        for target_node_name in dict.fromkeys(mapping.values()):
             additional_ctrl_flows.append(
                 ControlFlowEdge(
-                    name=f"{branching_node_name}_to_{target_node_name}",
+                    name=f"{branching_node_name}_branch_{target_node_name}",
                     from_node=branching_node,
-                    to_node=cast(AgentSpecNode, referenced_objects[target_node_name]),
-                    from_branch=branch_name,
+                    to_node=cast(AgentSpecNode, self._referenced_objects[target_node_name]),
+                    from_branch=target_node_name,
                 )
             )
-            additional_data_flows.append(
-                DataFlowEdge(
-                    name=f"data_{source_node}_to_{target_node_name}",
-                    source_node=cast(AgentSpecNode, referenced_objects[source_node]),
-                    source_output=_resolve_output_properties(graph, [target_node_name]).title,
-                    destination_node=cast(AgentSpecNode, referenced_objects[target_node_name]),
-                    destination_input=_resolve_output_properties(graph, [target_node_name]).title,
+            additional_data_flows.extend(
+                _build_data_flow_edges_for_node_pair(
+                    source_node=source_node,
+                    destination_node=cast(
+                        AgentSpecNode,
+                        self._referenced_objects[target_node_name],
+                    ),
+                    edge_name_prefix=f"data_{source_node_name}_to_{target_node_name}",
                 ),
             )
 
-        # We create an edge for the default case, that goes straight to the end node
-        # This should "in practice" never be reached
-        name = f"{branching_node_name}_to_{END}"
-        if not any(flow.name == name for flow in additional_ctrl_flows):
-            additional_ctrl_flows.append(
-                ControlFlowEdge(
-                    name=name,
-                    from_node=branching_node,
-                    to_node=cast(AgentSpecNode, referenced_objects[END]),
-                    from_branch=BranchingNode.DEFAULT_BRANCH,
+        # Always keep an explicit default edge to END, even if another mapped branch also targets
+        # END, because the default branch is a distinct Agent Spec branch.
+        additional_ctrl_flows.append(
+            ControlFlowEdge(
+                name=f"{branching_node_name}_default_to_{END}",
+                from_node=branching_node,
+                to_node=cast(AgentSpecNode, self._referenced_objects[END]),
+                from_branch=BranchingNode.DEFAULT_BRANCH,
+            )
+        )
+
+        return (additional_nodes, additional_ctrl_flows, additional_data_flows)
+
+    def _validate_data_flow_edges(
+        self,
+        nodes: List[AgentSpecNode],
+        data_flow_edges: List[DataFlowEdge],
+    ) -> None:
+        """Allow concrete strategies to validate assembled data edges."""
+
+    def _build_flow_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> FlowNode:
+        """Convert a graph-backed LangGraph node that exports as an Agent Spec FlowNode."""
+        raise NotImplementedError
+
+    def _build_tool_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        """Convert a LangGraph leaf runnable that should export as an Agent Spec ToolNode."""
+        raise NotImplementedError
+
+    def _get_start_end_node_properties(
+        self,
+        start_end_node_name: str,
+        public_schema: Any,
+    ) -> List[Property]:
+        """Return the START/END node properties for the current export strategy."""
+        raise NotImplementedError
+
+    def _resolve_conditional_node_inputs(
+        self,
+        source_node_name: str,
+        branch: BranchSpec,
+    ) -> List[Property]:
+        """Return the synthetic route-node inputs for the current export strategy."""
+        raise NotImplementedError
+
+
+class _StateWiringFlowExporter(_BaseLangGraphFlowExporter):
+    """Exporter that uses a single opaque `state` interface throughout the flow."""
+
+    def _build_flow_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> FlowNode:
+        subgraph_runnable = cast(LangGraphComponent, node.runnable)
+        subgraph_flow_name, normalized_subgraph = _prepare_langgraph_graph_for_export(
+            subgraph_runnable
+        )
+        subflow = _StateWiringFlowExporter(
+            self._converter,
+            normalized_subgraph,
+            subgraph_flow_name,
+            {},
+        ).build()
+        opaque_property = _build_opaque_property_from_schema(
+            self._graph.state_schema,
+            title=GRAPH_STATE_PROPERTY_TITLE,
+        )
+        return FlowNode(
+            name=node_name,
+            subflow=subflow,
+            inputs=[opaque_property],
+            outputs=[opaque_property],
+        )
+
+    def _build_tool_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        opaque_property = _build_opaque_property_from_schema(
+            self._graph.state_schema,
+            title=GRAPH_STATE_PROPERTY_TITLE,
+        )
+        return AgentSpecToolNode(
+            name=node_name,
+            tool=AgentSpecServerTool(
+                name=node_name + "_tool",
+                inputs=[opaque_property],
+                outputs=[opaque_property],
+            ),
+            inputs=[opaque_property],
+            outputs=[opaque_property],
+        )
+
+    def _get_start_end_node_properties(
+        self,
+        start_end_node_name: str,
+        public_schema: Any,
+    ) -> List[Property]:
+        return [
+            _build_opaque_property_from_schema(
+                self._graph.state_schema,
+                title=GRAPH_STATE_PROPERTY_TITLE,
+            )
+        ]
+
+    def _resolve_conditional_node_inputs(
+        self,
+        source_node_name: str,
+        branch: BranchSpec,
+    ) -> List[Property]:
+        return [
+            _build_opaque_property_from_schema(
+                self._graph.state_schema,
+                title=GRAPH_STATE_PROPERTY_TITLE,
+            )
+        ]
+
+
+class _FieldWiringFlowExporter(_BaseLangGraphFlowExporter):
+    """Exporter that preserves direct field wiring only for directly representable flows."""
+
+    def _build_flow_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> FlowNode:
+        subgraph_runnable = cast(LangGraphComponent, node.runnable)
+        subflow = _langgraph_graph_convert_to_agentspec(
+            self._converter,
+            subgraph_runnable,
+            {},
+        )
+        return FlowNode(name=node_name, subflow=subflow)
+
+    def _build_tool_node(
+        self,
+        node_name: str,
+        node: "StateNodeSpec[Any]",
+    ) -> AgentSpecNode:
+        declared_input_properties, declared_output_properties = (
+            _get_langgraph_node_declared_properties(
+                self._graph,
+                node,
+            )
+        )
+        input_properties = declared_input_properties or [
+            _build_opaque_property_from_schema(
+                node.input_schema,
+                title=OPAQUE_INPUT_PROPERTY_TITLE,
+            )
+        ]
+
+        output_properties = declared_output_properties
+        if output_properties is None:
+            target_nodes = [
+                to for from_, to in self._graph.edges if from_ != to and from_ == node_name
+            ]
+            # When a leaf node does not declare outputs, export the state shape expected by its
+            # downstream consumers. This is an adapter approximation: Agent Spec needs an explicit
+            # output port, while LangGraph lets the node return a patch that is interpreted in the
+            # context of the next node(s).
+            if target_nodes in ([], [END]):
+                # No explicit outgoing edge means LangGraph implicitly routes this node to END.
+                # An explicit edge to END has the same exported output shape.
+                output_properties = [
+                    _build_opaque_property_from_schema(
+                        self._graph.output_schema,
+                        title=OPAQUE_OUTPUT_PROPERTY_TITLE,
+                    )
+                ]
+            elif len(target_nodes) == 1:
+                target_node_name = target_nodes[0]
+                # With one downstream node, export the state shape that node reads.
+                output_properties = [
+                    _build_opaque_property_from_schema(
+                        self._graph.nodes[target_node_name].input_schema,
+                        title=OPAQUE_OUTPUT_PROPERTY_TITLE,
+                    )
+                ]
+            else:
+                # With multiple downstream nodes, export a union of the state shapes each
+                # possible target expects to read.
+                target_properties: List[Property] = []
+                for target_node_name in target_nodes:
+                    if target_node_name == END:
+                        target_properties.append(
+                            _build_opaque_property_from_schema(
+                                self._graph.output_schema,
+                                title=OPAQUE_OUTPUT_PROPERTY_TITLE,
+                            )
+                        )
+                    else:
+                        target_properties.append(
+                            _build_opaque_property_from_schema(
+                                self._graph.nodes[target_node_name].input_schema,
+                                title=OPAQUE_OUTPUT_PROPERTY_TITLE,
+                            )
+                        )
+                output_properties = [
+                    _build_opaque_union_property(
+                        target_properties,
+                        title=OPAQUE_OUTPUT_PROPERTY_TITLE,
+                    )
+                ]
+
+        return AgentSpecToolNode(
+            name=node_name,
+            tool=AgentSpecServerTool(
+                name=node_name + "_tool",
+                inputs=input_properties,
+                outputs=output_properties,
+            ),
+            inputs=input_properties,
+            outputs=output_properties,
+        )
+
+    def _get_start_end_node_properties(
+        self,
+        start_end_node_name: str,
+        public_schema: Any,
+    ) -> List[Property]:
+        opaque_boundary_title = (
+            OPAQUE_INPUT_PROPERTY_TITLE
+            if start_end_node_name == START
+            else OPAQUE_OUTPUT_PROPERTY_TITLE
+        )
+        # Only expose named-field boundary ports when the public boundary schema is
+        # narrower than the internal graph state. Otherwise we keep one opaque boundary port.
+        if public_schema is self._graph.state_schema:
+            return [
+                _build_opaque_property_from_schema(
+                    public_schema,
+                    title=GRAPH_STATE_PROPERTY_TITLE,
                 )
+            ]
+        return _get_named_field_properties_from_schema(public_schema) or [
+            _build_opaque_property_from_schema(
+                public_schema,
+                title=opaque_boundary_title,
             )
+        ]
 
-    return (additional_nodes, additional_ctrl_flows, additional_data_flows)
-
-
-def _get_start_end_nodes(
-    graph: StateGraph[Any, Any, Any],
-    referenced_objects: Dict[str, AgentSpecComponent],
-) -> Tuple[AgentSpecNode, AgentSpecNode]:
-    if START not in referenced_objects:
-        if START not in graph.nodes:
-            referenced_objects[START] = StartNode(
-                name=START,
-                inputs=[_get_property_from_schema(graph.input_schema)],
-                outputs=[_get_property_from_schema(graph.input_schema)],
+    def _resolve_conditional_node_inputs(
+        self,
+        source_node_name: str,
+        branch: BranchSpec,
+    ) -> List[Property]:
+        if named_field_properties := _get_named_field_properties_from_schema(branch.input_schema):
+            return named_field_properties
+        if source_node_name in self._graph.nodes:
+            return [
+                _build_opaque_property_from_schema(
+                    self._graph.nodes[source_node_name].input_schema,
+                    title=OPAQUE_INPUT_PROPERTY_TITLE,
+                )
+            ]
+        return [
+            _build_opaque_property_from_schema(
+                self._graph.state_schema,
+                title=OPAQUE_INPUT_PROPERTY_TITLE,
             )
-        else:
-            referenced_objects[START] = _langgraph_node_convert_to_agentspec(
-                graph,
-                START,
-                graph.nodes[START],
-                referenced_objects,
-            )
+        ]
 
-    if END not in referenced_objects:
-        if END not in graph.nodes:
-            referenced_objects[END] = EndNode(
-                name=END,
-                inputs=[_get_property_from_schema(graph.output_schema)],
-                outputs=[_get_property_from_schema(graph.output_schema)],
-            )
-        else:
-            referenced_objects[END] = _langgraph_node_convert_to_agentspec(
-                graph,
-                END,
-                graph.nodes[END],
-                referenced_objects,
-            )
+    def _validate_data_flow_edges(
+        self,
+        nodes: List[AgentSpecNode],
+        data_flow_edges: List[DataFlowEdge],
+    ) -> None:
+        """Require every named input in field-wiring mode to be satisfied locally."""
+        for destination_node in nodes:
+            if destination_node.name == START:
+                continue
 
-    return (
-        cast(AgentSpecNode, referenced_objects[START]),
-        cast(AgentSpecNode, referenced_objects[END]),
-    )
+            required_input_titles = [
+                property_.title
+                for property_ in destination_node.inputs or []
+                if not _is_opaque_property(property_)
+                and property_.default is Property.empty_default
+            ]
+            if not required_input_titles:
+                continue
+
+            provided_input_titles = {
+                edge.destination_input
+                for edge in data_flow_edges
+                if edge.destination_node.name == destination_node.name
+            }
+            missing_input_titles = [
+                title for title in required_input_titles if title not in provided_input_titles
+            ]
+            if missing_input_titles:
+                raise _FieldWiringFallbackRequired(
+                    f"Unable to represent data flow into `{destination_node.name}` for fields: "
+                    f"{', '.join(missing_input_titles)}."
+                )
 
 
-def _get_property_from_schema(schema: Type[Any]) -> Property:
+def _dedupe_name(
+    name_candidate: str,
+    referenced_object_names: Collection[str],
+) -> str:
+    """Return a unique component name by appending a numeric suffix when needed."""
+    if name_candidate not in referenced_object_names:
+        return name_candidate
+
+    name_suffix = 1
+    deduped_name = f"{name_candidate}_{name_suffix}"
+    while deduped_name in referenced_object_names:
+        name_suffix += 1
+        deduped_name = f"{name_candidate}_{name_suffix}"
+    return deduped_name
+
+
+def _build_json_schema_from_schema_type(schema: Type[Any]) -> Optional[Dict[str, Any]]:
+    """Build a raw JSON schema dictionary from a Python schema type."""
     if issubclass(schema, BaseModel):
-        json_schema = schema.model_json_schema()
-    elif is_dataclass(schema):
-        json_schema = TypeAdapter(schema).json_schema()
-    else:
-        try:
-            input_model = create_model(schema.__name__, **schema.__annotations__)
-            json_schema = input_model.model_json_schema()
-        except Exception:
-            return Property(json_schema={}, title="state")  # "Any" property
-
-    properties = json_schema["properties"]
-
-    # Pydantic keeps changing the title of the fields to PascalCase
-    # We overwrite the title with the proper field name
-    for field in schema.__annotations__:
-        if field in properties:
-            properties[field]["title"] = field
-
-    input_property = Property(json_schema=json_schema, title="state")
-    return input_property
+        return schema.model_json_schema()
+    if is_dataclass(schema):
+        return TypeAdapter(schema).json_schema()
+    try:
+        return cast(
+            Dict[str, Any],
+            create_model(schema.__name__, **schema.__annotations__).model_json_schema(),
+        )
+    except Exception:
+        return None
 
 
-def _resolve_output_properties(
-    graph: StateGraph[Any, Any, Any],
-    target_nodes: List[str],
+def _rename_top_level_property_titles(
+    json_schema: Dict[str, Any],
+    field_names: Collection[str],
+) -> Dict[str, Any]:
+    """Rewrite top-level property titles to their field names."""
+    properties = json_schema.get("properties")
+    if not isinstance(properties, dict):
+        return json_schema
+
+    normalized_properties = dict(properties)
+    updated = False
+    for field_name in field_names:
+        field_schema = properties.get(field_name)
+        if isinstance(field_schema, dict) and field_schema.get("title") != field_name:
+            normalized_properties[field_name] = {**field_schema, "title": field_name}
+            updated = True
+
+    if not updated:
+        return json_schema
+    return {**json_schema, "properties": normalized_properties}
+
+
+def _build_opaque_property_from_schema(
+    schema: Type[Any],
+    title: str,
 ) -> Property:
-    match target_nodes:
-        case []:
-            # This case handles nodes that don't have an explicit outgoing edge
-            # They are then routed to the end node automatically
-            # And thus the property is the output schema of the entire graph
-            return _get_property_from_schema(graph.output_schema)
-        case [node_name]:
-            # This case is used to get the output property for going from a node to a target node
-            if node_name == START:
-                return _get_property_from_schema(graph.input_schema)
-            if node_name == END:
-                return _get_property_from_schema(graph.output_schema)
-            return _get_property_from_schema(graph.nodes[node_name].input_schema)
-        case nodes:
-            # This case is used to get a union property of all the target nodes
-            properties: List[Property] = []
-            for node_name in nodes:
-                properties.append(_resolve_output_properties(graph, [node_name]))
-            union_property = UnionProperty(any_of=properties)
-            return union_property
+    """Build one opaque property from a schema type."""
+    json_schema = _build_json_schema_from_schema_type(schema)
+    if json_schema is None:
+        # Some class-like schemas expose annotations that we cannot turn into a valid Pydantic
+        # model/json schema. In that case we still export the port as one opaque property rather
+        # than failing the whole graph conversion.
+        return _OpaquePortProperty(json_schema={}, title=title)
+
+    # Agent Spec validates nested schema titles too. Pydantic generates display titles such
+    # as "Weather Data", which makes the opaque property invalid, so rewrite the
+    # top-level field titles back to their schema field names before constructing `Property`.
+    return _OpaquePortProperty(
+        json_schema=_rename_top_level_property_titles(
+            json_schema,
+            getattr(schema, "__annotations__", {}),
+        ),
+        title=title,
+    )
 
 
-def _langgraph_node_convert_to_agentspec(
+def _build_opaque_union_property(
+    properties: List[Property],
+    title: str,
+) -> Property:
+    """Build one opaque union port from multiple opaque fallback shapes."""
+    return _OpaqueUnionProperty(
+        any_of=properties,
+        title=title,
+    )
+
+
+def _is_opaque_property(property_: Property) -> bool:
+    """Return whether a property is one of the adapter's opaque fallback ports."""
+    return isinstance(property_, (_OpaquePortProperty, _OpaqueUnionProperty))
+
+
+def _get_named_field_properties_from_schema(schema: Any) -> Optional[List[Property]]:
+    """Return one property per schema field when the schema exposes named fields."""
+    # Convert a structured schema into one Agent Spec property per field so later conversion
+    # steps can wire nodes by field name instead of falling back to a single opaque port. If the
+    # schema does not expose named fields, return None and let callers use opaque state-level
+    # wiring instead.
+    annotations = getattr(schema, "__annotations__", None)
+    if not annotations:
+        return None
+
+    json_schema = _build_json_schema_from_schema_type(cast(Type[Any], schema))
+    if json_schema is None:
+        return None
+    properties = json_schema.get("properties")
+    if not isinstance(properties, dict) or not properties:
+        return None
+
+    result: List[Property] = []
+    for field_name in list(annotations) + [name for name in properties if name not in annotations]:
+        # Rebuild the field properties from the JSON schema so titles stay aligned with the
+        # original field names rather than Pydantic-generated display names.
+        field_schema = properties.get(field_name)
+        if not isinstance(field_schema, dict):
+            continue
+        result.append(Property(title=field_name, json_schema={**field_schema, "title": field_name}))
+    return result or None
+
+
+def _get_langgraph_node_declared_properties(
     graph: StateGraph[Any, Any, Any],
-    node_name: str,
     node: "StateNodeSpec[Any]",
-    referenced_objects: Dict[str, AgentSpecComponent],
-) -> AgentSpecNode:
-    if node_name in referenced_objects:
-        converted_node = referenced_objects[node_name]
-        if not isinstance(converted_node, AgentSpecNode):
-            raise TypeError(
-                f"expected node {converted_node} to be of type {AgentSpecNode}, got: {converted_node.__class__}"
-            )
-        return converted_node
+) -> Tuple[Optional[List[Property]], Optional[List[Property]]]:
+    """Infer the declared named-field inputs and outputs for a LangGraph node."""
+    # Infer the named-field inputs and outputs a LangGraph node declares so leaf nodes can
+    # expose concrete ports like "user_query" or "answer" instead of only the whole graph state.
+    runnable = getattr(node, "runnable", None)
+    unwrapped_callable = getattr(runnable, "func", runnable)
+    # LangGraph may store node callables in wrappers or `functools.partial(...)`.
+    # We currently unwrap those layers only to recover annotations when an explicit
+    # named-field input schema is not already available on the node itself.
+    while isinstance(unwrapped_callable, partial):
+        unwrapped_callable = unwrapped_callable.func
 
-    input_property = _get_property_from_schema(node.input_schema)
+    type_hints: Dict[str, Any] = {}
+    if callable(unwrapped_callable):
+        try:
+            type_hints = get_type_hints(unwrapped_callable)
+        except Exception:
+            raw_annotations = getattr(unwrapped_callable, "__annotations__", {}) or {}
+            if isinstance(raw_annotations, dict):
+                type_hints = raw_annotations
 
-    target_nodes: List[str] = []
-    for from_, to in graph.edges:
-        if from_ != to and from_ == node_name:
-            target_nodes.append(to)
-    output_property = _resolve_output_properties(graph, target_nodes)
+    input_properties: Optional[List[Property]] = None
+    if node.input_schema is not graph.state_schema:
+        # Prefer the explicit node input schema when LangGraph narrowed it below the graph state.
+        input_properties = _get_named_field_properties_from_schema(node.input_schema)
 
-    tool = AgentSpecServerTool(
-        name=node_name + "_tool",
-        inputs=[input_property],
-        outputs=[output_property],
-    )
-    referenced_objects[node_name] = AgentSpecToolNode(
-        name=node_name,
-        tool=tool,
-        inputs=[input_property],
-        outputs=[output_property],
-    )
-    return cast(AgentSpecNode, referenced_objects[node_name])
+    if input_properties is None and callable(unwrapped_callable):
+        # Otherwise fall back to the first positional parameter annotation on the callable.
+        try:
+            signature = inspect.signature(unwrapped_callable)
+        except (TypeError, ValueError):
+            pass
+        else:
+            for parameter in signature.parameters.values():
+                if parameter.kind not in (
+                    inspect.Parameter.POSITIONAL_ONLY,
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                ):
+                    continue
+                annotation = type_hints.get(parameter.name, parameter.annotation)
+                if annotation is not inspect.Signature.empty:
+                    input_properties = _get_named_field_properties_from_schema(annotation)
+                break
+
+    # Outputs come from the declared return type first, then from runnable.output_schema when
+    # LangGraph wrapped the callable and kept the schema there instead.
+    output_properties = _get_named_field_properties_from_schema(type_hints.get("return"))
+    if output_properties is None:
+        output_properties = _get_named_field_properties_from_schema(
+            getattr(runnable, "output_schema", None)
+        )
+
+    return input_properties, output_properties
 
 
-def _langgraph_edges_convert_to_agentspec_ctrl_flow(
+def _langgraph_edge_convert_to_agentspec_ctrl_flow(
     edge: Tuple[str, str],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> ControlFlowEdge:
+    """Convert a LangGraph control edge into an Agent Spec control edge."""
     from_, to = edge
-    name = f"{from_}_to_{to}"
 
     return ControlFlowEdge(
-        name=name,
+        name=f"{from_}_to_{to}",
         from_node=cast(AgentSpecNode, referenced_objects[from_]),
         to_node=cast(AgentSpecNode, referenced_objects[to]),
     )
 
 
-def _langgraph_edges_convert_to_agentspec_data_flow(
-    graph: StateGraph[Any, Any, Any],
-    edge: Tuple[str, str],
-    referenced_objects: Dict[str, AgentSpecComponent],
-) -> DataFlowEdge:
-    from_, to = edge
-    name = f"{from_}_to_{to}_data_edge"
+def _build_data_flow_edges_for_node_pair(
+    source_node: AgentSpecNode,
+    destination_node: AgentSpecNode,
+    edge_name_prefix: str,
+) -> List[DataFlowEdge]:
+    """Build all Agent Spec data edges for one converted source/destination node pair."""
+    # Prefer explicit field-to-field data edges when both nodes expose named ports.
+    destination_input_titles = {property_.title for property_ in destination_node.inputs or []}
+    shared_titles = [
+        property_.title
+        for property_ in source_node.outputs or []
+        if property_.title in destination_input_titles
+    ]
+    if shared_titles:
+        return [
+            DataFlowEdge(
+                name=f"{edge_name_prefix}_{title}_data_edge",
+                source_node=source_node,
+                destination_node=destination_node,
+                source_output=title,
+                destination_input=title,
+            )
+            for title in shared_titles
+        ]
 
-    if from_ == START:
-        internal_state_property = _get_property_from_schema(graph.input_schema)
-    else:
-        internal_state_property = _get_property_from_schema(graph.state_schema)
+    source_outputs = source_node.outputs or []
+    destination_inputs = destination_node.inputs or []
 
-    destination_input_property = _resolve_output_properties(graph, [to])
+    # Fall back to one opaque-port edge when both nodes only expose a single opaque port.
+    if (
+        len(source_outputs) == 1
+        and len(destination_inputs) == 1
+        and _is_opaque_property(source_outputs[0])
+        and _is_opaque_property(destination_inputs[0])
+    ):
+        return [
+            DataFlowEdge(
+                name=f"{edge_name_prefix}_data_edge",
+                source_node=source_node,
+                destination_node=destination_node,
+                source_output=source_outputs[0].title,
+                destination_input=destination_inputs[0].title,
+            )
+        ]
 
-    source_node = cast(AgentSpecNode, referenced_objects[from_])
-    destination_node = cast(AgentSpecNode, referenced_objects[to])
-
-    data_flow_edge = DataFlowEdge(
-        name=name,
-        source_node=source_node,
-        destination_node=destination_node,
-        source_output=internal_state_property.title,
-        destination_input=destination_input_property.title,
+    raise _FieldWiringFallbackRequired(
+        f"Unable to represent data flow between `{source_node.name}` and "
+        f"`{destination_node.name}` without mixing opaque-port wiring and named field wiring."
     )
-    return data_flow_edge

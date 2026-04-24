@@ -131,7 +131,9 @@ class LangGraphToAgentSpecConverter:
             )
         else:
             agentspec_component = _langgraph_graph_convert_to_agentspec(
-                self, langgraph_component, referenced_objects
+                self,
+                langgraph_component,
+                referenced_objects,
             )
         if agentspec_component is None:
             raise NotImplementedError(f"Conversion for {langgraph_component} not implemented yet")
