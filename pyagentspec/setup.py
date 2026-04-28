@@ -136,7 +136,7 @@ setup(
             "anyio>=4.10.0,<4.12.0",
             # As of 2026-03-24, public PyPI quarantined LiteLLM after a package compromise incident;
             # keep evaluation installs on the 1.81.x line until a newer series is vetted.
-            "litellm>=1.80.15,<1.82.0",
+            "litellm>=1.80.15,<1.84.0",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",
