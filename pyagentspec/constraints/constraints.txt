@@ -16,7 +16,7 @@ crewai==1.6.1
 # LangGraph adapter
 langgraph==1.0.5
 langchain==1.2.0
-langchain-openai==1.1.7
+langchain-openai==1.1.14
 langchain-ollama==1.0.1
 langchain-oci==0.2.3
 langchain-mcp-adapters==0.2.1
