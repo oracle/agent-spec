@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import datetime
+import string
 from types import FunctionType, UnionType
 from typing import (
     TYPE_CHECKING,
@@ -44,6 +45,7 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.agenticcomponent import AgenticComponent as AgentSpecAgenticComponent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms import LlmGenerationConfig as AgentSpecLlmGenerationConfig
 from pyagentspec.llms import OllamaConfig as AgentSpecOllamaConfig
 from pyagentspec.llms import OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig
 from pyagentspec.llms import OpenAiConfig as AgentSpecOpenAiConfig
@@ -73,6 +75,7 @@ from pyagentspec.mcp.clienttransport import (
 )
 from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
 from pyagentspec.swarm import Swarm as AgentSpecSwarm
+from pyagentspec.templating import get_placeholders_from_string
 from pyagentspec.tools import ServerTool
 from pyagentspec.tools import Tool as AgentSpecTool
 
@@ -131,7 +134,9 @@ class LangGraphToAgentSpecConverter:
             )
         else:
             agentspec_component = _langgraph_graph_convert_to_agentspec(
-                self, langgraph_component, referenced_objects
+                self,
+                langgraph_component,
+                referenced_objects,
             )
         if agentspec_component is None:
             raise NotImplementedError(f"Conversion for {langgraph_component} not implemented yet")
@@ -225,6 +230,8 @@ class LangGraphToAgentSpecConverter:
         except ImportError:
             _ChatOCIGenAI = None
 
+        generation_parameters = self._extract_generation_parameters_from_model(model)
+
         if _ChatOCIGenAI is not None and isinstance(model, _ChatOCIGenAI):
             auth_type = model.auth_type
             service_endpoint = model.service_endpoint
@@ -260,12 +267,14 @@ class LangGraphToAgentSpecConverter:
                 client_config=client_cfg,
                 provider=AgentSpecModelProvider(model.provider.upper()) if model.provider else None,
                 api_type=AgentSpecOciAPIType.OCI,
+                default_generation_parameters=generation_parameters,
             )
         if isinstance(model, langchain_ollama.ChatOllama):
             return AgentSpecOllamaConfig(
                 name=model.model,
                 url=model.base_url or "",
                 model_id=model.model,
+                default_generation_parameters=generation_parameters,
             )
         if isinstance(model, langchain_openai.ChatOpenAI):
             api_type = (
@@ -275,7 +284,10 @@ class LangGraphToAgentSpecConverter:
             )
             if (model.openai_api_base or "").startswith("https://api.openai.com"):
                 return AgentSpecOpenAiConfig(
-                    name=model.model_name, model_id=model.model_name, api_type=api_type
+                    name=model.model_name,
+                    model_id=model.model_name,
+                    api_type=api_type,
+                    default_generation_parameters=generation_parameters,
                 )
             else:
                 return AgentSpecOpenAiCompatibleConfig(
@@ -283,8 +295,62 @@ class LangGraphToAgentSpecConverter:
                     url=model.openai_api_base or "",
                     model_id=model.model_name,
                     api_type=api_type,
+                    default_generation_parameters=generation_parameters,
                 )
         raise ValueError(f"The LLM instance provided is of an unsupported type `{type(model)}`.")
+
+    def _extract_generation_parameters_from_model(
+        self,
+        model: BaseChatModel,
+    ) -> Optional[AgentSpecLlmGenerationConfig]:
+        model_kwargs = cast(Dict[str, Any], getattr(model, "model_kwargs", {}) or {})
+        max_tokens = getattr(model, "max_tokens", None)
+        if max_tokens is None:
+            max_tokens = getattr(model, "num_predict", None)
+        if max_tokens is None:
+            max_tokens = model_kwargs.get("max_tokens", model_kwargs.get("max_completion_tokens"))
+
+        generation_parameters = AgentSpecLlmGenerationConfig(
+            temperature=getattr(model, "temperature", model_kwargs.get("temperature")),
+            max_tokens=max_tokens,
+            top_p=getattr(model, "top_p", model_kwargs.get("top_p")),
+        )
+        if (
+            generation_parameters.temperature is None
+            and generation_parameters.max_tokens is None
+            and generation_parameters.top_p is None
+        ):
+            return None
+        return generation_parameters
+
+    def _normalize_prompt_template_string(self, template: str) -> Tuple[str, List[str]]:
+        # Do not rewrite the prompt here. Promotion to LlmNode/AgentNode is only allowed when the
+        # original prompt already uses Agent Spec-compatible `{{variable}}` placeholders. Single-
+        # curly `{...}` segments stay as literal prompt text in this narrow export contract.
+        return template, get_placeholders_from_string(template)
+
+    def _contains_python_format_fields(self, template: str) -> bool:
+        """Return whether the prompt contains Python `{field}` format placeholders."""
+        # `string.Formatter` already understands escaped braces, so `{{variable}}` stays literal
+        # while mixed templates like `{{variable}} ... {other}` still report the single-curly
+        # Python format field. The exporter treats any real Python format field conservatively and
+        # keeps the wrapper as a ToolNode rather than changing prompt rendering semantics.
+        formatter = string.Formatter()
+        try:
+            return any(field_name is not None for _, field_name, _, _ in formatter.parse(template))
+        except ValueError:
+            # Be conservative around malformed Python format strings and avoid exporting them as
+            # Agent Spec LlmNodes/AgentNodes.
+            return True
+
+    def _extract_prompt_from_react_agent(
+        self,
+        langgraph_component: LangGraphComponent,
+    ) -> str:
+        """Extract the system prompt string from a LangGraph react agent component."""
+        if isinstance(langgraph_component, CompiledStateGraph):
+            langgraph_component = langgraph_component.builder
+        return self._extract_prompt_from_model_node(langgraph_component.nodes["model"])
 
     def _langgraph_agent_convert_to_agentspec(
         self,
@@ -307,7 +373,7 @@ class LangGraphToAgentSpecConverter:
         return AgentSpecAgent(
             name=agent_name,
             llm_config=cast(AgentSpecLlmConfig, self.convert(basechatmodel, referenced_objects)),
-            system_prompt=self._extract_prompt_from_model_node(model_node),
+            system_prompt=self._extract_prompt_from_react_agent(langgraph_component),
             tools=tools,
         )
 
