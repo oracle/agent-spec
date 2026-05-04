@@ -27,16 +27,14 @@ def read(file_name):
 
 LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
-    "langgraph>=1.0.5",
-    "langchain>=1.2.0",
-    "langchain-openai>=1.1.7",
+    "langgraph>=1.1.10,<1.2.0",
+    "langchain-core>=1.3.2,<1.4.0",
+    "langchain>=1.2.17,<1.3.0",
+    "langchain-openai>=1.1.14,<1.2.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
-    # langgraph-prebuilt 1.0.9 imports runtime symbols that are not present in
-    # the langgraph 1.0.x series we currently support.
-    "langgraph-prebuilt<1.0.9",
     "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
 ]
 
@@ -73,8 +71,10 @@ setup(
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
         "httpx>0.28.0",
-        "urllib3>=2.5.0",  # needed to avoid a CVE present on earlier versions
+        "typing-extensions>=4.15.0",
         # 4rth party dependencies
+        "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+        "urllib3>=2.6.3",  # needed to avoid a CVE present in earlier versions
     ],
     test_suite="tests",
     entry_points={
@@ -100,7 +100,7 @@ setup(
             "crewai[litellm]>=1.6.1; python_version < '3.14'",
             # 4rth party dependencies
             # litellm is included to fix CVEs
-            "litellm>=1.80.15,<1.82.7; python_version < '3.14'",
+            "litellm>=1.83.14,<1.84.0; python_version < '3.14'",
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
@@ -134,9 +134,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
-            # As of 2026-03-24, public PyPI quarantined LiteLLM after a package compromise incident;
-            # keep evaluation installs on the 1.81.x line until a newer series is vetted.
-            "litellm>=1.80.15,<1.82.0",
+            "litellm>=1.83.14,<1.84.0; python_version < '3.14'",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",
