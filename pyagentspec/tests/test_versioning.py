@@ -59,7 +59,7 @@ def test_explicit_agentspec_version_export(simplest_flow: Flow) -> None:
 
 
 def test_only_top_level_is_versioned_component(simplest_flow: Flow) -> None:
-    schema = simplest_flow.model_json_schema()
+    schema = simplest_flow.model_json_schema(only_core_components=True)
     assert schema["anyOf"] == [
         {"$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"},
         {"$ref": "#/$defs/VersionedBaseFlow"},
@@ -362,7 +362,7 @@ def test_deserialize_raises_error_on_invalid_agentspec_version() -> None:
 
 
 def test_agentspec_version_json_schema_contains_correct_enum_values(simplest_flow: Flow) -> None:
-    schema = simplest_flow.model_json_schema()
+    schema = simplest_flow.model_json_schema(only_core_components=True)
     agentspec_version_values = sorted(
         [e.value for e in AgentSpecVersionEnum if e.value not in _LEGACY_AGENTSPEC_VERSIONS]
     )

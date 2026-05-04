@@ -530,15 +530,27 @@ In order to make them usable, we need to let users specify all the
 details needed to configure the LLM, like the connection details, the
 generation parameters, etc.
 
-We define a new Component called LlmConfig that contains all the details:
+We define a Component called LlmConfig that contains all the details:
 
 .. code-block:: python
 
    class LlmConfig(Component):
+     model_id: str
+     provider: Optional[str]
+     api_provider: Optional[str]
+     api_type: Optional[str]
+     url: Optional[str]
+     api_key: SensitiveField[Optional[str]]
      default_generation_parameters: Optional[Dict[str, Any]]
      retry_policy: Optional[RetryPolicy]
 
-We require only to specify the default generation parameters that should be used by default when prompting the LLM.
+The ``model_id`` field is required and identifies the model to use, as expected by the selected API provider.
+The ``provider`` field is optional and identifies the model provider (e.g. ``"openai"``, ``"meta"``, ``"anthropic"``, ``"cohere"``).
+The ``api_provider`` field is optional and identifies the API provider serving the model (e.g. ``"openai"``, ``"oci"``, ``"vllm"``, ``"ollama"``, ``"aws_bedrock"``, ``"vertex_ai"``).
+The ``api_type`` field is optional and identifies the API format to use (e.g. ``"chat_completions"``, ``"responses"``).
+The ``url`` field is optional and specifies the URL of the API endpoint (e.g. ``"https://api.openai.com/v1"``). If not specified, the default API URL of the API provider (if any) is used.
+The ``api_key`` field is optional and specifies an API key for the remote LLM. When the configuration is exported, the value is replaced by a reference.
+The ``default_generation_parameters`` field specifies the default generation parameters that should be used when prompting the LLM.
 These parameters are specified as a dictionary of parameter names and respective values.
 The names are strings, while values can be of any type compatible with the JSON schema standard.
 Additionally, an optional Retry policy can be specified to configure the how remote LLM calls are retried
@@ -600,7 +612,10 @@ When all retries fail, an error is raised and the execution is interrupted.
     or explicitly before importing the configuration into the runtime.
 
 Null value is equivalent to an empty dictionary, i.e., no default generation parameter is specified.
-Specific extensions of LlmConfig for the most common models are provided as well.
+
+``LlmConfig`` can be used directly for any LLM provider by setting the appropriate ``provider``, ``api_provider``,
+and ``api_type`` values. Specific extensions of ``LlmConfig`` for the most common providers are also provided
+for convenience, offering additional provider-specific configuration options.
 
 Structured Generation
 ^^^^^^^^^^^^^^^^^^^^^
@@ -2919,6 +2934,8 @@ See all the fields below that are considered sensitive fields:
 | OpenAiCompatibleConfig           | ca_file            |
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| LlmConfig                        | api_key            |
 +----------------------------------+--------------------+
 | GeminiAIStudioAuthConfig         | api_key            |
 +----------------------------------+--------------------+

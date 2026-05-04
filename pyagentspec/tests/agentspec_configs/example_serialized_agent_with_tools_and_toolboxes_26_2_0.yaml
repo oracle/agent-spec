@@ -14,6 +14,7 @@ outputs: []
 transforms: []
 llm_config:
   component_type: VllmConfig
+  provider: null
   api_key: null
   ca_file: null
   cert_file: null
@@ -22,9 +23,9 @@ llm_config:
   name: agi1
   description: null
   metadata: {}
+  model_id: agi_model1
   default_generation_parameters: null
   url: http://some.where
-  model_id: agi_model1
   retry_policy: null
   api_type: chat_completions
 system_prompt: No matter what the user asks, don't reply but make a joke instead

@@ -2,9 +2,11 @@
 How to Use LLMs from Different LLM Providers
 ============================================
 
-Agent Spec supports several LLM providers, each one having its own LlmConfig component.
-The available LLMs are:
+Agent Spec supports several LLM providers. ``LlmConfig`` can be used directly with the ``api_provider``
+field to describe any provider, or you can use a dedicated subclass for provider-specific configuration.
+The available LLM configurations are:
 
+- :ref:`LlmConfig <llmconfig>` (generic, provider-agnostic)
 - :ref:`OpenAiConfig <openaiconfig>`
 - :ref:`GeminiConfig <geminiconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
@@ -32,6 +34,51 @@ For example, you can attach a retry policy directly to a ``VllmConfig``:
     :end-before: # .. end-llm_retry_policy
 
 API Reference: :ref:`LlmConfig <llmconfig>`, :ref:`RetryPolicy <retrypolicy>`
+
+
+LlmConfig (Generic)
+====================
+
+``LlmConfig`` can be used directly to describe any LLM without requiring a provider-specific subclass.
+This is useful when you want to describe an LLM from a provider that does not have a dedicated configuration class,
+or when you want a simple, portable configuration.
+
+**Parameters**
+
+.. option:: model_id: str
+
+  Identifier of the model to use, as expected by the selected API provider.
+
+.. option:: provider: str, null
+
+  The model provider, i.e. who made the model (e.g. ``"openai"``, ``"meta"``, ``"anthropic"``, ``"cohere"``).
+
+.. option:: api_provider: str, null
+
+  The API provider, i.e. who serves the API (e.g. ``"openai"``, ``"oci"``, ``"vllm"``, ``"ollama"``, ``"aws_bedrock"``, ``"vertex_ai"``).
+
+.. option:: api_type: str, null
+
+  The API format to use to interact with the LLM (e.g. ``"chat_completions"``, ``"responses"``).
+
+.. option:: url: str, null
+
+  URL of the API endpoint (e.g. ``"https://api.openai.com/v1"``).
+
+.. option:: api_key: str, null
+
+  An optional API key for the remote LLM. When exported, the value is replaced by a reference.
+
+.. option:: default_generation_parameters: dict, null
+
+  Default parameters for text generation with this model.
+
+**Examples**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. llmconfig-start
+    :end-before: .. llmconfig-end
 
 
 OciGenAiConfig

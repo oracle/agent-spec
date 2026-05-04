@@ -65,6 +65,16 @@ New features
 
   For more information read the guide on :ref:`using LLM providers <howto-llmwithretrypolicy>`.
 
+* **Generic LlmConfig with provider-agnostic fields**
+
+  ``LlmConfig`` is now a concrete class that can be used directly without requiring a dedicated
+  subclass for each LLM provider. New fields ``model_id``, ``provider``, ``api_provider``,
+  ``api_type``, ``url``, and ``api_key`` allow describing any LLM connection generically. Existing subclasses (``OpenAiConfig``,
+  ``OciGenAiConfig``, etc.) continue to work unchanged. All framework adapters support bare ``LlmConfig``
+  instances through string-based dispatch on ``api_provider``.
+
+  We thank @spichen for the contribution!
+
 * **Certificate configuration for OpenAI-compatible LLMs**
 
   ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``

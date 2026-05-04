@@ -25,16 +25,23 @@ Agent Spec defines a Component called ``LlmConfig`` that contains all necessary 
 .. code-block:: python
 
    class LlmConfig(Component):
+     model_id: str
+     provider: Optional[str]
+     api_provider: Optional[str]
+     api_type: Optional[str]
+     url: Optional[str]
+     api_key: SensitiveField[Optional[str]]
      default_generation_parameters: Optional[Dict[str, Any]]
 
-By default, you only need to specify the generation parameters that should be used when prompting the LLM.
+The ``model_id`` field is required and should match the identifier expected by the selected API provider.
+The optional ``provider``, ``api_provider``, and ``api_type`` fields
+allow describing any LLM provider without requiring a dedicated subclass.
 
-Specific extensions of ``LlmConfig`` are provided for common models. For example:
+``LlmConfig`` can be used directly, but specific extensions are also provided for common providers. For example:
 
 .. code-block:: python
 
    class VLlmConfig(LlmConfig):
-     model_id: str
      url: str
 
 For more details, see the :ref:`Agent Spec Language Specification <agentspecspec>`.

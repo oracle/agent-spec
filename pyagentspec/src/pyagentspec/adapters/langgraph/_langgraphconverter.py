@@ -1306,8 +1306,23 @@ class AgentSpecToLangGraphConverter:
                 **self._oci_client_config_to_langgraph(llm_config.client_config),
             )
         else:
+            # Bare LlmConfig — dispatch on api_provider string
+            if llm_config.api_provider == "openai":
+                return _create_chat_openai_model(
+                    model_id=llm_config.model_id,
+                    base_url=(
+                        _ensure_url_has_scheme(llm_config.url)
+                        if llm_config.url is not None
+                        else None
+                    ),
+                    api_key=llm_config.api_key,
+                    use_responses_api=llm_config.api_type == "responses",
+                    callbacks=callbacks,
+                    generation_config=generation_config,
+                )
             raise NotImplementedError(
-                f"Llm model of type {llm_config.__class__.__name__} is not yet supported."
+                f"LlmConfig with api_provider='{llm_config.api_provider}' is not yet supported "
+                f"in langgraph. Consider using a specific LlmConfig subclass instead."
             )
 
     def _client_transport_convert_to_langgraph(
@@ -1522,6 +1537,13 @@ def _create_chat_openai_model(
     return ChatOpenAI(**kwargs)
 
 
+def _ensure_url_has_scheme(url: str) -> str:
+    url = url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = f"http://{url}"
+    return url
+
+
 def _prepare_openai_compatible_url(url: str) -> str:
     """
     Correctly formats a URL for an OpenAI-compatible server.
@@ -1538,9 +1560,7 @@ def _prepare_openai_compatible_url(url: str) -> str:
     """
     from urllib.parse import urlparse, urlunparse
 
-    url = url.strip()
-    if not url.startswith(("http://", "https://")):
-        url = f"http://{url}"
+    url = _ensure_url_has_scheme(url)
     parsed_url = urlparse(url)
     # parsed_url is a namedtuple object, and it has the _replace method
     # this is actually a public facing method, check python documentation of namedtuple
