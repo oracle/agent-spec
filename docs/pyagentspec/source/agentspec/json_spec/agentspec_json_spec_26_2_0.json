@@ -3034,6 +3034,7 @@
           "type": "string"
         },
         "provider": {
+          "const": "google",
           "default": "google",
           "title": "Provider",
           "type": "string"
@@ -5039,6 +5040,7 @@
           "default": null
         },
         "api_provider": {
+          "const": "oci",
           "default": "oci",
           "title": "Api Provider",
           "type": "string"
@@ -5186,6 +5188,7 @@
           "title": "Provider"
         },
         "api_provider": {
+          "const": "ollama",
           "default": "ollama",
           "title": "Api Provider",
           "type": "string"
@@ -5493,11 +5496,13 @@
           "type": "string"
         },
         "provider": {
+          "const": "openai",
           "default": "openai",
           "title": "Provider",
           "type": "string"
         },
         "api_provider": {
+          "const": "openai",
           "default": "openai",
           "title": "Api Provider",
           "type": "string"
@@ -7517,6 +7522,7 @@
           "title": "Provider"
         },
         "api_provider": {
+          "const": "vllm",
           "default": "vllm",
           "title": "Api Provider",
           "type": "string"
