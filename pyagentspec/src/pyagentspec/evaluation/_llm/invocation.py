@@ -32,12 +32,9 @@ else:
 
 
 def _is_litellm_model_response(response: Any) -> bool:
-    response_type = type(response)
-    return (
-        response_type.__name__ == "ModelResponse"
-        and response_type.__module__ == "litellm.types.utils"
-        and callable(getattr(response, "to_dict", None))
-    )
+    from litellm.types.utils import ModelResponse  # type: ignore[import-not-found, unused-ignore]
+
+    return isinstance(response, ModelResponse)
 
 
 def _prepare_openai_compatible_url(url: str) -> str:
