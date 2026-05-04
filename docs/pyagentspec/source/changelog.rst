@@ -73,6 +73,8 @@ New features
   ``OciGenAiConfig``, etc.) continue to work unchanged. All framework adapters support bare ``LlmConfig``
   instances through string-based dispatch on ``api_provider``.
 
+  We thank @spichen for the contribution!
+
 * **Certificate configuration for OpenAI-compatible LLMs**
 
   ``OpenAiCompatibleConfig`` now supports optional ``key_file``, ``cert_file``, and ``ca_file``
