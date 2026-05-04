@@ -1311,7 +1311,9 @@ class AgentSpecToLangGraphConverter:
                 return _create_chat_openai_model(
                     model_id=llm_config.model_id,
                     base_url=(
-                        _ensure_url_has_scheme(llm_config.url) if llm_config.url is not None else None
+                        _ensure_url_has_scheme(llm_config.url)
+                        if llm_config.url is not None
+                        else None
                     ),
                     api_key=llm_config.api_key,
                     use_responses_api=llm_config.api_type == "responses",

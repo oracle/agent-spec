@@ -46,8 +46,8 @@ def test_openai_provider_returns_client() -> None:
 def test_openai_provider_with_base_url_and_api_key() -> None:
     from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-    from pyagentspec.adapters.autogen._types import AutogenModelFamily
     from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
+    from pyagentspec.adapters.autogen._types import AutogenModelFamily
 
     converter = AgentSpecToAutogenConverter()
     result = converter._llm_convert_to_autogen(
