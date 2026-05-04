@@ -74,7 +74,7 @@ Extra dependencies
 * The ``wayflow``, ``wayflow_oci``, ``wayflow_a2a``, ``wayflow_datastore`` extra dependency gives access to the WayFlow runtime adapter.
 * The ``agent-framework`` extra dependency gives access to the Microsoft Agent Framework runtime adapter.
 * The ``crewai`` extra dependency gives access to the CrewAI runtime adapter. Note that this adapter might be incompatible with other adapters if installed in the same virtual environment due to conflicting dependencies.
-* The ``evaluation`` extra dependency gives access to the Agent Spec Eval functionalities.
+* The ``evaluation`` extra dependency gives access to the Agent Spec Eval functionalities. Note that this extra might be incompatible with the ``langgraph-full`` extra if installed in the same virtual environment due to conflicting ``openai`` dependency requirements. LLM-based evaluation is only available on Python versions older than 3.14.
 
 To install extra dependencies, run the following command specifying the list of dependencies you want to install:
 
