@@ -21,11 +21,12 @@ from pyagentspec.llms.ociclientconfig import (
 )
 
 if TYPE_CHECKING:
-    # Important: do not move this import out of the TYPE_CHECKING block so long as oci is an optional dependency.
+    # Important: do not move these imports out of the TYPE_CHECKING block so long as
+    # oci and litellm are optional dependencies.
     # Otherwise, importing the modules when they are not installed would lead to an import error.
     import oci  # type: ignore
-
-    acompletion: Any
+    from litellm import acompletion  # type: ignore[import-not-found, unused-ignore]
+    from litellm.types.utils import ModelResponse  # type: ignore[import-not-found, unused-ignore]
 else:
     oci = LazyLoader("oci")
     acompletion = LazyLoader("litellm", "acompletion")
