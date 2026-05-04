@@ -98,6 +98,7 @@ async def test_semantic_binary_match_metric_parses_boolean_and_metadata(big_llm_
 
 
 @pytest.mark.anyio
+@pytest.mark.requires_litellm
 async def test_semantic_binary_match_metric_runs_with_real_llm(big_llm_config):
     metric = SemanticBinaryMatchMetric(llm_config=big_llm_config)
     value, details = await metric(reference="Geneva", response="Genf")
