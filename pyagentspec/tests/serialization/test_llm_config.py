@@ -5,15 +5,20 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import pytest
+from pydantic import ValidationError
 
 from pyagentspec.llms import (
+    GeminiConfig,
     LlmConfig,
+    OciGenAiConfig,
     OllamaConfig,
     OpenAiCompatibleConfig,
     OpenAiConfig,
     VllmConfig,
 )
+from pyagentspec.llms.geminiauthconfig import GeminiAIStudioAuthConfig
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
+from pyagentspec.llms.ociclientconfig import OciClientConfigWithApiKey
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -231,3 +236,56 @@ def test_version_inference_bare_llmconfig_always_requires_v26_2_0() -> None:
         api_type="chat_completions",
     )
     assert config_with_fields.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+
+
+def test_openai_config_rejects_invalid_generic_overrides() -> None:
+    with pytest.raises(ValidationError, match="provider"):
+        OpenAiConfig(name="openai", model_id="gpt-4o", provider="meta")
+    with pytest.raises(ValidationError, match="api_provider"):
+        OpenAiConfig(name="openai", model_id="gpt-4o", api_provider="foo")
+
+
+@pytest.mark.parametrize(
+    "llm_config_type, url, expected_api_provider",
+    [
+        (VllmConfig, "http://localhost:8000", "vllm"),
+        (OllamaConfig, "http://localhost:11434", "ollama"),
+    ],
+)
+def test_openai_compatible_subclasses_reject_fixed_api_provider_override(
+    llm_config_type: type[OpenAiCompatibleConfig], url: str, expected_api_provider: str
+) -> None:
+    with pytest.raises(ValidationError, match="api_provider"):
+        llm_config_type(
+            name="llm",
+            model_id="some-model",
+            url=url,
+            api_provider=f"{expected_api_provider}_other",
+        )
+
+
+def test_gemini_config_rejects_fixed_provider_override() -> None:
+    with pytest.raises(ValidationError, match="provider"):
+        GeminiConfig(
+            name="gemini",
+            model_id="gemini-2.5-flash",
+            auth=GeminiAIStudioAuthConfig(name="gemini_auth"),
+            provider="other",
+        )
+
+
+def test_oci_genai_config_rejects_fixed_api_provider_override() -> None:
+    client_config = OciClientConfigWithApiKey(
+        name="oci_client_config",
+        service_endpoint="SERVICE_ENDPOINT",
+        auth_profile="DEFAULT",
+        auth_file_location="~/.oci/config",
+    )
+    with pytest.raises(ValidationError, match="api_provider"):
+        OciGenAiConfig(
+            name="ocigenai",
+            model_id="provider.model_id",
+            compartment_id="ID2",
+            client_config=client_config,
+            api_provider="other",
+        )

@@ -7,7 +7,7 @@
 """Class to configure a connection to an OCI GenAI hosted model."""
 
 from enum import Enum
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import SerializeAsAny
 
@@ -50,7 +50,7 @@ class OciGenAiConfig(LlmConfig):
     Requires to specify the model id and the client configuration to the OCI GenAI service.
     """
 
-    api_provider: str = "oci"
+    api_provider: Literal["oci"] = "oci"
     """The API provider used to serve the model."""
 
     compartment_id: str

@@ -6,6 +6,8 @@
 
 """Defines the class for configuring how to connect to a LLM hosted by Ollama."""
 
+from typing import Literal
+
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -17,7 +19,7 @@ class OllamaConfig(OpenAiCompatibleConfig):
     Requires to specify the url and port at which the model is running.
     """
 
-    api_provider: str = "ollama"
+    api_provider: Literal["ollama"] = "ollama"
     """The API provider used to serve the model."""
 
     def _versioned_model_fields_to_exclude(

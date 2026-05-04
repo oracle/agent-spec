@@ -4,9 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-"""Defines the class for configuring how to connect to a LLM hosted by a vLLM instance."""
+"""Defines the class for configuring how to connect to an OpenAI LLM."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 from pyagentspec.component import SerializeAsEnum
 from pyagentspec.llms.llmconfig import LlmConfig
@@ -22,10 +22,10 @@ class OpenAiConfig(LlmConfig):
     Requires to specify the identity of the model to use.
     """
 
-    provider: str = "openai"
+    provider: Literal["openai"] = "openai"
     """The provider of the model."""
 
-    api_provider: str = "openai"
+    api_provider: Literal["openai"] = "openai"
     """The API provider used to serve the model."""
 
     api_type: SerializeAsEnum[OpenAIAPIType] = OpenAIAPIType.CHAT_COMPLETIONS

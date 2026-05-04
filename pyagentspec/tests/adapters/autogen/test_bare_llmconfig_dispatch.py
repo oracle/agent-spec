@@ -18,9 +18,9 @@ def _get_bare_llmconfig_openai() -> LlmConfig:
 def _get_bare_llmconfig_openai_with_base_url() -> LlmConfig:
     return LlmConfig(
         name="test",
-        model_id="gpt-4o",
+        model_id="custom-model",
         api_provider="openai",
-        url="https://my-proxy.example.com/v1",
+        url="my-proxy.example.com",
         api_key="sk-test-key",
     )
 
@@ -46,6 +46,7 @@ def test_openai_provider_returns_client() -> None:
 def test_openai_provider_with_base_url_and_api_key() -> None:
     from autogen_ext.models.openai import OpenAIChatCompletionClient
 
+    from pyagentspec.adapters.autogen._types import AutogenModelFamily
     from pyagentspec.adapters.autogen._autogenconverter import AgentSpecToAutogenConverter
 
     converter = AgentSpecToAutogenConverter()
@@ -55,6 +56,8 @@ def test_openai_provider_with_base_url_and_api_key() -> None:
         converted_components={},
     )
     assert isinstance(result, OpenAIChatCompletionClient)
+    assert result.model_info["family"] == AutogenModelFamily.UNKNOWN
+    assert result.model_info["function_calling"] is True
 
 
 def test_unsupported_provider_raises() -> None:

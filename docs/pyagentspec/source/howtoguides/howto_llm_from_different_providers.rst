@@ -47,7 +47,7 @@ or when you want a simple, portable configuration.
 
 .. option:: model_id: str
 
-  Name of the model to use.
+  Identifier of the model to use, as expected by the selected API provider.
 
 .. option:: provider: str, null
 

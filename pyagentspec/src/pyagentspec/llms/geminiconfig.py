@@ -6,6 +6,8 @@
 
 """Defines the class for configuring how to connect to Gemini LLMs."""
 
+from typing import Literal
+
 from pydantic import Field, SerializeAsAny
 from pydantic.json_schema import SkipJsonSchema
 
@@ -25,7 +27,7 @@ class GeminiConfig(LlmConfig):
 
     auth: SerializeAsAny[GeminiAuthConfig]
     """Authentication configuration used to connect to the Gemini service."""
-    provider: str = "google"
+    provider: Literal["google"] = "google"
     """The provider of the model."""
 
     def _versioned_model_fields_to_exclude(

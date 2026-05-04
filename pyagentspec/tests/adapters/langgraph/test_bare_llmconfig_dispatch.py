@@ -26,6 +26,10 @@ def _get_bare_llmconfig_openai_with_base_url() -> LlmConfig:
     )
 
 
+def _get_bare_llmconfig_openai_with_raw_base_url() -> LlmConfig:
+    return LlmConfig(name="test", model_id="gpt-4o", api_provider="openai", url="localhost:8000")
+
+
 def _get_bare_llmconfig_openai_responses() -> LlmConfig:
     return LlmConfig(name="test", model_id="gpt-4o", api_provider="openai", api_type="responses")
 
@@ -61,6 +65,16 @@ def test_openai_provider_with_base_url_and_api_key() -> None:
     )
     assert result.openai_api_base == "https://my-proxy.example.com/v1"
     assert result.openai_api_key.get_secret_value() == "sk-test-key"
+
+
+def test_openai_provider_with_raw_base_url_adds_scheme() -> None:
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+
+    converter = AgentSpecToLangGraphConverter()
+    result = converter._llm_convert_to_langgraph(
+        _get_bare_llmconfig_openai_with_raw_base_url(), RunnableConfig()
+    )
+    assert result.openai_api_base == "http://localhost:8000"
 
 
 def test_unsupported_provider_raises() -> None:

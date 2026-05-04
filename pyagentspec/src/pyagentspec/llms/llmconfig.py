@@ -25,7 +25,7 @@ class LlmConfig(Component):
     """
 
     model_id: str
-    """ID of the model to use"""
+    """Identifier of the model to use, as expected by the selected API provider."""
 
     provider: Optional[str] = None
     """The provider of the model (e.g. 'meta', 'openai', 'cohere')."""
@@ -34,7 +34,7 @@ class LlmConfig(Component):
     """The API provider used to serve the model (e.g. 'openai', 'oci', 'vllm')."""
 
     api_type: Optional[str] = None
-    """The API protocol to use (e.g. 'chat_completions', 'responses')."""
+    """The API format to use (e.g. 'chat_completions', 'responses')."""
 
     url: Optional[str] = None
     """URL of the API endpoint (e.g. 'https://api.openai.com/v1')."""

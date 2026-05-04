@@ -6,6 +6,8 @@
 
 """Defines the class for configuring how to connect to a LLM hosted by a vLLM instance."""
 
+from typing import Literal
+
 from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -17,7 +19,7 @@ class VllmConfig(OpenAiCompatibleConfig):
     Requires to specify the url at which the instance is running.
     """
 
-    api_provider: str = "vllm"
+    api_provider: Literal["vllm"] = "vllm"
     """The API provider used to serve the model."""
 
     def _versioned_model_fields_to_exclude(
