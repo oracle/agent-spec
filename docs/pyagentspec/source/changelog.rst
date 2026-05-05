@@ -7,6 +7,11 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **More reliable tool payload tracing in LangGraph adapter**
+
+  The LangGraph adapter now normalizes tool callback inputs before emitting tracing events,
+  preserving structured tool execution payloads more reliably in traced agents and flows.
+
 * **New xAI model provider for OciGenAiConfig**
 
   Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
