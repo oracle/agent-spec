@@ -336,3 +336,79 @@ def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_s
     assert executed_tool_call_ids
 
     # TODO: Add robust event id matching asserts
+
+
+def test_langgraph_flow_tracing_collects_tool_inputs() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
+    from pyagentspec.flows.flow import Flow
+    from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
+    from pyagentspec.property import ObjectProperty, StringProperty
+    from pyagentspec.tools import ServerTool
+
+    city_property = StringProperty(title="city")
+    forecast_property = ObjectProperty(
+        title="forecast",
+        properties={
+            "city": StringProperty(title="city"),
+            "condition": StringProperty(title="condition"),
+        },
+    )
+    weather_tool = ServerTool(
+        name="get_weather",
+        description="Retrieves the weather in a city",
+        inputs=[city_property],
+        outputs=[forecast_property],
+    )
+
+    start_node = StartNode(name="start", inputs=[city_property])
+    tool_node = ToolNode(name="tool", tool=weather_tool)
+    end_node = EndNode(name="end", outputs=[forecast_property])
+
+    flow = Flow(
+        name="weather_flow",
+        start_node=start_node,
+        nodes=[start_node, tool_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_tool", from_node=start_node, to_node=tool_node),
+            ControlFlowEdge(name="tool_to_end", from_node=tool_node, to_node=end_node),
+        ],
+        data_flow_connections=[
+            DataFlowEdge(
+                name="city_edge",
+                source_node=start_node,
+                source_output="city",
+                destination_node=tool_node,
+                destination_input="city",
+            ),
+            DataFlowEdge(
+                name="forecast_edge",
+                source_node=tool_node,
+                source_output="forecast",
+                destination_node=end_node,
+                destination_input="forecast",
+            ),
+        ],
+    )
+
+    def get_weather(city: str) -> dict[str, str]:
+        return {"city": city, "condition": "sunny"}
+
+    app = AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_component(flow)
+
+    proc = DummySpanProcessor()
+    with Trace(name="langgraph_tool_input_trace_test", span_processors=[proc]):
+        response = app.invoke({"inputs": {"city": "Agadir"}})
+
+    tool_request_events = [
+        event for (event, _span) in proc.events if isinstance(event, ToolExecutionRequest)
+    ]
+    tool_response_events = [
+        event for (event, _span) in proc.events if isinstance(event, ToolExecutionResponse)
+    ]
+
+    assert response["outputs"] == {"forecast": {"city": "Agadir", "condition": "sunny"}}
+    assert len(tool_request_events) == 1
+    assert tool_request_events[0].inputs == {"city": "Agadir"}
+    assert len(tool_response_events) == 1
+    assert tool_response_events[0].outputs == {"forecast": {"city": "Agadir", "condition": "sunny"}}
