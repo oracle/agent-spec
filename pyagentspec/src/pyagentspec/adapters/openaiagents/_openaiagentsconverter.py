@@ -84,8 +84,8 @@ class AgentSpecToOpenAIConverter:
 
         def _make_async_openai_client(base_url: str, api_key: Optional[str] = None) -> AsyncOpenAI:
             kwargs: Dict[str, Any] = {"base_url": base_url}
-            # Do not pass an explicit empty API key, so env-based defaults can still work.
-            if api_key is not None:
+            # Do not pass a blank API key, so env-based defaults can still work.
+            if api_key not in (None, ""):
                 kwargs["api_key"] = api_key
             return AsyncOpenAI(**kwargs)
 
