@@ -80,9 +80,9 @@ class AgentSpecToOpenAIConverter:
         return obj
 
     def _llm_convert_to_openai(self, llm: AgentSpecLlmConfig) -> Any:
-        def _make_async_openai_client(base_url: str, api_key: Optional[str] = None):
-            from openai import AsyncOpenAI
+        from openai import AsyncOpenAI
 
+        def _make_async_openai_client(base_url: str, api_key: Optional[str] = None) -> AsyncOpenAI:
             kwargs: Dict[str, Any] = {"base_url": base_url}
             # Do not pass an explicit empty API key, so env-based defaults can still work.
             if api_key is not None:
