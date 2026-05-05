@@ -571,6 +571,7 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
             tool=self.tool,
+            # LangChain should provide structured `inputs` in the `kwargs`, the others are fallback options
             inputs=_normalize_tool_inputs(self.tool, input_str, kwargs.get("inputs")),
         )
         # starting a tool span for this tool
@@ -667,6 +668,7 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
             tool=self.tool,
+            # LangChain should provide structured `inputs` in the `kwargs`, the others are fallback options
             inputs=_normalize_tool_inputs(self.tool, input_str, kwargs.get("inputs")),
         )
         # starting a tool span for this tool
