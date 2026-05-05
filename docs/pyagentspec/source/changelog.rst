@@ -12,6 +12,12 @@ Improvements
   The LangGraph adapter now normalizes tool callback inputs before emitting tracing events,
   preserving structured tool execution payloads more reliably in traced agents and flows.
 
+* **Improved OpenAI Agents code generation**
+
+  The OpenAI Agents adapter now emits specification-derived string values as
+  Python literals in generated workflow code and validates supported model
+  settings before emission.
+
 * **New xAI model provider for OciGenAiConfig**
 
   Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
@@ -176,6 +182,14 @@ New features
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
+
+* **Numeric model settings in OpenAI Agents code generation**
+
+  ``temperature`` and ``top_p`` must now be numeric values, and ``max_tokens``
+  must now be an integer, before the OpenAI Agents adapter emits them into
+  generated workflow code.
+  Configurations that supplied these values as strings should update them to
+  numeric YAML/JSON values.
 
 * **Empty titles in properties**
 

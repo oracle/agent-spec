@@ -11,6 +11,17 @@ While Agent Spec itself is purely declarative, its specifications influence runt
 Risks can arise from configurations that include sensitive information, lack proper isolation, or rely on untrusted components.
 This document helps reduce misconfiguration risks and supports the secure execution of the resulting agent.
 
+Considerations regarding generated code and templates
+-----------------------------------------------------
+
+Some adapters can translate Agent Spec representations into runtime-specific source code.
+Generated source should only be produced from specifications that passed validation, reviewed before deployment when the specification is untrusted, and executed with the same isolation expected for application code.
+The OpenAI Agents Python adapter serializes specification-derived values as Python literals, and numeric model settings such as ``temperature``, ``top_p``, and ``max_tokens`` must be numeric before they are emitted into generated code.
+
+Template placeholders are matched by name and rendered at runtime from input values.
+Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
+Placeholder names are interpreted literally during rendering; avoid relying on regular expression behavior or other pattern syntax in property titles.
+
 Considerations regarding tools
 ------------------------------
 
