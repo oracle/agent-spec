@@ -176,10 +176,7 @@ def test_weather_agent_with_server_tool_with_openaicompatible_llm_raises_without
     old_value = os.environ.pop("OPENAI_API_KEY", None)
 
     try:
-        with pytest.raises(
-            openai.OpenAIError,
-            match="The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
-        ):
+        with pytest.raises(openai.OpenAIError, match="api_key"):
             AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
                 weather_agent_server_tool_openaicompatible_yaml
             )

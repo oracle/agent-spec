@@ -196,13 +196,11 @@ class AgentSpecToAutogenConverter:
                 base_url = urljoin(base_url + "/", "v1")
             return base_url
 
-        def _prepare_llm_args(
-            agentspec_llm_: AgentSpecOpenAiCompatibleModel,
-        ) -> Dict[str, Any]:
+        def _prepare_llm_args(agentspec_llm_: AgentSpecLlmConfig) -> Dict[str, Any]:
             return dict(
                 model=agentspec_llm_.model_id,
                 base_url=_prepare_base_url(agentspec_llm_.url, append_v1=True),
-                api_key="",
+                api_key=agentspec_llm_.api_key if agentspec_llm_.api_key else None,
                 model_info=_prepare_model_info(agentspec_llm_),
             )
 
@@ -217,15 +215,7 @@ class AgentSpecToAutogenConverter:
         else:
             # Bare LlmConfig — dispatch on api_provider string
             if agentspec_llm.api_provider == "openai":
-                kwargs: Dict[str, Any] = {
-                    "model": agentspec_llm.model_id,
-                    "model_info": _prepare_model_info(agentspec_llm),
-                }
-                if agentspec_llm.url is not None:
-                    kwargs["base_url"] = _prepare_base_url(agentspec_llm.url, append_v1=False)
-                if agentspec_llm.api_key is not None:
-                    kwargs["api_key"] = agentspec_llm.api_key
-                return AutogenOpenAIChatCompletionClient(**kwargs)
+                return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
             raise NotImplementedError(
                 f"LlmConfig with api_provider='{agentspec_llm.api_provider}' is not supported "
                 f"in autogen yet. Consider using a specific LlmConfig subclass instead."
