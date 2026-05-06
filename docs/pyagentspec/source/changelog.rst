@@ -59,6 +59,12 @@ Improvements
   Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
   Install with `pip install pyagentspec[langgraph-full]` to access this feature.
 
+* **Improved template placeholder rendering in adapters**
+
+  Template placeholders in adapter utilities are now rendered by matching placeholders
+  directly in the source template instead of recursively splitting the template text.
+  This keeps unresolved placeholders unchanged and makes the rendering logic easier to follow.
+
 
 New features
 ^^^^^^^^^^^^
