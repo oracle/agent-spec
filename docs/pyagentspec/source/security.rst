@@ -18,9 +18,7 @@ Some adapters can translate Agent Spec representations into runtime-specific sou
 Generated source should only be produced from specifications that passed validation, reviewed before deployment when the specification is untrusted, and executed with the same isolation expected for application code.
 The OpenAI Agents Python adapter serializes specification-derived values as Python literals, and numeric model settings such as ``temperature``, ``top_p``, and ``max_tokens`` must be numeric before they are emitted into generated code.
 
-Template placeholders are matched by name and rendered at runtime from input values.
 Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
-Placeholder names are interpreted literally during rendering; avoid relying on regular expression behavior or other pattern syntax in property titles.
 
 Considerations regarding tools
 ------------------------------

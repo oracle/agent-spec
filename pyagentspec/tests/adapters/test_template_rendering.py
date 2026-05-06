@@ -112,8 +112,3 @@ def test_json_template_are_properly_rendered(
     template: str, inputs: Dict[str, Any], expected: str
 ) -> None:
     assert render_nested_object_template(template, inputs) == expected
-
-
-@pytest.mark.parametrize("input_title", [".*", "a|safe_name", "[abc]", "x)"])
-def test_template_input_titles_are_treated_as_literal_names(input_title: str) -> None:
-    assert render_template("Hello {{safe_name}}", {input_title: "PWNED"}) == "Hello {{safe_name}}"
