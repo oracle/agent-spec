@@ -12,12 +12,7 @@ from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 @pytest.fixture
-def url_allow_list() -> list[str]:
-    return ["https://example.invalid/orders/"]
-
-
-@pytest.fixture
-def api_node_with_url_allow_list(url_allow_list: list[str]) -> ApiNode:
+def api_node_with_url_allow_list() -> ApiNode:
     return ApiNode(
         name="orders_api",
         url="https://example.invalid/orders/{{order_id}}",
@@ -26,7 +21,7 @@ def api_node_with_url_allow_list(url_allow_list: list[str]) -> ApiNode:
         data={"status": "{{status}}"},
         query_params={"expand": "items"},
         headers={"X-Trace-Id": "trace-123"},
-        url_allow_list=url_allow_list,
+        url_allow_list=["https://example.invalid/orders/"],
     )
 
 

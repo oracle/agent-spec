@@ -30,11 +30,6 @@ def vllmconfig_with_responses():
     )
 
 
-@pytest.fixture
-def url_allow_list() -> list[str]:
-    return ["https://example.invalid/orders/"]
-
-
 def make_client_tool():
     return ClientTool(
         name="tool",
@@ -72,13 +67,13 @@ def make_remote_tool():
 
 
 @pytest.fixture
-def remote_tool_with_url_allow_list(url_allow_list: list[str]) -> RemoteTool:
+def remote_tool_with_url_allow_list() -> RemoteTool:
     return RemoteTool(
         name="remote_tool",
         description="remote tool",
         url="https://example.invalid/orders/{{order_id}}",
         http_method="GET",
-        url_allow_list=url_allow_list,
+        url_allow_list=["https://example.invalid/orders/"],
     )
 
 
