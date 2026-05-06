@@ -75,6 +75,11 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **URL allow lists for RemoteTool and ApiNode**
+
+  Added an optional ``url_allow_list`` field to ``RemoteTool`` and ``ApiNode`` to declare
+  the allowed rendered URL targets when those components use templated URLs.
+
 * **Retry policy for components doing remote calls:**
 
   Added ``retry_policy`` support to components doing remote calls to enable
