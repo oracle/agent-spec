@@ -55,6 +55,11 @@ class RemoteTool(Tool):
     """Additional headers for the API call.
        These headers are intended to be used for sensitive information such as
        authentication tokens and will be excluded form exported JSON configs."""
+    url_allow_list: Optional[List[str]] = None
+    """Optional list of allowed URLs or URL patterns for the rendered request URL.
+       When honored by the runtime, scheme and authority are matched exactly and
+       path uses prefix matching. Query parameters, URL params, and fragments are
+       not used for matching."""
 
     retry_policy: Optional[RetryPolicy] = None
     """Optional retry configuration for the HTTP call performed by this tool."""
@@ -78,6 +83,7 @@ class RemoteTool(Tool):
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
         if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("url_allow_list")
             fields_to_exclude.add("retry_policy")
         return fields_to_exclude
 
@@ -87,6 +93,8 @@ class RemoteTool(Tool):
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
         if self.sensitive_headers:
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
+        if self.url_allow_list is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
         if self.retry_policy is not None:
             min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
         return min_version

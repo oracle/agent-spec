@@ -981,6 +981,7 @@ the correct built-in tool.
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
      sensitive_headers: SensitiveField[Dict[str, Any]]
+     url_allow_list: Optional[List[str]]
      retry_policy: Optional[RetryPolicy]
 
    class MCPTool(Tool):
@@ -1022,6 +1023,17 @@ If ``data`` is specified as a string, the runtime must encode and pass it as the
 otherwise the value of ``data`` should be JSON serializable and runtimes are
 expected to dump it when adding it in the body of the HTTP request.
 The data is passed to the request as Form Data if the header ``{"Content-Type": "application/x-www-form-urlencoded"}`` is specified.
+
+The ``url_allow_list`` field is an optional list of developer-controlled URLs or URL patterns that runtimes
+or adapters can use to validate the rendered request URL. The intended matching behavior is exact matching on
+scheme and authority (host and port), together with prefix matching on the path. Query parameters, URL params,
+and fragments are not used for matching.
+
+For higher security, authors should strongly prefer configuring ``url_allow_list`` whenever templating is used in
+``url``, especially if placeholders can affect the destination part of the URL (scheme, host, or port).
+However, Agent Spec does not require runtime adapters to enforce this rule: whether to accept
+or reject ``url`` containing placeholders without an explicit ``url_allow_list`` is left to runtime implementations.
+The recommended pattern is to keep the base URL developer-controlled and template only path, query, or body values.
 
 MCP Tools
 ^^^^^^^^^
@@ -1672,6 +1684,12 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - url_allow_list
+              - Optional list of allowed URLs or URL patterns for the rendered request URL. The intended semantics are
+                the same as for ``RemoteTool.url_allow_list``.
+              - array[string] | null
+              - No
+              - null
             * - retry_policy
               - Optional retry policy configuration applied to this API call.
               - RetryPolicy | null

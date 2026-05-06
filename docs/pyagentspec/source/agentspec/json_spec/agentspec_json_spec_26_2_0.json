@@ -1763,6 +1763,21 @@
           "title": "Sensitive Headers",
           "type": "object"
         },
+        "url_allow_list": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Allow List"
+        },
         "retry_policy": {
           "anyOf": [
             {
@@ -6136,6 +6151,21 @@
           "additionalProperties": true,
           "title": "Sensitive Headers",
           "type": "object"
+        },
+        "url_allow_list": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Allow List"
         },
         "retry_policy": {
           "anyOf": [
