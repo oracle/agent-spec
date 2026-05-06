@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from pyagentspec.adapters.openaiagents.flows._flow_ir import IRFlow, IRNode
 from pyagentspec.adapters.openaiagents.flows.errors import UnsupportedPatternError
@@ -437,13 +437,15 @@ def _py_triple_str(s: str) -> str:
 
 
 def _validate_model_setting(name: str, value: Any) -> int | float:
-    if name == "max_tokens":
-        if isinstance(value, bool) or not isinstance(value, int):
-            raise TypeError(f"Model setting {name!r} must be an integer")
-        return cast(int, value)
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if isinstance(value, bool):
         raise TypeError(f"Model setting {name!r} must be a number")
-    return cast(int | float, value)
+    if name == "max_tokens":
+        if not isinstance(value, int):
+            raise TypeError(f"Model setting {name!r} must be an integer")
+        return value
+    if not isinstance(value, (int, float)):
+        raise TypeError(f"Model setting {name!r} must be a number")
+    return value
 
 
 def _emit_run_workflow(

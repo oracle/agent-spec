@@ -19,26 +19,6 @@ from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
 from pyagentspec.llms import OpenAiConfig
 
 
-def _flow_for_system_prompt(system_prompt: str) -> Flow:
-    agent = Agent(
-        name="A",
-        llm_config=OpenAiConfig(name="m", model_id="gpt-4o-mini"),
-        system_prompt=system_prompt,
-    )
-    start = StartNode(name="start")
-    agent_node = AgentNode(name="agent_node", agent=agent)
-    end = EndNode(name="end")
-    return Flow(
-        name="F",
-        start_node=start,
-        nodes=[start, agent_node, end],
-        control_flow_connections=[
-            ControlFlowEdge(name="start_to_agent", from_node=start, to_node=agent_node),
-            ControlFlowEdge(name="agent_to_end", from_node=agent_node, to_node=end),
-        ],
-    )
-
-
 def _contains_import_call(tree: ast.AST) -> bool:
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
@@ -57,8 +37,25 @@ def test_generated_flow_keeps_system_prompt_inside_string_literal() -> None:
         '  name="dummy",\n'
         '  instructions="""'
     )
+    agent = Agent(
+        name="A",
+        llm_config=OpenAiConfig(name="m", model_id="gpt-4o-mini"),
+        system_prompt=malicious_prompt,
+    )
+    start = StartNode(name="start")
+    agent_node = AgentNode(name="agent_node", agent=agent)
+    end = EndNode(name="end")
+    flow = Flow(
+        name="F",
+        start_node=start,
+        nodes=[start, agent_node, end],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_agent", from_node=start, to_node=agent_node),
+            ControlFlowEdge(name="agent_to_end", from_node=agent_node, to_node=end),
+        ],
+    )
 
-    generated = AgentSpecLoader().load_component(_flow_for_system_prompt(malicious_prompt))
+    generated = AgentSpecLoader().load_component(flow)
     tree = ast.parse(generated)
 
     assert not _contains_import_call(tree)
