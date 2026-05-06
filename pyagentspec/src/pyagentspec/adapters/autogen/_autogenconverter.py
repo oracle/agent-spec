@@ -188,7 +188,7 @@ class AgentSpecToAutogenConverter:
                 structured_output=structured_output,
             )
 
-        def _prepare_base_url(url: str, *, append_v1: bool) -> str:
+        def _prepare_base_url(url: str, append_v1: bool) -> str:
             base_url = url
             if not base_url.startswith(("http://", "https://")):
                 base_url = f"http://{base_url}"
@@ -199,7 +199,7 @@ class AgentSpecToAutogenConverter:
         def _prepare_llm_args(agentspec_llm_: AgentSpecLlmConfig) -> Dict[str, Any]:
             return dict(
                 model=agentspec_llm_.model_id,
-                base_url=_prepare_base_url(agentspec_llm_.url, append_v1=True),
+                base_url=_prepare_base_url(agentspec_llm_.url, append_v1=True) if agentspec_llm_.url else None,
                 api_key=agentspec_llm_.api_key if agentspec_llm_.api_key else None,
                 model_info=_prepare_model_info(agentspec_llm_),
             )
