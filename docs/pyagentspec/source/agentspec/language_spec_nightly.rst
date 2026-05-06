@@ -1029,6 +1029,13 @@ or adapters can use to validate the rendered request URL. The intended matching 
 scheme and authority (host and port), together with prefix matching on the path. Query parameters, URL params,
 and fragments are not used for matching.
 
+These patterns are simple URL prefixes rather than wildcards or regexes. For example:
+
+* ``https://example.com`` allows ``https://example.com/page`` because scheme, host, and port match and the path prefix is ``/``.
+* ``https://example.com/orders/`` allows ``https://example.com/orders/123`` and ``https://example.com/orders/123/items``.
+* ``https://example.com/orders/`` does not allow ``https://example.com/customers/123`` because the path prefix differs.
+* ``http://example.com/orders/`` does not allow ``https://example.com/orders/123`` because the scheme differs.
+
 For higher security, authors should strongly prefer configuring ``url_allow_list`` whenever templating is used in
 ``url``, especially if placeholders can affect the destination part of the URL (scheme, host, or port).
 However, Agent Spec does not require runtime adapters to enforce this rule: whether to accept
@@ -1686,7 +1693,8 @@ A more detailed description of each node follows.
               - {}
             * - url_allow_list
               - Optional list of allowed URLs or URL patterns for the rendered request URL. The intended semantics are
-                the same as for ``RemoteTool.url_allow_list``.
+                the same as for ``RemoteTool.url_allow_list``. For example, ``https://example.com`` allows any path
+                on that origin, while ``https://example.com/orders/`` allows only the ``/orders/`` subtree.
               - array[string] | null
               - No
               - null

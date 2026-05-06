@@ -136,7 +136,15 @@ class ApiNode(Node):
     """Optional list of allowed URLs or URL patterns for the rendered request URL.
        When honored by the runtime, scheme and authority are matched exactly and
        path uses prefix matching. Query parameters, URL params, and fragments are
-       not used for matching."""
+       not used for matching.
+
+       Typical entries are URL prefixes rather than wildcards or regexes.
+       For example, ``https://api.example.com`` allows any path on that origin,
+       while ``https://api.example.com/orders/`` allows
+       ``https://api.example.com/orders/123`` but not
+       ``https://api.example.com/customers/123``. Likewise,
+       ``http://api.example.com/orders/`` does not match
+       ``https://api.example.com/orders/123`` because the scheme differs."""
 
     retry_policy: Optional[RetryPolicy] = None
     """Optional retry configuration for the API call performed by this node."""

@@ -69,6 +69,7 @@ Following security considerations is important when working with remote/mcp tool
 * **URL Allow Lists (``url_allow_list``)**: ``RemoteTool`` and ``ApiNode`` support an optional ``url_allow_list`` field that can be used by runtimes or adapters to restrict outbound requests to a predefined set of approved destinations. \
   This field is especially recommended when placeholders can affect the destination part of the URL (scheme, host, or port), but it is not compulsory: adapter/runtime documentation should explain how this rule is applied. \
   The intended matching behavior is exact matching on scheme and authority (host and port), together with prefix matching on the path; query parameters, URL params, and fragments are not used for matching. \
+  In practice these patterns are plain URL prefixes, for example ``https://api.example.com`` or ``https://api.example.com/orders/``. \
 * **Secure Connections**: Use HTTPS for all remote calls.
 * **HTTP Method**: When possible, use fixed and explicit HTTP methods for the ``http_method`` parameter in the ``RemoteTool`` or ``ApiNode`` (e.g., ``"GET"``, ``"POST"``) rather than dynamic templates.
 * **Timeouts**: Remote/MCP tools or API nodes may block indefinitely if the external service is unresponsive. \
