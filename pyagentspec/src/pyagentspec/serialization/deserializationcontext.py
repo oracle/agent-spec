@@ -31,6 +31,7 @@ from typing_extensions import TypeGuard
 
 from pyagentspec.component import Component
 from pyagentspec.property import Property
+from pyagentspec.serialization.componentpolicy import ComponentLoadPolicy, ComponentPolicyInput
 from pyagentspec.serialization.types import (
     BaseModelAsDictT,
     ComponentAsDictT,
@@ -90,9 +91,15 @@ class _DeserializationContextImpl(DeserializationContext):
         self,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
         partial_model_build: bool = False,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
     ) -> None:
 
         self.plugins = list(plugins) if plugins is not None else []
+        self.component_load_policy = ComponentLoadPolicy(
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
 
         # Add the deserialization plugin that loads all builtin Agent Spec components
         # All other components must be loaded by custom components
@@ -444,7 +451,10 @@ class _DeserializationContextImpl(DeserializationContext):
                     PyAgentSpecErrorDetails(**error_details)  # type: ignore
                     for error_details in e.errors()
                 ]
-                return model_class.model_construct(**resolved_content), all_validation_errors
+                return (
+                    model_class.model_construct(**resolved_content),
+                    all_validation_errors,
+                )
             # If we are not ok with partial build, we forward the exception
             raise e
 
@@ -549,7 +559,8 @@ class _DeserializationContextImpl(DeserializationContext):
         else:
             self._agentspec_version = AgentSpecVersionEnum(
                 value=content.get(
-                    AGENTSPEC_VERSION_FIELD_NAME, content.get(_LEGACY_VERSION_FIELD_NAME)
+                    AGENTSPEC_VERSION_FIELD_NAME,
+                    content.get(_LEGACY_VERSION_FIELD_NAME),
                 )
             )
 
@@ -567,6 +578,7 @@ class _DeserializationContextImpl(DeserializationContext):
         self._load_component_registry(components_registry)
         # the top level object has to be a component, this method will check for that
         component, validation_errors = self._load_component_from_dict(content)
+        self.component_load_policy.validate_component_tree(component)
 
         self._agentspec_version = None
         return component, validation_errors

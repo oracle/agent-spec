@@ -71,6 +71,12 @@ Improvements
   directly in the source template instead of recursively splitting the template text.
   This keeps unresolved placeholders unchanged and makes the rendering logic easier to follow.
 
+* **Component loading defaults**
+
+  Agent Spec loaders now expose ``allowed_components`` and ``blocked_components`` options,
+  allowing users to control which Agent Spec component types can be loaded from configurations.
+  Component type names that resolve to known Component classes use hierarchy matching,
+  like class entries; unresolved type names match only the exact serialized component type.
 
 New features
 ^^^^^^^^^^^^
@@ -201,6 +207,14 @@ Breaking Changes
 Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
 
 Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+
+* **MCP stdio transport is blocked by default in Agent Spec loaders**
+
+  ``StdioTransport`` and its subclasses will no longer load by default through
+  Agent Spec loaders. If a trusted configuration
+  intentionally uses stdio transports, pass ``blocked_components=[]`` to the
+  loader, or provide a custom ``blocked_components`` value that does not include
+  the stdio transport component class.
 
 
 Agent Spec 26.1.0

@@ -8,13 +8,27 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Protocol, TypeAlias, Union, cast, overload
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+    TypeAlias,
+    Union,
+    cast,
+    overload,
+)
 
 from pyagentspec.component import Component as AgentSpecComponent
+from pyagentspec.mcp import StdioTransport
 from pyagentspec.serialization import AgentSpecDeserializer, ComponentDeserializationPlugin
+from pyagentspec.serialization.componentpolicy import ComponentLoadPolicy, ComponentPolicyInput
 
 _RuntimeComponentT: TypeAlias = Any
 _RuntimeRegistryT: TypeAlias = Dict[str, Any]
+_DEFAULT_BLOCKED_COMPONENTS: tuple[type[AgentSpecComponent], ...] = (StdioTransport,)
 
 
 logger = logging.getLogger(__name__)
@@ -66,15 +80,37 @@ class AdapterAgnosticAgentSpecLoader(ABC):
         Optional callable to convert a runtime components registry into an Agent
         Spec registry (mapping ids to Agent Spec components/values) so that
         references can be resolved during deserialization.
+    allowed_components:
+        Optional iterable of Agent Spec component type names or Component classes allowed
+        to be loaded. If omitted, all component types are allowed unless blocked.
+    blocked_components:
+        Optional iterable of Agent Spec component type names or Component classes blocked
+        from loading. If omitted, ``StdioTransport`` and its subclasses are blocked by default.
+        Resolvable type names and Component classes also match subclasses; unresolved
+        type names match only the exact serialized component type. When allow and
+        block entries both match, the closest match in the component class hierarchy
+        wins; block entries win same-distance ties.
     """
 
     def __init__(
         self,
         tool_registry: Optional[Dict[str, Any]] = None,
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
+        *,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
     ) -> None:
         self.plugins = plugins
         self.tool_registry = tool_registry or {}
+        blocked_components = (
+            _DEFAULT_BLOCKED_COMPONENTS if blocked_components is None else blocked_components
+        )
+        self.component_load_policy = ComponentLoadPolicy(
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
+        self.allowed_components = self.component_load_policy.allowed_components
+        self.blocked_components = self.component_load_policy.blocked_components
 
     @property
     @abstractmethod
@@ -296,6 +332,7 @@ class AdapterAgnosticAgentSpecLoader(ABC):
         Subclasses may override this method to pass adapter-specific parameters
         into their converter (e.g., tool registries).
         """
+        self.component_load_policy.validate_component_tree(agentspec_component)
         return self.agentspec_to_runtime_converter.convert(
             agentspec_component, tool_registry=self.tool_registry
         )
@@ -326,7 +363,11 @@ class AdapterAgnosticAgentSpecLoader(ABC):
         import_only_referenced_components: bool,
     ) -> Union[_RuntimeComponentT, Dict[str, _RuntimeComponentT]]:
 
-        deserializer = AgentSpecDeserializer(plugins=self.plugins)
+        deserializer = AgentSpecDeserializer(
+            plugins=self.plugins,
+            allowed_components=self.allowed_components,
+            blocked_components=self.blocked_components,
+        )
         deserializer_func: Callable[..., Any]
         if loader == "yaml":
             deserializer_func = deserializer.from_yaml
