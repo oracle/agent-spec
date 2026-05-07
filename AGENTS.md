@@ -1,5 +1,11 @@
 # Core AI Tools in Oracle Agent Spec Ecosystem
 
+## Repository Guidance
+
+* For changes involving prompt templates, generated code, remote tools, credentials, deserialization, network communication, or adapter execution behavior, consult `docs/pyagentspec/source/security.rst` and keep it current with any user-visible guidance changes.
+
+* Package-specific coding guidance lives in nested `AGENTS.md` files. For Python SDK work, follow `pyagentspec/AGENTS.md`; for evaluation work, also follow `pyagentspec/src/pyagentspec/evaluation/AGENTS.md`.
+
 * Framework-agnostic agent definitions
   Agent Spec itself is a declarative configuration language for defining AI agents and workflows (not a single AI model/tool). It lets you describe how an agent should behave, what tools it uses, and how workflows are structured — in a portable, framework-neutral format.
 
