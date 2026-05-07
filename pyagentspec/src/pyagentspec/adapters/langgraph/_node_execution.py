@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, cast
 import anyio
 import httpx
 
-from pyagentspec.adapters._url_security import (
+from pyagentspec.adapters._url_validation import (
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,
 )

@@ -8,7 +8,7 @@ import warnings
 
 import pytest
 
-from pyagentspec.adapters._url_security import (
+from pyagentspec.adapters._url_validation import (
     get_url_destination_placeholder_names,
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,

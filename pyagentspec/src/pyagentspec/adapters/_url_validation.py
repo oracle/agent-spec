@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-"""Helpers for optional URL allow-list handling in HTTP-based components."""
+"""Helpers for URL validation and optional allow-list handling in HTTP-based components."""
 
 import warnings
 from typing import List, Optional, Tuple
@@ -86,7 +86,7 @@ def maybe_warn_about_unrestricted_templated_url(
 
 
 def validate_url_against_allow_list(url: str, url_allow_list: Optional[List[str]]) -> None:
-    """Validate a rendered URL against an optional allow list."""
+    """Validate a URL against an optional allow list."""
     if url_allow_list is None:
         return
 
