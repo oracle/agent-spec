@@ -30,8 +30,10 @@ from pyagentspec.property import IntegerProperty
 
 CLIENT_TRANSPORT_NAMES = [
     "sse_client_transport",
+    "sse_client_transport_https",
     "sse_client_transport_mtls",
     "streamablehttp_client_transport",
+    "streamablehttp_client_transport_https",
     "streamablehttp_client_transport_mtls",
 ]
 
@@ -39,6 +41,12 @@ CLIENT_TRANSPORT_NAMES = [
 @pytest.fixture
 def sse_client_transport(sse_mcp_server_http):
     return SSETransport(name="my server 1", url=sse_mcp_server_http)
+
+
+@pytest.fixture
+def sse_client_transport_https(monkeypatch, ca_cert_path, sse_mcp_server_https):
+    monkeypatch.setenv("SSL_CERT_FILE", ca_cert_path)
+    return SSETransport(name="my server 2", url=sse_mcp_server_https)
 
 
 @pytest.fixture
@@ -55,6 +63,14 @@ def sse_client_transport_mtls(sse_mcp_server_mtls, client_cert_path, client_key_
 @pytest.fixture
 def streamablehttp_client_transport(streamablehttp_mcp_server_http):
     return StreamableHTTPTransport(name="my server 4", url=streamablehttp_mcp_server_http)
+
+
+@pytest.fixture
+def streamablehttp_client_transport_https(
+    monkeypatch, ca_cert_path, streamablehttp_mcp_server_https
+):
+    monkeypatch.setenv("SSL_CERT_FILE", ca_cert_path)
+    return StreamableHTTPTransport(name="my server 5", url=streamablehttp_mcp_server_https)
 
 
 @pytest.fixture
