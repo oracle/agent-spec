@@ -18,6 +18,7 @@ Each component captures type, identity, inputs, outputs, and optional metadata, 
 ### Schema & Placeholder Guidance
 - Declare every exposed input/output. Runtime or SDK-inferred schemas must match names and be type-compatible with the declared list.
 - Use double-curly placeholders (`{{placeholder}}`) in templates to infer string inputs. Complex templating is intentionally limited; prefer explicit JSON Schema for lists/objects.
+- Treat prompt placeholders as trust-boundary decisions. System-prompt placeholders should use trusted configuration values only; do not route user, tool, RAG, or MCP output into system prompts without deliberate runtime controls. Keep `docs/pyagentspec/source/security.rst` current when changing prompt templating, runtime adapters, generated code, remote tools, or deserialization paths.
 
 ### Component Families
 Agent Spec organizes common constructs into specialized subclasses for validation and tooling:
@@ -92,7 +93,7 @@ Typical workflows include:
 - **Inference rules** – Agents infer IO from prompts, flows infer from start/end nodes. Maintain parity between inferred and explicit schemas.
 - **Mutable defaults** – Use Pydantic `Field(default_factory=...)` for lists/dicts; never use bare mutable defaults.
 - **Logging/prints** – Library code must not use `print`. Use `logging.getLogger(__name__)` when logging is required.
-- **Security** – Never embed secrets. Remote configs should expose parameters, not credentials.
+- **Security** – Never embed secrets. Remote configs should expose parameters, not credentials. Consult `docs/pyagentspec/source/security.rst` for secure-use guidance before changing security-sensitive surfaces.
 - **Classes** - Prefer Pydantic v2 models with `model_config = ConfigDict(extra="forbid")`; respect frozen fields like `Component.id`.
 
 
