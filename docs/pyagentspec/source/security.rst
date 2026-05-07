@@ -18,6 +18,7 @@ Some adapters can translate Agent Spec representations into runtime-specific sou
 Generated source should only be produced from specifications that passed validation, reviewed before deployment when the specification is untrusted, and executed with the same isolation expected for application code.
 
 Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
+
 Considerations regarding prompt templates
 -----------------------------------------
 
