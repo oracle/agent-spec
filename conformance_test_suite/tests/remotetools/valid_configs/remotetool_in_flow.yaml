@@ -1,0 +1,124 @@
+component_type: Flow
+id: 0b1c2d3e-4f5a-6b7c-8d9e-0f1a2b3c4d5e
+name: Flow with RemoteTool (top-level city JSON)
+description: Flow that invokes a RemoteTool inside a ToolNode posting a top-level JSON object body
+metadata: {}
+inputs:
+- title: city
+  type: string
+outputs:
+- title: weather
+  type: string
+start_node:
+  $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+nodes:
+- $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+- $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+- $component_ref: 33333333-4444-4555-8666-cccccccccccc
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: d1111111-2222-4333-8444-555555555555
+  name: start_to_tool
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  from_branch: null
+  to_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+- component_type: ControlFlowEdge
+  id: d2222222-3333-4444-8555-666666666666
+  name: tool_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  from_branch: null
+  to_node:
+    $component_ref: 33333333-4444-4555-8666-cccccccccccc
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: e1111111-2222-4333-8444-777777777777
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  source_output: city
+  destination_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  destination_input: city
+- component_type: DataFlowEdge
+  id: e4444444-5555-4666-8777-000000000000
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  source_output: http_response
+  destination_node:
+    $component_ref: 33333333-4444-4555-8666-cccccccccccc
+  destination_input: weather
+$referenced_components:
+  11111111-2222-4333-8444-aaaaaaaaaaaa:
+    component_type: StartNode
+    id: 11111111-2222-4333-8444-aaaaaaaaaaaa
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: city
+      type: string
+    branches:
+    - next
+  22222222-3333-4444-8555-bbbbbbbbbbbb:
+    component_type: ToolNode
+    id: 22222222-3333-4444-8555-bbbbbbbbbbbb
+    name: Weather forecast RemoteTool (top-level json)
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: http_response
+      type: string
+    branches:
+    - next
+    tool:
+      component_type: RemoteTool
+      id: forecast_weather_simple
+      name: forecast_weather_simple
+      description: Returns a forecast of the weather for the chosen city (top-level city)
+      metadata: {}
+      inputs:
+      - title: city
+        type: string
+      outputs:
+      - title: http_response
+        type: string
+      url: http://localhost:5008/weather/forecast_top_json
+      http_method: POST
+      api_spec_uri: null
+      data:
+        city: '{{city}}'
+      query_params: {}
+      headers: {}
+  33333333-4444-4555-8666-cccccccccccc:
+    component_type: EndNode
+    id: 33333333-4444-4555-8666-cccccccccccc
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

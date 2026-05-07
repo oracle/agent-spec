@@ -1,0 +1,130 @@
+component_type: Flow
+id: 1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+name: ApiNode flow with raw string data
+description: Flow that calls an ApiNode posting a raw string body
+metadata: {}
+inputs:
+- title: city
+  type: string
+- title: note
+  type: string
+outputs:
+- title: city
+  type: string
+start_node:
+  $component_ref: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+nodes:
+- $component_ref: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+- $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+- $component_ref: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f
+  name: start_to_api
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+  from_branch: null
+  to_node:
+    $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+- component_type: ControlFlowEdge
+  id: d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a
+  name: api_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+  from_branch: null
+  to_node:
+    $component_ref: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+  source_output: city
+  destination_node:
+    $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+  destination_input: city
+- component_type: DataFlowEdge
+  id: f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c
+  name: note_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+  source_output: note
+  destination_node:
+    $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+  destination_input: note
+- component_type: DataFlowEdge
+  id: a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d
+  name: city_out_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+  source_output: city
+  destination_node:
+    $component_ref: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+  destination_input: city
+$referenced_components:
+  9a8b7c6d-5e4f-3a2b-1c0d-efab12345678:
+    component_type: StartNode
+    id: 9a8b7c6d-5e4f-3a2b-1c0d-efab12345678
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    outputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    branches:
+    - next
+  a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d:
+    component_type: ApiNode
+    id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+    name: Echo raw text
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    outputs:
+    - title: city
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/raw/echo_text
+    http_method: POST
+    api_spec_uri: null
+    data: "request body for city: {{ city }} with note: {{ note }}"
+    query_params: {}
+    headers: {}
+  b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e:
+    component_type: EndNode
+    id: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: city
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

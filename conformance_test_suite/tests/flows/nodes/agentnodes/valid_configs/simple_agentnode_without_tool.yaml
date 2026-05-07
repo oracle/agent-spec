@@ -1,0 +1,139 @@
+$referenced_components:
+  8d626a54-a305-48f6-ad63-299f2150af32:
+    agent:
+      component_type: Agent
+      description: null
+      id: 12b25e61-2111-447c-bd54-7c626c8f55d3
+      inputs:
+      - default: ''
+        title: query
+        type: string
+      llm_config:
+        component_type: OpenAiCompatibleConfig
+        default_generation_parameters: null
+        description: null
+        id: 8218e009-d36f-420c-84e2-bd9bc36535c0
+        metadata: {}
+        model_id: /storage/models/Llama-3.1-70B-Instruct
+        name: Llama-3.1-70B-Instruct
+        url: http://localhost:5006
+      metadata: {}
+      name: Search agent
+      outputs:
+      - default: ''
+        title: search_results
+        type: string
+      system_prompt: 'Your task is to calculate operations for the user: {{query}}.
+        Only provide math results directly without additional text.'
+      tools: []
+    branches:
+    - next
+    component_type: AgentNode
+    description: null
+    id: 8d626a54-a305-48f6-ad63-299f2150af32
+    inputs:
+    - default: ''
+      title: query
+      type: string
+    metadata: {}
+    name: Search agent node
+    outputs:
+    - default: ''
+      title: search_results
+      type: string
+  ac9ebea5-a7fe-4954-b94e-2492d90ab6b5:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: ac9ebea5-a7fe-4954-b94e-2492d90ab6b5
+    inputs:
+    - default: ''
+      title: query
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - default: ''
+      title: query
+      type: string
+  c2c395a9-ad20-4e61-96a7-9be2621f217f:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: c2c395a9-ad20-4e61-96a7-9be2621f217f
+    inputs:
+    - default: ''
+      title: search_results
+      type: string
+    metadata: {}
+    name: end
+    outputs:
+    - default: ''
+      title: search_results
+      type: string
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: ac9ebea5-a7fe-4954-b94e-2492d90ab6b5
+  id: 32093b32-3f1e-4f48-8295-b31abad1d3c0
+  metadata: {}
+  name: start_to_agent
+  to_node:
+    $component_ref: 8d626a54-a305-48f6-ad63-299f2150af32
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 8d626a54-a305-48f6-ad63-299f2150af32
+  id: f127d0ee-9cd5-484d-8ccd-2f44631d1301
+  metadata: {}
+  name: agent_to_end
+  to_node:
+    $component_ref: c2c395a9-ad20-4e61-96a7-9be2621f217f
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: query
+  destination_node:
+    $component_ref: 8d626a54-a305-48f6-ad63-299f2150af32
+  id: 7243e2e2-685f-4407-b35d-81ef74902db5
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: ac9ebea5-a7fe-4954-b94e-2492d90ab6b5
+  source_output: query
+- component_type: DataFlowEdge
+  description: null
+  destination_input: search_results
+  destination_node:
+    $component_ref: c2c395a9-ad20-4e61-96a7-9be2621f217f
+  id: c10f6555-b0f0-4ab0-9918-60a996829ef4
+  metadata: {}
+  name: search_results_edge
+  source_node:
+    $component_ref: 8d626a54-a305-48f6-ad63-299f2150af32
+  source_output: search_results
+description: null
+id: 2c9b4ed1-2eeb-444c-bc2f-c5b275c7cf91
+inputs:
+- default: ''
+  title: query
+  type: string
+metadata: {}
+name: Search agent flow
+nodes:
+- $component_ref: ac9ebea5-a7fe-4954-b94e-2492d90ab6b5
+- $component_ref: 8d626a54-a305-48f6-ad63-299f2150af32
+- $component_ref: c2c395a9-ad20-4e61-96a7-9be2621f217f
+outputs:
+- default: ''
+  title: search_results
+  type: string
+start_node:
+  $component_ref: ac9ebea5-a7fe-4954-b94e-2492d90ab6b5
+agentspec_version: 25.4.1
