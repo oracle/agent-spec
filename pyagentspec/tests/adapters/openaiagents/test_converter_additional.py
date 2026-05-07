@@ -8,7 +8,9 @@
 import asyncio
 import json
 from typing import Any
+from unittest.mock import patch
 
+import pytest
 import yaml
 
 from pyagentspec import Agent
@@ -16,6 +18,19 @@ from pyagentspec.llms import OpenAiConfig
 from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
+
+
+@pytest.fixture
+def remote_tool_with_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="get_weather_remote",
+        description="Fetch weather for a city via HTTP.",
+        http_method="GET",
+        url="https://{{host}}/weather",
+        url_allow_list=["https://allowed.example.com/weather"],
+        inputs=[StringProperty(title="host")],
+        outputs=[StringProperty(title="result")],
+    )
 
 
 def test_agentspec_client_tool_converts_and_prompts(monkeypatch) -> None:
@@ -73,6 +88,7 @@ def test_agentspec_remote_tool_converts_and_calls_httpx(monkeypatch) -> None:
         description="Fetch weather for a city via HTTP.",
         http_method="GET",
         url="https://api.example.com/weather",
+        url_allow_list=["https://api.example.com/weather"],
         headers={"X-Auth": "{{auth}}"},
         query_params={"city": "{{city}}"},
         data={},
@@ -138,6 +154,25 @@ def test_agentspec_remote_tool_converts_and_calls_httpx(monkeypatch) -> None:
     assert isinstance(result, dict)
     assert result["temp_f"] == 72
     assert result["city"] == "San Francisco"
+
+
+def test_agentspec_remote_tool_rejects_url_outside_allow_list(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    from pyagentspec.adapters.openaiagents import AgentSpecLoader
+    from pyagentspec.adapters.openaiagents._types import OAFunctionTool
+
+    tool = AgentSpecLoader(tool_registry={}).load_component(remote_tool_with_url_allow_list)
+    assert isinstance(tool, OAFunctionTool)
+
+    async def invoke_tool():
+        return await tool.on_invoke_tool(None, json.dumps({"host": "blocked.example.com"}))  # type: ignore[arg-type]
+
+    with patch("pyagentspec.adapters._tools_common.httpx.request") as mocked_request:
+        with pytest.raises(ValueError, match="Requested URL is not in allowed list"):
+            asyncio.run(invoke_tool())
+
+    mocked_request.assert_not_called()
 
 
 def test_round_trip_agentspec_to_openai_to_agentspec() -> None:
