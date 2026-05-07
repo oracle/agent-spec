@@ -82,7 +82,7 @@ def test_export_openai_model_with_base_url_maps_to_openai_compatible() -> None:
 
     # Build an OA Agent whose model comes from a provider using custom base_url (vLLM)
     provider = OpenAIProvider(
-        openai_client=AsyncOpenAI(api_key="", base_url="http://localhost:8000/v1")
+        openai_client=AsyncOpenAI(api_key="fake-api-key", base_url="http://localhost:8000/v1")
     )
     oa_model = provider.get_model("my-vllm-model")
 
@@ -110,7 +110,7 @@ def test_export_openai_model_with_ollama_base_url_maps_to_openai_compatible() ->
     from pyagentspec.adapters.openaiagents import AgentSpecExporter
 
     provider = OpenAIProvider(
-        openai_client=AsyncOpenAI(api_key="", base_url="http://localhost:11434/v1")
+        openai_client=AsyncOpenAI(api_key="fake-api-key", base_url="http://localhost:11434/v1")
     )
     oa_model = provider.get_model("llama3.1")
 

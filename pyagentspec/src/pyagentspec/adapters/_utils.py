@@ -67,27 +67,32 @@ def render_nested_object_template(
         return object
 
 
-def render_template(template: str, inputs: Dict[str, Any]) -> str:
+def render_template(template: Any, inputs: Dict[str, Any]) -> str:
     """Render a prompt template using inputs."""
     if not isinstance(template, str):
         return str(template)
-    return _recursive_template_splitting_rendering(
-        template, [(input_title, input_value) for input_title, input_value in inputs.items()]
-    )
+    return _render_template_placeholders(template, inputs)
 
 
-def _recursive_template_splitting_rendering(template: str, inputs: List[Tuple[str, Any]]) -> str:
-    """Recursively split and join the templates using the list of inputs."""
-    if len(inputs) == 0:
-        return template
-    input_title, input_value = inputs[-1]
-    splitting_regexp = TEMPLATE_PLACEHOLDER_REGEXP.replace(r"(\w+)", input_title)
-    split_templates = re.split(splitting_regexp, template)
-    rendered_split_templates = [
-        _recursive_template_splitting_rendering(t, inputs[:-1]) for t in split_templates
-    ]
-    rendered_template = str(input_value).join(rendered_split_templates)
-    return rendered_template
+def _render_template_placeholders(template: str, inputs: Dict[str, Any]) -> str:
+    """Render placeholders found in the original template using the list of inputs."""
+    rendered_parts: List[str] = []
+    last_end: int = 0
+
+    for match in re.finditer(TEMPLATE_PLACEHOLDER_REGEXP, template):
+        rendered_parts.append(template[last_end : match.start()])
+        # Original placeholder text as it appeared in the template, including braces and inner whitespace
+        full_placeholder = match.group(0)
+        # Only the placeholder name, extracted from inside {{ ... }}
+        input_title = match.group(1)
+        if input_title in inputs:
+            rendered_parts.append(str(inputs[input_title]))
+        else:
+            rendered_parts.append(full_placeholder)
+        last_end = match.end()
+
+    rendered_parts.append(template[last_end:])
+    return "".join(rendered_parts)
 
 
 class SchemaRegistry:

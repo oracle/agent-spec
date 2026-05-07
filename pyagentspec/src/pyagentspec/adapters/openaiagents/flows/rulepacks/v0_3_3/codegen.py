@@ -331,14 +331,8 @@ def _emit_agents(
             lines.append("  model_settings=ModelSettings(")
             for k in ("temperature", "top_p", "max_tokens"):
                 if k in supported and supported[k] is not None:
-                    if k == "max_tokens":
-                        try:
-                            val = int(supported[k])
-                        except Exception:
-                            val = supported[k]
-                        lines.append(f"    {k}={val},")
-                    else:
-                        lines.append(f"    {k}={supported[k]},")
+                    val = _validate_model_setting(k, supported[k])
+                    lines.append(f"    {k}={val!r},")
             lines.append("")
             # Close ModelSettings call and ensure this argument is comma-terminated
             # so additional args (e.g., tools) can follow.
@@ -427,7 +421,7 @@ def _emit_tools(tools: list[dict[str, Any]]) -> tuple[list[str], bool]:
         ident = td.get("name") or name
         lines.append(f"  impl = _TOOL_REGISTRY.get({_py_str(ident)})")
         lines.append(f"  if impl is None:")
-        lines.append(f"    raise RuntimeError('Required tool not provided: {name}')")
+        lines.append(f"    raise RuntimeError({_py_str(f'Required tool not provided: {name}')})")
         call_args = ", ".join([_snake_case(p.get("title") or "arg") for p in ins])
         lines.append(f"  return impl({call_args})")
         lines.append("")
@@ -439,13 +433,19 @@ def _py_str(s: str) -> str:
 
 
 def _py_triple_str(s: str) -> str:
-    if not s:
-        return repr("")
-    if "\n" not in s:
-        return repr(s)
-    # Use triple quotes for readability; escape triple quotes if present
-    safe = s.replace('"""', '"""')
-    return f'"""{safe}\n"""'
+    return repr(s)
+
+
+def _validate_model_setting(name: str, value: Any) -> int | float:
+    if isinstance(value, bool):
+        raise TypeError(f"Model setting {name!r} must be a number")
+    if name == "max_tokens":
+        if not isinstance(value, int):
+            raise TypeError(f"Model setting {name!r} must be an integer")
+        return value
+    if not isinstance(value, (int, float)):
+        raise TypeError(f"Model setting {name!r} must be a number")
+    return value
 
 
 def _emit_run_workflow(

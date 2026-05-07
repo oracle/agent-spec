@@ -80,23 +80,38 @@ class AgentSpecToOpenAIConverter:
         return obj
 
     def _llm_convert_to_openai(self, llm: AgentSpecLlmConfig) -> Any:
+        from openai import AsyncOpenAI
+
+        def _make_async_openai_client(base_url: str, api_key: Optional[str] = None) -> AsyncOpenAI:
+            kwargs: Dict[str, Any] = {"base_url": base_url}
+            # Do not pass a blank API key, so env-based defaults can still work.
+            if api_key not in (None, ""):
+                kwargs["api_key"] = api_key
+            return AsyncOpenAI(**kwargs)
+
         if isinstance(llm, AgentSpecOpenAiConfig):
             # OpenAI Agents accepts model as str for default OpenAI models
             return llm.model_id
         elif isinstance(llm, AgentSpecOpenAiCompatibleConfig):
-            from openai import AsyncOpenAI
-
             # Map any OpenAI-compatible endpoint via OAOpenAIProvider with custom base_url.
-            # Construct a client with empty API key so it works for local/self-hosted deployments.
             base_url = llm.url
             if not base_url.startswith("http"):
                 base_url = "http://" + base_url
             if not base_url.endswith("v1"):
                 base_url += "/v1"
-            client = AsyncOpenAI(api_key=llm.api_key or "", base_url=base_url)
+            client = _make_async_openai_client(base_url=base_url, api_key=llm.api_key)
             return OAChatCompletionsModel(llm.model_id, client)
         else:
-            raise NotImplementedError(f"Unsupported LlmConfig: {type(llm)}")
+            # Bare LlmConfig — dispatch on api_provider string
+            if llm.api_provider == "openai":
+                if llm.url is not None:
+                    client = _make_async_openai_client(base_url=llm.url, api_key=llm.api_key)
+                    return OAChatCompletionsModel(llm.model_id, client)
+                return llm.model_id
+            raise NotImplementedError(
+                f"LlmConfig with api_provider='{llm.api_provider}' is not supported "
+                f"in openai-agents. Consider using a specific LlmConfig subclass instead."
+            )
 
     def _agent_convert_to_openai(
         self,

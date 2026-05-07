@@ -4,7 +4,6 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-import ast
 import json
 import logging
 import typing
@@ -74,6 +73,26 @@ LANGCHAIN_ROLES_TO_OPENAI_ROLES = {
 T = TypeVar("T")
 
 logger = logging.getLogger(__file__)
+
+
+def _normalize_tool_inputs(
+    tool: AgentSpecTool, input_value: Any, callback_inputs: Any
+) -> Dict[str, Any]:
+    """Normalize LangChain callback tool inputs into the mapping expected by trace events."""
+    if isinstance(callback_inputs, dict):
+        return callback_inputs
+
+    if isinstance(input_value, dict):
+        return input_value
+
+    if tool.inputs and len(tool.inputs) == 1:
+        return {tool.inputs[0].title: input_value}
+
+    if isinstance(input_value, str):
+        return {"value": input_value}
+
+    return {"value": str(input_value)}
+
 
 # NOTE ABOUT CONTEXTVARS AND THE ACTIVE SPAN STACK
 #
@@ -552,7 +571,8 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
             tool=self.tool,
-            inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
+            # LangChain should provide structured `inputs` in the `kwargs`, the others are fallback options
+            inputs=_normalize_tool_inputs(self.tool, input_str, kwargs.get("inputs")),
         )
         # starting a tool span for this tool
         span_name = f"ToolExecution[{self.tool.name}]"
@@ -648,7 +668,8 @@ class AgentSpecToolCallbackHandler(AgentSpecCallbackHandler):
         request_event = AgentSpecToolExecutionRequest(
             request_id=run_id_str,
             tool=self.tool,
-            inputs=ast.literal_eval(input_str) if isinstance(input_str, str) else input_str,
+            # LangChain should provide structured `inputs` in the `kwargs`, the others are fallback options
+            inputs=_normalize_tool_inputs(self.tool, input_str, kwargs.get("inputs")),
         )
         # starting a tool span for this tool
         span_name = f"ToolExecution[{self.tool.name}]"

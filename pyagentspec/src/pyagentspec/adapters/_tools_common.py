@@ -8,11 +8,21 @@ from typing import Any, Callable
 
 import httpx
 
+from pyagentspec.adapters._url_validation import (
+    maybe_warn_about_unrestricted_templated_url,
+    validate_url_against_allow_list,
+)
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
 
 
 def _create_remote_tool_func(remote_tool: AgentSpecRemoteTool) -> Callable[..., Any]:
+    maybe_warn_about_unrestricted_templated_url(
+        url=remote_tool.url,
+        url_allow_list=remote_tool.url_allow_list,
+        component_name=f"RemoteTool `{remote_tool.name}`",
+    )
+
     def _remote_tool(**kwargs: Any) -> Any:
         remote_tool_data = render_nested_object_template(remote_tool.data, kwargs)
         remote_tool_headers = {
@@ -42,6 +52,8 @@ def _create_remote_tool_func(remote_tool: AgentSpecRemoteTool) -> Callable[..., 
             content = remote_tool_data
         else:
             json_data = remote_tool_data
+
+        validate_url_against_allow_list(remote_tool_url, remote_tool.url_allow_list)
 
         response = httpx.request(
             method=remote_tool.http_method,

@@ -24,6 +24,11 @@ from pyagentspec.adapters._utils import render_nested_object_template, render_te
         ("{{ b{{a}} }}{{b1}}", {"a": 1, "b": 2, "b1": 3}, "{{ b1 }}3"),
         ("{{{{a}}}}", {"a": " b ", "b": 2}, "{{ b }}"),
         ("{{a}}{{b}}", {"a": "{{b}}", "b": 2}, "{{b}}2"),
+        ("{{a}}{{b}}", {"b": 2, "a": "{{b}}"}, "{{b}}2"),
+        ("{{a}}", {".*": "b"}, "{{a}}"),
+        ("{{a}}", {"a|b": "c"}, "{{a}}"),
+        ("{{a}}", {"[abc]": "b"}, "{{a}}"),
+        ("{{a}}", {"b)": "b"}, "{{a}}"),
         (
             "Here is the equation: {{a}} plus {{b}} equals {{c}}",
             {"a": "{{", "b": "}}", "plus": "SECRET"},

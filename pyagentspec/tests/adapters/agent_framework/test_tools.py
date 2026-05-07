@@ -6,6 +6,8 @@
 
 from unittest.mock import patch
 
+import pytest
+
 from pyagentspec.tools.remotetool import RemoteTool
 
 
@@ -19,6 +21,17 @@ class DummyResponse:
 
     def json(self):
         return self._obj
+
+
+@pytest.fixture
+def remote_tool_with_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="lookup",
+        description="Looks up remote data",
+        url="https://{{host}}/api/value",
+        http_method="GET",
+        url_allow_list=["https://allowed.example.com/api/"],
+    )
 
 
 def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
@@ -38,6 +51,7 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
         description="Returns a forecast of the weather for the chosen city",
         url="https://weatherforecast.example/api/forecast/{{city}}",
         http_method="POST",
+        url_allow_list=["https://weatherforecast.example/api/forecast/"],
         data={
             "location": {
                 "city": "{{city}}",
@@ -75,6 +89,20 @@ def test_remote_tool_having_nested_inputs_with_agent_framework() -> None:
         ), f"Expected 'json' kwarg in request call since data is a dict, got {called_kwargs}"
         assert called_kwargs["json"] == expected_json
         assert result == {"weather": "sunny in Agadir"}
+
+
+def test_remote_tool_rejects_rendered_url_outside_allow_list_with_agent_framework(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    from pyagentspec.adapters.agent_framework import AgentSpecLoader
+
+    msft_af_tool = AgentSpecLoader().load_component(remote_tool_with_url_allow_list)
+
+    with patch("httpx.request", return_value=DummyResponse({"ok": True})) as mocked_request:
+        with pytest.raises(ValueError, match="Requested URL is not in allowed list"):
+            msft_af_tool(host="blocked.example.com")
+
+    mocked_request.assert_not_called()
 
 
 def test_remote_tool_post_json_array_with_agent_framework() -> None:

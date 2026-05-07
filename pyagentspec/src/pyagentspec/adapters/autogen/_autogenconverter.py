@@ -159,15 +159,8 @@ class AgentSpecToAutogenConverter:
         converted_components: Optional[Dict[str, Any]] = None,
     ) -> AutogenChatCompletionClient:
 
-        def _prepare_llm_args(
-            agentspec_llm_: AgentSpecOpenAiCompatibleModel,
-        ) -> Dict[str, Any]:
+        def _prepare_model_info(agentspec_llm_: AgentSpecLlmConfig) -> AutogenModelInfo:
             metadata = getattr(agentspec_llm_, "metadata", {}) or {}
-            base_url = agentspec_llm_.url
-            if not base_url.startswith("http://"):
-                base_url = f"http://{base_url}"
-            if "/v1" not in base_url:
-                base_url = urljoin(base_url + "/", "v1")
             model_info = metadata.get("model_info") or {}
             if isinstance(model_info, str):
                 # Sometimes model info is a json serialization
@@ -187,17 +180,32 @@ class AgentSpecToAutogenConverter:
                 ),
             )
             structured_output = model_info.get("structured_output", True)
+            return AutogenModelInfo(
+                vision=vision,
+                function_calling=function_calling,
+                json_output=json_output,
+                family=family,
+                structured_output=structured_output,
+            )
+
+        def _prepare_base_url(url: str, append_v1: bool) -> str:
+            base_url = url
+            if not base_url.startswith(("http://", "https://")):
+                base_url = f"http://{base_url}"
+            if append_v1 and "/v1" not in base_url:
+                base_url = urljoin(base_url + "/", "v1")
+            return base_url
+
+        def _prepare_llm_args(agentspec_llm_: AgentSpecLlmConfig) -> Dict[str, Any]:
             return dict(
                 model=agentspec_llm_.model_id,
-                base_url=base_url,
-                api_key="",
-                model_info=AutogenModelInfo(
-                    vision=vision,
-                    function_calling=function_calling,
-                    json_output=json_output,
-                    family=family,
-                    structured_output=structured_output,
+                base_url=(
+                    _prepare_base_url(agentspec_llm_.url, append_v1=True)
+                    if agentspec_llm_.url
+                    else None
                 ),
+                api_key=agentspec_llm_.api_key if agentspec_llm_.api_key else None,
+                model_info=_prepare_model_info(agentspec_llm_),
             )
 
         if isinstance(agentspec_llm, AgentSpecOpenAiConfig):
@@ -209,8 +217,12 @@ class AgentSpecToAutogenConverter:
         elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleModel):
             return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
         else:
+            # Bare LlmConfig — dispatch on api_provider string
+            if agentspec_llm.api_provider == "openai":
+                return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
             raise NotImplementedError(
-                f"The provided LlmConfig type `{type(agentspec_llm)}` is not supported in autogen yet."
+                f"LlmConfig with api_provider='{agentspec_llm.api_provider}' is not supported "
+                f"in autogen yet. Consider using a specific LlmConfig subclass instead."
             )
 
     def _client_tool_convert_to_autogen(

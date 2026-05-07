@@ -7,6 +7,17 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **More reliable tool payload tracing in LangGraph adapter**
+
+  The LangGraph adapter now normalizes tool callback inputs before emitting tracing events,
+  preserving structured tool execution payloads more reliably in traced agents and flows.
+
+* **Improved OpenAI Agents code generation**
+
+  The OpenAI Agents adapter now emits specification-derived string values as
+  Python literals in generated workflow code and validates supported model
+  settings before emission.
+
 * **New xAI model provider for OciGenAiConfig**
 
   Introduced a new provider `XAI` for ``OciGenAiConfig`` LLMs.
@@ -54,9 +65,20 @@ Improvements
   Users can now use models such ss Grok and Meta models available on the OCI GenAI service.
   Install with `pip install pyagentspec[langgraph-full]` to access this feature.
 
+* **Improved template placeholder rendering in adapters**
+
+  Template placeholders in adapter utilities are now rendered by matching placeholders
+  directly in the source template instead of recursively splitting the template text.
+  This keeps unresolved placeholders unchanged and makes the rendering logic easier to follow.
+
 
 New features
 ^^^^^^^^^^^^
+
+* **URL allow lists for RemoteTool and ApiNode**
+
+  Added an optional ``url_allow_list`` field to ``RemoteTool`` and ``ApiNode`` to declare
+  the allowed rendered URL targets when those components use templated URLs.
 
 * **Retry policy for components doing remote calls:**
 
@@ -64,6 +86,16 @@ New features
   configuration of retries, backoff, and request timeouts across remote integrations.
 
   For more information read the guide on :ref:`using LLM providers <howto-llmwithretrypolicy>`.
+
+* **Generic LlmConfig with provider-agnostic fields**
+
+  ``LlmConfig`` is now a concrete class that can be used directly without requiring a dedicated
+  subclass for each LLM provider. New fields ``model_id``, ``provider``, ``api_provider``,
+  ``api_type``, ``url``, and ``api_key`` allow describing any LLM connection generically. Existing subclasses (``OpenAiConfig``,
+  ``OciGenAiConfig``, etc.) continue to work unchanged. All framework adapters support bare ``LlmConfig``
+  instances through string-based dispatch on ``api_provider``.
+
+  We thank @spichen for the contribution!
 
 * **Certificate configuration for OpenAI-compatible LLMs**
 
@@ -155,6 +187,14 @@ New features
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
+
+* **Numeric model settings in OpenAI Agents code generation**
+
+  ``temperature`` and ``top_p`` must now be numeric values, and ``max_tokens``
+  must now be an integer, before the OpenAI Agents adapter emits them into
+  generated workflow code.
+  Configurations that supplied these values as strings should update them to
+  numeric YAML/JSON values.
 
 * **Empty titles in properties**
 
