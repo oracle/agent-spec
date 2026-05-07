@@ -41,11 +41,13 @@ component_type: ToolPolicy
 id: c0d1e2f3-a4b5-6789-0abc-def123456789
 name: sensitive_data_policy
 description: Standard policy for tools accessing customer PII
-rate_limit:
-  max_calls: 100
-  window_seconds: 3600
-data_classification: pii
+data_classification: restricted
 requires_justification: true
+guards:
+  - type: rate_limit
+    max_calls: 100
+    window_seconds: 3600
+    on_violation: block
 ```
 
 **YAML example (referenced from tools):**
@@ -81,10 +83,12 @@ tools:
         type: string
     tool_policy:
       data_classification: internal
-      approval_required_for:
-        - condition: input_contains
+      guards:
+        - type: require_approval
+          condition: input_contains
           field: to
           value: "@gov."
+          on_violation: escalate
 ```
 
 In the second tool (`send_email`), the policy is defined inline because it is specific to that tool.
@@ -113,20 +117,6 @@ ToolPolicy:
       type: string
       description: Explanation of the policy's intent.
 
-    rate_limit:
-      type: object
-      description: Limits on invocation frequency.
-      properties:
-        max_calls:
-          type: integer
-          minimum: 1
-          description: Maximum number of calls permitted within the time window.
-        window_seconds:
-          type: integer
-          minimum: 1
-          description: Rolling time window in seconds.
-      required: [max_calls, window_seconds]
-
     data_classification:
       type: string
       enum: [public, internal, confidential, restricted]
@@ -146,67 +136,110 @@ ToolPolicy:
         When true, the invoking agent must provide a reason for calling
         this tool. How justification is captured is runtime-defined.
 
+    guards:
+      type: array
+      items:
+        $ref: "#/ExecutionGuard"
+      description: >
+        Execution-time constraints on tool invocation. Each guard
+        defines a type, an optional condition, and what happens when
+        the constraint is not satisfied. This provides a uniform
+        shape for rate limits, approvals, caller restrictions, and
+        future constraint types.
+
     allowed_callers:
       type: array
       items:
         $ref: "#/$component_ref"
       description: >
-        Component references (by ID) of agents or flows permitted to
-        invoke this tool. If omitted, any component with the tool in
-        scope may invoke it.
+        (MAY — optional for v1 runtimes.) Component references (by ID)
+        of agents or flows permitted to invoke this tool. If omitted,
+        any component with the tool in scope may invoke it. Primary
+        use case: shared toolboxes in multi-agent systems where the
+        same tool is exposed to agents with different trust levels.
 
     denied_callers:
       type: array
       items:
         $ref: "#/$component_ref"
       description: >
-        Component references (by ID) explicitly denied from invoking
-        this tool. Takes precedence over allowed_callers.
-
-    approval_required_for:
-      type: array
-      items:
-        $ref: "#/ConditionalApproval"
-      description: >
-        Conditions under which human approval is required before
-        the tool executes. Extends the existing requires_confirmation
-        concept with input-aware conditions.
+        (MAY — optional for v1 runtimes.) Component references (by ID)
+        explicitly denied from invoking this tool. Takes precedence
+        over allowed_callers.
 
   additionalProperties: false
 
-ConditionalApproval:
+ExecutionGuard:
   type: object
   description: >
-    A condition on tool inputs that, when matched, requires human
-    approval before execution.
+    A single execution-time constraint on tool invocation. Guards
+    provide a uniform abstraction for rate limits, approval
+    requirements, and other controls that gate whether a tool
+    call proceeds.
   properties:
+    type:
+      type: string
+      enum: [rate_limit, require_approval, require_justification]
+      description: The kind of constraint this guard enforces.
     condition:
       type: string
-      enum: [input_equals, input_contains, input_not_equals]
-      description: The type of condition to evaluate.
+      enum: [always, input_equals, input_contains, input_not_equals]
+      default: always
+      description: >
+        When this guard applies. "always" means unconditional.
+        Input-conditional guards evaluate against a specific input
+        field (see "field" and "value" properties).
     field:
       type: string
-      description: Name of the input field to evaluate.
+      description: >
+        Name of the input field to evaluate. Required when condition
+        is input_equals, input_contains, or input_not_equals.
     value:
       type: string
-      description: Value to compare against using the specified condition.
-  required: [condition, field, value]
+      description: >
+        Value to compare against using the specified condition.
+        Required when condition is input-conditional.
+    max_calls:
+      type: integer
+      minimum: 1
+      description: >
+        Maximum calls within window_seconds. Only used when
+        type is "rate_limit".
+    window_seconds:
+      type: integer
+      minimum: 1
+      description: >
+        Rolling time window in seconds. Only used when type is
+        "rate_limit".
+    on_violation:
+      type: string
+      enum: [block, flag, log, escalate]
+      default: block
+      description: >
+        What the runtime does when the constraint is not satisfied.
+        - block: Prevent the tool call entirely.
+        - flag: Allow the call but flag it for review.
+        - log: Allow the call, record the violation only.
+        - escalate: Route to a human or escalation workflow.
+  required: [type]
 ```
+
+**Note on `requires_confirmation` compatibility:** The existing `Tool.requires_confirmation: true` is equivalent to a guard of `{type: require_approval, condition: always, on_violation: block}`. Runtimes SHOULD treat them identically. `requires_confirmation` remains as the simpler form for the common unconditional case.
 
 ### Policy Composition: ToolBox + Tool
 
-When a `ToolBox` has a `tool_policy` and individual tools within that box also have their own `tool_policy`, the effective policy for a tool is the **union** of both:
+When a `ToolBox` has a `tool_policy` and individual tools within that box also have their own `tool_policy`, the ToolBox policy acts as a **base** that **combines with** (not replaces) the tool-level policy. The effective policy for a tool is determined per-field:
 
-- **rate_limit**: The more restrictive limit applies (lower `max_calls` or shorter `window_seconds`).
 - **data_classification**: The higher sensitivity level wins (`restricted` > `confidential` > `internal` > `public`).
 - **requires_justification**: `true` at either level means justification is required.
-- **allowed_callers**: Intersection of both lists (caller must be allowed at both levels).
-- **denied_callers**: Union of both lists (denied at either level means denied).
-- **approval_required_for**: Union of both condition lists (all conditions from both levels apply).
+- **guards**: Union of both lists. All guards from both levels apply.
+- **allowed_callers** (MAY): Intersection of both lists (caller must be allowed at both levels).
+- **denied_callers** (MAY): Union of both lists (denied at either level means denied).
 
-**Example:**
+**Example (before composition):**
 
 ```yaml
+# ToolBox defines base policy
 component_type: MCPToolBox
 id: d4e5f6a7-b8c9-0123-4567-890abcdef012
 name: customer_data_tools
@@ -214,20 +247,14 @@ description: Tools for accessing customer records
 tool_policy:
   data_classification: confidential
   requires_justification: true
+  guards:
+    - type: rate_limit
+      max_calls: 200
+      window_seconds: 3600
+      on_violation: block
+
+# Tool within the box adds its own policy
 tools:
-  - component_type: ServerTool
-    name: query_customer
-    description: Look up customer records
-    inputs:
-      - title: customer_id
-        type: string
-    outputs:
-      - title: record
-        type: object
-    tool_policy:
-      rate_limit:
-        max_calls: 100
-        window_seconds: 3600
   - component_type: ServerTool
     name: delete_customer
     description: Permanently delete a customer record
@@ -239,13 +266,37 @@ tools:
         type: boolean
     tool_policy:
       data_classification: restricted
-      allowed_callers:
-        - $component_ref: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      guards:
+        - type: rate_limit
+          max_calls: 10
+          window_seconds: 3600
+          on_violation: block
+        - type: require_approval
+          condition: always
+          on_violation: escalate
 ```
 
-In this example:
-- `query_customer` inherits `confidential` classification and `requires_justification: true` from the toolbox, and adds its own rate limit.
-- `delete_customer` escalates to `restricted` (higher than the toolbox's `confidential`) and restricts callers.
+**Effective policy for `delete_customer` (after composition):**
+
+```yaml
+# Composed result:
+data_classification: restricted        # tool wins (higher than confidential)
+requires_justification: true           # inherited from toolbox
+guards:
+  - type: rate_limit                   # tool's rate limit (stricter)
+    max_calls: 10
+    window_seconds: 3600
+    on_violation: block
+  - type: require_approval             # tool's approval guard
+    condition: always
+    on_violation: escalate
+  - type: rate_limit                   # toolbox's rate limit also applies
+    max_calls: 200
+    window_seconds: 3600
+    on_violation: block
+```
+
+For rate limits, runtimes SHOULD apply the more restrictive limit when multiple rate_limit guards overlap on the same window. In the example above, the effective limit is 10 calls per 3600s.
 
 ### PolicyViolation Event
 
@@ -274,12 +325,14 @@ PolicyViolation:
       description: The component that attempted the invocation.
     action_taken:
       type: string
-      enum: [blocked, flagged, logged]
+      enum: [blocked, flagged, logged, escalated]
       description: >
-        What the runtime did in response.
+        What the runtime did in response. Maps to the guard's
+        on_violation setting.
         - blocked: Invocation was prevented.
         - flagged: Invocation proceeded but was flagged for review.
         - logged: Invocation proceeded, violation recorded only.
+        - escalated: Routed to a human or escalation workflow.
     detail:
       type: string
       description: Human-readable explanation of the violation.
@@ -303,12 +356,22 @@ detail: "Tool 'query_customer_database' exceeded 100 calls in 3600s window"
 
 ### Relationship to `requires_confirmation`
 
-The existing `Tool.requires_confirmation` and `ToolBox.requires_confirmation` fields remain unchanged. `tool_policy.approval_required_for` extends the concept by adding input-aware conditions. These are complementary:
+The existing `Tool.requires_confirmation` and `ToolBox.requires_confirmation` fields remain unchanged. They are equivalent to a guard of `{type: require_approval, condition: always, on_violation: block}` and exist as the simpler form for the common unconditional case.
 
-- `requires_confirmation: true` means *always* require confirmation.
-- `approval_required_for` means *conditionally* require confirmation based on inputs.
+The `guards` array extends this concept with conditional and typed constraints. There is no duplication: `requires_confirmation` is sugar, guards are the general mechanism.
 
-There is no duplication. `tool_policy` does not re-define `requires_confirmation`.
+### AGT Policy Compatibility Mapping
+
+The [Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) uses a condition-expression policy format at runtime. The tool-level subset maps to Agent Spec's `ToolPolicy` as follows:
+
+| Agent Spec `ToolPolicy` | AGT Policy YAML | Notes |
+|---|---|---|
+| `guards: [{type: rate_limit, max_calls: 50, window_seconds: 3600}]` | `condition: "tool_name == 'web_search'"` + `action: rate_limit` + `rate_limit: {max_calls: 50, window: 3600}` | AGT uses condition expressions; Agent Spec uses structured fields |
+| `data_classification: restricted` | `condition: "data_classification == 'restricted'"` + `action: deny` | AGT evaluates classification as a runtime condition |
+| `allowed_callers: [$ref: agent-id]` | `condition: "caller_id in ['agent-id']"` + `action: allow` | AGT uses caller_id in condition expressions |
+| `guards: [{type: require_approval, condition: always}]` | `condition: "tool_name == 'delete_record'"` + `action: require_approval` | Same semantics, different serialization |
+
+Both formats serialize to the same enforcement semantics. A compatibility layer can translate between them so policies defined in one system are loadable in the other.
 
 ## Compatibility
 
@@ -336,7 +399,10 @@ These questions were raised in the initial draft and resolved through review dis
 1. **Standalone vs. inline policies**: `ToolPolicy` is a standalone component, referenceable via `$component_ref` for reuse. Inline definition is supported for single-use cases (same pattern as other Agent Spec components).
 2. **data_classification as enum**: Uses a four-level enum (`public`, `internal`, `confidential`, `restricted`) for portability and composition semantics. Organizations needing custom labels can extend via `metadata`.
 3. **PolicyViolation event**: Added as a dedicated event type in the tracing system (see [PolicyViolation Event](#policyviolation-event) above).
-4. **ToolBox + Tool policy interaction**: Effective policy is the union of both levels, with specifics defined per field (see [Policy Composition](#policy-composition-toolbox--tool) above).
+4. **ToolBox + Tool policy interaction**: ToolBox policy acts as a base that combines with (not replaces) tool-level policies. Composition rules are defined per-field with concrete examples (see [Policy Composition](#policy-composition-toolbox--tool)).
+5. **Execution guard unification**: Rate limits, approval requirements, and other execution-time constraints use a common `ExecutionGuard` shape with `{type, condition, on_violation}`. This replaces the earlier design of separate top-level fields for each constraint type, giving us a cleaner extension point for future guard types.
+6. **Caller restrictions as MAY**: `allowed_callers`/`denied_callers` are marked as MAY for v1 runtimes. The primary use case (shared toolboxes in multi-agent systems) is valid but not universal enough to require for initial conformance.
+7. **AGT compatibility**: Added a mapping table showing how Agent Spec `ToolPolicy` fields correspond to AGT's condition-expression policy format. Both serialize to the same enforcement semantics.
 
 ## Examples
 
@@ -353,9 +419,11 @@ outputs:
   - title: results
     type: array
 tool_policy:
-  rate_limit:
-    max_calls: 50
-    window_seconds: 3600
+  guards:
+    - type: rate_limit
+      max_calls: 50
+      window_seconds: 3600
+      on_violation: block
 ```
 
 ### Reusable policy across multiple tools
@@ -365,11 +433,16 @@ tool_policy:
 component_type: ToolPolicy
 id: e1f2a3b4-c5d6-7890-1234-567890abcdef
 name: high_security_policy
-rate_limit:
-  max_calls: 10
-  window_seconds: 3600
 data_classification: restricted
 requires_justification: true
+guards:
+  - type: rate_limit
+    max_calls: 10
+    window_seconds: 3600
+    on_violation: block
+  - type: require_approval
+    condition: always
+    on_violation: escalate
 
 ---
 # Tool referencing the policy
@@ -382,7 +455,6 @@ inputs:
 outputs:
   - title: success
     type: boolean
-requires_confirmation: true
 tool_policy:
   $component_ref: e1f2a3b4-c5d6-7890-1234-567890abcdef
 
@@ -397,12 +469,11 @@ inputs:
 outputs:
   - title: purged_count
     type: integer
-requires_confirmation: true
 tool_policy:
   $component_ref: e1f2a3b4-c5d6-7890-1234-567890abcdef
 ```
 
-### Conditional approval
+### Conditional approval (input-aware guard)
 
 ```yaml
 component_type: ServerTool
@@ -418,12 +489,15 @@ outputs:
     type: string
 tool_policy:
   data_classification: confidential
-  rate_limit:
-    max_calls: 10
-    window_seconds: 3600
   requires_justification: true
-  approval_required_for:
-    - condition: input_contains
+  guards:
+    - type: rate_limit
+      max_calls: 10
+      window_seconds: 3600
+      on_violation: block
+    - type: require_approval
+      condition: input_contains
       field: destination_account
       value: "external:"
+      on_violation: escalate
 ```
