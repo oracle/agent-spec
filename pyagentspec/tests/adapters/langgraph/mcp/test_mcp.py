@@ -15,6 +15,8 @@ from langgraph.types import Command
 from pydantic import SecretStr
 
 from pyagentspec.adapters.langgraph import AgentSpecExporter, AgentSpecLoader
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory
 from pyagentspec.agent import Agent
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.mcp.clienttransport import (
@@ -28,10 +30,8 @@ from pyagentspec.property import IntegerProperty
 
 CLIENT_TRANSPORT_NAMES = [
     "sse_client_transport",
-    "sse_client_transport_https",
     "sse_client_transport_mtls",
     "streamablehttp_client_transport",
-    "streamablehttp_client_transport_https",
     "streamablehttp_client_transport_mtls",
 ]
 
@@ -39,11 +39,6 @@ CLIENT_TRANSPORT_NAMES = [
 @pytest.fixture
 def sse_client_transport(sse_mcp_server_http):
     return SSETransport(name="my server 1", url=sse_mcp_server_http)
-
-
-@pytest.fixture
-def sse_client_transport_https(sse_mcp_server_https):
-    return SSETransport(name="my server 2", url=sse_mcp_server_https)
 
 
 @pytest.fixture
@@ -60,11 +55,6 @@ def sse_client_transport_mtls(sse_mcp_server_mtls, client_cert_path, client_key_
 @pytest.fixture
 def streamablehttp_client_transport(streamablehttp_mcp_server_http):
     return StreamableHTTPTransport(name="my server 4", url=streamablehttp_mcp_server_http)
-
-
-@pytest.fixture
-def streamablehttp_client_transport_https(streamablehttp_mcp_server_https):
-    return StreamableHTTPTransport(name="my server 5", url=streamablehttp_mcp_server_https)
 
 
 @pytest.fixture
@@ -90,6 +80,43 @@ def loaded_langgraph_agent(client_transport_name, big_llama, request):
         system_prompt="be kind and stay frosty",
     )
     return AgentSpecLoader().load_component(agentspec_agent)
+
+
+def test_httpx_client_factory_uses_system_ca_store_for_server_only_tls():
+    factory = _HttpxClientFactory(verify=True)
+
+    assert factory.verify is True
+
+
+def test_httpx_client_factory_requires_complete_mtls_configuration():
+    with pytest.raises(
+        ValueError,
+        match="When verify=True and certificate files are provided",
+    ):
+        _HttpxClientFactory(verify=True, key_file="client.key")
+
+
+@pytest.mark.parametrize(
+    ("client_transport", "expected_transport"),
+    [
+        (
+            SSETransport(name="my server 2", url="https://example.com/sse"),
+            "sse",
+        ),
+        (
+            StreamableHTTPTransport(name="my server 5", url="https://example.com/mcp"),
+            "streamable_http",
+        ),
+    ],
+)
+def test_non_mtls_remote_connections_enable_tls_verification(client_transport, expected_transport):
+    connection = AgentSpecToLangGraphConverter()._client_transport_convert_to_langgraph(
+        client_transport
+    )
+
+    assert connection["transport"] == expected_transport
+    assert isinstance(connection["httpx_client_factory"], _HttpxClientFactory)
+    assert connection["httpx_client_factory"].verify is True
 
 
 @pytest.fixture(scope="function")

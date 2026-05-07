@@ -18,6 +18,8 @@ T = TypeVar("T")
 
 
 class _HttpxClientFactory:
+    """Build HTTPX async clients for MCP transports with explicit TLS verification."""
+
     def __init__(
         self,
         verify: bool = True,
@@ -29,16 +31,21 @@ class _HttpxClientFactory:
     ):
         self.verify: bool | ssl.SSLContext
         if verify:
-            # Default behaviour: Client verification
-            if not (key_file and cert_file and ssl_ca_cert):
-                raise ValueError(
-                    "When verify=True, all `key_file`, `cert_file` and `ssl_ca_cert` "
-                    "must be defined."
-                )
-            ssl_ctx = ssl.create_default_context(cafile=ssl_ca_cert)
-            ssl_ctx.load_cert_chain(certfile=cert_file, keyfile=key_file)
-            ssl_ctx.check_hostname = check_hostname
-            self.verify = ssl_ctx
+            if key_file or cert_file or ssl_ca_cert:
+                # mTLS requires the full client certificate configuration.
+                if not (key_file and cert_file and ssl_ca_cert):
+                    raise ValueError(
+                        "When verify=True and certificate files are provided, all "
+                        "`key_file`, `cert_file` and `ssl_ca_cert` must be defined."
+                    )
+                ssl_ctx = ssl.create_default_context(cafile=ssl_ca_cert)
+                ssl_ctx.load_cert_chain(certfile=cert_file, keyfile=key_file)
+                ssl_ctx.check_hostname = check_hostname
+                self.verify = ssl_ctx
+            else:
+                # Standard HTTPS verification without client certificates uses the
+                # system trust store.
+                self.verify = True
         else:
             # If verify=False the cert/key files should not be specified
             if key_file or cert_file or ssl_ca_cert:
