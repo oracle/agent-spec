@@ -15,9 +15,9 @@ llm_config:
   id: 01932e0d-5115-4848-a529-f1f1f7a5e866
   metadata:
     __metadata_info__: {}
-  model_id: /storage/models/Llama-3.3-70B-Instruct
-  name: Llama-3.3-70B-Instruct
-  url: [[LLAMA70BV33_API_URL]]
+  model_id: openai/gpt-oss-120b
+  name: gpt-oss-120b
+  url: [[OSS_API_URL]]
 metadata:
   __metadata_info__: {}
 name: agent_75dd14fc

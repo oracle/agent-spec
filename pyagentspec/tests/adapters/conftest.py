@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -27,6 +27,11 @@ from .server_utils import (
 )
 
 SKIP_LLM_TESTS_ENV_VAR = "SKIP_LLM_TESTS"
+DUMMY_LLM_URL_BY_ENV = {
+    "LLAMA_API_URL": "http://dummy-llm.local",
+    "LLAMA70BV33_API_URL": "http://dummy-llm70.local",
+    "OSS_API_URL": "http://dummy-llm-oss.local",
+}
 
 
 @pytest.fixture(autouse=True)
@@ -51,15 +56,32 @@ def should_skip_llm_test() -> bool:
     return os.environ.get(SKIP_LLM_TESTS_ENV_VAR) == "1"
 
 
+def _seed_dummy_llm_env_for_skip() -> None:
+    if not should_skip_llm_test():
+        return
+    for env_name, dummy_url in DUMMY_LLM_URL_BY_ENV.items():
+        os.environ.setdefault(env_name, dummy_url)
+
+
+def _get_required_llm_url(env_name: str) -> str:
+    value = os.environ.get(env_name)
+    if value:
+        return value
+    if should_skip_llm_test():
+        return DUMMY_LLM_URL_BY_ENV[env_name]
+    raise Exception(f"{env_name} is not set in the environment")
+
+
+_seed_dummy_llm_env_for_skip()
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _seed_llm_env_for_skip():
     """
     When SKIP_LLM_TESTS=1, seed harmless dummy endpoints so imports/deserialization
     never crash on missing env vars.
     """
-    if should_skip_llm_test():
-        os.environ.setdefault("LLAMA_API_URL", "http://dummy-llm.local")
-        os.environ.setdefault("LLAMA70BV33_API_URL", "http://dummy-llm70.local")
+    _seed_dummy_llm_env_for_skip()
     yield
 
 
@@ -105,28 +127,9 @@ def json_server(json_server_port: int):
         terminate_process_tree(process, timeout=5.0)
 
 
-llama_api_url = os.environ.get("LLAMA_API_URL")
-if not llama_api_url:
-    if should_skip_llm_test():
-        llama_api_url = "http://dummy-llm.local"
-    else:
-        raise Exception("LLAMA_API_URL is not set in the environment")
-
-
-llama70bv33_api_url = os.environ.get("LLAMA70BV33_API_URL")
-if not llama70bv33_api_url:
-    if should_skip_llm_test():
-        llama70bv33_api_url = "http://dummy-llm70.local"
-    else:
-        raise Exception("LLAMA70BV33_API_URL is not set in the environment")
-
-
-oss_api_url = os.environ.get("OSS_API_URL")
-if not oss_api_url:
-    if should_skip_llm_test():
-        oss_api_url = "http://dummy-llm-oss.local"
-    else:
-        raise Exception("OSS_API_URL is not set in the environment")
+llama_api_url = _get_required_llm_url("LLAMA_API_URL")
+llama70bv33_api_url = _get_required_llm_url("LLAMA70BV33_API_URL")
+oss_api_url = _get_required_llm_url("OSS_API_URL")
 
 
 def _replace_config_placeholders(yaml_config: str, json_server_url: str) -> str:
@@ -180,9 +183,9 @@ def quickstart_agent_json() -> str:
     )
 
     agentspec_llm_config = OpenAiCompatibleConfig(
-        name="llama-3.3-70b-instruct",
-        model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.environ["LLAMA70BV33_API_URL"],
+        name="gpt-oss-120b",
+        model_id="openai/gpt-oss-120b",
+        url=_get_required_llm_url("OSS_API_URL"),
     )
 
     agent = Agent(

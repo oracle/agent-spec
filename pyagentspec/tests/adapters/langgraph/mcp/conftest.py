@@ -15,6 +15,6 @@ def big_llama():
 
     return VllmConfig(
         name="TEST MODEL",
-        model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.environ.get("LLAMA70BV33_API_URL"),
+        model_id="openai/gpt-oss-120b",
+        url=os.environ.get("OSS_API_URL"),
     )
