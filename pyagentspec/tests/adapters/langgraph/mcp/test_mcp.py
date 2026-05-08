@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import ssl
 import sys
 from contextlib import nullcontext
 
@@ -101,15 +102,31 @@ def loaded_langgraph_agent(client_transport_name, big_llama, request):
 def test_httpx_client_factory_uses_system_ca_store_for_server_only_tls():
     factory = _HttpxClientFactory(verify=True)
 
-    assert factory.verify is True
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is True
+
+
+def test_httpx_client_factory_accepts_custom_ca_without_client_certificates(ca_cert_path):
+    factory = _HttpxClientFactory(verify=True, ssl_ca_cert=ca_cert_path)
+
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is True
 
 
 def test_httpx_client_factory_requires_complete_mtls_configuration():
     with pytest.raises(
         ValueError,
-        match="When verify=True and certificate files are provided",
+        match="both `key_file` and `cert_file` must be defined",
     ):
         _HttpxClientFactory(verify=True, key_file="client.key")
+
+
+def test_httpx_client_factory_warns_when_hostname_checks_are_disabled():
+    with pytest.warns(UserWarning, match="hostname verification is disabled"):
+        factory = _HttpxClientFactory(verify=True, check_hostname=False)
+
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is False
 
 
 @pytest.mark.parametrize(
@@ -132,7 +149,8 @@ def test_non_mtls_remote_connections_enable_tls_verification(client_transport, e
 
     assert connection["transport"] == expected_transport
     assert isinstance(connection["httpx_client_factory"], _HttpxClientFactory)
-    assert connection["httpx_client_factory"].verify is True
+    assert isinstance(connection["httpx_client_factory"].verify, ssl.SSLContext)
+    assert connection["httpx_client_factory"].verify.check_hostname is True
 
 
 @pytest.fixture(scope="function")

@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import ssl
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from typing import Any, Awaitable, Callable, Optional, TypeVar
@@ -31,21 +32,26 @@ class _HttpxClientFactory:
     ):
         self.verify: bool | ssl.SSLContext
         if verify:
-            if key_file or cert_file or ssl_ca_cert:
-                # mTLS requires the full client certificate configuration.
-                if not (key_file and cert_file and ssl_ca_cert):
+            ssl_ctx = ssl.create_default_context()
+            if ssl_ca_cert:
+                ssl_ctx.load_verify_locations(cafile=ssl_ca_cert)
+
+            if key_file or cert_file:
+                # Client authentication requires both pieces of certificate material.
+                if not (key_file and cert_file):
                     raise ValueError(
-                        "When verify=True and certificate files are provided, all "
-                        "`key_file`, `cert_file` and `ssl_ca_cert` must be defined."
+                        "When client certificates are provided, both `key_file` and "
+                        "`cert_file` must be defined."
                     )
-                ssl_ctx = ssl.create_default_context(cafile=ssl_ca_cert)
                 ssl_ctx.load_cert_chain(certfile=cert_file, keyfile=key_file)
-                ssl_ctx.check_hostname = check_hostname
-                self.verify = ssl_ctx
-            else:
-                # Standard HTTPS verification without client certificates uses the
-                # system trust store.
-                self.verify = True
+            ssl_ctx.check_hostname = check_hostname
+            if not check_hostname:
+                warnings.warn(
+                    "TLS hostname verification is disabled for this MCP HTTP client.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+            self.verify = ssl_ctx
         else:
             # If verify=False the cert/key files should not be specified
             if key_file or cert_file or ssl_ca_cert:
