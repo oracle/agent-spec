@@ -154,7 +154,10 @@ async def test_can_run_imported_agent_with_mcp_tools(
     )
     output = ""
     for m in response["messages"][1:]:
-        output += m.content
+        if isinstance(m.content, str):
+            output += m.content
+        elif isinstance(m.content, list):
+            output += "".join(str(item) for item in m.content)
     assert output  # should not be empty
 
 
