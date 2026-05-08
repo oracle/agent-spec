@@ -135,7 +135,10 @@ def test_mcp_toolbox_exposes_proper_tools(loaded_langgraph_agent):
 
 
 @pytest.mark.anyio
-async def test_can_run_imported_agent_with_mcp_tools(agentspec_agent_with_mcp_toolbox):
+async def test_can_run_imported_agent_with_mcp_tools(
+    agentspec_agent_with_mcp_toolbox,
+    disable_parallel_tool_calls,
+):
     langgraph_agent = AgentSpecLoader().load_component(agentspec_agent_with_mcp_toolbox)
 
     response = await langgraph_agent.ainvoke(
