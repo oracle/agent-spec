@@ -137,6 +137,13 @@ class ComponentLoadPolicy:
         component_class = Component.get_class_from_name(component_type)
         self._validate_component(component_type, component_class)
 
+    def validate_component(self, component: Component) -> None:
+        """Raise if the component is disallowed by the policy."""
+        self._validate_component(
+            cast(str, component.component_type),
+            component.__class__,
+        )
+
     def _validate_component(
         self,
         component_type: str,
@@ -198,10 +205,7 @@ class ComponentLoadPolicy:
                 continue
             visited_component_ids.add(id(current_component))
 
-            self._validate_component(
-                cast(str, current_component.component_type),
-                current_component.__class__,
-            )
+            self.validate_component(current_component)
             for field_name in current_component.__class__.model_fields:
                 field_value = getattr(current_component, field_name, None)
                 components_to_check.extend(_get_children_direct_from_field_value(field_value))

@@ -246,6 +246,8 @@ class _DeserializationContextImpl(DeserializationContext):
                 f"'{annotation.__name__}', got '{loaded_reference.__class__.__name__}'. "
                 "If using a component registry, make sure that the components are correct."
             )
+        if isinstance(loaded_reference, Component):
+            self.component_load_policy.validate_component(loaded_reference)
         return loaded_reference, validation_errors
 
     def load_field(
@@ -497,6 +499,7 @@ class _DeserializationContextImpl(DeserializationContext):
             )
 
         component.min_agentspec_version = agentspec_version
+        self.component_load_policy.validate_component(component)
         return component, validation_errors
 
     def _load_component_from_dict(
@@ -521,6 +524,7 @@ class _DeserializationContextImpl(DeserializationContext):
             return self._load_reference(content["$component_ref"], annotation)
 
         component_type = self.get_component_type(content)
+        self.component_load_policy.validate_component_type(component_type)
 
         # get the plugin to use for loading if there is one
         plugin = self.component_types_to_plugins.get(component_type, None)
@@ -578,7 +582,6 @@ class _DeserializationContextImpl(DeserializationContext):
         self._load_component_registry(components_registry)
         # the top level object has to be a component, this method will check for that
         component, validation_errors = self._load_component_from_dict(content)
-        self.component_load_policy.validate_component_tree(component)
 
         self._agentspec_version = None
         return component, validation_errors

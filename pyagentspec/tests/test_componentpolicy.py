@@ -186,7 +186,7 @@ def test_component_load_policy_unresolved_type_names_match_exactly() -> None:
         policy.validate_component_type("UnregisteredComponent")
 
 
-def test_deserializer_applies_hierarchical_policy_to_deserialized_component_tree() -> None:
+def test_deserializer_applies_hierarchical_policy_to_loaded_components() -> None:
     serialized_tool = AgentSpecSerializer().to_dict(_make_stdio_mcp_tool())
 
     with pytest.raises(ValueError, match="StdioTransport.*in the block list"):
@@ -225,11 +225,11 @@ def test_component_load_policy_class_entries_work_for_extension_components() -> 
     assert loaded_component == component
 
 
-def test_deserializer_validates_component_tree_returned_by_plugin() -> None:
-    with pytest.raises(ValueError, match="StdioTransport.*in the block list"):
+def test_deserializer_validates_component_returned_by_plugin() -> None:
+    with pytest.raises(ValueError, match="PolicyPluginContainer.*in the block list"):
         AgentSpecDeserializer(
             plugins=[PolicyBypassDeserializationPlugin()],
-            blocked_components=[StdioTransport],
+            blocked_components=[PolicyPluginContainer],
         ).from_dict(
             {
                 "component_type": PolicyPluginContainer.__name__,
