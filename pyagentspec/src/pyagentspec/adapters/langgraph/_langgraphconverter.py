@@ -1255,8 +1255,14 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
             )
         elif isinstance(llm_config, OllamaConfig):
+            if llm_config.retry_policy is not None:
+                raise NotImplementedError(
+                    "LangGraph ChatOllama conversion does not support `RetryPolicy`."
+                )
+
             from langchain_ollama import ChatOllama
 
             generation_config = {
@@ -1277,6 +1283,7 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
             return _create_chat_openai_model(
@@ -1286,14 +1293,20 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
             )
         elif isinstance(llm_config, OciGenAiConfig):
-            from langchain_oci import ChatOCIGenAI  # type: ignore
-
             if use_responses_api:
                 raise NotImplementedError(
                     "OCI GenAI models with OpenAI Responses API is not yet supported"
                 )
+
+            if llm_config.retry_policy is not None:
+                raise NotImplementedError(
+                    "LangGraph OCI GenAI conversion does not support `RetryPolicy`."
+                )
+
+            from langchain_oci import ChatOCIGenAI  # type: ignore
 
             model_kwargs = {**generation_config}
             if "openai" in llm_config.model_id and "max_tokens" in model_kwargs:
@@ -1319,11 +1332,47 @@ class AgentSpecToLangGraphConverter:
                     use_responses_api=llm_config.api_type == "responses",
                     callbacks=callbacks,
                     generation_config=generation_config,
+                    retry_config=self._retry_policy_convert_to_langgraph(llm_config),
                 )
             raise NotImplementedError(
                 f"LlmConfig with api_provider='{llm_config.api_provider}' is not yet supported "
                 f"in langgraph. Consider using a specific LlmConfig subclass instead."
             )
+
+    def _retry_policy_convert_to_langgraph(
+        self, llm_config: AgentSpecLlmConfig
+    ) -> "ChatOpenAIRetryConfig":
+        """Convert Agent Spec retry policy settings into ChatOpenAI keyword arguments."""
+        retry_policy = llm_config.retry_policy
+        if retry_policy is None:
+            return {}
+
+        default_retry_policy = type(retry_policy)()
+        unsupported_fields = [
+            field_name
+            for field_name in (
+                "initial_retry_delay",
+                "max_retry_delay",
+                "backoff_factor",
+                "jitter",
+                "service_error_retry_on_any_5xx",
+                "recoverable_statuses",
+            )
+            if getattr(retry_policy, field_name) != getattr(default_retry_policy, field_name)
+        ]
+        if unsupported_fields:
+            raise NotImplementedError(
+                "LangGraph ChatOpenAI conversion supports only "
+                "`RetryPolicy.max_attempts` and `RetryPolicy.request_timeout`. "
+                "This is because the underlying ChatOpenAI/OpenAI client only exposes "
+                "retry count and timeout settings. "
+                "Unsupported retry policy fields: " + ", ".join(unsupported_fields)
+            )
+
+        retry_config: ChatOpenAIRetryConfig = {"max_retries": retry_policy.max_attempts}
+        if retry_policy.request_timeout is not None:
+            retry_config["timeout"] = retry_policy.request_timeout
+        return retry_config
 
     def _client_transport_convert_to_langgraph(
         self, agentspec_component: AgentSpecClientTransport
@@ -1513,6 +1562,7 @@ def _create_chat_openai_model(
     use_responses_api: bool,
     callbacks: List[BaseCallbackHandler],
     generation_config: Dict[str, Any],
+    retry_config: "ChatOpenAIRetryConfig",
     base_url: Optional[str] = None,
     api_key: Optional[str] = None,
 ) -> BaseChatModel:
@@ -1529,12 +1579,20 @@ def _create_chat_openai_model(
         "use_responses_api": use_responses_api,
         "callbacks": callbacks,
         **generation_config,
+        **retry_config,
     }
     if base_url is not None:
         kwargs["base_url"] = base_url
     if api_key is not None:
         kwargs["api_key"] = SecretStr(api_key)
     return ChatOpenAI(**kwargs)
+
+
+class ChatOpenAIRetryConfig(TypedDict):
+    """Keyword arguments for ChatOpenAI retry and timeout configuration."""
+
+    max_retries: NotRequired[int]
+    timeout: NotRequired[float]
 
 
 def _ensure_url_has_scheme(url: str) -> str:

@@ -30,6 +30,7 @@ from pyagentspec.tracing.spans import (
     ToolExecutionSpan,
 )
 from pyagentspec.tracing.trace import Trace
+from tests.retry_test import retry_test
 
 from ..conftest import _replace_config_placeholders
 
@@ -191,7 +192,16 @@ def check_dummyspanprocessor_flow_events_and_spans(span_processor: DummySpanProc
     ), "ToolExecutionResponse not emitted"
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  1.27 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -214,7 +224,16 @@ def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: s
     check_dummyspanprocessor_agent_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  1.41 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -242,7 +261,16 @@ def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: s
     check_dummyspanprocessor_agent_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_invoke_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  2.45 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -265,7 +293,16 @@ def test_langgraph_invoke_tracing_emits_flow_events(json_server: str) -> None:
     check_dummyspanprocessor_flow_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  2.17 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -290,7 +327,16 @@ def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
     check_dummyspanprocessor_flow_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_server: str):
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  1.50 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 

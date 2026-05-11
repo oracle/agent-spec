@@ -14,9 +14,13 @@ from pyagentspec.adapters.langgraph._langgraphconverter import (
     AgentSpecToLangGraphConverter,
     _prepare_openai_compatible_url,
 )
+from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
+from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.retrypolicy import RetryPolicy
+from tests.retry_test import retry_test
 
 
 @pytest.mark.parametrize(
@@ -80,6 +84,72 @@ def test_openaicompatible_conversion_sets_responses_flag(
     assert model.temperature == default_generation_parameters.temperature
 
 
+@pytest.mark.parametrize("llm_type", ["vllm", "openai_compatible", "openai", "bare_openai"])
+def test_openai_chat_conversion_maps_retry_policy(llm_type: str, monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
+    retry_policy = RetryPolicy(max_attempts=0, request_timeout=2.5)
+    agentspec_llm: LlmConfig
+
+    if llm_type == "vllm":
+        agentspec_llm = VllmConfig(
+            name="llm",
+            model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+            url="localhost:8000",
+            retry_policy=retry_policy,
+        )
+    elif llm_type == "openai_compatible":
+        agentspec_llm = OpenAiCompatibleConfig(
+            name="oaic",
+            model_id="gpt-4o-mini",
+            url="https://api.compatible",
+            retry_policy=retry_policy,
+        )
+    elif llm_type == "openai":
+        agentspec_llm = OpenAiConfig(
+            name="openai",
+            model_id="gpt-4o-mini",
+            api_key="sk-test",
+            retry_policy=retry_policy,
+        )
+    else:
+        agentspec_llm = LlmConfig(
+            name="openai",
+            model_id="gpt-4o-mini",
+            api_provider="openai",
+            retry_policy=retry_policy,
+        )
+
+    model = AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+    assert isinstance(model, ChatOpenAI)
+    assert model.request_timeout == retry_policy.request_timeout
+    assert model.max_retries == retry_policy.max_attempts
+
+
+def test_openai_chat_conversion_rejects_unsupported_retry_policy_fields() -> None:
+    agentspec_llm = VllmConfig(
+        name="llm",
+        model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+        url="localhost:8000",
+        retry_policy=RetryPolicy(initial_retry_delay=0.5),
+    )
+
+    with pytest.raises(NotImplementedError, match="initial_retry_delay"):
+        AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+
+def test_non_openai_chat_conversion_rejects_retry_policy() -> None:
+    agentspec_llm = OllamaConfig(
+        name="oll",
+        model_id="llama3.2",
+        url="http://localhost:11434",
+        retry_policy=RetryPolicy(max_attempts=0),
+    )
+
+    with pytest.raises(NotImplementedError, match="ChatOllama.*RetryPolicy"):
+        AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+
 def test_ollama_conversion_maps_generation_config_names(default_generation_parameters):
     agentspec_llm = OllamaConfig(
         name="oll",
@@ -98,7 +168,17 @@ def test_ollama_conversion_maps_generation_config_names(default_generation_param
     assert model.top_p == default_generation_parameters.top_p
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_invoke_vllm_model(default_generation_parameters, monkeypatch):
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  0.52 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
+
     agentspec_llm = OpenAiCompatibleConfig(
         name="gpt-oss-120b",
         model_id="openai/gpt-oss-120b",

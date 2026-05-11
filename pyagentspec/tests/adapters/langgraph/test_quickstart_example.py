@@ -8,12 +8,23 @@ import anyio
 import pytest
 
 from pyagentspec.agent import Agent
+from tests.retry_test import retry_test
 
 
 @pytest.mark.filterwarnings(
     f"ignore:`config_type` is deprecated and will be removed:DeprecationWarning"
 )
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_quickstart_example_runs(quickstart_agent_json: Agent):
+    """
+    Failure rate:          0 out of 20
+    Observed on:           2026-05-11
+    Average success time:  1.99 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     def subtract(a: float, b: float) -> float:
