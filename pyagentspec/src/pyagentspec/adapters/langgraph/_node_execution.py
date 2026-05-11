@@ -487,6 +487,7 @@ class AgentNodeExecutor(NodeExecutor):
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        middleware: Optional[List[Any]] = None,
     ) -> None:
         super().__init__(node)
         if not isinstance(self.node, AgentSpecAgentNode):
@@ -495,6 +496,7 @@ class AgentNodeExecutor(NodeExecutor):
         self.checkpointer = checkpointer
         self.converted_components = converted_components
         self.config = config
+        self._middleware: List[Any] = list(middleware or [])
         self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
 
     def _create_react_agent_with_given_input_values(
@@ -508,9 +510,9 @@ class AgentNodeExecutor(NodeExecutor):
         agentspec_component = self.node.agent
         system_prompt = render_template(agentspec_component.system_prompt, inputs)
         if system_prompt not in self._agents_cache:
-            self._agents_cache[
-                system_prompt
-            ] = AgentSpecToLangGraphConverter()._create_react_agent_with_given_info(
+            self._agents_cache[system_prompt] = AgentSpecToLangGraphConverter(
+                middleware=self._middleware
+            )._create_react_agent_with_given_info(
                 name=agentspec_component.name,
                 system_prompt=system_prompt,
                 agent=agentspec_component,

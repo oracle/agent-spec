@@ -723,6 +723,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
             checkpointer=checkpointer,
             config=config,
+            middleware=self._middleware,
         )
 
     def _llm_node_convert_to_langgraph(
