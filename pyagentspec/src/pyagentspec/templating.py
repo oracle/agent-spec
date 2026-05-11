@@ -18,10 +18,10 @@ TEMPLATE_PLACEHOLDER_REGEXP = r"{{\s*(\w+)\s*}}"
 def get_placeholders_from_string(string_with_placeholders: str) -> List[str]:
     """Extract the placeholder names from a string."""
     return list(
-        {
+        dict.fromkeys(
             match.strip()
             for match in re.findall(TEMPLATE_PLACEHOLDER_REGEXP, string_with_placeholders)
-        }
+        )
     )
 
 
