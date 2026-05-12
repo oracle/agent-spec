@@ -1385,7 +1385,7 @@ class AgentSpecToLangGraphConverter:
                 transport="sse",
                 url=agentspec_component.url,
                 headers=agentspec_component.headers,
-                httpx_client_factory=_HttpxClientFactory(verify=False),
+                httpx_client_factory=_HttpxClientFactory(verify=True),
             )
         if isinstance(agentspec_component, AgentSpecStreamableHTTPmTLSTransport):
             return StreamableHttpConnection(
@@ -1403,7 +1403,7 @@ class AgentSpecToLangGraphConverter:
                 transport="streamable_http",
                 url=agentspec_component.url,
                 headers=agentspec_component.headers,
-                httpx_client_factory=_HttpxClientFactory(verify=False),
+                httpx_client_factory=_HttpxClientFactory(verify=True),
             )
         raise ValueError(
             f"Agent Spec ClientTransport '{agentspec_component.__class__.__name__}' is not supported yet."

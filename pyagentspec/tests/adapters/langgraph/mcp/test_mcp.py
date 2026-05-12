@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import ssl
 import sys
 from contextlib import nullcontext
 
@@ -15,6 +16,8 @@ from langgraph.types import Command
 from pydantic import SecretStr
 
 from pyagentspec.adapters.langgraph import AgentSpecExporter, AgentSpecLoader
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory
 from pyagentspec.agent import Agent
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.mcp.clienttransport import (
@@ -42,7 +45,8 @@ def sse_client_transport(sse_mcp_server_http):
 
 
 @pytest.fixture
-def sse_client_transport_https(sse_mcp_server_https):
+def sse_client_transport_https(monkeypatch, ca_cert_path, sse_mcp_server_https):
+    monkeypatch.setenv("SSL_CERT_FILE", ca_cert_path)
     return SSETransport(name="my server 2", url=sse_mcp_server_https)
 
 
@@ -63,7 +67,10 @@ def streamablehttp_client_transport(streamablehttp_mcp_server_http):
 
 
 @pytest.fixture
-def streamablehttp_client_transport_https(streamablehttp_mcp_server_https):
+def streamablehttp_client_transport_https(
+    monkeypatch, ca_cert_path, streamablehttp_mcp_server_https
+):
+    monkeypatch.setenv("SSL_CERT_FILE", ca_cert_path)
     return StreamableHTTPTransport(name="my server 5", url=streamablehttp_mcp_server_https)
 
 
@@ -90,6 +97,60 @@ def loaded_langgraph_agent(client_transport_name, big_llama, request):
         system_prompt="be kind and stay frosty",
     )
     return AgentSpecLoader().load_component(agentspec_agent)
+
+
+def test_httpx_client_factory_uses_system_ca_store_for_server_only_tls():
+    factory = _HttpxClientFactory(verify=True)
+
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is True
+
+
+def test_httpx_client_factory_accepts_custom_ca_without_client_certificates(ca_cert_path):
+    factory = _HttpxClientFactory(verify=True, ssl_ca_cert=ca_cert_path)
+
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is True
+
+
+def test_httpx_client_factory_requires_complete_mtls_configuration():
+    with pytest.raises(
+        ValueError,
+        match="both `key_file` and `cert_file` must be defined",
+    ):
+        _HttpxClientFactory(verify=True, key_file="client.key")
+
+
+def test_httpx_client_factory_warns_when_hostname_checks_are_disabled():
+    with pytest.warns(UserWarning, match="hostname verification is disabled"):
+        factory = _HttpxClientFactory(verify=True, check_hostname=False)
+
+    assert isinstance(factory.verify, ssl.SSLContext)
+    assert factory.verify.check_hostname is False
+
+
+@pytest.mark.parametrize(
+    ("client_transport", "expected_transport"),
+    [
+        (
+            SSETransport(name="my server 2", url="https://example.com/sse"),
+            "sse",
+        ),
+        (
+            StreamableHTTPTransport(name="my server 5", url="https://example.com/mcp"),
+            "streamable_http",
+        ),
+    ],
+)
+def test_non_mtls_remote_connections_enable_tls_verification(client_transport, expected_transport):
+    connection = AgentSpecToLangGraphConverter()._client_transport_convert_to_langgraph(
+        client_transport
+    )
+
+    assert connection["transport"] == expected_transport
+    assert isinstance(connection["httpx_client_factory"], _HttpxClientFactory)
+    assert isinstance(connection["httpx_client_factory"].verify, ssl.SSLContext)
+    assert connection["httpx_client_factory"].verify.check_hostname is True
 
 
 @pytest.fixture(scope="function")

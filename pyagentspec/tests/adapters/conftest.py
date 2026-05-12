@@ -72,9 +72,6 @@ def _get_required_llm_url(env_name: str) -> str:
     raise Exception(f"{env_name} is not set in the environment")
 
 
-_seed_dummy_llm_env_for_skip()
-
-
 @pytest.fixture(scope="session", autouse=True)
 def _seed_llm_env_for_skip():
     """

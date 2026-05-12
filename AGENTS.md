@@ -1,30 +1,70 @@
-# Core AI Tools in Oracle Agent Spec Ecosystem
+# Agent Spec Repository Guide
 
-* Framework-agnostic agent definitions
-  Agent Spec itself is a declarative configuration language for defining AI agents and workflows (not a single AI model/tool). It lets you describe how an agent should behave, what tools it uses, and how workflows are structured — in a portable, framework-neutral format.
+These instructions apply to the whole repository. More specific nested
+`AGENTS.md` files take precedence for their subtrees.
 
-* Runtime execution frameworks
-  To actually run agents defined with Agent Spec, you use one of several runtime/agent execution tools:
-  * WayFlow — Oracle’s reference Agent Spec runtime.
-  * LangGraph, AutoGen, CrewAI — Community or partner frameworks that can interpret and execute Agent Spec definitions.
+## Working Rules
 
-* LLM integrations (AI models)
-  Agents typically call large language models (LLMs) to generate responses, reason, plan, and act. In the Agent Spec context (especially via the PyAgentSpec SDK), supported models include:
+- Confirm the current branch and working tree before editing. Preserve unrelated
+  user changes and untracked files.
+- Read the relevant implementation, tests, docs, and nested `AGENTS.md` file
+  before choosing an approach.
+- Keep changes scoped. Do not mix unrelated cleanup, formatting churn, or
+  behavior changes into the same patch.
+- Update tests and public docs when behavior is user-visible.
+- Prefer targeted validation first. Run broad suites only when the touched
+  surface justifies it or the user asks.
 
-  * OCI GenAI (Oracle Cloud’s generative models)
-  * OpenAI models
-  * Ollama models
+## Package Guidance
 
-  These are configured via abstraction layers in the SDK, so the agent logic stays compatible regardless of the underlying LLM.
+- For Python SDK work, follow `pyagentspec/AGENTS.md`.
+- For evaluation work, also follow
+  `pyagentspec/src/pyagentspec/evaluation/AGENTS.md`.
+- For TypeScript SDK work, follow `tsagentspec/AGENTS.md`.
+- Keep package-specific details in nested `AGENTS.md` files instead of expanding
+  this repository-level guide.
 
-* Oracle Cloud AI Platform tools (often combined with Agent Spec)
-  When building real enterprise agents (e.g., via OCI AI Agent Platform), Oracle’s tooling can include:
+## Agent Spec Scope
 
-* Retrieval-Augmented Generation (RAG) — to fetch context from enterprise knowledge bases.
+- Agent Spec is a declarative, framework-neutral configuration language for
+  agents and workflows. Treat serialized specs as data, not executable code.
+- Runtime adapters may target WayFlow, LangGraph, AutoGen, CrewAI, OpenAI
+  Agents, and related frameworks. Preserve semantics where possible and fail
+  explicitly when a target cannot represent a construct.
+- LLM and tool integrations should stay behind package abstractions so agent
+  definitions remain portable across providers and runtimes.
 
-* SQL tools — convert natural language to SQL and run against databases.
+## Security-Sensitive Changes
 
-* Custom function calling — enables agents to execute arbitrary custom functions or APIs.
+- For changes involving prompt templates, generated code, remote tools,
+  credentials, deserialization, network communication, or adapter execution
+  behavior, consult `docs/pyagentspec/source/security.rst`.
+- Keep `docs/pyagentspec/source/security.rst` current when a change alters
+  user-visible security guidance or secure-use expectations.
+- Never embed secrets in specs, docs, examples, or tests. Use parameters,
+  environment variables, or documented credential references.
+- Treat prompt placeholders, templated URLs, remote tool calls, and generated
+  code as trust-boundary surfaces.
 
-* User interaction tooling
-  While not part of Agent Spec’s core spec, AG-UI (Agent-User Interaction protocol) can be used alongside Agent Spec to standardize how agents communicate with front-ends and interactive apps.
+## Repository Map
+
+- `pyagentspec/`: Python SDK, adapters, tests, and fuzz tests.
+- `tsagentspec/`: TypeScript SDK sources, tests, and examples.
+- `docs/pyagentspec/`: Python SDK documentation.
+- `examples/`: runnable examples and adapter demonstrations.
+- `.github/`: CI and repository automation.
+- Top-level install scripts and config files support cross-package development.
+
+## Validation
+
+- Use the closest package-level test command for the files changed.
+- Run commands from the package directory when package configuration expects it.
+- Avoid tests that require external services unless they are already marked,
+  guarded, and relevant to the change.
+- Run `git diff --check` before handing off documentation or code changes.
+
+## Handoff
+
+- Summarize the files changed and the reason for each change.
+- Report the validation commands run, or state why validation was not run.
+- Call out remaining risks, skipped external-service tests, or follow-up work.
