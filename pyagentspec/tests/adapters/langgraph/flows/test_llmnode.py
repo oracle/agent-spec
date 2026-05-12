@@ -13,7 +13,8 @@ from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
 from pyagentspec.llms import LlmGenerationConfig, VllmConfig
 from pyagentspec.property import StringProperty
-from tests.retry_test import retry_test
+
+from ....retry_test import retry_test
 
 
 @pytest.fixture()

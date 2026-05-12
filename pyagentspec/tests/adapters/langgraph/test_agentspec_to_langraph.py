@@ -9,8 +9,7 @@ from unittest import mock
 
 import pytest
 
-from tests.retry_test import retry_test
-
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 from .conftest import get_weather
 
@@ -160,11 +159,13 @@ def test_client_tool_with_two_inputs(
     assert get_child_msgs, "Expected a ToolMessage from client tool 'get_child'"
     assert "himothy" in str(get_child_msgs[0].content).lower()
 
-    # ancestry_agent_with_client_tool_yaml is an agent with outputs and with a client tool with outputs
+    # ancestry_agent_with_client_tool_yaml is an agent with outputs and with a client
+    # tool with outputs
     # With latest langchain, agents with outputs may be emitted either as:
     # - a ToolMessage created from a structured-output tool (ToolStrategy path), or
     # - an AIMessage with a structured-output tool_call (ProviderStrategy path).
-    # - the langgraph adapter defaults to ToolStrategy, but the agent may fail to generate the AgentOutputModel tool call
+    # - the langgraph adapter defaults to ToolStrategy, but the agent may fail to generate
+    #   the AgentOutputModel tool call
     # - so it may try to re-generate the tool call (last_message being of type "AIMessage")
     structured_tool_msgs = [
         m for m in messages if m.type == "tool" and m.name == "AgentOutputModel"

@@ -29,8 +29,8 @@ from pyagentspec.tracing.spans import (
     ToolExecutionSpan,
 )
 from pyagentspec.tracing.trace import Trace
-from tests.retry_test import retry_test
 
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 from .test_tracing import DummySpanProcessor
 

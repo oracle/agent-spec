@@ -14,7 +14,8 @@ from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
 from pyagentspec.llms import VllmConfig
 from pyagentspec.property import StringProperty
-from tests.retry_test import retry_test
+
+from ....retry_test import retry_test
 
 
 @pytest.fixture()

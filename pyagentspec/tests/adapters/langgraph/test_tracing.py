@@ -30,8 +30,8 @@ from pyagentspec.tracing.spans import (
     ToolExecutionSpan,
 )
 from pyagentspec.tracing.trace import Trace
-from tests.retry_test import retry_test
 
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 
 CONFIGS = Path(__file__).parent / "configs"
@@ -367,7 +367,8 @@ def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_s
     streamed_tool_call_ids = {e.tool_calls[0].call_id for e in tool_call_chunks}
 
     # LangChain/LangGraph can stream provisional tool_call_ids that get abandoned before execution.
-    # Only the tool_call_id that actually runs will trigger on_tool_start and create a ToolExecutionSpan,
+    # Only the tool_call_id that actually runs will trigger on_tool_start and create a
+    # ToolExecutionSpan,
     # so we assert that every executed span originated from the streamed IDs rather than enforcing
     # one-to-one equality between streamed and executed tool calls.
     tool_spans = [s for (_, s) in proc.events if isinstance(s, ToolExecutionSpan)]
