@@ -320,132 +320,68 @@ def test_remote_tool_rejects_rendered_url_outside_allow_list_with_langgraph(
     mocked_request.assert_not_called()
 
 
-def test_remote_tool_retry_policy_timeout_is_forwarded_to_httpx() -> None:
-    """Verify RemoteTool retry policy request timeout is forwarded to httpx.request."""
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    remote_tool = RemoteTool(
-        name="slow_service",
-        description="A slow remote service",
+def _make_remote_tool_for_retry_tests(retry_policy: RetryPolicy | None) -> RemoteTool:
+    return RemoteTool(
+        name="retry_service",
+        description="A remote service with retry policy",
         url="https://example.com/api",
         http_method="GET",
-        retry_policy=RetryPolicy(max_attempts=0, request_timeout=300.0),
+        retry_policy=retry_policy,
     )
 
-    lang_tool = AgentSpecLoader().load_component(remote_tool)
 
-    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.return_value = DummyResponse({"result": "ok"})
-        lang_tool.func()
-        _, called_kwargs = mock_request.call_args
-        assert isinstance(called_kwargs["timeout"], httpx.Timeout)
-        assert called_kwargs["timeout"].read == 300.0
-
-
-def test_remote_tool_without_retry_policy_uses_httpx_default_timeout() -> None:
-    """Verify no timeout is passed when RemoteTool has no retry policy."""
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    remote_tool = RemoteTool(
-        name="default_service",
-        description="A remote service with default timeout",
-        url="https://example.com/api",
-        http_method="GET",
-    )
-
-    lang_tool = AgentSpecLoader().load_component(remote_tool)
-
-    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.return_value = DummyResponse({"result": "ok"})
-        lang_tool.func()
-        _, called_kwargs = mock_request.call_args
-        assert "timeout" not in called_kwargs
-
-
-def test_remote_tool_retry_policy_max_attempts_retries_httpx_errors() -> None:
-    """Verify RemoteTool retry policy retries transient HTTP client errors."""
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    remote_tool = RemoteTool(
-        name="flaky_service",
-        description="A flaky remote service",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
-            max_attempts=2,
-            request_timeout=0.5,
-            initial_retry_delay=0,
-            max_retry_delay=0,
+@pytest.mark.parametrize(
+    "retry_policy, expected_timeout",
+    [
+        pytest.param(
+            RetryPolicy(max_attempts=0, request_timeout=300.0),
+            300.0,
+            id="retry-policy-timeout",
         ),
-    )
+        pytest.param(
+            RetryPolicy(max_attempts=0),
+            None,
+            id="retry-policy-without-timeout",
+        ),
+        pytest.param(None, None, id="no-retry-policy"),
+    ],
+)
+def test_remote_tool_retry_policy_timeout_configuration(
+    retry_policy: RetryPolicy | None, expected_timeout: float | None
+) -> None:
+    """Verify RemoteTool retry policy timeout configuration is passed only when set."""
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
+    remote_tool = _make_remote_tool_for_retry_tests(retry_policy)
     lang_tool = AgentSpecLoader().load_component(remote_tool)
 
     with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.side_effect = [
+        mock_request.return_value = DummyResponse({"result": "ok"})
+        lang_tool.func()
+        _, called_kwargs = mock_request.call_args
+
+    if expected_timeout is None:
+        assert "timeout" not in called_kwargs
+    else:
+        assert isinstance(called_kwargs["timeout"], httpx.Timeout)
+        assert called_kwargs["timeout"].read == expected_timeout
+
+
+def _retry_success_side_effects(case_name: str) -> list[Any]:
+    request = httpx.Request("GET", "https://example.com/api")
+    if case_name == "transport-error":
+        return [
             httpx.ConnectError("temporary failure"),
             httpx.ConnectError("temporary failure"),
             DummyResponse({"result": "ok"}),
         ]
-        assert lang_tool.func() == {"result": "ok"}
-        assert mock_request.call_count == 3
-        assert all(
-            isinstance(call.kwargs["timeout"], httpx.Timeout) and call.kwargs["timeout"].read == 0.5
-            for call in mock_request.call_args_list
-        )
-
-
-def test_remote_tool_retry_policy_max_attempts_retries_recoverable_status() -> None:
-    """Verify RemoteTool retry policy retries recoverable HTTP status responses."""
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    remote_tool = RemoteTool(
-        name="busy_service",
-        description="A temporarily busy remote service",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
-            max_attempts=1,
-            initial_retry_delay=0,
-            max_retry_delay=0,
-        ),
-    )
-
-    lang_tool = AgentSpecLoader().load_component(remote_tool)
-    request = httpx.Request("GET", "https://example.com/api")
-
-    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.side_effect = [
+    if case_name == "service-error":
+        return [
             httpx.Response(503, request=request, json={"error": "busy"}),
             DummyResponse({"result": "ok"}),
         ]
-        assert lang_tool.func() == {"result": "ok"}
-        assert mock_request.call_count == 2
-
-
-def test_remote_tool_retry_policy_matches_recoverable_status_text_code() -> None:
-    """Verify recoverable status text codes are honored when configured."""
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    remote_tool = RemoteTool(
-        name="throttled_service",
-        description="A temporarily throttled remote service",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
-            max_attempts=1,
-            initial_retry_delay=0,
-            max_retry_delay=0,
-            service_error_retry_on_any_5xx=False,
-            recoverable_statuses={"429": ["TooManyRequests"]},
-        ),
-    )
-
-    lang_tool = AgentSpecLoader().load_component(remote_tool)
-    request = httpx.Request("GET", "https://example.com/api")
-
-    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.side_effect = [
+    if case_name == "status-text-code":
+        return [
             httpx.Response(
                 429,
                 request=request,
@@ -453,25 +389,88 @@ def test_remote_tool_retry_policy_matches_recoverable_status_text_code() -> None
             ),
             DummyResponse({"result": "ok"}),
         ]
+    raise ValueError(f"Unknown retry success case: {case_name}")
+
+
+@pytest.mark.parametrize(
+    "case_name, retry_policy, expected_call_count, expected_timeout",
+    [
+        pytest.param(
+            "transport-error",
+            RetryPolicy(
+                max_attempts=2,
+                request_timeout=0.5,
+                initial_retry_delay=0,
+                max_retry_delay=0,
+            ),
+            3,
+            0.5,
+            id="transport-error",
+        ),
+        pytest.param(
+            "service-error",
+            RetryPolicy(
+                max_attempts=1,
+                initial_retry_delay=0,
+                max_retry_delay=0,
+            ),
+            2,
+            None,
+            id="default-5xx-service-error",
+        ),
+        pytest.param(
+            "status-text-code",
+            RetryPolicy(
+                max_attempts=1,
+                initial_retry_delay=0,
+                max_retry_delay=0,
+                service_error_retry_on_any_5xx=False,
+                recoverable_statuses={"429": ["TooManyRequests"]},
+            ),
+            2,
+            None,
+            id="configured-status-text-code",
+        ),
+    ],
+)
+def test_remote_tool_retry_policy_retries_then_succeeds(
+    case_name: str,
+    retry_policy: RetryPolicy,
+    expected_call_count: int,
+    expected_timeout: float | None,
+) -> None:
+    """Verify retry policy succeeds after transient transport or response failures."""
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    remote_tool = _make_remote_tool_for_retry_tests(retry_policy)
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
+        mock_request.side_effect = _retry_success_side_effects(case_name)
         assert lang_tool.func() == {"result": "ok"}
-        assert mock_request.call_count == 2
+        assert mock_request.call_count == expected_call_count
+
+    if expected_timeout is not None:
+        assert all(
+            isinstance(call.kwargs["timeout"], httpx.Timeout)
+            and call.kwargs["timeout"].read == expected_timeout
+            for call in mock_request.call_args_list
+        )
+    else:
+        assert all("timeout" not in call.kwargs for call in mock_request.call_args_list)
 
 
 def test_remote_tool_retry_policy_honors_retry_after_header() -> None:
     """Verify RemoteTool retry policy prefers bounded Retry-After delays."""
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
-    remote_tool = RemoteTool(
-        name="throttled_service",
-        description="A temporarily throttled remote service",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
+    remote_tool = _make_remote_tool_for_retry_tests(
+        RetryPolicy(
             max_attempts=1,
             initial_retry_delay=0,
             max_retry_delay=0,
             recoverable_statuses={"429": []},
-        ),
+        )
     )
 
     lang_tool = AgentSpecLoader().load_component(remote_tool)
@@ -498,16 +497,12 @@ def test_remote_tool_retry_policy_raises_after_recoverable_status_retries() -> N
     """Verify RemoteTool retry policy raises after recoverable responses are exhausted."""
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
-    remote_tool = RemoteTool(
-        name="busy_service",
-        description="A persistently busy remote service",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
+    remote_tool = _make_remote_tool_for_retry_tests(
+        RetryPolicy(
             max_attempts=1,
             initial_retry_delay=0,
             max_retry_delay=0,
-        ),
+        )
     )
 
     lang_tool = AgentSpecLoader().load_component(remote_tool)
@@ -527,16 +522,12 @@ def test_remote_tool_retry_policy_does_not_retry_tls_errors() -> None:
     """Verify RemoteTool retry policy does not retry TLS verification failures."""
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
-    remote_tool = RemoteTool(
-        name="tls_service",
-        description="A remote service with invalid TLS",
-        url="https://example.com/api",
-        http_method="GET",
-        retry_policy=RetryPolicy(
+    remote_tool = _make_remote_tool_for_retry_tests(
+        RetryPolicy(
             max_attempts=2,
             initial_retry_delay=0,
             max_retry_delay=0,
-        ),
+        )
     )
 
     lang_tool = AgentSpecLoader().load_component(remote_tool)
