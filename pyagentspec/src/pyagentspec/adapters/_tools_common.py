@@ -119,6 +119,8 @@ def _request_with_retry(
             if wait_time_seconds is None:
                 raise
             previous_wait_time_seconds = wait_time_seconds
+            # RemoteTool execution is currently exposed as a synchronous callable across
+            # adapters, so retry backoff blocks until async RemoteTool support is consistent.
             time.sleep(wait_time_seconds)
             continue
 
@@ -147,6 +149,8 @@ def _request_with_retry(
             return response
         previous_wait_time_seconds = wait_time_seconds
         response.close()
+        # RemoteTool execution is currently exposed as a synchronous callable across
+        # adapters, so retry backoff blocks until async RemoteTool support is consistent.
         time.sleep(wait_time_seconds)
 
     raise RuntimeError("Request failed after retry attempts were exhausted.")
