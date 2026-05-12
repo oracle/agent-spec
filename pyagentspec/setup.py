@@ -28,14 +28,26 @@ def read(file_name):
 LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
     "langgraph>=1.1.10,<1.2.0",
-    "langchain-core>=1.3.2,<1.4.0",
+    "langchain-core>=1.3.3,<1.4.0",
     "langchain>=1.2.17,<1.3.0",
     "langchain-openai>=1.1.14,<1.2.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
+    "httpx>0.28.0",
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
-    "langgraph-checkpoint>=3.0.1,<4.0.0",  # To mitigate CVE-2025-64439
+    "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+    "langgraph-checkpoint>=4.0.1,<5.0.0",  # needed to avoid CVE present in earlier versions
+    "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
+]
+
+LANGGRAPH_FULL_DEPS = LANGGRAPH_DEPS + [
+    # 3rd party dependencies (imported in code)
+    "langchain-mcp-adapters",
+    "langchain-oci",
+    # 4rth party dependencies
+    "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+    "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
 ]
 
 
@@ -70,11 +82,7 @@ setup(
         "jsonschema>=4.23.0,<5",
         "pydantic>=2.10,<2.13",
         "pyyaml>=6,<7",
-        "httpx>0.28.0",
         "typing-extensions>=4.15.0",
-        # 4rth party dependencies
-        "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-        "urllib3>=2.6.3",  # needed to avoid a CVE present in earlier versions
     ],
     test_suite="tests",
     entry_points={
@@ -87,49 +95,76 @@ setup(
             "autogen-core>=0.5.6; python_version < '3.13'",
             "autogen-ext[ollama,openai]>=0.5.6; python_version < '3.13'",
             "autogen-agentchat>=0.5.6; python_version < '3.13'",
+            "httpx>0.28.0; python_version < '3.13'",
             # 4rth party dependencies
+            "certifi>=2025.1.31; python_version < '3.13'",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0; python_version < '3.13'",  # needed to avoid CVE present in earlier versions
         ],
         "openai-agents": [
             # 3rd party dependencies (imported in code)
             "openai-agents>=0.6.9",
             "libcst>=1.5,<2",
+            "httpx>0.28.0",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "crewai": [
             # 3rd party dependencies (imported in code)
             "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            "httpx>0.28.0; python_version < '3.14'",
             # 4rth party dependencies
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # litellm is included to fix CVEs
             "litellm>=1.83.14,<1.84.0; python_version < '3.14'",
+            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "langgraph": LANGGRAPH_DEPS,
-        "langgraph-full": LANGGRAPH_DEPS + ["langchain-mcp-adapters", "langchain-oci"],
+        "langgraph-full": LANGGRAPH_FULL_DEPS,
+        # wayflowcore 26.1.x caps starlette<0.48.0, so starlette cannot be
+        # lower-bounded here until WayFlow publishes a compatible release.
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=26.1.0"
+            "wayflowcore>=26.1.0",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=26.1.0"
+            "wayflowcore[oci]>=26.1.0",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=26.1.0"
+            "wayflowcore[a2a]>=26.1.0",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=26.1.0"
+            "wayflowcore[datastore]>=26.1.0",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
             "agent-framework>=1.0.0b260130; python_version < '3.14'",
+            "httpx>0.28.0; python_version < '3.14'",
             # 4rth party dependencies
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # including otel-semconv-ai to address internal agent-framework bug
             "opentelemetry-semantic-conventions-ai<0.4.14",
+            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
@@ -139,6 +174,10 @@ setup(
             "oci>=2.158.2",
             "numpy>=2.2.6",
             # 4rth party dependencies
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
     },
 )

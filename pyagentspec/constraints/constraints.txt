@@ -4,6 +4,8 @@ pyyaml==6.0.3
 httpx==0.28.1
 typing-extensions==4.15.0
 anyio==4.11.0
+cryptography==46.0.7
+pyOpenSSL==26.2.0
 
 # AutoGen adapter
 autogen-core==0.7.4
@@ -16,11 +18,12 @@ crewai==1.6.1
 # LangGraph adapter
 langgraph==1.1.10
 langchain==1.2.17
-langchain-core==1.3.2
+langchain-core==1.3.3
 langchain-openai==1.1.14
 langchain-ollama==1.0.1
-langchain-oci==0.2.3
-langchain-mcp-adapters==0.2.1
+langchain-oci==0.2.5
+langchain-mcp-adapters==0.2.2
+langgraph-checkpoint==4.1.0
 langgraph-swarm==0.1.0
 
 # WayFlow adapter
@@ -35,7 +38,7 @@ libcst==1.8.5
 
 # Evaluation
 pandas==2.3.3
-oci==2.167.0
+oci==2.174.0
 litellm==1.83.14
 numpy==2.2.6; python_version<"3.14"
 numpy==2.4.2; python_version>="3.14"

@@ -7,11 +7,11 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 import anyio
-import httpx
 
+from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.adapters._url_validation import (
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,
@@ -57,6 +57,11 @@ from pyagentspec.tracing.events import NodeExecutionStart as AgentSpecNodeExecut
 from pyagentspec.tracing.events.exception import ExceptionRaised
 from pyagentspec.tracing.spans import NodeExecutionSpan as AgentSpecNodeExecutionSpan
 from pyagentspec.tracing.spans.span import get_current_span
+
+if TYPE_CHECKING:
+    import httpx
+else:
+    httpx = LazyLoader("httpx")
 
 MessageLike = Union[BaseMessage, List[str], Tuple[str, str], str, Dict[str, Any]]
 

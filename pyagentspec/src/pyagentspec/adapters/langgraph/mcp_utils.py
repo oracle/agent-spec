@@ -4,16 +4,24 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from __future__ import annotations
+
 import ssl
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
-from typing import Any, Awaitable, Callable, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar
 
 import anyio
-import httpx
 from anyio import from_thread
 from sniffio import AsyncLibraryNotFoundError, current_async_library
+
+from pyagentspec._lazy_loader import LazyLoader
+
+if TYPE_CHECKING:
+    import httpx
+else:
+    httpx = LazyLoader("httpx")
 
 T = TypeVar("T")
 

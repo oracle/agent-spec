@@ -9,10 +9,9 @@ import time
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from secrets import SystemRandom
-from typing import Any, Callable, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Optional
 
-import httpx
-
+from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.adapters._url_validation import (
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,
@@ -20,6 +19,11 @@ from pyagentspec.adapters._url_validation import (
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
 from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.tools.remotetool import RemoteTool as AgentSpecRemoteTool
+
+if TYPE_CHECKING:
+    import httpx
+else:
+    httpx = LazyLoader("httpx")
 
 _JITTER_RANDOM = SystemRandom()
 _DEFAULT_TOTAL_ELAPSED_TIME_SECONDS = 600.0
@@ -90,7 +94,7 @@ def _create_remote_tool_func(remote_tool: AgentSpecRemoteTool) -> Callable[..., 
 
 def _request_with_retry(
     retry_policy: Optional[RetryPolicy], request_kwargs: dict[str, Any]
-) -> httpx.Response:
+) -> "httpx.Response":
     """Execute an HTTP request with retry-policy handling."""
     if retry_policy is None:
         return httpx.request(**request_kwargs)
@@ -300,7 +304,7 @@ def _compute_wait_seconds(
     return base
 
 
-def _get_response_error_text(response: httpx.Response) -> str:
+def _get_response_error_text(response: "httpx.Response") -> str:
     """Return a response body string suitable for retry-code matching."""
     try:
         return response.text
