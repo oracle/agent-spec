@@ -181,8 +181,12 @@ def _is_retryable_http_error(
     retry_policy: RetryPolicy, status_code: int, response_error_text: str
 ) -> bool:
     """Return whether an HTTP error response should be retried."""
+    # Agent Spec says runtimes SHOULD NOT retry auth/authz or validation errors,
+    # but does not explicitly define precedence against `recoverable_statuses`.
+    # We interpret that non-retryable guidance as taking precedence.
     if status_code in {400, 401, 403, 422}:
         return False
+    # Agent Spec defines `service_error_retry_on_any_5xx` as excluding HTTP 501.
     if status_code == 501:
         return False
 
