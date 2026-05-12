@@ -131,7 +131,6 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
-            "starlette>=0.49.1",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
@@ -140,7 +139,6 @@ setup(
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
             "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
-            "starlette>=0.49.1",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_a2a": [
@@ -149,7 +147,6 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
-            "starlette>=0.49.1",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
@@ -157,7 +154,6 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
-            "starlette>=0.49.1",  # needed to avoid CVE present in earlier versions
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
