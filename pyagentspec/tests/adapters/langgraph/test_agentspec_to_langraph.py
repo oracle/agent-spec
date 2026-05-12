@@ -18,12 +18,12 @@ from .conftest import get_weather
 @retry_test(max_attempts=3, wait_between_tries=2)
 def test_weather_agent_with_server_tool(weather_agent_server_tool_yaml: str) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  1.69 seconds per successful attempt
+    Average success time:  1.35 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.messages import ToolMessage
@@ -61,12 +61,12 @@ def test_weather_agent_with_server_tool_with_output_descriptors(
     weather_agent_with_outputs_yaml: str,
 ) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  2.87 seconds per successful attempt
+    Average success time:  2.13 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.runnables import RunnableConfig
@@ -89,12 +89,12 @@ def test_weather_agent_with_server_tool_with_output_descriptors(
 @retry_test(max_attempts=3, wait_between_tries=2)
 def test_client_tool_with_agent(weather_agent_client_tool_yaml: str) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  1.07 seconds per successful attempt
+    Average success time:  1.09 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.runnables import RunnableConfig
@@ -125,12 +125,12 @@ def test_client_tool_with_two_inputs(
     disable_parallel_tool_calls: None,
 ) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  1.29 seconds per successful attempt
+    Average success time:  1.24 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.runnables import RunnableConfig
@@ -185,12 +185,12 @@ def test_client_tool_with_two_inputs(
 @retry_test(max_attempts=3, wait_between_tries=2)
 def test_remote_tool_with_agent(json_server: str, weather_agent_remote_tool_yaml: str) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  1.16 seconds per successful attempt
+    Average success time:  1.03 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.runnables import RunnableConfig
@@ -246,12 +246,12 @@ def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
     weather_agent_server_tool_openaicompatible_yaml: str,
 ) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
     Average success time:  1.35 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.messages import ToolMessage
@@ -279,12 +279,12 @@ def test_execute_swarm(
     disable_parallel_tool_calls: None,
 ) -> None:
     """
-    Failure rate:          0 out of 20
+    Failure rate:          0 out of 50
     Observed on:           2026-05-11
-    Average success time:  2.48 seconds per successful attempt
+    Average success time:  2.39 seconds per successful attempt
     Average failure time:  No time measurement
     Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
     """
 
     from langchain_core.runnables import RunnableConfig

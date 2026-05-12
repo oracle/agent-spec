@@ -1341,7 +1341,7 @@ class AgentSpecToLangGraphConverter:
 
     def _retry_policy_convert_to_langgraph(
         self, llm_config: AgentSpecLlmConfig
-    ) -> "ChatOpenAIRetryConfig":
+    ) -> "_ChatRetryConfig":
         """Convert Agent Spec retry policy settings into ChatOpenAI keyword arguments."""
         retry_policy = llm_config.retry_policy
         if retry_policy is None:
@@ -1369,7 +1369,7 @@ class AgentSpecToLangGraphConverter:
                 "Unsupported retry policy fields: " + ", ".join(unsupported_fields)
             )
 
-        retry_config: ChatOpenAIRetryConfig = {"max_retries": retry_policy.max_attempts}
+        retry_config: _ChatRetryConfig = {"max_retries": retry_policy.max_attempts}
         if retry_policy.request_timeout is not None:
             retry_config["timeout"] = retry_policy.request_timeout
         return retry_config
@@ -1562,7 +1562,7 @@ def _create_chat_openai_model(
     use_responses_api: bool,
     callbacks: List[BaseCallbackHandler],
     generation_config: Dict[str, Any],
-    retry_config: "ChatOpenAIRetryConfig",
+    retry_config: "_ChatRetryConfig",
     base_url: Optional[str] = None,
     api_key: Optional[str] = None,
 ) -> BaseChatModel:
@@ -1588,7 +1588,7 @@ def _create_chat_openai_model(
     return ChatOpenAI(**kwargs)
 
 
-class ChatOpenAIRetryConfig(TypedDict):
+class _ChatRetryConfig(TypedDict):
     """Keyword arguments for ChatOpenAI retry and timeout configuration."""
 
     max_retries: NotRequired[int]

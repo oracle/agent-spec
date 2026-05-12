@@ -28,7 +28,6 @@ from pyagentspec.mcp.clienttransport import (
 )
 from pyagentspec.mcp.tools import MCPTool, MCPToolBox, MCPToolSpec
 from pyagentspec.property import IntegerProperty
-from tests.retry_test import retry_test
 
 CLIENT_TRANSPORT_NAMES = [
     "sse_client_transport",
@@ -197,20 +196,10 @@ def test_mcp_toolbox_exposes_proper_tools(loaded_langgraph_agent):
 
 
 @pytest.mark.anyio
-@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_can_run_imported_agent_with_mcp_tools(
     agentspec_agent_with_mcp_toolbox,
     disable_parallel_tool_calls,
 ):
-    """
-    Failure rate:          0 out of 20
-    Observed on:           2026-05-11
-    Average success time:  1.65 seconds per successful attempt
-    Average failure time:  No time measurement
-    Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
-    """
-
     langgraph_agent = AgentSpecLoader().load_component(agentspec_agent_with_mcp_toolbox)
 
     response = await langgraph_agent.ainvoke(

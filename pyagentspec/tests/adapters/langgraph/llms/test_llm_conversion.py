@@ -20,7 +20,6 @@ from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompati
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.retrypolicy import RetryPolicy
-from tests.retry_test import retry_test
 
 
 @pytest.mark.parametrize(
@@ -168,17 +167,7 @@ def test_ollama_conversion_maps_generation_config_names(default_generation_param
     assert model.top_p == default_generation_parameters.top_p
 
 
-@retry_test(max_attempts=3, wait_between_tries=2)
 def test_invoke_vllm_model(default_generation_parameters, monkeypatch):
-    """
-    Failure rate:          0 out of 20
-    Observed on:           2026-05-11
-    Average success time:  0.52 seconds per successful attempt
-    Average failure time:  No time measurement
-    Max attempt:           3
-    Justification:         (0.05 ** 3) ~= 9.4 / 100'000
-    """
-
     agentspec_llm = OpenAiCompatibleConfig(
         name="gpt-oss-120b",
         model_id="openai/gpt-oss-120b",
