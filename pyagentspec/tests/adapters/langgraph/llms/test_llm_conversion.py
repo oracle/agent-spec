@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+from typing import Any
 
 import pytest
 from langchain_ollama import ChatOllama
@@ -83,40 +84,55 @@ def test_openaicompatible_conversion_sets_responses_flag(
     assert model.temperature == default_generation_parameters.temperature
 
 
-@pytest.mark.parametrize("llm_type", ["vllm", "openai_compatible", "openai", "bare_openai"])
-def test_openai_chat_conversion_maps_retry_policy(llm_type: str, monkeypatch) -> None:
+@pytest.mark.parametrize(
+    "llm_config_class, llm_config_kwargs",
+    [
+        pytest.param(
+            VllmConfig,
+            {
+                "name": "llm",
+                "model_id": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+                "url": "localhost:8000",
+            },
+            id="vllm",
+        ),
+        pytest.param(
+            OpenAiCompatibleConfig,
+            {
+                "name": "oaic",
+                "model_id": "gpt-4o-mini",
+                "url": "https://api.compatible",
+            },
+            id="openai-compatible",
+        ),
+        pytest.param(
+            OpenAiConfig,
+            {
+                "name": "openai",
+                "model_id": "gpt-4o-mini",
+                "api_key": "sk-test",
+            },
+            id="openai",
+        ),
+        pytest.param(
+            LlmConfig,
+            {
+                "name": "openai",
+                "model_id": "gpt-4o-mini",
+                "api_provider": "openai",
+            },
+            id="bare-openai",
+        ),
+    ],
+)
+def test_openai_chat_conversion_maps_retry_policy(
+    llm_config_class: type[LlmConfig],
+    llm_config_kwargs: dict[str, Any],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
     retry_policy = RetryPolicy(max_attempts=0, request_timeout=2.5)
-    agentspec_llm: LlmConfig
-
-    if llm_type == "vllm":
-        agentspec_llm = VllmConfig(
-            name="llm",
-            model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-            url="localhost:8000",
-            retry_policy=retry_policy,
-        )
-    elif llm_type == "openai_compatible":
-        agentspec_llm = OpenAiCompatibleConfig(
-            name="oaic",
-            model_id="gpt-4o-mini",
-            url="https://api.compatible",
-            retry_policy=retry_policy,
-        )
-    elif llm_type == "openai":
-        agentspec_llm = OpenAiConfig(
-            name="openai",
-            model_id="gpt-4o-mini",
-            api_key="sk-test",
-            retry_policy=retry_policy,
-        )
-    else:
-        agentspec_llm = LlmConfig(
-            name="openai",
-            model_id="gpt-4o-mini",
-            api_provider="openai",
-            retry_policy=retry_policy,
-        )
+    agentspec_llm = llm_config_class(**llm_config_kwargs, retry_policy=retry_policy)
 
     model = AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
 

@@ -243,7 +243,8 @@ def test_remote_tool_actual_endpoint_with_langgraph(
 ) -> None:
     """
     Real-server test using the in-repo FastAPI app (json_server fixture).
-    Validates templating, JSON vs form vs raw payload handling, headers, query params, and path rendering.
+    Validates templating, JSON vs form vs raw payload handling, headers, query params,
+    and path rendering.
     """
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -367,7 +368,7 @@ def test_remote_tool_retry_policy_timeout_configuration(
         assert called_kwargs["timeout"].read == expected_timeout
 
 
-def _retry_success_side_effects(case_name: str) -> list[Any]:
+def _get_retry_success_side_effects(case_name: str) -> list[Any]:
     request = httpx.Request("GET", "https://example.com/api")
     if case_name == "transport-error":
         return [
@@ -446,7 +447,7 @@ def test_remote_tool_retry_policy_retries_then_succeeds(
     lang_tool = AgentSpecLoader().load_component(remote_tool)
 
     with patch("pyagentspec.adapters._tools_common.httpx.request") as mock_request:
-        mock_request.side_effect = _retry_success_side_effects(case_name)
+        mock_request.side_effect = _get_retry_success_side_effects(case_name)
         assert lang_tool.func() == {"result": "ok"}
         assert mock_request.call_count == expected_call_count
 

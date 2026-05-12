@@ -113,6 +113,7 @@ from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import StringProperty as AgentSpecStringProperty
 from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.property import json_schemas_have_same_type
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
 from pyagentspec.swarm import Swarm as AgentSpecSwarm
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
@@ -1255,7 +1256,7 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
-                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OllamaConfig):
             if llm_config.retry_policy is not None:
@@ -1283,7 +1284,7 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
-                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
             return _create_chat_openai_model(
@@ -1293,7 +1294,7 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
-                retry_config=self._retry_policy_convert_to_langgraph(llm_config),
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OciGenAiConfig):
             if use_responses_api:
@@ -1332,7 +1333,7 @@ class AgentSpecToLangGraphConverter:
                     use_responses_api=llm_config.api_type == "responses",
                     callbacks=callbacks,
                     generation_config=generation_config,
-                    retry_config=self._retry_policy_convert_to_langgraph(llm_config),
+                    retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
                 )
             raise NotImplementedError(
                 f"LlmConfig with api_provider='{llm_config.api_provider}' is not yet supported "
@@ -1340,10 +1341,9 @@ class AgentSpecToLangGraphConverter:
             )
 
     def _retry_policy_convert_to_langgraph(
-        self, llm_config: AgentSpecLlmConfig
+        self, retry_policy: Optional[RetryPolicy]
     ) -> "_ChatRetryConfig":
         """Convert Agent Spec retry policy settings into ChatOpenAI keyword arguments."""
-        retry_policy = llm_config.retry_policy
         if retry_policy is None:
             return {}
 
