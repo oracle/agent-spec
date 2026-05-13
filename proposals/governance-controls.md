@@ -172,23 +172,64 @@ ToolPolicy:
 ExecutionGuard:
   type: object
   description: >
-    A single execution-time constraint on tool invocation. Guards
-    provide a uniform abstraction for rate limits, approval
-    requirements, and other controls that gate whether a tool
-    call proceeds.
+    A single execution-time constraint on tool invocation.
+    ExecutionGuard is a discriminated union: the `type` field
+    determines which concrete guard schema applies. Each guard
+    type owns only the fields meaningful for that constraint,
+    making validation strict and extension straightforward.
+  discriminator:
+    propertyName: type
+  oneOf:
+    - $ref: "#/RateLimitGuard"
+    - $ref: "#/ApprovalGuard"
+    - $ref: "#/JustificationGuard"
+
+RateLimitGuard:
+  type: object
+  description: >
+    Constrains how frequently a tool can be invoked within a
+    rolling time window.
   properties:
     type:
       type: string
-      enum: [rate_limit, require_approval, require_justification]
-      description: The kind of constraint this guard enforces.
+      const: rate_limit
+    max_calls:
+      type: integer
+      minimum: 1
+      description: Maximum invocations allowed within window_seconds.
+    window_seconds:
+      type: integer
+      minimum: 1
+      description: Rolling time window in seconds.
+    on_violation:
+      type: string
+      enum: [block, flag, log, escalate]
+      default: block
+      description: >
+        Runtime response when the rate limit is exceeded.
+        - block: Prevent the tool call entirely.
+        - flag: Allow the call but flag it for review.
+        - log: Allow the call, record the violation only.
+        - escalate: Route to a human or escalation workflow.
+  required: [type, max_calls, window_seconds]
+
+ApprovalGuard:
+  type: object
+  description: >
+    Requires human or supervisor approval before the tool call
+    proceeds. Can be unconditional or triggered by input conditions.
+  properties:
+    type:
+      type: string
+      const: require_approval
     condition:
       type: string
       enum: [always, input_equals, input_contains, input_not_equals]
       default: always
       description: >
-        When this guard applies. "always" means unconditional.
-        Input-conditional guards evaluate against a specific input
-        field (see "field" and "value" properties).
+        When approval is required. "always" means every invocation.
+        Input-conditional values evaluate against a specific input
+        field (see "field" and "value").
     field:
       type: string
       description: >
@@ -199,32 +240,60 @@ ExecutionGuard:
       description: >
         Value to compare against using the specified condition.
         Required when condition is input-conditional.
-    max_calls:
-      type: integer
-      minimum: 1
-      description: >
-        Maximum calls within window_seconds. Only used when
-        type is "rate_limit".
-    window_seconds:
-      type: integer
-      minimum: 1
-      description: >
-        Rolling time window in seconds. Only used when type is
-        "rate_limit".
     on_violation:
       type: string
-      enum: [block, flag, log, escalate]
+      enum: [block, escalate]
       default: block
       description: >
-        What the runtime does when the constraint is not satisfied.
+        Runtime response when approval is not granted.
+        - block: Prevent the tool call entirely.
+        - escalate: Route to a human or escalation workflow.
+  required: [type]
+
+JustificationGuard:
+  type: object
+  description: >
+    Requires the invoking agent to provide a reason for the tool
+    call. Can be unconditional or triggered by input conditions.
+  properties:
+    type:
+      type: string
+      const: require_justification
+    condition:
+      type: string
+      enum: [always, input_equals, input_contains, input_not_equals]
+      default: always
+      description: >
+        When justification is required. "always" means every
+        invocation. Input-conditional values evaluate against a
+        specific input field (see "field" and "value").
+    field:
+      type: string
+      description: >
+        Name of the input field to evaluate. Required when condition
+        is input_equals, input_contains, or input_not_equals.
+    value:
+      type: string
+      description: >
+        Value to compare against using the specified condition.
+        Required when condition is input-conditional.
+    on_violation:
+      type: string
+      enum: [block, flag]
+      default: block
+      description: >
+        Runtime response when justification is not provided.
         - block: Prevent the tool call entirely.
         - flag: Allow the call but flag it for review.
-        - log: Allow the call, record the violation only.
-        - escalate: Route to a human or escalation workflow.
   required: [type]
 ```
 
-**Note on `requires_confirmation` compatibility:** The existing `Tool.requires_confirmation: true` is equivalent to a guard of `{type: require_approval, condition: always, on_violation: block}`. Runtimes SHOULD treat them identically. `requires_confirmation` remains as the simpler form for the common unconditional case.
+**Note on shorthand compatibility:**
+
+- `Tool.requires_confirmation: true` is equivalent to `ApprovalGuard` with `condition: always, on_violation: block`. It remains as the simpler form for the common unconditional case.
+- `ToolPolicy.requires_justification: true` is equivalent to `JustificationGuard` with `condition: always, on_violation: block`. The boolean is for unconditional use; the guard form adds conditional semantics (e.g., require justification only when a specific input field matches).
+
+Runtimes SHOULD treat the shorthand and guard forms identically.
 
 ### Policy Composition: ToolBox + Tool
 
