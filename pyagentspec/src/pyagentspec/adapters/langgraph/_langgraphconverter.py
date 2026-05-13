@@ -1143,7 +1143,9 @@ class AgentSpecToLangGraphConverter:
         # byte-identical to earlier releases.
         if self._middleware:
             create_agent_kwargs["middleware"] = self._middleware
-        compiled_graph = langchain_agents.create_agent(**create_agent_kwargs)
+        compiled_graph: CompiledStateGraph[Any, Any, Any] = langchain_agents.create_agent(
+            **create_agent_kwargs
+        )
 
         # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
 
