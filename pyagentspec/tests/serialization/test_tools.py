@@ -66,6 +66,27 @@ def make_remote_tool():
     )
 
 
+@pytest.fixture
+def remote_tool_with_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="remote_tool",
+        description="remote tool",
+        url="https://example.invalid/orders/{{order_id}}",
+        http_method="GET",
+        url_allow_list=["https://example.invalid/orders/"],
+    )
+
+
+@pytest.fixture
+def remote_tool_without_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="remote_tool",
+        description="remote tool",
+        url="https://example.invalid/orders/{{order_id}}",
+        http_method="GET",
+    )
+
+
 def make_mcp_tool():
     transport = SSETransport(id="sse1", name="mcp_transport", url="https://example.com/sse")
     return MCPTool(
@@ -158,3 +179,38 @@ def test_serialized_representations_are_equal_in_agent_with_confirmation_tools(
         "example_tools_with_confirmation_25_4_2.yaml"
     )
     assert_serialized_representations_are_equal(serialized_agent, example_serialized_agent)
+
+
+def test_remote_tool_url_allow_list_serialization_roundtrip(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    dumped = AgentSpecSerializer().to_dict(remote_tool_with_url_allow_list)
+    loaded = AgentSpecDeserializer().from_dict(dumped)
+
+    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert loaded.url_allow_list == remote_tool_with_url_allow_list.url_allow_list
+    assert AgentSpecSerializer().to_dict(loaded) == dumped
+
+
+def test_remote_tool_url_allow_list_serialization_with_unsupported_version_raises(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecSerializer().to_dict(
+            remote_tool_with_url_allow_list,
+            agentspec_version=AgentSpecVersionEnum.v26_1_0,
+        )
+
+
+def test_remote_tool_url_allow_list_is_omitted_from_older_supported_versions_when_unset(
+    remote_tool_without_url_allow_list: RemoteTool,
+) -> None:
+    dumped = AgentSpecSerializer().to_dict(
+        remote_tool_without_url_allow_list,
+        agentspec_version=AgentSpecVersionEnum.v25_4_1,
+    )
+    loaded = AgentSpecDeserializer().from_dict(dumped)
+
+    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v25_4_1.value
+    assert "url_allow_list" not in dumped
+    assert loaded.url_allow_list is None

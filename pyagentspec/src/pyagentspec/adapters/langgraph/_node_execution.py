@@ -12,6 +12,10 @@ from typing import Any, Dict, List, Optional, Tuple, Union, cast
 import anyio
 import httpx
 
+from pyagentspec.adapters._url_validation import (
+    maybe_warn_about_unrestricted_templated_url,
+    validate_url_against_allow_list,
+)
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
@@ -676,6 +680,11 @@ class ApiNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecApiNode):
             raise TypeError("ApiNodeExecutor can only be initialized with ApiNode")
+        maybe_warn_about_unrestricted_templated_url(
+            url=self.node.url,
+            url_allow_list=self.node.url_allow_list,
+            component_name=f"ApiNode `{self.node.name}`",
+        )
 
     def _build_request_kwargs(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         api_node = self.node
@@ -710,6 +719,8 @@ class ApiNodeExecutor(NodeExecutor):
             content = api_node_data
         else:
             json_data = api_node_data
+
+        validate_url_against_allow_list(api_node_url, api_node.url_allow_list)
 
         return {
             "method": api_node.http_method,

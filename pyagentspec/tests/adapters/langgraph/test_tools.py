@@ -34,6 +34,22 @@ class DummyResponse:
         return self._obj
 
 
+@pytest.fixture
+def url_allow_list() -> list[str]:
+    return ["https://allowed.example.com/api/"]
+
+
+@pytest.fixture
+def remote_tool_with_url_allow_list(url_allow_list: list[str]) -> RemoteTool:
+    return RemoteTool(
+        name="lookup",
+        description="Looks up remote data",
+        url="https://{{host}}/api/value",
+        http_method="GET",
+        url_allow_list=url_allow_list,
+    )
+
+
 def test_remote_tool_having_nested_inputs_with_langgraph() -> None:
     """
     End-to-end: convert an AgentSpec RemoteTool to a LangGraph StructuredTool and run it.
@@ -264,6 +280,20 @@ def test_remote_tool_converts_to_structured_tool_with_func_and_coroutine() -> No
     assert lang_tool.func is not None
     assert lang_tool.coroutine is not None
     assert inspect.iscoroutinefunction(lang_tool.coroutine)
+
+
+def test_remote_tool_rejects_rendered_url_outside_allow_list_with_langgraph(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool_with_url_allow_list)
+
+    with patch("httpx.request", return_value=DummyResponse({"ok": True})) as mocked_request:
+        with pytest.raises(ValueError, match="Requested URL is not in allowed list"):
+            lang_tool.func(host="blocked.example.com")
+
+    mocked_request.assert_not_called()
 
 
 def _make_simple_flow_with_tool(tool_node, start_inputs=None, end_outputs=None):

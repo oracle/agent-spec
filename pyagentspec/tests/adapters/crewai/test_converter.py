@@ -3,6 +3,8 @@
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+from unittest.mock import patch
+
 import pytest
 import yaml
 from pydantic import BaseModel
@@ -20,6 +22,27 @@ from pyagentspec.serialization import AgentSpecSerializer
 from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
 
 # mypy: ignore-errors
+
+
+class DummyResponse:
+    def __init__(self, obj):
+        self._obj = obj
+
+    def json(self):
+        return self._obj
+
+
+@pytest.fixture
+def remote_tool_with_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="lookup",
+        description="Looks up remote data",
+        url="https://{{host}}/api/value",
+        http_method="GET",
+        url_allow_list=["https://allowed.example.com/api/"],
+        inputs=[StringProperty(title="host")],
+        outputs=[StringProperty(title="result")],
+    )
 
 
 def mock_tool() -> str:
@@ -134,3 +157,17 @@ def test_agentspec_agent_can_be_converted_to_crewai(llm_config: LlmConfig) -> No
     assert crewai_assistant.backstory == "You are a helpful assistant"
     assert len(crewai_assistant.tools) == 3
     assert isinstance(crewai_assistant.llm, crewai.LLM)
+
+
+def test_remote_tool_rejects_rendered_url_outside_allow_list_with_crewai(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    from pyagentspec.adapters.crewai import AgentSpecLoader
+
+    crewai_tool = AgentSpecLoader().load_component(remote_tool_with_url_allow_list)
+
+    with patch("httpx.request", return_value=DummyResponse({"ok": True})) as mocked_request:
+        with pytest.raises(ValueError, match="Requested URL is not in allowed list"):
+            crewai_tool.func(host="blocked.example.com")
+
+    mocked_request.assert_not_called()

@@ -22,13 +22,14 @@ from pyagentspec.flows.nodes import LlmNode
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecSerializer
+from pyagentspec.transforms.summarization import ConversationSummarizationTransform
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 from .conftest import read_agentspec_config_file
 
 
 def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
-    schema = LlmConfig.model_json_schema()
+    schema = LlmConfig.model_json_schema(only_core_components=True)
     assert "anyOf" in schema
     llm_config_subtypes = [
         component_type
@@ -38,12 +39,12 @@ def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
     for component_type in llm_config_subtypes:
         assert component_type.__name__ in schema["$defs"]
     assert AgentSpecVersionEnum.__name__ in schema["$defs"]
-    # +1 because the schema includes ComponentReferenceWithNestedReferences
-    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 1
+    # +1 for ComponentReferenceWithNestedReferences, +1 for LlmConfig itself (concrete)
+    assert len(schema["anyOf"]) == len(llm_config_subtypes) + 2
 
 
 def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:
-    schema = LlmNode.model_json_schema()
+    schema = LlmNode.model_json_schema(only_core_components=True)
     # because all concrete components can be either serialized as a reference or as their properties
     # directly, the specifications is of type `anyOf` containing these two options.
     assert "anyOf" in schema
@@ -61,7 +62,7 @@ def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:
 
 
 def test_flow_schema_contains_all_concrete_node_types() -> None:
-    schema = Flow.model_json_schema(mode="serialization")
+    schema = Flow.model_json_schema(mode="serialization", only_core_components=True)
     node_types = [
         component_type
         for component_type in BUILTIN_CLASS_MAP.values()
@@ -71,14 +72,42 @@ def test_flow_schema_contains_all_concrete_node_types() -> None:
         assert component_type.__name__ in schema["$defs"]
 
 
+def test_bare_llmconfig_validates_in_parent_schema() -> None:
+    # When LlmConfig (concrete, non-abstract) is embedded in a parent component like Agent,
+    # the parent schema must include LlmConfig itself plus all subclass schemas in $defs.
+    schema = Agent.model_json_schema(mode="serialization", only_core_components=True)
+    # LlmConfig itself must appear as a valid option in the schema
+    assert "LlmConfig" in schema["$defs"]
+    # Serialized bare LlmConfig must validate against the Agent schema
+    serialized_agent = Agent(
+        name="test-agent",
+        llm_config=LlmConfig(name="test-llm", model_id="gpt-4o", api_provider="openai"),
+        system_prompt="test",
+    ).to_yaml()
+    validate(yaml.safe_load(serialized_agent), schema)
+
+
 def test_agent_schema_contains_all_concrete_llm_types() -> None:
-    schema = Agent.model_json_schema(mode="serialization")
-    node_types = [
+    schema = Agent.model_json_schema(mode="serialization", only_core_components=True)
+    component_types = [
         component_type
         for component_type in BUILTIN_CLASS_MAP.values()
         if issubclass(component_type, LlmConfig)
     ]
-    for component_type in node_types:
+    for component_type in component_types:
+        assert component_type.__name__ in schema["$defs"]
+
+
+def test_nested_plain_llmconfig_schema_contains_all_concrete_llm_types() -> None:
+    schema = ConversationSummarizationTransform.model_json_schema(
+        mode="serialization", only_core_components=True
+    )
+    component_types = [
+        component_type
+        for component_type in BUILTIN_CLASS_MAP.values()
+        if issubclass(component_type, LlmConfig)
+    ]
+    for component_type in component_types:
         assert component_type.__name__ in schema["$defs"]
 
 
@@ -129,7 +158,7 @@ def test_generated_schema_correctly_validates_components_serializations(
     component: Component,
 ) -> None:
     serialized_component = AgentSpecSerializer().to_yaml(component)
-    component_schema = component.model_json_schema(mode="serialization")
+    component_schema = component.model_json_schema(mode="serialization", only_core_components=True)
     validate(yaml.safe_load(serialized_component), component_schema)
 
 
@@ -181,7 +210,7 @@ def test_generated_schema_correctly_raise_when_type_does_not_match_or_config_is_
     file_path: str, component_type: Type[Component]
 ) -> None:
     serialized_component = read_agentspec_config_file(file_path)
-    component_schema = component_type.model_json_schema()
+    component_schema = component_type.model_json_schema(only_core_components=True)
     with pytest.raises(jsonschema.exceptions.ValidationError):
         validate(yaml.safe_load(serialized_component), component_schema)
 
@@ -220,7 +249,7 @@ def test_json_schema_generation_applies_referencing_on_custom_components() -> No
 
 
 def test_is_abstract_flag_is_set_correctly() -> None:
-    component_json_schema = Component.model_json_schema()
+    component_json_schema = Component.model_json_schema(only_core_components=True)
     assert "$defs" in component_json_schema
     for component_type_name, component_type_class in BUILTIN_CLASS_MAP.items():
         if isinstance(component_type_class, Component):

@@ -24,7 +24,11 @@ $referenced_components:
     outputs: []
     llm_config:
       $component_ref: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
-    system_prompt: You are able to do sums. In case of multiplications, ask the `multiply_agent`.
+    system_prompt: >-
+      You handle addition requests. For every addition calculation, you must call the
+      `add` tool and must not calculate the result yourself. After the `add` tool
+      returns a result, answer with that result and do not call `add` again. In case
+      of multiplications, ask the `multiply_agent`.
     tools:
     - component_type: ServerTool
       id: d089e4c2-21d2-41b8-ba59-95f415c66771
@@ -45,12 +49,12 @@ $referenced_components:
   8055058e-1c45-4d9d-9378-7a45e2ba10ee:
     component_type: OpenAiCompatibleConfig
     id: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
-    name: Llama-3.3-70B-Instruct
+    name: gpt-oss-120b
     description: null
     metadata: {}
     default_generation_parameters: null
-    url: '[[LLAMA70BV33_API_URL]]'
-    model_id: /storage/models/Llama-3.3-70B-Instruct
+    url: '[[OSS_API_URL]]'
+    model_id: openai/gpt-oss-120b
     api_type: chat_completions
     api_key: null
   de8f0d0e-57ca-4998-9520-766cdba6ab85:
@@ -63,7 +67,11 @@ $referenced_components:
     outputs: []
     llm_config:
       $component_ref: 8055058e-1c45-4d9d-9378-7a45e2ba10ee
-    system_prompt: You are able to do multiplications. In case of sums, ask the `sum_agent`.
+    system_prompt: >-
+      You handle multiplication requests. For every multiplication calculation, you
+      must call the `multiply` tool and must not calculate the result yourself.
+      After the `multiply` tool returns a result, answer with that result and do not
+      call `multiply` again. In case of sums, ask the `sum_agent`.
     tools:
     - component_type: ServerTool
       id: 0ebddedd-c4ac-4b1b-b8e5-f977b9499106

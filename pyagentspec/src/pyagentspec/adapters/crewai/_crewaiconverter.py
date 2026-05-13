@@ -323,7 +323,18 @@ class AgentSpecToCrewAIConverter:
             llm_parameters["model"] = "ollama/" + agentspec_llm.model_id
             llm_parameters["base_url"] = parse_url(agentspec_llm.url)
         else:
-            raise NotImplementedError()
+            # Bare LlmConfig — dispatch on api_provider string
+            if agentspec_llm.api_provider == "openai":
+                llm_parameters["model"] = "openai/" + agentspec_llm.model_id
+                if agentspec_llm.url is not None:
+                    llm_parameters["api_base"] = parse_url(agentspec_llm.url)
+                if agentspec_llm.api_key is not None:
+                    llm_parameters["api_key"] = agentspec_llm.api_key
+            else:
+                raise NotImplementedError(
+                    f"LlmConfig with api_provider='{agentspec_llm.api_provider}' is not supported "
+                    f"in crewai. Consider using a specific LlmConfig subclass instead."
+                )
 
         if agentspec_llm.default_generation_parameters is not None:
             llm_parameters["top_p"] = agentspec_llm.default_generation_parameters.top_p

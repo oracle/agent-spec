@@ -61,7 +61,7 @@ from pyagentspec.versioning import (
 )
 
 if TYPE_CHECKING:
-    from pyagentspec.serialization import ComponentDeserializationPlugin
+    from pyagentspec.serialization import ComponentDeserializationPlugin, ComponentPolicyInput
     from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
     from pyagentspec.serialization.types import (
         ComponentAsDictT,
@@ -472,12 +472,9 @@ class Component(AbstractableModel, abstract=True):
         JsonSchemaValue:
             The json schema specification for the chosen Agent Spec Component
         """
-        if cls._is_abstract:
-            all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
-            adapter = TypeAdapter(Union[all_subclasses])  # type: ignore
-            json_schema = adapter.json_schema(by_alias=by_alias, mode=mode)
-        else:
-            json_schema = super().model_json_schema(by_alias=by_alias, mode=mode, **kwargs)
+        all_subclasses = cls._get_all_subclasses(only_core_components=only_core_components)
+        adapter = TypeAdapter(Union[tuple([*all_subclasses] if cls._is_abstract else [cls, *all_subclasses])])  # type: ignore
+        json_schema = adapter.json_schema(by_alias=by_alias, mode=mode, **kwargs)
         json_schema_with_all_types = replace_abstract_models_and_hierarchical_definitions(
             json_schema, mode, only_core_components=only_core_components, by_alias=by_alias
         )
@@ -1063,6 +1060,8 @@ class Component(AbstractableModel, abstract=True):
         yaml_content: str,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1073,6 +1072,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1082,6 +1083,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from YAML.
@@ -1095,6 +1098,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1108,7 +1123,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_yaml(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_yaml(
             yaml_content,
             components_registry=components_registry,
             import_only_referenced_components=False,
@@ -1122,6 +1141,8 @@ class Component(AbstractableModel, abstract=True):
         json_content: str,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1132,6 +1153,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1141,6 +1164,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from JSON.
@@ -1154,6 +1179,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1167,7 +1204,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_json(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_json(
             json_content,
             components_registry=components_registry,
             import_only_referenced_components=False,
@@ -1181,6 +1222,8 @@ class Component(AbstractableModel, abstract=True):
         dict_content: "ComponentAsDictT",
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1191,6 +1234,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1200,6 +1245,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from dictionary.
@@ -1213,6 +1260,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1261,7 +1320,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_dict(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_dict(
             dict_content,
             components_registry=components_registry,
             import_only_referenced_components=False,
@@ -1290,29 +1353,28 @@ def replace_abstract_models_and_hierarchical_definitions(
     -   If the json schema does not have an entry ``$defs``, it means that it is not referencing
         any type at all, so as a consequence, it is not referencing abstract types and nothing
         needs to be done.
-    -   The list ``abstract_types_to_resolve`` is used as a stack. It contains all the abstract
-        types that must be extended to the definition. It is first initialized as all the abstract
-        types initially defined in the schema.
-    -   Whenever an abstract type definition requires other abstract types to be defined these new
-        abstract types are appended to the stack ``abstract_types_to_resolve``. For
-        example: the abstract type ``Node`` definition requires the definition of concrete
-        ``LlmNode``, which has the attribute ``llm_config`` of abstract type ``LlmConfig``, thus
-        the definition of the ``Node`` abstract type requires to get the definition of the
-        ``LlmConfig`` abstract type.
+    -   The list ``component_types_to_resolve`` is used as a stack. It contains all the component
+        types whose hierarchy needs to be expanded. It is first initialized with the component
+        definitions initially present in the schema.
+    -   Whenever expanding a component hierarchy introduces new component definitions, these are
+        appended to the same stack so their hierarchies are resolved transitively. The only
+        difference between abstract and concrete components is the final schema assigned to the
+        current type: abstract components become a union of their subclasses, while concrete
+        components keep their own schema and additionally accept their subclasses.
     """
     if "$defs" in json_schema:
-        # Resolve abstract types first
-        abstract_types_to_resolve: deque[str] = deque(
+        component_types_to_resolve: deque[str] = deque(
             [
                 component_type_name
                 for component_type_name in json_schema["$defs"]
-                if (component_type := Component.get_class_from_name(component_type_name))
-                and component_type._is_abstract
+                if Component.get_class_from_name(component_type_name)
             ]
         )
-        resolved_abstract_types: Set[str] = set()
-        while abstract_types_to_resolve:
-            component_type_name = abstract_types_to_resolve.pop()
+        resolved_component_types: Set[str] = set()
+        while component_types_to_resolve:
+            component_type_name = component_types_to_resolve.pop()
+            if component_type_name in resolved_component_types:
+                continue
             component_type = Component.get_class_from_name(component_type_name)
             if component_type is None:
                 raise RuntimeError(f"Tried to resolve a missing type: '{component_type_name}'.")
@@ -1332,52 +1394,26 @@ def replace_abstract_models_and_hierarchical_definitions(
                 abstract_type_json_schema["anyOf"].remove({"type": "null"})
                 # ^ pop the null ref (ok since python list.remove relies on equality)
             else:
-                raise ValueError(
-                    f"No subclass was found for abstract type `{component_type_name}`."
-                )
-
-            new_type_definitions = abstract_type_json_schema.pop("$defs")
-            abstract_types_to_resolve.extend(
-                [
-                    new_component_type_name
-                    for new_component_type_name in new_type_definitions
-                    if (
-                        new_component_type := Component.get_class_from_name(new_component_type_name)
+                if component_type._is_abstract:
+                    raise ValueError(
+                        f"No subclass was found for abstract type `{component_type_name}`."
                     )
-                    and new_component_type._is_abstract
-                    and new_component_type_name not in resolved_abstract_types
-                ]
-            )
-            json_schema["$defs"].update(
-                {
-                    new_component_type_name: new_type_definition
-                    for new_component_type_name, new_type_definition in new_type_definitions.items()
-                    if not (
-                        new_component_type := Component.get_class_from_name(new_component_type_name)
-                    )
-                    or not new_component_type._is_abstract
-                }
-            )
-            json_schema["$defs"][component_type_name] = abstract_type_json_schema
-            resolved_abstract_types.add(component_type_name)
+                resolved_component_types.add(component_type_name)
+                continue
 
-        # Resolve concrete types
-        concrete_types_to_resolve: List[str] = [
-            component_type_name
-            for component_type_name in json_schema["$defs"]
-            if (component_type := Component.get_class_from_name(component_type_name))
-            and not component_type._is_abstract
-        ]
-        for component_type_name in concrete_types_to_resolve:
-            # For each type we take its json schema, and we replace it with an anyOf
-            # of its own json schema, plus the reference to the schemas of all its subclasses
-            component_type = Component.get_class_from_name(component_type_name)
-            if component_type is None:
-                raise RuntimeError(f"Tried to resolve a missing type: '{component_type_name}'.")
-            all_subclasses = component_type._get_all_subclasses(
-                only_core_components=only_core_components
-            )
-            if len(all_subclasses) > 0:
+            new_type_definitions = abstract_type_json_schema.pop("$defs", {})
+            for new_component_type_name, new_type_definition in new_type_definitions.items():
+                json_schema["$defs"].setdefault(new_component_type_name, new_type_definition)
+                if (
+                    Component.get_class_from_name(new_component_type_name)
+                    and new_component_type_name not in resolved_component_types
+                ):
+                    component_types_to_resolve.append(new_component_type_name)
+
+            if component_type._is_abstract:
+                json_schema["$defs"][component_type_name] = abstract_type_json_schema
+            else:
+                # Concrete types accept both their own schema and the schemas of any subclasses.
                 concrete_type_json_schema = json_schema["$defs"][component_type_name]
                 json_schema["$defs"][component_type_name] = {
                     "anyOf": [
@@ -1386,6 +1422,7 @@ def replace_abstract_models_and_hierarchical_definitions(
                     ]
                     + [concrete_type_json_schema]
                 }
+            resolved_component_types.add(component_type_name)
     return json_schema
 
 

@@ -23,6 +23,17 @@ class DummyResponse:
         return self._obj
 
 
+@pytest.fixture
+def remote_tool_with_url_allow_list() -> RemoteTool:
+    return RemoteTool(
+        name="lookup",
+        description="Looks up remote data",
+        url="https://{{host}}/api/value",
+        http_method="GET",
+        url_allow_list=["https://allowed.example.com/api/"],
+    )
+
+
 def test_remote_tool_having_nested_inputs_with_agent() -> None:
     """
     End-to-end: convert an AgentSpec RemoteTool to an AutoGen FunctionTool and run it.
@@ -40,6 +51,7 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
         description="Returns a forecast of the weather for the chosen city",
         url="https://weatherforecast.example/api/forecast/{{city}}",
         http_method="POST",
+        url_allow_list=["https://weatherforecast.example/api/forecast/"],
         data={
             "location": {
                 "city": "{{city}}",
@@ -85,6 +97,20 @@ def test_remote_tool_having_nested_inputs_with_agent() -> None:
         assert called_kwargs["url"] == expected_url
         assert called_kwargs["headers"] == expected_headers
         assert result == {"weather": "sunny in Agadir"}
+
+
+def test_remote_tool_rejects_rendered_url_outside_allow_list(
+    remote_tool_with_url_allow_list: RemoteTool,
+) -> None:
+    from pyagentspec.adapters.autogen import AgentSpecLoader
+
+    autogen_tool = AgentSpecLoader().load_component(remote_tool_with_url_allow_list)
+
+    with patch("httpx.request", return_value=DummyResponse({"ok": True})) as mocked_request:
+        with pytest.raises(ValueError, match="Requested URL is not in allowed list"):
+            autogen_tool._func(host="blocked.example.com")
+
+    mocked_request.assert_not_called()
 
 
 def test_remote_tool_post_json_array() -> None:

@@ -4,9 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-"""Defines the class for configuring how to connect to a LLM hosted by a vLLM instance."""
+"""Defines the class for configuring how to connect to an OpenAI LLM."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 from pyagentspec.component import SerializeAsEnum
 from pyagentspec.llms.llmconfig import LlmConfig
@@ -22,19 +22,29 @@ class OpenAiConfig(LlmConfig):
     Requires to specify the identity of the model to use.
     """
 
-    model_id: str
-    """ID of the model to use"""
+    provider: Literal["openai"] = "openai"
+    """The provider of the model."""
+
+    api_provider: Literal["openai"] = "openai"
+    """The API provider used to serve the model."""
 
     api_type: SerializeAsEnum[OpenAIAPIType] = OpenAIAPIType.CHAT_COMPLETIONS
     """OpenAI API protocol to use"""
-    api_key: SensitiveField[Optional[str]] = None
-    """An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
-       excluded and replaced by a reference when exporting the configuration."""
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # First, we reintroduce the attributes that were introduced in 26.2.0 LlmConfig, but were
+        # already here before that version. Then the rest of the logic will handle older versions.
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.remove("api_type")
+            fields_to_exclude.remove("api_key")
+            fields_to_exclude.remove("model_id")
+        # provider and api_provider are frozen/implied by component_type
+        fields_to_exclude.add("provider")
+        fields_to_exclude.add("api_provider")
+        fields_to_exclude.add("url")
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("api_key")

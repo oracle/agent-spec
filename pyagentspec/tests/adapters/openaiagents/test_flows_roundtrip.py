@@ -68,7 +68,7 @@ def _override_module_models(mod: types.ModuleType) -> None:
     if not base_url.endswith("v1"):
         base_url += "/v1"
 
-    client = AsyncOpenAI(api_key="", base_url=base_url)
+    client = AsyncOpenAI(api_key="fake-api-key", base_url=base_url)
     model = OpenAIChatCompletionsModel("openai/gpt-oss-120b", client)
     for v in list(mod.__dict__.values()):
         if isinstance(v, Agent):

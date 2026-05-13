@@ -1,146 +1,133 @@
-# Agent Spec Python SDK – Assistant Operating Manual
+# PyAgentSpec Coding Guide
 
-These instructions keep AI coding agents aligned with the expectations for contributing to the Agent Spec language, and the `pyagentspec` package. Follow them before making changes.
+These instructions apply to the `pyagentspec/` package. More specific nested
+`AGENTS.md` files, such as `src/pyagentspec/evaluation/AGENTS.md`, take
+precedence for their subtrees.
 
+## Working Rules
 
-## Agent Spec Language Highlights
+- Confirm the current branch and working tree before editing. Preserve unrelated
+  user changes and untracked files.
+- Read the neighboring implementation, tests, and docs before choosing an
+  approach. Prefer the established local pattern over a new abstraction.
+- Keep changes scoped. Do not mix unrelated cleanup, formatting churn, or
+  behavior changes into the same patch.
+- For code changes, update the closest tests and public docs when the behavior
+  is user-visible.
+- Use targeted validation first. Run broad suites only when the touched surface
+  justifies it.
 
-Agent Spec is an open specification language for expressing the structure and configuration of agentic systems. It centers on the concept of a `Component`, a flexible building block that captures the type, identity, name, description, and optional metadata of an element in an agent system. Components can be composed or referenced symbolically, allowing complex graphs to reuse subcomponents without duplicating definitions. To describe how data moves through these graphs, Component subclasses expose inputs and outputs via JSON Schema definitions, ensuring each connection is type compatible and well documented.
-The language standardizes a set of component families—such as agentic components, flows, nodes, LLM configurations, and tools—so that SDKs, runtimes, and editing GUIs share a common understanding of their behavior. By relying on JSON Schema for property typing and conversion rules, Agent Spec enables structured generation, validation, and runtime automation while remaining serialization-format agnostic. Because serialized specifications are not intended to contain executable code, producers and consumers must treat them as configurations and apply appropriate security practices when loading them.
-Each component captures type, identity, inputs, outputs, and optional metadata, enabling deterministic reconstruction of agent graphs across runtimes.
+## Package Map
 
-### Component Model Fundamentals
-- **Component** – Base abstraction with immutable `id`, declarative `type`, `name`, `description`, and extensible `metadata` for UI/runtime hints.
-- **ComponentWithIO** – Adds explicit `inputs` and `outputs`, each defined via JSON Schema annotations (`title`, `type`, optional `default`/`description`). Inputs/outputs can be inferred from configuration (e.g., prompts) but must be consistent with declared schemas.
-- **Symbolic references** – Components reuse others via `{"$component_ref": "COMPONENT_ID"}`, ensuring graphs stay acyclic and deduplicated.
-- **Type compatibility** – Agent Spec relies on the JSON schema typing system. Output types must be castable to connected input types. Numeric/string/boolean coercions follow JSON Schema conventions.
+- `src/pyagentspec/component.py`, `agent.py`, `agenticcomponent.py`: core
+  component model.
+- `src/pyagentspec/property.py`: JSON Schema-backed IO properties and type
+  compatibility.
+- `src/pyagentspec/flows/`: flow graph, nodes, edges, and the flow builder.
+- `src/pyagentspec/tools/`, `mcp/`, `remoteagent.py`, `a2aagent.py`,
+  `ociagent.py`: tool and remote integration specs.
+- `src/pyagentspec/llms/`: provider-specific LLM configuration models.
+- `src/pyagentspec/serialization/`: serializer/deserializer plugins and schema
+  generation.
+- `src/pyagentspec/adapters/`: conversions to and from LangGraph, CrewAI,
+  AutoGen, Agent Framework, OpenAI Agents, WayFlow, and related runtimes.
+- `src/pyagentspec/tracing/`: Agent Spec tracing models and events.
+- `tests/`: unit and integration-style coverage. Adapter tests live under
+  `tests/adapters/<runtime>/`.
 
-### Schema & Placeholder Guidance
-- Declare every exposed input/output. Runtime or SDK-inferred schemas must match names and be type-compatible with the declared list.
-- Use double-curly placeholders (`{{placeholder}}`) in templates to infer string inputs. Complex templating is intentionally limited; prefer explicit JSON Schema for lists/objects.
+## Core Model Patterns
 
-### Component Families
-Agent Spec organizes common constructs into specialized subclasses for validation and tooling:
-- **Agentic Components** – Interactive entry points (`Agent`, `Flow`, `RemoteAgent`, `Swarm`, `ManagerWorkers`, `SpecializedAgent`).
-- **Agents** – Conversational entities with `llm_config`, tools, and system prompts.
-- **Flows** – Graphs of nodes (`StartNode`, `EndNode`, `LlmNode`, `BranchNode`, etc.) tied together by control/data edges.
-- **Tools/ToolBoxes** – Callable capabilities and aggregations, including MCP integrations.
-- **LLM Configs** – Provider-specific models (OCI, OpenAI-compatible, VLLM, Ollama).
-- **Remote Agents** – Components referencing externally hosted agents (A2A, OCI Agent).
+- Use Pydantic v2 models. Prefer `ConfigDict(extra="forbid")` unless a local
+  model intentionally allows provider-specific extras.
+- Use `Field(default_factory=...)` for list, dict, and set defaults. Do not use
+  bare mutable defaults.
+- Describe inputs and outputs with `Property` objects and JSON Schema. Prefer
+  typed property helpers such as `StringProperty` or `IntegerProperty` when they
+  fit.
+- Keep explicit IO, inferred IO, and edge compatibility consistent. Placeholder
+  inference uses `{{placeholder}}` names and should remain predictable.
+- Add validation through `@model_validator_with_error_accumulation` when a
+  component can report multiple configuration errors. Avoid ad hoc
+  `model_post_init` validation.
+- New built-in components must be registered in `_component_registry.py`, exposed
+  through the appropriate `__all__`, and covered by serialization tests.
+- Preserve version behavior. If a feature requires a newer Agent Spec version,
+  update minimum-version inference and add tests for accepted and rejected
+  versions.
 
+## Adapter Patterns
 
-## Zero-Step Contract (always obey)
+- Conversions should be deterministic and preserve names, metadata, IO schemas,
+  component references, and graph topology where the target runtime supports
+  them.
+- Reuse each adapter's `referenced_objects` or equivalent cache so shared
+  components stay shared and cycles are handled consistently.
+- Raise `NotImplementedError` for unsupported runtime constructs instead of
+  silently dropping behavior.
+- Keep runtime execution helpers separate from representation conversion when
+  the adapter already has that split.
+- For generated source code, use structured rendering helpers, `repr`, or AST-like
+  construction rather than raw string interpolation of spec values.
+- Add focused adapter tests near the changed runtime, usually under
+  `tests/adapters/<runtime>/`. Round-trip tests are expected for new conversion
+  behavior.
 
-1. **Plan tightly** – Outline ≤4 steps, ≤6 words each.
-2. **Stay scoped** – Touch only files needed; mirror code changes with matching docs/tests when applicable.
-3. **Validate surgically** – Prefer targeted `pytest` (single file or marker). Run broader suites only on request.
-4. **No background work** – Avoid long-running processes; ask if information is missing. No speculative refactors or drive-by cleanups.
-5. **Report concisely** – Summarize edits (few words) and list follow-up tasks if work remains.
+## Templates, URLs, and Trust Boundaries
 
+- Treat `docs/pyagentspec/source/security.rst` as the canonical secure-use
+  guidance. Update it when changing prompt templating, generated code, remote
+  calls, credentials, deserialization, or adapter execution behavior.
+- Prompt placeholders are a trust-boundary decision. System-prompt placeholders
+  should use trusted configuration values only; do not route user, tool, RAG, or
+  MCP output into system prompts without deliberate runtime controls.
+- When untrusted content must appear in prompts, keep it separate from system
+  instructions where possible, delimit it clearly as data, validate or normalize
+  it, and apply runtime length limits or filtering.
+- Validate templated URL destinations after rendering. Prefer fixed
+  developer-controlled scheme and authority, use `url_allow_list` where
+  applicable, and avoid templated header names.
+- Never embed secrets in Agent Spec. Remote configs should expose references or
+  parameters, not credentials.
+- Deserialization must not execute code. Use safe YAML/JSON paths and explicit
+  component registries.
 
-## Project Snapshot
+## Tests and Tooling
 
-- **Purpose** – Provide the canonical Python SDK for creating, validating, serializing, and converting Agent Spec configurations.
-- **Packaging** – Ships to PyPI as `pyagentspec`; library code under `src/pyagentspec/`.
-- **Core abstractions** – `Component` hierarchy, `Property`, agentic components (`Agent`, `Flow`, `Swarm`, etc.), LLM configs, tool definitions, serialization plugins.
-- **Key capabilities** – Build Agent Spec graphs in Python, infer IO, enforce schema compatibility, version negotiation, adapters for external runtimes.
-- **Plugins** – Serialization/deserialization plugins live in `pyagentspec/serialization/`, and are used by `AgentSpecSerializer`/`AgentSpecDeserializer`.
-
-Typical workflows include:
-
-- Defining agents/flows using strongly-typed Pydantic models.
-- Serializing/deserializing Agent Spec JSON or YAML via `AgentSpecSerializer` and `AgentSpecDeserializer`.
-- Converting between Agent Spec and runtime-specific representations (LangGraph, CrewAI, AutoGen, OpenAI Agents, etc.).
-- Validating configurations against version-specific rules and compatibility constraints.
-
-
-## Repository Map
-
-| Area                     | Location                                                                | Notes                                                                                  |
-|--------------------------|-------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| Core components          | `component.py`, `agenticcomponent.py`, `agent.py`, `swarm.py`, `flows/` | Base classes, IO inference, version guards.                                            |
-| Properties & schemas     | `property.py`                                                           | JSON Schema-backed IO descriptors, compatibility helpers.                              |
-| Tools                    | `tools/`                                                                | Built-in, client, server, remote tool specs and toolboxes.                             |
-| LLM configs              | `llms/`                                                                 | Provider-specific configuration models (OCI, OpenAI-compatible, VLLM, Ollama, etc.).   |
-| MCP                      | `mcp/`                                                                  | MCP (Model Context Protocol) tooling components                                        |
-| Remote agents            | `remoteagent.py`, `a2aagent.py`, `ociagent.py`                          | Describe remote runtimes and A2A connections.                                          |
-| Manager-workers & swarms | `managerworkers.py`, `swarm.py`                                         | Multi-agent orchestration components.                                                  |
-| Flows                    | `flows/`                                                                | Structured workflow components and helpers.                                            |
-| ├─ Nodes                 | `flows/nodes/`                                                          | List of available nodes usable in flows.                                               |
-| ├─ Edges                 | `flows/edges/`                                                          | Node connections in flows                                                              |
-| └─ Builder               | `flowbuilder.py`                                                        | Chainable flow builder helper.                                                  |
-| Serialization            | `serialization/`                                                        | Plugins, registries, JSON schema generation, versioning support.                       |
-| Adapters                 | `adapters/`                                                             | Conversion layers for external frameworks (LangGraph, CrewAI, AutoGen, OpenAI Agents). |
-| Validation               | `validation_helpers.py`                                                 | Error accumulation helpers and configuration validators.                               |
-| Versioning               | `versioning.py`                                                         | Classes and helpers for the Agent Spec versioning system                               |
-| Tests                    | `tests/`                                                                | Extensive pytest suite, fuzz tests under `tests_fuzz/`.                                |
-
-
-## Tooling & Environment
-
-- **Python** – Target 3.10–3.14. Use the `install-dev.sh` for editable installs that include development tools. Use the `install.sh` for simple package usage.
-- **Type system** – Type static checks are performed by `mypy`, the configuration is available in the `pyproject.toml` file. Avoid using `type: ignore` statements unless strictly required.
-- **Formatting** – `black` (line length 100) and `isort` run via git hooks; keep imports organized accordingly. Do not introduce alternate formatters.
-- **Warnings discipline** – Pytest treats warnings as errors. Either eliminate warnings or capture them with `pytest.warns`. Tests might spawn servers: do it in separate thread and make sure to use an available port using the `get_available_port` function you can find in `tests/adapters/utils.py`.
-
-
-## Coding Guardrails
-
-- **Serialization safety** – Do not execute arbitrary code during (de)serialization. Use safe loaders for YAML, keep JSON the default interchange format.
-- **Component registry** – Register new components via `_component_registry.py`; ensure unique names and add to `__all__` if part of the public API.
-- **Properties** – Inputs/outputs must be `Property` instances using JSON Schema annotations. Keep schemas consistent across nested components and respect `properties_have_same_type` checks.
-- **Inference rules** – Agents infer IO from prompts, flows infer from start/end nodes. Maintain parity between inferred and explicit schemas.
-- **Mutable defaults** – Use Pydantic `Field(default_factory=...)` for lists/dicts; never use bare mutable defaults.
-- **Logging/prints** – Library code must not use `print`. Use `logging.getLogger(__name__)` when logging is required.
-- **Security** – Never embed secrets. Remote configs should expose parameters, not credentials.
-- **Classes** - Prefer Pydantic v2 models with `model_config = ConfigDict(extra="forbid")`; respect frozen fields like `Component.id`.
-
-
-## Coding patterns and guidelines
-
-- **Component implementation** – Subclass `Component`/`ComponentWithIO`, populate Pydantic fields (no bare defaults), implement `_get_inferred_inputs/_outputs`, `_infer_min_agentspec_version_from_configuration`, and register the class in `_component_registry.BUILTIN_CLASS_MAP` plus `__all__` that you can find in `_component_registry.py`.
-- **Flow nodes** – Extend `Node`, override `_get_inferred_branches` (and IO helpers) to keep schema/branch names deterministic, and mirror validation patterns from `flows/nodes/*.py`.
-- **Serialization plugins** – Prefer subclassing `PydanticComponentSerializationPlugin`/`PydanticComponentDeserializationPlugin`, supply explicit `component_types_and_models`, ensure unique `plugin_name`, and add coverage in `tests/serialization/`.
-- **Adapters** – Follow the LangGraph adapter pattern: keep conversions deterministic, reuse `referenced_objects` to preserve references, surface `NotImplementedError` for unsupported constructs, and add round-trip tests in `tests/adapters/<framework>/`.
-- **Schema signatures** – Always describe IO via `Property` JSON Schema; use helper utilities (`properties_have_same_type`, `model_validator_with_error_accumulation`) to enforce compatibility; using native property types (e.g., `StringProperty`, `IntegerProperty`) is preferred over using `Property` with a `json_schema`).
-- **Validation helpers** – Use `@model_validator_with_error_accumulation` decorator to write validation functions of Components. Do not use the `model_post_init` method for validation.
-
-
-## Testing Playbook
-
-- Write targeted pytest cases under `tests/`. Mirror new library features with tests in the closest matching module (e.g., `tests/test_component.py` or `tests/adapters/<runtime>/`).
-- Use fixtures from `tests/conftest.py` instead of ad-hoc setup. Mark tests requiring external services and guard with environment variables when applicable (`LLAMA_API_URL`, etc.).
-- Avoid non-deterministic behaviors in tests (e.g., execution of LLM calls) unless strictly necessary.
-- For versioned behavior, add explicit tests covering old vs. new `AgentSpecVersionEnum` scenarios (see `tests/test_versioning.py` and `tests/test_component.py::test_component_serializer_rejects_old_version`).
-- New features should add new tests instead of modifying older ones, which should keep working without modifications in most cases.
-- New features should include a regression test asserting that older spec versions reject the new capability (e.g., mirroring `tests/test_component.py::test_component_serializer_rejects_old_version`).
-- Use patterns from: `tests/serialization` when adding serialization tests; `tests/validation` when adding validation tests; `tests/tracing` when adding Agent Spec Tracing tests;  `tests/adapters` when adding adapters tests.
-
+- Follow red-green-refactor for behavioral changes: first add or identify a
+  focused failing test that demonstrates the desired behavior, then make the
+  smallest implementation change that turns it green, then refactor while keeping
+  the same focused tests passing.
+- Run tests from the `pyagentspec/` working directory so the package test
+  configuration and conftest directory checks apply, for example:
+  `pytest -q tests/test_component.py`.
+- For adapter changes, prefer the closest focused file, for example:
+  `pytest -q tests/adapters/langgraph/test_tracing_async.py`.
+- Some adapter tests require environment variables such as `LLAMA_API_URL`.
+  If a test imports `tests/adapters/conftest.py`, ensure the needed local test
+  environment is loaded before running it.
+- Pytest treats warnings as errors. Use `pytest.warns` for expected warnings and
+  eliminate unexpected ones.
+- Keep tests deterministic. Avoid real LLM or network calls unless the existing
+  test is explicitly marked and guarded.
+- Formatting and static checks follow `pyproject.toml`: Black and isort at line
+  length 100, and strict mypy for package code. Run `git diff --check` before
+  handing off.
 
 ## Documentation Expectations
 
-- Add a module-level docstring that states the purpose of every new Python module, matching the concise, single-sentence summaries used across `src/pyagentspec/`.
-- Give each public class a docstring whose first line summarizes intent, followed by optional paragraphs or `Examples` blocks written as doctests (mirroring `Agent`, `Flow`, and `StartNode`).
-- Document public methods/functions with a short summary and, when parameters or returns need clarification, append NumPy-style ``Parameters``/``Returns`` sections as seen in `Property` and `Trace` helpers.
-- Attach attribute docstrings to Pydantic model fields using triple-quoted strings immediately after the field definition (e.g., Component IDs, Tool flags) so generated docs stay informative.
-- Highlight version requirements inside docstrings whenever behavior depends on `AgentSpecVersionEnum`; prefer concise notes over long narratives.
+- Public modules, classes, methods, and functions need concise docstrings that
+  match nearby style.
+- Pydantic fields that appear in generated docs should have attribute docstrings
+  immediately after the field definition.
+- User-visible behavior belongs in `docs/pyagentspec/source/`; security-sensitive
+  guidance belongs in `docs/pyagentspec/source/security.rst`.
+- Keep examples small, deterministic, and aligned with the current public API.
 
+## Commit Hygiene
 
-## Contribution Workflow
-
-- Prefer incremental PRs focused on a single feature or bugfix.
-- When adding new components or adapters, include serialization round-trip tests, validation tests, and schema coverage.
-- For adapters, ensure conversions preserve metadata and IO definitions; document unsupported fields explicitly.
-- Every change should ensure backward compatibility for at least one minor version.
-- Clearly document the code; Add docstrings to every class, method, and function you implement, even minimal ones in case they are private APIs; Explaining the semantic of the most important and less clear code blocks with inline comments.
-
-
-## Quick Reference Commands
-
-- `./install-dev.sh` – install package + dev extras in editable mode.
-- `pytest tests/test_component.py` – example targeted test run.
-
-
----
-
-Respecting these guardrails keeps the Python SDK aligned with the evolving Agent Spec language while remaining stable for downstream runtimes.
+- Stage only the files needed for the current task.
+- Keep commits reviewable and topic-focused.
+- Use Conventional Commits for commit messages: `type(scope): summary` when a
+  useful scope exists, otherwise `type: summary`. Common types here include
+  `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, and `ci`.
+- Mention tests or explain why tests were not run in the handoff.

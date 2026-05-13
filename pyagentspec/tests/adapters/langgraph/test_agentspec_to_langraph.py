@@ -87,7 +87,10 @@ def test_client_tool_with_agent(weather_agent_client_tool_yaml: str) -> None:
     assert all(x in last_message.content.lower() for x in ("agadir", "sunny"))
 
 
-def test_client_tool_with_two_inputs(ancestry_agent_with_client_tool_yaml: str) -> None:
+def test_client_tool_with_two_inputs(
+    ancestry_agent_with_client_tool_yaml: str,
+    disable_parallel_tool_calls: None,
+) -> None:
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.types import Command
@@ -176,10 +179,7 @@ def test_weather_agent_with_server_tool_with_openaicompatible_llm_raises_without
     old_value = os.environ.pop("OPENAI_API_KEY", None)
 
     try:
-        with pytest.raises(
-            openai.OpenAIError,
-            match="The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
-        ):
+        with pytest.raises(openai.OpenAIError, match="api_key"):
             AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
                 weather_agent_server_tool_openaicompatible_yaml
             )
@@ -211,7 +211,10 @@ def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
     assert isinstance(tool_call_message, ToolMessage)
 
 
-def test_execute_swarm(swarm_calculator_yaml: str) -> None:
+def test_execute_swarm(
+    swarm_calculator_yaml: str,
+    disable_parallel_tool_calls: None,
+) -> None:
     from langchain_core.runnables import RunnableConfig
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader

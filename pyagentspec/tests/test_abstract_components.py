@@ -10,7 +10,6 @@ import pytest
 
 from pyagentspec import Component
 from pyagentspec.flows.node import Node
-from pyagentspec.llms.llmconfig import LlmConfig
 
 
 def test_component_cannot_be_instantiated() -> None:
@@ -60,7 +59,7 @@ def test_concrete_child_of_concrete_component_can_be_instantiated() -> None:
     assert ContcreteChildOfConcreteComponent(name="abcde") is not None
 
 
-@pytest.mark.parametrize("expected_abstract_cls", [Component, Node, LlmConfig])
+@pytest.mark.parametrize("expected_abstract_cls", [Component, Node])
 def test_agentspec_components_are_abstract(expected_abstract_cls: Type[Component]) -> None:
     with pytest.raises(
         TypeError, match="Class '.*' is meant to be abstract and cannot be instantiated"

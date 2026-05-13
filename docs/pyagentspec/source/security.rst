@@ -11,6 +11,25 @@ While Agent Spec itself is purely declarative, its specifications influence runt
 Risks can arise from configurations that include sensitive information, lack proper isolation, or rely on untrusted components.
 This document helps reduce misconfiguration risks and supports the secure execution of the resulting agent.
 
+Considerations regarding generated code and templates
+-----------------------------------------------------
+
+Some adapters can translate Agent Spec representations into runtime-specific source code.
+Generated source should only be produced from specifications that passed validation, reviewed before deployment when the specification is untrusted, and executed with the same isolation expected for application code.
+
+Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
+
+Considerations regarding prompt templates
+-----------------------------------------
+
+Prompt templates can combine trusted instructions with runtime values.
+When a placeholder in a system prompt or other instruction-bearing prompt is filled from end-user input, tool output, retrieved documents, MCP responses, or other untrusted sources, the model may interpret the substituted text as instructions rather than data.
+
+Use placeholders in system prompts only for trusted configuration values.
+Avoid inserting user-provided, tool-derived, RAG, or MCP output directly into system prompts.
+When untrusted content must be included in a prompt, keep it separate from system instructions where possible, delimit it clearly as data, validate and normalize it, and apply length limits or filtering in the runtime.
+These controls reduce prompt-injection risk, but they do not eliminate it.
+
 Considerations regarding tools
 ------------------------------
 
@@ -25,7 +44,7 @@ Key Principles for Tool Security:
   Note that ``inputs`` do not support constraints like ranges or max lengths, so you must implement additional validation in your tool’s code. \
   You should also validate the semantic correctness of inputs, especially when they may originate from untrusted sources like LLM completions or end-user input. \
   For remote tools, which constructs HTTP requests, validation is critical for all parameters that can be templated (e.g., url, method, json_body, data, params, headers, cookies). \
-  While ``inputs`` can define the schema for arguments passed to the remote tool, the core security lies in controlling how these arguments are used to form the request.
+  While ``inputs`` can define the schema for arguments passed to the remote tool, the core security lies in controlling how these arguments are used to form the request and in features like ``url_allow_list``.
 * **Output Scrutiny**: For all tools, you should define the expected type of a tool’s output using ``outputs`` in the representation. \
   Currently, the representation does not support output constraints like maximum length or detailed validation logic. \
   The output of well-contained tools which you fully control can often be trusted, but tool outputs should be treated with caution when they:
@@ -57,7 +76,11 @@ Following security considerations is important when working with remote/mcp tool
 * **Templated Request Arguments**: Since most request fields support templating, they can be influenced by dynamic inputs, such as LLM completions or user-provided values. \
   As a result, these fields must be handled with extra caution in the specification to avoid misuse at runtime. \
   Maliciously crafted inputs could lead to information leakage (e.g., exposing sensitive data in URLs or headers) or enable attacks like SSRF (Server-Side Request Forgery) or automated DDoS. \
-  Developers must validate all templated inputs, including URLs, headers, and request bodies before executing the request.
+  Developers must validate all templated inputs, including URLs, headers, and request bodies before executing the request. Prefer a fixed developer-controlled base URL and template only path, query, or body values whenever possible.
+* **URL Allow Lists (``url_allow_list``)**: ``RemoteTool`` and ``ApiNode`` support an optional ``url_allow_list`` field that can be used by runtimes or adapters to restrict outbound requests to a predefined set of approved destinations. \
+  This field is especially recommended when placeholders can affect the destination part of the URL (scheme, host, or port), but it is not compulsory: adapter/runtime documentation should explain how this rule is applied. \
+  The intended matching behavior is exact matching on scheme and authority (host and port), together with prefix matching on the path; query parameters, URL params, and fragments are not used for matching. \
+  In practice these patterns are plain URL prefixes, for example ``https://api.example.com`` or ``https://api.example.com/orders/``. \
 * **Secure Connections**: Use HTTPS for all remote calls.
 * **HTTP Method**: When possible, use fixed and explicit HTTP methods for the ``http_method`` parameter in the ``RemoteTool`` or ``ApiNode`` (e.g., ``"GET"``, ``"POST"``) rather than dynamic templates.
 * **Timeouts**: Remote/MCP tools or API nodes may block indefinitely if the external service is unresponsive. \
@@ -79,6 +102,7 @@ Consider the following security considerations:
 * **TLS**: Use mTLS for service-to-service communications such as connecting to MCP servers, Monitoring/Telemetry services, File Storage Services, Databases, and so on.
 * **Strict Egress Rules**: Default-deny outbound traffic. Allow only Allow-Listed domains/IPs for Agent Spec components (such as when using remote tools or API Nodes).
 * **Centralized Allow-Lists**: Use a central allow-list to restrict access to LLM endpoints, logging/telemetry sinks, and external APIs called by components like remote tools or API Nodes. \
+  When using ``RemoteTool`` or ``ApiNode``, align component-level ``url_allow_list`` values with these infrastructure-level policies. \
   Set up alerts for policy violations.
 
 
@@ -339,6 +363,27 @@ utilities to avoid unsafe behavior.
     assistant_or_flow = AgentSpecDeserializer.from_yaml(raw_yaml_string)
 
 When deploying serialized representation to an execution engine, use the engine's secure loading mechanism for the import.
+
+Considerations regarding runtime-sensitive components
+-----------------------------------------------------
+
+Some Agent Spec components can influence actions performed by adapters or runtimes
+when a configuration is loaded or run. For example, MCP stdio transports can start
+a local MCP server subprocess on the machine that loads and runs the resulting
+agent.
+
+Only enable runtime-sensitive components from trusted configurations. PyAgentSpec
+loaders block ``StdioTransport`` and its subclasses by default. If a trusted
+configuration intentionally uses stdio transports, pass
+``blocked_components=[]`` to the loader, or provide a custom
+``blocked_components`` value that does not include the stdio transport
+component class. For stricter environments, use ``allowed_components`` to
+explicitly list the component types that may be loaded.
+
+Component policy entries can be provided as Component classes or component type
+names. Type names that resolve to known Component classes use the same hierarchy
+matching as class entries; unresolved type names match only the exact serialized
+component type.
 
 .. _securitycatchexceptionnode:
 

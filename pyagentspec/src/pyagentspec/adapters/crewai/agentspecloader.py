@@ -15,19 +15,36 @@ from pyagentspec.adapters._agentspecloader import (
 )
 from pyagentspec.adapters.crewai._agentspecconverter import CrewAIToAgentSpecConverter
 from pyagentspec.adapters.crewai._crewaiconverter import AgentSpecToCrewAIConverter
+from pyagentspec.serialization.componentpolicy import ComponentPolicyInput
 
 
 class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
-    """Helper class to convert Agent Spec configurations to CrewAI objects."""
+    """Helper class to convert Agent Spec configurations to CrewAI objects.
+
+    ``allowed_components`` and ``blocked_components`` can be used to constrain
+    which Agent Spec component types load. Resolvable type names and Component
+    classes match subclasses; unresolved type names match only the exact serialized
+    component type. When allow and block entries both match, the closest match
+    in the component class hierarchy wins; block entries win same-distance ties.
+    If ``blocked_components`` is omitted, ``StdioTransport`` and its subclasses
+    are blocked by default.
+    """
 
     def __init__(
         self,
         tool_registry: Optional[Dict[str, Any]] = None,
         plugins: Optional[List[Any]] = None,
         *,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
         enable_agentspec_tracing: bool = True,
     ) -> None:
-        super().__init__(tool_registry=tool_registry, plugins=plugins)
+        super().__init__(
+            tool_registry=tool_registry,
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
         self._enable_agentspec_tracing = enable_agentspec_tracing
 
     @property

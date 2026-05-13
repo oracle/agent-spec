@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from pyagentspec.llms import OpenAiCompatibleConfig
+from pyagentspec.llms import LlmConfig, OpenAiCompatibleConfig
 from pyagentspec.property import StringProperty
 
 
@@ -29,3 +29,10 @@ def test_passing_a_non_sting_api_key_raises(
             model_id="custom_model_id",
             api_key=incorrect_api_key,
         )
+
+
+def test_llmconfig_is_not_abstract() -> None:
+    """LlmConfig can be instantiated directly — it is no longer abstract."""
+    config = LlmConfig(name="test", model_id="some-model")
+    assert config.model_id == "some-model"
+    assert config.component_type == "LlmConfig"

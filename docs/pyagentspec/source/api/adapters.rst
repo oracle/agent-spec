@@ -7,6 +7,12 @@ into the equivalent solution, as per each framework's definition, and return an 
 
 This page presents all APIs and classes related to Agent Spec Adapters.
 
+Shared Loader
+-------------
+
+.. _adapters_shared_loader:
+.. autoclass:: pyagentspec.adapters._agentspecloader.AdapterAgnosticAgentSpecLoader
+
 LangGraph
 ---------
 

@@ -52,12 +52,13 @@ def convert_agentspec_llm_to_autogen(agentspec_llm: LlmConfig):
         return OpenAIChatCompletionClient(
             model=agentspec_llm.model_id,
             base_url=f"http://{agentspec_llm.url}/v1",
-            api_key="",
+            api_key="your-api-key",
             model_info={
                 "vision": False,
                 "function_calling": True,
                 "json_output": True,
                 "family": "unknown",
+                "structured_output": True,
             },
         )
     # Here we should write the translation for

@@ -40,9 +40,6 @@ class OpenAiCompatibleConfig(LlmConfig):
     """ID of the model to use"""
     api_type: SerializeAsEnum[OpenAIAPIType] = OpenAIAPIType.CHAT_COMPLETIONS
     """OpenAI API protocol to use"""
-    api_key: SensitiveField[Optional[str]] = None
-    """An optional API KEY for the remote LLM model. If specified, the value of the api_key will be
-       excluded and replaced by a reference when exporting the configuration."""
     key_file: SensitiveField[Optional[str]] = None
     """The path to an optional client private key file (PEM format)."""
     cert_file: SensitiveField[Optional[str]] = None
@@ -54,15 +51,17 @@ class OpenAiCompatibleConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        # First, we reintroduce the attributes that were introduced in 26.2.0 LlmConfig, but were
+        # already here before that version. Then the rest of the logic will handle older versions.
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.remove("api_key")
+            fields_to_exclude.remove("api_type")
+            fields_to_exclude.remove("url")
+            fields_to_exclude.remove("model_id")
+        # Remove fields in older versions
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("api_key")
-        # Certificate fields were added in 26.2.0. For backwards compatibility with existing
-        # serialized configs, omit them entirely when they are unset instead of exporting `null`.
-        has_certificate_configuration = any(
-            certificate_path is not None
-            for certificate_path in (self.key_file, self.cert_file, self.ca_file)
-        )
         if agentspec_version < AgentSpecVersionEnum.v26_2_0:
             fields_to_exclude.add("key_file")
             fields_to_exclude.add("cert_file")

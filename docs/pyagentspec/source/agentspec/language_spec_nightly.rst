@@ -530,15 +530,27 @@ In order to make them usable, we need to let users specify all the
 details needed to configure the LLM, like the connection details, the
 generation parameters, etc.
 
-We define a new Component called LlmConfig that contains all the details:
+We define a Component called LlmConfig that contains all the details:
 
 .. code-block:: python
 
    class LlmConfig(Component):
+     model_id: str
+     provider: Optional[str]
+     api_provider: Optional[str]
+     api_type: Optional[str]
+     url: Optional[str]
+     api_key: SensitiveField[Optional[str]]
      default_generation_parameters: Optional[Dict[str, Any]]
      retry_policy: Optional[RetryPolicy]
 
-We require only to specify the default generation parameters that should be used by default when prompting the LLM.
+The ``model_id`` field is required and identifies the model to use, as expected by the selected API provider.
+The ``provider`` field is optional and identifies the model provider (e.g. ``"openai"``, ``"meta"``, ``"anthropic"``, ``"cohere"``).
+The ``api_provider`` field is optional and identifies the API provider serving the model (e.g. ``"openai"``, ``"oci"``, ``"vllm"``, ``"ollama"``, ``"aws_bedrock"``, ``"vertex_ai"``).
+The ``api_type`` field is optional and identifies the API format to use (e.g. ``"chat_completions"``, ``"responses"``).
+The ``url`` field is optional and specifies the URL of the API endpoint (e.g. ``"https://api.openai.com/v1"``). If not specified, the default API URL of the API provider (if any) is used.
+The ``api_key`` field is optional and specifies an API key for the remote LLM. When the configuration is exported, the value is replaced by a reference.
+The ``default_generation_parameters`` field specifies the default generation parameters that should be used when prompting the LLM.
 These parameters are specified as a dictionary of parameter names and respective values.
 The names are strings, while values can be of any type compatible with the JSON schema standard.
 Additionally, an optional Retry policy can be specified to configure the how remote LLM calls are retried
@@ -600,7 +612,10 @@ When all retries fail, an error is raised and the execution is interrupted.
     or explicitly before importing the configuration into the runtime.
 
 Null value is equivalent to an empty dictionary, i.e., no default generation parameter is specified.
-Specific extensions of LlmConfig for the most common models are provided as well.
+
+``LlmConfig`` can be used directly for any LLM provider by setting the appropriate ``provider``, ``api_provider``,
+and ``api_type`` values. Specific extensions of ``LlmConfig`` for the most common providers are also provided
+for convenience, offering additional provider-specific configuration options.
 
 Structured Generation
 ^^^^^^^^^^^^^^^^^^^^^
@@ -966,6 +981,7 @@ the correct built-in tool.
      query_params: Dict[str, Any]
      headers: Dict[str, Any]
      sensitive_headers: SensitiveField[Dict[str, Any]]
+     url_allow_list: Optional[List[str]]
      retry_policy: Optional[RetryPolicy]
 
    class MCPTool(Tool):
@@ -1007,6 +1023,24 @@ If ``data`` is specified as a string, the runtime must encode and pass it as the
 otherwise the value of ``data`` should be JSON serializable and runtimes are
 expected to dump it when adding it in the body of the HTTP request.
 The data is passed to the request as Form Data if the header ``{"Content-Type": "application/x-www-form-urlencoded"}`` is specified.
+
+The ``url_allow_list`` field is an optional list of developer-controlled URLs or URL patterns that runtimes
+or adapters can use to validate the rendered request URL. The intended matching behavior is exact matching on
+scheme and authority (host and port), together with prefix matching on the path. Query parameters, URL params,
+and fragments are not used for matching.
+
+These patterns are simple URL prefixes rather than wildcards or regexes. For example:
+
+* ``https://example.com`` allows ``https://example.com/page`` because scheme, host, and port match and the path prefix is ``/``.
+* ``https://example.com/orders/`` allows ``https://example.com/orders/123`` and ``https://example.com/orders/123/items``.
+* ``https://example.com/orders/`` does not allow ``https://example.com/customers/123`` because the path prefix differs.
+* ``http://example.com/orders/`` does not allow ``https://example.com/orders/123`` because the scheme differs.
+
+For higher security, authors should strongly prefer configuring ``url_allow_list`` whenever templating is used in
+``url``, especially if placeholders can affect the destination part of the URL (scheme, host, or port).
+However, Agent Spec does not require runtime adapters to enforce this rule: whether to accept
+or reject ``url`` containing placeholders without an explicit ``url_allow_list`` is left to runtime implementations.
+The recommended pattern is to keep the base URL developer-controlled and template only path, query, or body values.
 
 MCP Tools
 ^^^^^^^^^
@@ -1657,6 +1691,13 @@ A more detailed description of each node follows.
               - object[str, any]
               - No
               - {}
+            * - url_allow_list
+              - Optional list of allowed URLs or URL patterns for the rendered request URL. The intended semantics are
+                the same as for ``RemoteTool.url_allow_list``. For example, ``https://example.com`` allows any path
+                on that origin, while ``https://example.com/orders/`` allows only the ``/orders/`` subtree.
+              - array[string] | null
+              - No
+              - null
             * - retry_policy
               - Optional retry policy configuration applied to this API call.
               - RetryPolicy | null
@@ -2919,6 +2960,8 @@ See all the fields below that are considered sensitive fields:
 | OpenAiCompatibleConfig           | ca_file            |
 +----------------------------------+--------------------+
 | OpenAiConfig                     | api_key            |
++----------------------------------+--------------------+
+| LlmConfig                        | api_key            |
 +----------------------------------+--------------------+
 | GeminiAIStudioAuthConfig         | api_key            |
 +----------------------------------+--------------------+

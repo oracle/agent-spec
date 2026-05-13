@@ -1763,6 +1763,21 @@
           "title": "Sensitive Headers",
           "type": "object"
         },
+        "url_allow_list": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Allow List"
+        },
         "retry_policy": {
           "anyOf": [
             {
@@ -3029,6 +3044,64 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "const": "google",
+          "default": "google",
+          "title": "Provider",
+          "type": "string"
+        },
+        "api_provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Provider"
+        },
+        "api_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Type"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -3050,10 +3123,6 @@
             }
           ],
           "default": null
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
         },
         "auth": {
           "$ref": "#/$defs/GeminiAuthConfig"
@@ -3333,9 +3402,145 @@
         },
         {
           "$ref": "#/$defs/VllmConfig"
+        },
+        {
+          "additionalProperties": false,
+          "description": "A LLM configuration defines how to connect to a LLM to do generation requests.\n\nThis class can be used directly with the ``provider``, ``api_provider``, and ``api_type``\nfields to describe any LLM without a dedicated subclass. Concrete subclasses provide\nadditional configuration for specific LLM providers.",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Description"
+            },
+            "metadata": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metadata"
+            },
+            "model_id": {
+              "title": "Model Id",
+              "type": "string"
+            },
+            "provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Provider"
+            },
+            "api_provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Provider"
+            },
+            "api_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Type"
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Url"
+            },
+            "api_key": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Key"
+            },
+            "default_generation_parameters": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/LlmGenerationConfig"
+                }
+              ],
+              "default": null
+            },
+            "retry_policy": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RetryPolicy"
+                }
+              ],
+              "default": null
+            },
+            "$referenced_components": {
+              "$ref": "#/$defs/ReferencedComponents"
+            },
+            "component_type": {
+              "const": "LlmConfig"
+            }
+          },
+          "required": [
+            "model_id",
+            "name"
+          ],
+          "title": "LlmConfig",
+          "type": "object"
         }
       ],
-      "x-abstract-component": true
+      "x-abstract-component": false
     },
     "BaseLlmNode": {
       "additionalProperties": false,
@@ -4834,6 +5039,55 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/ModelProvider"
+            }
+          ],
+          "default": null
+        },
+        "api_provider": {
+          "const": "oci",
+          "default": "oci",
+          "title": "Api Provider",
+          "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OciAPIType",
+          "default": "oci"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -4856,10 +5110,6 @@
           ],
           "default": null
         },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
-        },
         "compartment_id": {
           "title": "Compartment Id",
           "type": "string"
@@ -4868,23 +5118,8 @@
           "$ref": "#/$defs/ServingMode",
           "default": "ON_DEMAND"
         },
-        "provider": {
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/$defs/ModelProvider"
-            }
-          ],
-          "default": null
-        },
         "client_config": {
           "$ref": "#/$defs/OciClientConfig"
-        },
-        "api_type": {
-          "$ref": "#/$defs/OciAPIType",
-          "default": "oci"
         },
         "conversation_store_id": {
           "anyOf": [
@@ -4951,6 +5186,48 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "api_provider": {
+          "const": "ollama",
+          "default": "ollama",
+          "title": "Api Provider",
+          "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -4972,30 +5249,6 @@
             }
           ],
           "default": null
-        },
-        "url": {
-          "title": "Url",
-          "type": "string"
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
-        },
-        "api_type": {
-          "$ref": "#/$defs/OpenAIAPIType",
-          "default": "chat_completions"
-        },
-        "api_key": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Api Key"
         },
         "key_file": {
           "anyOf": [
@@ -5093,6 +5346,54 @@
               ],
               "title": "Metadata"
             },
+            "model_id": {
+              "title": "Model Id",
+              "type": "string"
+            },
+            "provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Provider"
+            },
+            "api_provider": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Provider"
+            },
+            "api_type": {
+              "$ref": "#/$defs/OpenAIAPIType",
+              "default": "chat_completions"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "api_key": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Api Key"
+            },
             "default_generation_parameters": {
               "anyOf": [
                 {
@@ -5114,30 +5415,6 @@
                 }
               ],
               "default": null
-            },
-            "url": {
-              "title": "Url",
-              "type": "string"
-            },
-            "model_id": {
-              "title": "Model Id",
-              "type": "string"
-            },
-            "api_type": {
-              "$ref": "#/$defs/OpenAIAPIType",
-              "default": "chat_completions"
-            },
-            "api_key": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "title": "Api Key"
             },
             "key_file": {
               "anyOf": [
@@ -5229,6 +5506,50 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "const": "openai",
+          "default": "openai",
+          "title": "Provider",
+          "type": "string"
+        },
+        "api_provider": {
+          "const": "openai",
+          "default": "openai",
+          "title": "Api Provider",
+          "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -5250,26 +5571,6 @@
             }
           ],
           "default": null
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
-        },
-        "api_type": {
-          "$ref": "#/$defs/OpenAIAPIType",
-          "default": "chat_completions"
-        },
-        "api_key": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Api Key"
         },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
@@ -5850,6 +6151,21 @@
           "additionalProperties": true,
           "title": "Sensitive Headers",
           "type": "object"
+        },
+        "url_allow_list": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Allow List"
         },
         "retry_policy": {
           "anyOf": [
@@ -7219,6 +7535,48 @@
           ],
           "title": "Metadata"
         },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "api_provider": {
+          "const": "vllm",
+          "default": "vllm",
+          "title": "Api Provider",
+          "type": "string"
+        },
+        "api_type": {
+          "$ref": "#/$defs/OpenAIAPIType",
+          "default": "chat_completions"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
         "default_generation_parameters": {
           "anyOf": [
             {
@@ -7240,30 +7598,6 @@
             }
           ],
           "default": null
-        },
-        "url": {
-          "title": "Url",
-          "type": "string"
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
-        },
-        "api_type": {
-          "$ref": "#/$defs/OpenAIAPIType",
-          "default": "chat_completions"
-        },
-        "api_key": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Api Key"
         },
         "key_file": {
           "anyOf": [

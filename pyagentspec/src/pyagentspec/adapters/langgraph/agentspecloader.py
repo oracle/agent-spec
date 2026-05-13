@@ -18,6 +18,7 @@ from pyagentspec.adapters.langgraph._types import (
 )
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.serialization import ComponentDeserializationPlugin
+from pyagentspec.serialization.componentpolicy import ComponentPolicyInput
 
 
 class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
@@ -38,6 +39,16 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         enables features that require a checkpointer (e.g., client tools).
     config:
         Optional ``RunnableConfig`` to pass to created runnables/graphs.
+    allowed_components:
+        Optional iterable of Agent Spec component type names or Component classes allowed
+        to be loaded. If omitted, all component types are allowed unless blocked.
+    blocked_components:
+        Optional iterable of Agent Spec component type names or Component classes blocked
+        from loading. If omitted, stdio MCP transports are blocked by default.
+        Resolvable type names and Component classes also match subclasses; unresolved
+        type names match only the exact serialized component type. When allow and
+        block entries both match, the closest match in the component class hierarchy
+        wins; block entries win same-distance ties.
     """
 
     def __init__(
@@ -46,8 +57,16 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
         checkpointer: Optional[Checkpointer] = None,
         config: Optional[RunnableConfig] = None,
+        *,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
     ) -> None:
-        super().__init__(plugins=plugins, tool_registry=tool_registry)
+        super().__init__(
+            plugins=plugins,
+            tool_registry=tool_registry,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
         self.checkpointer = checkpointer
         self.config = config
 
@@ -259,7 +278,8 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         )
 
     def load_component(self, agentspec_component: AgentSpecComponent) -> LangGraphRuntimeComponent:
-        # Need to override to make it use config and checkpointer
+        # Need to override to make it use config and checkpointer, while preserving base policy validation
+        self.component_load_policy.validate_component_tree(agentspec_component)
         return cast(
             LangGraphRuntimeComponent,
             self.agentspec_to_runtime_converter.convert(
