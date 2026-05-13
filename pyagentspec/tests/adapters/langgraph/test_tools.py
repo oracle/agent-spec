@@ -837,32 +837,42 @@ async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
     assert "10" in str(tool_result_message.content)
 
 
-def test_server_tool_confirmation_with_typed_outputs_works() -> None:
-    """Tools with requires_confirmation and typed output schemas should load
-    without error.  The output schema is metadata for the LLM, not a runtime
-    validation constraint, so it should not be rejected."""
+def test_server_tool_confirmation_with_typed_object_output_works() -> None:
+    """Tools with requires_confirmation and a typed (object) output schema
+    should load without error and execute the approved path. The output schema
+    is metadata for the LLM, not a runtime constraint, and on rejection the
+    denial string maps cleanly into a single declared output."""
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
+    bash_result = {"stdout": "hello", "stderr": "", "exit_code": 0}
+
     def bash_func(command: str) -> dict:
-        return {"stdout": "hello", "stderr": "", "exit_code": 0}
+        return bash_result
 
     server_tool = ServerTool(
         name="bash",
         description="Run a shell command",
         inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
         outputs=[
-            Property(title="stdout", json_schema={"title": "stdout", "type": "string"}),
-            Property(title="stderr", json_schema={"title": "stderr", "type": "string"}),
-            Property(title="exit_code", json_schema={"title": "exit_code", "type": "number"}),
+            Property(
+                title="result",
+                json_schema={
+                    "type": "object",
+                    "properties": {
+                        "stdout": {"type": "string"},
+                        "stderr": {"type": "string"},
+                        "exit_code": {"type": "number"},
+                    },
+                },
+            ),
         ],
         requires_confirmation=True,
     )
     flow = _make_simple_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
 
-    # Should not raise ValueError about output schema
     app = AgentSpecLoader(
         tool_registry={"bash": bash_func},
         checkpointer=MemorySaver(),
@@ -876,7 +886,40 @@ def test_server_tool_confirmation_with_typed_outputs_works() -> None:
     assert interrupt_payload["action_requests"][0]["name"] == "bash"
 
     result = app.invoke(_approve_command(), config=config)
-    assert result["outputs"] is not None
+    assert result["outputs"]["result"] == bash_result
+
+
+def test_server_tool_confirmation_with_multi_output_in_flow_tool_node_raises() -> None:
+    """Multiple declared outputs combined with requires_confirmation cannot be
+    used inside a Flow ToolNode: on rejection, the tool returns a single denial
+    string that has no principled mapping to multiple outputs. We catch this at
+    load time with a clear error rather than letting it surface as an opaque
+    mapping failure at runtime."""
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def bash_func(command: str) -> dict:
+        return {"stdout": "hello", "stderr": "", "exit_code": 0}
+
+    server_tool = ServerTool(
+        name="bash",
+        description="Run a shell command",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+        outputs=[
+            Property(title="stdout", json_schema={"type": "string"}),
+            Property(title="stderr", json_schema={"type": "string"}),
+            Property(title="exit_code", json_schema={"type": "number"}),
+        ],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
+
+    with pytest.raises(ValueError, match="multiple outputs"):
+        AgentSpecLoader(
+            tool_registry={"bash": bash_func},
+            checkpointer=MemorySaver(),
+        ).load_component(flow)
 
 
 def test_requires_confirmation_without_checkpointer_raises_for_server_tool_in_flow() -> None:

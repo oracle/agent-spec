@@ -738,6 +738,22 @@ class AgentSpecToLangGraphConverter:
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import ToolNodeExecutor
 
+        # A rejected confirmation returns a single denial string, which cannot be
+        # split across multiple declared outputs of a Flow ToolNode. Catch this
+        # at load time rather than letting it surface as an opaque mapping error
+        # at runtime on the rejection path.
+        agentspec_tool = tool_node.tool
+        tool_outputs = agentspec_tool.outputs or []
+        if agentspec_tool.requires_confirmation and len(tool_outputs) > 1:
+            raise ValueError(
+                f"Tool '{agentspec_tool.name}' declares multiple outputs and "
+                f"requires_confirmation=True inside Flow ToolNode '{tool_node.name}'. "
+                f"On rejection, the tool returns a single denial string, which "
+                f"cannot be mapped to multiple declared outputs. "
+                f"Use a single output (object-typed if structured data is needed), "
+                f"or move the tool out of the Flow ToolNode."
+            )
+
         tool = self.convert(
             tool_node.tool,
             tool_registry=tool_registry,
