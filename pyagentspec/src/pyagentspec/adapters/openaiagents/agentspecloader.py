@@ -17,6 +17,7 @@ from pyagentspec.adapters.openaiagents.flows._rulepack_registry import resolve_r
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.serialization import ComponentDeserializationPlugin
+from pyagentspec.serialization.componentpolicy import ComponentPolicyInput
 
 _OAComponent = Union[OAAgent, str]
 
@@ -48,6 +49,9 @@ def _load_component(
     """
     is_flow = isinstance(agentspec_component, cast(type, AgentSpecFlow))
     if is_flow:
+        # Flow codegen bypasses the base loader's conversion path, so enforce the
+        # component policy here before generating executable Python source.
+        agent_spec_loader.component_load_policy.validate_component_tree(agentspec_component)
         pack = resolve_rulepack(rulepack_version)
         ir = pack.agentspec_to_ir(agentspec_component, strict=True)
         mod = pack.codegen(ir, module_name=module_name)
@@ -61,12 +65,22 @@ def _load_component(
 
 
 class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
-    """Helper class to convert Agent Spec configurations to OpenAI Agents SDK objects."""
+    """Helper class to convert Agent Spec configurations to OpenAI Agents SDK objects.
+
+    ``allowed_components`` and ``blocked_components`` can be used to constrain
+    which Agent Spec component types load. Resolvable type names and Component
+    classes match subclasses; unresolved type names match only the exact serialized
+    component type. When allow and block entries both match, the closest match
+    in the component class hierarchy wins; block entries win same-distance ties.
+    """
 
     def __init__(
         self,
         tool_registry: Optional[Dict[str, _TargetTool]] = None,
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
+        *,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
     ):
         """
         Parameters
@@ -77,8 +91,23 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
             the values are the tool objects (prebuilt OpenAI FunctionTool or callable).
         plugins:
             Optional list of deserialization plugins for PyAgentSpec.
+        allowed_components:
+            Optional iterable of Agent Spec component type names or Component classes allowed
+            to be loaded. If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of Agent Spec component type names or Component classes blocked
+            from loading. If omitted, stdio MCP transports are blocked by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
         """
-        super().__init__(plugins=plugins, tool_registry=tool_registry)
+        super().__init__(
+            plugins=plugins,
+            tool_registry=tool_registry,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
 
     @property
     def agentspec_to_runtime_converter(self) -> AgentSpecToOpenAIConverter:

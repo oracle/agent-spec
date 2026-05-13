@@ -34,6 +34,20 @@ def get_weather(city: str) -> str:
     return f"The weather in {city} is sunny."
 
 
+@pytest.fixture()
+def disable_parallel_tool_calls(monkeypatch: pytest.MonkeyPatch) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+
+    original_init = ChatOpenAI.__init__
+
+    def init_without_parallel_tool_calls(self: ChatOpenAI, *args: Any, **kwargs: Any) -> None:
+        model_kwargs = kwargs.setdefault("model_kwargs", {})
+        model_kwargs.setdefault("parallel_tool_calls", False)
+        original_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(ChatOpenAI, "__init__", init_without_parallel_tool_calls)
+
+
 CONFIGS = Path(__file__).parent / "configs"
 
 

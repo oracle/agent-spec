@@ -100,9 +100,9 @@ def test_ollama_conversion_maps_generation_config_names(default_generation_param
 
 def test_invoke_vllm_model(default_generation_parameters, monkeypatch):
     agentspec_llm = OpenAiCompatibleConfig(
-        name="llama33",
-        model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.getenv("LLAMA70BV33_API_URL"),
+        name="gpt-oss-120b",
+        model_id="openai/gpt-oss-120b",
+        url=os.getenv("OSS_API_URL"),
         default_generation_parameters=default_generation_parameters,
     )
     monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "not needed"))

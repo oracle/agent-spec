@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union, overlo
 import yaml
 
 from pyagentspec.component import Component
+from pyagentspec.serialization.componentpolicy import ComponentLoadPolicy, ComponentPolicyInput
 from pyagentspec.serialization.deserializationcontext import _DeserializationContextImpl
 from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
 from pyagentspec.serialization.types import ComponentAsDictT, ComponentsRegistryT
@@ -24,18 +25,62 @@ from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
 
 
 class AgentSpecDeserializer:
-    """Provides methods to deserialize Agent Spec Components."""
+    """Provides methods to deserialize Agent Spec Components.
 
-    def __init__(self, plugins: Optional[List[ComponentDeserializationPlugin]] = None) -> None:
+    ``allowed_components`` and ``blocked_components`` can be used to constrain
+    which Agent Spec component types load. Resolvable type names and Component
+    classes match subclasses; unresolved type names match only the exact serialized
+    component type. When allow and block entries both match, the closest match
+    in the component class hierarchy wins; block entries win same-distance ties.
+
+    This low-level deserializer does not block any component types by default.
+    Adapter loaders block ``StdioTransport`` and its subclasses by default.
+    """
+
+    def __init__(
+        self,
+        plugins: Optional[List[ComponentDeserializationPlugin]] = None,
+        allowed_components: Optional[ComponentPolicyInput] = None,
+        blocked_components: Optional[ComponentPolicyInput] = None,
+    ) -> None:
         """
         Instantiate an Agent Spec Deserializer.
 
         plugins:
             List of plugins to serialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this deserializer does not block any component types by default.
+            Adapter loaders block ``StdioTransport`` and its subclasses by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
         """
-        # for early failure when using incorrect plugins
-        _DeserializationContextImpl(plugins=plugins)
+        component_load_policy = ComponentLoadPolicy(
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        )
         self.plugins = plugins
+        self.allowed_components = component_load_policy.allowed_components
+        self.blocked_components = component_load_policy.blocked_components
+
+        # for early failure when using incorrect plugins
+        self._get_new_deserialization_context(partial_model_build=False)
+
+    def _get_new_deserialization_context(
+        self,
+        partial_model_build: bool,
+    ) -> _DeserializationContextImpl:
+        return _DeserializationContextImpl(
+            plugins=self.plugins,
+            partial_model_build=partial_model_build,
+            allowed_components=self.allowed_components,
+            blocked_components=self.blocked_components,
+        )
 
     @overload
     def from_yaml(self, yaml_content: str) -> Component:
@@ -389,8 +434,8 @@ class AgentSpecDeserializer:
                     "valid Agent Spec Component. To load a disaggregated configuration, "
                     "make sure that `import_only_referenced_components` is `True`"
                 )
-            main_deserialization_context = _DeserializationContextImpl(
-                plugins=self.plugins, partial_model_build=False
+            main_deserialization_context = self._get_new_deserialization_context(
+                partial_model_build=False
             )
             return main_deserialization_context.load_config_dict(
                 dict_content, components_registry=components_registry
@@ -412,8 +457,8 @@ class AgentSpecDeserializer:
             )
         referenced_components: Dict[str, Component] = {}
         for component_id, component_as_dict in dict_content["$referenced_components"].items():
-            disag_deserialization_context = _DeserializationContextImpl(
-                plugins=self.plugins, partial_model_build=False
+            disag_deserialization_context = self._get_new_deserialization_context(
+                partial_model_build=False
             )
             referenced_components[component_id] = disag_deserialization_context.load_config_dict(
                 component_as_dict, components_registry=components_registry
@@ -497,8 +542,8 @@ class AgentSpecDeserializer:
                     "valid Agent Spec Component. To load a disaggregated configuration, "
                     "make sure that `import_only_referenced_components` is `True`"
                 )
-            main_deserialization_context = _DeserializationContextImpl(
-                plugins=self.plugins, partial_model_build=True
+            main_deserialization_context = self._get_new_deserialization_context(
+                partial_model_build=True
             )
             return main_deserialization_context.load_config_dict(
                 dict_content, components_registry=components_registry
@@ -521,8 +566,8 @@ class AgentSpecDeserializer:
         referenced_components: Dict[str, Component] = {}
         all_validation_errors: List[PyAgentSpecErrorDetails] = []
         for component_id, component_as_dict in dict_content["$referenced_components"].items():
-            disag_deserialization_context = _DeserializationContextImpl(
-                plugins=self.plugins, partial_model_build=True
+            disag_deserialization_context = self._get_new_deserialization_context(
+                partial_model_build=True
             )
             referenced_components[component_id], validation_errors = (
                 disag_deserialization_context.load_config_dict(
@@ -535,7 +580,8 @@ class AgentSpecDeserializer:
 
     @staticmethod
     def _check_missing_component_references(
-        dict_content: ComponentAsDictT, components_registry: Optional[ComponentsRegistryT] = None
+        dict_content: ComponentAsDictT,
+        components_registry: Optional[ComponentsRegistryT] = None,
     ) -> None:
         """
         Check that all references that are part of the dict_content are either defined in
@@ -557,7 +603,9 @@ class AgentSpecDeserializer:
             )
 
     @staticmethod
-    def _recursively_get_all_references(value: Dict[str, Any]) -> Tuple[Set[str], Set[str]]:
+    def _recursively_get_all_references(
+        value: Dict[str, Any],
+    ) -> Tuple[Set[str], Set[str]]:
         """
         This method recursively traverses the content of `value` and collects all the references
         used that appear as `{"$component_ref": "some_component_id"}` and all the references that

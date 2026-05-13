@@ -61,7 +61,7 @@ from pyagentspec.versioning import (
 )
 
 if TYPE_CHECKING:
-    from pyagentspec.serialization import ComponentDeserializationPlugin
+    from pyagentspec.serialization import ComponentDeserializationPlugin, ComponentPolicyInput
     from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
     from pyagentspec.serialization.types import (
         ComponentAsDictT,
@@ -1060,6 +1060,8 @@ class Component(AbstractableModel, abstract=True):
         yaml_content: str,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1070,6 +1072,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1079,6 +1083,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from YAML.
@@ -1092,6 +1098,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1105,7 +1123,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_yaml(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_yaml(
             yaml_content,
             components_registry=components_registry,
             import_only_referenced_components=False,
@@ -1119,6 +1141,8 @@ class Component(AbstractableModel, abstract=True):
         json_content: str,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1129,6 +1153,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1138,6 +1164,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from JSON.
@@ -1151,6 +1179,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1164,7 +1204,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_json(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_json(
             json_content,
             components_registry=components_registry,
             import_only_referenced_components=False,
@@ -1178,6 +1222,8 @@ class Component(AbstractableModel, abstract=True):
         dict_content: "ComponentAsDictT",
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @overload
@@ -1188,6 +1234,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"],
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT: ...
 
     @classmethod
@@ -1197,6 +1245,8 @@ class Component(AbstractableModel, abstract=True):
         components_registry: Optional["ComponentsRegistryT"] = None,
         *,
         plugins: Optional[List["ComponentDeserializationPlugin"]] = None,
+        allowed_components: Optional["ComponentPolicyInput"] = None,
+        blocked_components: Optional["ComponentPolicyInput"] = None,
     ) -> ComponentT:
         """
         Load a component and its sub-components from dictionary.
@@ -1210,6 +1260,18 @@ class Component(AbstractableModel, abstract=True):
             main component.
         plugins:
             List of plugins to deserialize additional components.
+        allowed_components:
+            Optional iterable of component type names or Component classes allowed to be loaded.
+            If omitted, all component types are allowed unless blocked.
+        blocked_components:
+            Optional iterable of component type names or Component classes blocked from loading.
+            If omitted, this convenience deserialization API does not block any component
+            types by default. Adapter loaders block ``StdioTransport`` and its subclasses
+            by default.
+            Resolvable type names and Component classes also match subclasses; unresolved
+            type names match only the exact serialized component type. When allow and
+            block entries both match, the closest match in the component class hierarchy
+            wins; block entries win same-distance ties.
 
         Returns
         -------
@@ -1258,7 +1320,11 @@ class Component(AbstractableModel, abstract=True):
         """
         from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 
-        deserialized = AgentSpecDeserializer(plugins=plugins).from_dict(
+        deserialized = AgentSpecDeserializer(
+            plugins=plugins,
+            allowed_components=allowed_components,
+            blocked_components=blocked_components,
+        ).from_dict(
             dict_content,
             components_registry=components_registry,
             import_only_referenced_components=False,

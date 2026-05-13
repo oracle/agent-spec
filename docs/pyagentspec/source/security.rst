@@ -19,6 +19,17 @@ Generated source should only be produced from specifications that passed validat
 
 Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
 
+Considerations regarding prompt templates
+-----------------------------------------
+
+Prompt templates can combine trusted instructions with runtime values.
+When a placeholder in a system prompt or other instruction-bearing prompt is filled from end-user input, tool output, retrieved documents, MCP responses, or other untrusted sources, the model may interpret the substituted text as instructions rather than data.
+
+Use placeholders in system prompts only for trusted configuration values.
+Avoid inserting user-provided, tool-derived, RAG, or MCP output directly into system prompts.
+When untrusted content must be included in a prompt, keep it separate from system instructions where possible, delimit it clearly as data, validate and normalize it, and apply length limits or filtering in the runtime.
+These controls reduce prompt-injection risk, but they do not eliminate it.
+
 Considerations regarding tools
 ------------------------------
 
@@ -352,6 +363,27 @@ utilities to avoid unsafe behavior.
     assistant_or_flow = AgentSpecDeserializer.from_yaml(raw_yaml_string)
 
 When deploying serialized representation to an execution engine, use the engine's secure loading mechanism for the import.
+
+Considerations regarding runtime-sensitive components
+-----------------------------------------------------
+
+Some Agent Spec components can influence actions performed by adapters or runtimes
+when a configuration is loaded or run. For example, MCP stdio transports can start
+a local MCP server subprocess on the machine that loads and runs the resulting
+agent.
+
+Only enable runtime-sensitive components from trusted configurations. PyAgentSpec
+loaders block ``StdioTransport`` and its subclasses by default. If a trusted
+configuration intentionally uses stdio transports, pass
+``blocked_components=[]`` to the loader, or provide a custom
+``blocked_components`` value that does not include the stdio transport
+component class. For stricter environments, use ``allowed_components`` to
+explicitly list the component types that may be loaded.
+
+Component policy entries can be provided as Component classes or component type
+names. Type names that resolve to known Component classes use the same hierarchy
+matching as class entries; unresolved type names match only the exact serialized
+component type.
 
 .. _securitycatchexceptionnode:
 

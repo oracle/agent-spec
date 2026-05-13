@@ -11,7 +11,7 @@ import pytest
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
-from pyagentspec.llms import VllmConfig
+from pyagentspec.llms import LlmGenerationConfig, VllmConfig
 from pyagentspec.property import StringProperty
 
 
@@ -23,13 +23,14 @@ def llm_flow() -> Flow:
     car_property = StringProperty(title="car")
     llm_config = VllmConfig(
         name="llm_config",
-        model_id="/storage/models/Llama-3.3-70B-Instruct",
-        url=os.environ.get("LLAMA70BV33_API_URL"),
+        model_id="openai/gpt-oss-120b",
+        url=os.environ.get("OSS_API_URL"),
+        default_generation_parameters=LlmGenerationConfig(temperature=0, max_tokens=512),
     )
     llm_node = LlmNode(
         name="llm_node",
         llm_config=llm_config,
-        prompt_template="What is the fastest {{nationality}} car?",
+        prompt_template="Answer in one short sentence. What is the fastest {{nationality}} car?",
         inputs=[nationality_property],
         outputs=[car_property],
     )

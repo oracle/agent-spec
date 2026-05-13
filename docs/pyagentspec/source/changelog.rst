@@ -7,6 +7,12 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **Improved HTTPS handling for LangGraph MCP remote transports**
+
+  Non-mTLS LangGraph MCP SSE and Streamable HTTP transports now use the standard
+  system trust store for server certificate checks, while mTLS transports continue
+  to use explicit client certificate configuration.
+
 * **More reliable tool payload tracing in LangGraph adapter**
 
   The LangGraph adapter now normalizes tool callback inputs before emitting tracing events,
@@ -71,6 +77,12 @@ Improvements
   directly in the source template instead of recursively splitting the template text.
   This keeps unresolved placeholders unchanged and makes the rendering logic easier to follow.
 
+* **Component loading defaults**
+
+  Agent Spec loaders now expose ``allowed_components`` and ``blocked_components`` options,
+  allowing users to control which Agent Spec component types can be loaded from configurations.
+  Component type names that resolve to known Component classes use hierarchy matching,
+  like class entries; unresolved type names match only the exact serialized component type.
 
 New features
 ^^^^^^^^^^^^
@@ -188,6 +200,14 @@ New features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
+* **HTTPS certificate validation for LangGraph MCP remote transports**
+
+  Non-mTLS LangGraph MCP SSE and Streamable HTTP transports now validate the
+  server certificate using the system trust store by default. Connections that
+  previously relied on self-signed, privately issued, expired, or hostname-mismatched
+  certificates may now require updating the certificate setup, trusting the CA in
+  the system store, or switching to the mTLS transport configuration.
+
 * **Numeric model settings in OpenAI Agents code generation**
 
   ``temperature`` and ``top_p`` must now be numeric values, and ``max_tokens``
@@ -198,9 +218,17 @@ Breaking Changes
 
 * **Empty titles in properties**
 
-Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
+  Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
 
-Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+  Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+
+* **MCP stdio transport is blocked by default in Agent Spec loaders**
+
+  ``StdioTransport`` and its subclasses will no longer load by default through
+  Agent Spec loaders. If a trusted configuration
+  intentionally uses stdio transports, pass ``blocked_components=[]`` to the
+  loader, or provide a custom ``blocked_components`` value that does not include
+  the stdio transport component class.
 
 
 Agent Spec 26.1.0

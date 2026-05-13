@@ -105,12 +105,12 @@
       "llm_config": {
         "component_type": "OpenAiCompatibleConfig",
         "id": "81c0e83e-3585-44b5-8d47-41dd6a0783ee",
-        "name": "Llama-3.3-70B-Instruct",
+        "name": "gpt-oss-120b",
         "description": null,
         "metadata": {},
         "default_generation_parameters": null,
-        "url": "[[LLAMA70BV33_API_URL]]",
-        "model_id": "/storage/models/Llama-3.3-70B-Instruct"
+        "url": "[[OSS_API_URL]]",
+        "model_id": "openai/gpt-oss-120b"
       },
       "prompt_template": "Write a haiku about Oracle."
     },
