@@ -38,6 +38,7 @@ LANGGRAPH_DEPS = [
     # 4rth party dependencies
     "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
     "langgraph-checkpoint>=4.0.1,<5.0.0",  # needed to avoid CVE present in earlier versions
+    "langsmith>=0.8.0,<1.0.0",  # needed to avoid CVE present in earlier versions
     "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
 ]
 
@@ -118,7 +119,7 @@ setup(
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # litellm is included to fix CVEs
-            "litellm>=1.83.14,<1.84.0; python_version < '3.14'",
+            "litellm>=1.84.0,<1.85.0; python_version < '3.14'",
             "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "langgraph": LANGGRAPH_DEPS,
@@ -169,7 +170,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
-            "litellm>=1.83.14,<1.84.0; python_version < '3.14'",
+            "litellm>=1.84.0,<1.85.0; python_version < '3.14'",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",

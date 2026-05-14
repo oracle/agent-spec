@@ -25,17 +25,10 @@ if TYPE_CHECKING:
     # oci and litellm are optional dependencies.
     # Otherwise, importing the modules when they are not installed would lead to an import error.
     import oci  # type: ignore
-    from litellm import acompletion  # type: ignore[import-not-found, unused-ignore]
-    from litellm.types.utils import ModelResponse  # type: ignore[import-not-found, unused-ignore]
+    from litellm import acompletion
 else:
     oci = LazyLoader("oci")
     acompletion = LazyLoader("litellm", "acompletion")
-
-
-def _is_litellm_model_response(response: Any) -> bool:
-    from litellm.types.utils import ModelResponse  # type: ignore[import-not-found, unused-ignore]
-
-    return isinstance(response, ModelResponse)
 
 
 def _prepare_openai_compatible_url(url: str) -> str:
@@ -112,7 +105,11 @@ async def complete_conversation(
         **_get_llm_config_as_litellm_dict(llm_config),
     )
 
-    if not _is_litellm_model_response(response):
+    # Keep this as a local import instead of LazyLoader: isinstance() needs
+    # the actual ModelResponse type, not a lazy proxy.
+    from litellm.types.utils import ModelResponse
+
+    if not isinstance(response, ModelResponse):
         raise RuntimeError("Unexpected response from the LLM provider.")
 
     return cast(Dict[str, Any], response.to_dict())
