@@ -15,6 +15,7 @@ from pyagentspec.adapters.langgraph._langgraphconverter import (
     AgentSpecToLangGraphConverter,
     _prepare_openai_compatible_url,
 )
+from pyagentspec.llms import LlmGenerationConfig
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
@@ -82,6 +83,29 @@ def test_openaicompatible_conversion_sets_responses_flag(
     assert model.use_responses_api is expected_flag
     assert model.max_tokens == default_generation_parameters.max_tokens
     assert model.temperature == default_generation_parameters.temperature
+
+
+def test_openai_chat_conversion_does_not_forward_extra_generation_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
+    agentspec_llm = OpenAiConfig(
+        name="openai",
+        model_id="gpt-4o-mini",
+        default_generation_parameters=LlmGenerationConfig(
+            temperature=0.2,
+            max_tokens=128,
+            top_p=0.8,
+            presence_penalty=1.0,
+        ),
+    )
+
+    model = AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+    assert isinstance(model, ChatOpenAI)
+    assert model.temperature == 0.2
+    assert model.max_tokens == 128
+    assert "presence_penalty" not in model.model_kwargs
 
 
 @pytest.mark.parametrize(
