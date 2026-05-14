@@ -62,6 +62,7 @@ function isProperty(value: unknown): value is Property {
 export class SerializationContext {
   agentspecVersion: AgentSpecVersion;
   camelCase: boolean;
+  includeSensitiveFields: boolean;
   private componentTypesToPlugins: Map<string, ComponentSerializationPlugin>;
   private resolvedComponents: Map<string, SerializedDict> = new Map();
   private referencingStructure: Record<string, string> = {};
@@ -69,16 +70,21 @@ export class SerializationContext {
 
   constructor(
     plugins: ComponentSerializationPlugin[],
-    targetVersion?: AgentSpecVersion,
-    resolvedComponents?: Map<string, SerializedDict>,
-    componentsIdMapping?: Map<string, string>,
-    camelCase?: boolean,
+    options?: {
+      targetVersion?: AgentSpecVersion;
+      resolvedComponents?: Map<string, SerializedDict>;
+      componentsIdMapping?: Map<string, string>;
+      camelCase?: boolean;
+      includeSensitiveFields?: boolean;
+    },
   ) {
-    this.agentspecVersion = targetVersion ?? CURRENT_VERSION;
-    this.camelCase = camelCase ?? false;
+    const opts = options ?? {};
+    this.agentspecVersion = opts.targetVersion ?? CURRENT_VERSION;
+    this.camelCase = opts.camelCase ?? false;
+    this.includeSensitiveFields = opts.includeSensitiveFields ?? false;
     this.componentTypesToPlugins = this.buildComponentTypesToPlugins(plugins);
-    this.resolvedComponents = resolvedComponents ?? new Map();
-    this.componentsIdMapping = componentsIdMapping ?? new Map();
+    this.resolvedComponents = opts.resolvedComponents ?? new Map();
+    this.componentsIdMapping = opts.componentsIdMapping ?? new Map();
   }
 
   private buildComponentTypesToPlugins(
@@ -317,6 +323,7 @@ export class SerializationContext {
 
   /** Check if a field is sensitive and should be excluded */
   isFieldSensitive(componentType: string, fieldName: string): boolean {
+    if (this.includeSensitiveFields) return false;
     return isSensitiveField(componentType, fieldName);
   }
 

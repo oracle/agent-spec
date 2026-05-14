@@ -388,6 +388,26 @@ def test_disaggregated_configuration_with_sensitive_fields_can_be_loaded_back(
     }
 
 
+def test_include_sensitive_fields_opt_in() -> None:
+    llm_config = OpenAiCompatibleConfig(
+        name="openai-compatible-config",
+        id="openai-compatible-config-id",
+        url="https://api.closedai.com/v2",
+        model_id="gpt-7",
+        api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+    )
+    serialized = AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
+    assert "THIS_IS_SECRET" in serialized
+    assert "/etc/certs/client.key" in serialized
+    assert "$component_ref" not in serialized
+
+    deserialized = AgentSpecDeserializer().from_json(serialized)
+    assert isinstance(deserialized, OpenAiCompatibleConfig)
+    assert deserialized.api_key == "THIS_IS_SECRET"
+    assert deserialized.key_file == "/etc/certs/client.key"
+
+
 def test_partial_configurations_exclude_secrets():
     partial_llm_config = {
         "name": "openai-compatible-config",

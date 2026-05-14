@@ -73,6 +73,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -81,6 +82,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: Literal[False],
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -89,6 +91,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -98,6 +101,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[False],
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -107,6 +111,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: DisaggregatedComponentsConfigT,
         export_disaggregated_components: Literal[True],
+        include_sensitive_fields: bool = False,
     ) -> Tuple[str, str]: ...
 
     @overload
@@ -116,6 +121,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -125,6 +131,7 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum],
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     def to_yaml(
@@ -133,6 +140,7 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT] = None,
         export_disaggregated_components: bool = False,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]:
         """
         Serialize a component and its sub-components to YAML.
@@ -183,6 +191,7 @@ class AgentSpecSerializer:
             agentspec_version=agentspec_version,
             disaggregated_components=disaggregated_components,
             export_disaggregated_components=export_disaggregated_components,
+            include_sensitive_fields=include_sensitive_fields,
         )
         return (
             tuple(yaml.safe_dump(x, sort_keys=False) for x in obj)  # type: ignore
@@ -196,6 +205,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -205,6 +215,7 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum],
         *,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -214,6 +225,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -223,6 +235,7 @@ class AgentSpecSerializer:
         *,
         export_disaggregated_components: Literal[False],
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -232,6 +245,7 @@ class AgentSpecSerializer:
         *,
         export_disaggregated_components: bool,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -242,6 +256,7 @@ class AgentSpecSerializer:
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[False],
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -252,6 +267,7 @@ class AgentSpecSerializer:
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[True],
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> Tuple[str, str]: ...
 
     @overload
@@ -262,6 +278,7 @@ class AgentSpecSerializer:
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     @overload
@@ -273,6 +290,7 @@ class AgentSpecSerializer:
         export_disaggregated_components: bool,
         *,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]: ...
 
     def to_json(
@@ -282,6 +300,7 @@ class AgentSpecSerializer:
         disaggregated_components: Optional[DisaggregatedComponentsConfigT] = None,
         export_disaggregated_components: bool = False,
         indent: Optional[int] = None,
+        include_sensitive_fields: bool = False,
     ) -> Union[str, Tuple[str, str]]:
         """
         Serialize a component and its sub-components to JSON.
@@ -333,6 +352,7 @@ class AgentSpecSerializer:
             agentspec_version=agentspec_version,
             disaggregated_components=disaggregated_components,
             export_disaggregated_components=export_disaggregated_components,
+            include_sensitive_fields=include_sensitive_fields,
         )
         return (
             tuple(json.dumps(x, indent=indent, sort_keys=False) for x in obj)  # type: ignore
@@ -359,6 +379,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
+        include_sensitive_fields: bool = False,
     ) -> ComponentAsDictT: ...
 
     @overload
@@ -367,6 +388,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: Literal[False],
+        include_sensitive_fields: bool = False,
     ) -> ComponentAsDictT: ...
 
     @overload
@@ -375,6 +397,7 @@ class AgentSpecSerializer:
         component: Component,
         *,
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[ComponentAsDictT, Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]]: ...
 
     @overload
@@ -384,6 +407,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: Literal[False],
+        include_sensitive_fields: bool = False,
     ) -> ComponentAsDictT: ...
 
     @overload
@@ -393,6 +417,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: DisaggregatedComponentsConfigT,
         export_disaggregated_components: Literal[True],
+        include_sensitive_fields: bool = False,
     ) -> Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]: ...
 
     @overload
@@ -402,6 +427,7 @@ class AgentSpecSerializer:
         *,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[ComponentAsDictT, Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]]: ...
 
     @overload
@@ -411,6 +437,7 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum],
         disaggregated_components: Optional[DisaggregatedComponentsConfigT],
         export_disaggregated_components: bool,
+        include_sensitive_fields: bool = False,
     ) -> Union[ComponentAsDictT, Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]]: ...
 
     def to_dict(
@@ -419,6 +446,7 @@ class AgentSpecSerializer:
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
         disaggregated_components: Optional[DisaggregatedComponentsConfigT] = None,
         export_disaggregated_components: bool = False,
+        include_sensitive_fields: bool = False,
     ) -> Union[ComponentAsDictT, Tuple[ComponentAsDictT, DisaggregatedComponentsAsDictT]]:
         """
         Serialize a component and its sub-components to a dictionary.
@@ -531,6 +559,7 @@ class AgentSpecSerializer:
             disag_serialization_context = _SerializationContextImpl(
                 plugins=self.plugins,
                 _allow_partial_model_serialization=self._allow_partial_model_serialization,
+                include_sensitive_fields=include_sensitive_fields,
             )
             model_dump = disag_serialization_context._save_to_dict(
                 disag_component, agentspec_version=agentspec_version
@@ -548,6 +577,7 @@ class AgentSpecSerializer:
             resolved_components=copy(disaggregated_components_as_dict),
             components_id_mapping=watched_components_id_mapping,
             _allow_partial_model_serialization=self._allow_partial_model_serialization,
+            include_sensitive_fields=include_sensitive_fields,
         )
 
         main_model_dump = main_serialization_context._save_to_dict(
