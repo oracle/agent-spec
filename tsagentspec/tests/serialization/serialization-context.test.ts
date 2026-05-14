@@ -213,17 +213,17 @@ describe("SerializationContext", () => {
     });
   });
 
-  describe("isFieldSensitive", () => {
+  describe("shouldRedactField", () => {
     it("should return true for sensitive fields", () => {
       const ctx = new SerializationContext(makeBuiltinPlugins());
-      expect(ctx.isFieldSensitive("OpenAiCompatibleConfig", "apiKey")).toBe(
+      expect(ctx.shouldRedactField("OpenAiCompatibleConfig", "apiKey")).toBe(
         true,
       );
     });
 
     it("should return false for non-sensitive fields", () => {
       const ctx = new SerializationContext(makeBuiltinPlugins());
-      expect(ctx.isFieldSensitive("OpenAiCompatibleConfig", "modelId")).toBe(
+      expect(ctx.shouldRedactField("OpenAiCompatibleConfig", "modelId")).toBe(
         false,
       );
     });

@@ -43,7 +43,7 @@ export class BuiltinsComponentSerializationPlugin
       if (EXCLUDED_FIELDS.has(fieldName)) continue;
 
       // Skip sensitive fields
-      if (context.isFieldSensitive(componentType, fieldName)) continue;
+      if (context.shouldRedactField(componentType, fieldName)) continue;
 
       // Skip version-gated fields
       if (context.isFieldVersionGated(componentType, fieldName)) continue;
