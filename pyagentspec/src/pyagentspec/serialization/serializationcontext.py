@@ -33,11 +33,11 @@ class SerializationContext:
     """Interface for the serialization of Components."""
 
     agentspec_version: AgentSpecVersionEnum
-    include_sensitive_fields: bool = False
+    _include_sensitive_fields: bool = False
 
     def is_field_sensitive(self, field_info: FieldInfo) -> bool:
-        """Return True if the field should be redacted (replaced with a reference)."""
-        if self.include_sensitive_fields:
+        """Return True if the field should be redacted; False when opt-in bypass is active."""
+        if self._include_sensitive_fields:
             return False
         return is_sensitive_field(field_info)
 
@@ -93,7 +93,7 @@ class _SerializationContextImpl(SerializationContext):
     ) -> None:
 
         self._allow_partial_model_serialization = _allow_partial_model_serialization
-        self.include_sensitive_fields = include_sensitive_fields
+        self._include_sensitive_fields = include_sensitive_fields
         self.plugins = list(plugins) if plugins is not None else []
 
         from pyagentspec.serialization.builtinserializationplugin import (
