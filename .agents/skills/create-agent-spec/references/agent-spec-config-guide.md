@@ -230,7 +230,6 @@ lookup_customer = ClientTool(
     id="lookup_customer",
     name="lookup_customer",
     description="Fetches customer profile and recent support cases.",
-    metadata={"implementation_contract": "Host application provides this read-only function."},
     inputs=[StringProperty(title="account_name")],
     outputs=[
         Property(
@@ -327,10 +326,11 @@ Run the bundled validator:
 ```bash
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 SKILL_DIR="$REPO_ROOT/.agents/skills/create-agent-spec"
-"$SKILL_DIR/scripts/validate_agentspec_config.py" artifact.agentspec.json
+python "$SKILL_DIR/scripts/validate_agentspec_config.py" artifact.agentspec.json
 ```
 
 The validator uses PyAgentSpec deserialization as the required validation path and fails if PyAgentSpec or its dependencies are unavailable.
+Run it with the Python environment where PyAgentSpec is installed. If validation fails with `ModuleNotFoundError`, install PyAgentSpec in that environment first.
 
 ## Hygiene
 

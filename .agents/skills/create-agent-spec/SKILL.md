@@ -61,8 +61,10 @@ When the current workspace is an Agent Spec checkout, prefer its local `pyagents
 ```bash
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 SKILL_DIR="$REPO_ROOT/.agents/skills/create-agent-spec"
-"$SKILL_DIR/scripts/validate_agentspec_config.py" path/to/artifact.agentspec.json
+python "$SKILL_DIR/scripts/validate_agentspec_config.py" path/to/artifact.agentspec.json
 ```
+
+Run the validator with the Python environment where PyAgentSpec is installed. If validation fails with `ModuleNotFoundError`, install PyAgentSpec in that environment first.
 
 8. Report:
    - output path
