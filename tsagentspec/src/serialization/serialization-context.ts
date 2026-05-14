@@ -322,7 +322,7 @@ export class SerializationContext {
   }
 
   /** Check if a field is sensitive and should be excluded */
-  isFieldSensitive(componentType: string, fieldName: string): boolean {
+  shouldRedactField(componentType: string, fieldName: string): boolean {
     if (this.includeSensitiveFields) return false;
     return isSensitiveField(componentType, fieldName);
   }

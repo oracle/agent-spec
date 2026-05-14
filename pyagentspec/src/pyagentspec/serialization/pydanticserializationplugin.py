@@ -67,7 +67,7 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                 # If a sensitive value is left as a falsy value (e.g. None, False, {}, "") then it
                 # is not replaced by a reference, such that the empty value does not need to be
                 # explicitly specified when loading the component configuration.
-                if field_value and serialization_context.is_field_sensitive(field_info):
+                if field_value and serialization_context.should_redact_field(field_info):
                     serialized_component[field_name] = {
                         "$component_ref": f"{component.id}.{field_name}"
                     }

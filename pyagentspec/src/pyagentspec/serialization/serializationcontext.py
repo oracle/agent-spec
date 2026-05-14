@@ -35,7 +35,7 @@ class SerializationContext:
     agentspec_version: AgentSpecVersionEnum
     _include_sensitive_fields: bool = False
 
-    def is_field_sensitive(self, field_info: FieldInfo) -> bool:
+    def should_redact_field(self, field_info: FieldInfo) -> bool:
         """Return True if the field should be redacted; False when opt-in bypass is active."""
         if self._include_sensitive_fields:
             return False
