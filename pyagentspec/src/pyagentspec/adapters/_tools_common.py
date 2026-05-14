@@ -162,6 +162,8 @@ def _is_tls_or_cert_error(exc: BaseException) -> bool:
     while current is not None:
         if isinstance(current, ssl.SSLCertVerificationError):
             return True
+        # httpx/httpcore transports can wrap lower-level TLS failures in the
+        # exception cause chain, and some backends preserve only the message text.
         message = str(current)
         if any(
             pattern in message
@@ -173,6 +175,7 @@ def _is_tls_or_cert_error(exc: BaseException) -> bool:
             )
         ):
             return True
+        # Continue unwrapping chained exceptions until the original transport error is reached.
         current = current.__cause__
     return False
 

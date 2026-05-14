@@ -299,11 +299,15 @@ class LangGraphToAgentSpecConverter:
         default_retry_policy = AgentSpecRetryPolicy()
         max_retries = model.max_retries
         raw_request_timeout = model.request_timeout
-        request_timeout = (
-            self._request_timeout_convert_to_agentspec(raw_request_timeout)
-            if raw_request_timeout is not None
-            else None
-        )
+        if raw_request_timeout is None:
+            request_timeout = None
+        elif isinstance(raw_request_timeout, (int, float)):
+            request_timeout = float(raw_request_timeout)
+        else:
+            raise NotImplementedError(
+                "LangGraph ChatOpenAI timeout conversion supports only a single timeout value "
+                "because Agent Spec `RetryPolicy.request_timeout` exposes one per-request timeout."
+            )
 
         has_custom_retry_count = (
             max_retries is not None and max_retries != default_retry_policy.max_attempts
@@ -317,16 +321,6 @@ class LangGraphToAgentSpecConverter:
                 max_retries if max_retries is not None else default_retry_policy.max_attempts
             ),
             request_timeout=request_timeout,
-        )
-
-    def _request_timeout_convert_to_agentspec(self, request_timeout: Any) -> float:
-        """Convert a ChatOpenAI timeout into Agent Spec's single request timeout value."""
-        if isinstance(request_timeout, (int, float)):
-            return float(request_timeout)
-
-        raise NotImplementedError(
-            "LangGraph ChatOpenAI timeout conversion supports only a single timeout value "
-            "because Agent Spec `RetryPolicy.request_timeout` exposes one per-request timeout."
         )
 
     def _langgraph_agent_convert_to_agentspec(
