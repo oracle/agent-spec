@@ -33,10 +33,7 @@ describe("SerializationContext", () => {
     });
 
     it("should accept a custom target version", () => {
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        "0.4.0",
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { targetVersion: "0.4.0" });
       expect(ctx.agentspecVersion).toBe("0.4.0");
     });
 
@@ -46,13 +43,7 @@ describe("SerializationContext", () => {
     });
 
     it("should accept camelCase option", () => {
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        undefined,
-        undefined,
-        undefined,
-        true,
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { camelCase: true });
       expect(ctx.camelCase).toBe(true);
     });
 
@@ -130,13 +121,7 @@ describe("SerializationContext", () => {
     });
 
     it("should keep camelCase keys when camelCase mode is enabled", () => {
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        undefined,
-        undefined,
-        undefined,
-        true,
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { camelCase: true });
       const result = ctx.dumpModelObject(
         { maxTokens: 1024, temperature: 0.7 },
         false,
@@ -182,13 +167,7 @@ describe("SerializationContext", () => {
     });
 
     it("should keep camelCase when camelCase mode is enabled", () => {
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        undefined,
-        undefined,
-        undefined,
-        true,
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { camelCase: true });
       expect(ctx.toSerializedFieldName("systemPrompt")).toBe("systemPrompt");
     });
 
@@ -219,10 +198,7 @@ describe("SerializationContext", () => {
 
     it("should return true for _self version gate at old version", () => {
       // BuiltinTool has _self: V25_4_2, so at an earlier version all fields are gated
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        AgentSpecVersion.V25_4_1,
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { targetVersion: AgentSpecVersion.V25_4_1 });
       expect(ctx.isFieldVersionGated("BuiltinTool", "toolType")).toBe(true);
     });
 
@@ -232,10 +208,7 @@ describe("SerializationContext", () => {
     });
 
     it("should return true for field-level version gate at old version", () => {
-      const ctx = new SerializationContext(
-        makeBuiltinPlugins(),
-        AgentSpecVersion.V25_4_1,
-      );
+      const ctx = new SerializationContext(makeBuiltinPlugins(), { targetVersion: AgentSpecVersion.V25_4_1 });
       expect(ctx.isFieldVersionGated("Agent", "toolboxes")).toBe(true);
     });
   });
