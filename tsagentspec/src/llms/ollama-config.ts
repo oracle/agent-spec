@@ -2,19 +2,16 @@
  * Ollama LLM config.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
-import { LlmGenerationConfigSchema, OpenAIAPIType } from "./llm-config.js";
+import { LlmConfigBaseSchema, LlmGenerationConfigSchema, LocalInferenceFields, OpenAIAPIType } from "./llm-config.js";
+import { RetryPolicySchema } from "./retry-policy.js";
 
-export const OllamaConfigSchema = ComponentBaseSchema.extend({
-  componentType: z.literal("OllamaConfig"),
-  url: z.string(),
-  modelId: z.string(),
-  apiType: z
-    .enum([OpenAIAPIType.CHAT_COMPLETIONS, OpenAIAPIType.RESPONSES])
-    .default(OpenAIAPIType.CHAT_COMPLETIONS),
-  defaultGenerationParameters: LlmGenerationConfigSchema.optional(),
-  apiKey: z.string().optional(),
-});
+// apiProvider is fixed to "ollama" and excluded from serialization, so omitted here.
+export const OllamaConfigSchema = LlmConfigBaseSchema
+  .omit({ apiProvider: true })
+  .extend({
+    componentType: z.literal("OllamaConfig"),
+    ...LocalInferenceFields,
+  });
 
 export type OllamaConfig = z.infer<typeof OllamaConfigSchema>;
 
@@ -28,10 +25,13 @@ export function createOllamaConfig(opts: {
   apiType?: OpenAIAPIType;
   defaultGenerationParameters?: z.infer<typeof LlmGenerationConfigSchema>;
   apiKey?: string;
+  provider?: string;
+  keyFile?: string;
+  certFile?: string;
+  caFile?: string;
+  retryPolicy?: z.infer<typeof RetryPolicySchema>;
 }): OllamaConfig {
-  const parsed = OllamaConfigSchema.parse({
-    ...opts,
-    componentType: "OllamaConfig" as const,
-  });
-  return Object.freeze(parsed);
+  return Object.freeze(
+    OllamaConfigSchema.parse({ ...opts, componentType: "OllamaConfig" }),
+  );
 }

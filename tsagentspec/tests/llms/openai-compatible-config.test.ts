@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   createOpenAiCompatibleConfig,
   OpenAIAPIType,
+  AgentSpecSerializer,
+  AgentSpecDeserializer,
 } from "../../src/index.js";
 
 describe("OpenAiCompatibleConfig", () => {
@@ -100,5 +102,44 @@ describe("OpenAiCompatibleConfig", () => {
       modelId: "model1",
     });
     expect(config.metadata).toEqual({});
+  });
+
+  it("should accept TLS fields", () => {
+    const config = createOpenAiCompatibleConfig({
+      name: "test",
+      url: "https://localhost",
+      modelId: "model1",
+      keyFile: "/path/to/client.key",
+      certFile: "/path/to/client.crt",
+      caFile: "/path/to/ca.crt",
+    });
+    expect(config.keyFile).toBe("/path/to/client.key");
+    expect(config.certFile).toBe("/path/to/client.crt");
+    expect(config.caFile).toBe("/path/to/ca.crt");
+  });
+
+  it("should accept provider field", () => {
+    const config = createOpenAiCompatibleConfig({
+      name: "test",
+      url: "http://localhost",
+      modelId: "model1",
+      provider: "custom-provider",
+    });
+    expect(config.provider).toBe("custom-provider");
+  });
+
+  it("should round-trip with provider field", () => {
+    const serializer = new AgentSpecSerializer();
+    const deserializer = new AgentSpecDeserializer();
+    const config = createOpenAiCompatibleConfig({
+      id: "test-id",
+      name: "test",
+      url: "https://localhost",
+      modelId: "model1",
+      provider: "my-provider",
+    });
+    const yaml = serializer.toYaml(config);
+    const restored = deserializer.fromYaml(yaml);
+    expect(restored).toEqual(config);
   });
 });

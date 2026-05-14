@@ -29,11 +29,7 @@ import { snakeToCamel } from "./serialization-context.js";
  */
 const PROPERTY_ARRAY_FIELDS = new Set(["inputs", "outputs"]);
 
-/**
- * Fields (camelCase) whose object values are model objects with snake_case keys
- * that need conversion. All other object values are user data with preserved keys.
- */
-const MODEL_OBJECT_FIELDS = new Set(["defaultGenerationParameters"]);
+const MODEL_OBJECT_FIELDS = new Set(["defaultGenerationParameters", "retryPolicy"]);
 
 /** Deserialize a jsonSchema dict into a Property */
 function deserializeProperty(value: unknown): Property {
@@ -104,7 +100,6 @@ export class BuiltinsComponentDeserializationPlugin
         continue;
       }
 
-      // Handle model object fields (keys need snake_case -> camelCase)
       if (
         MODEL_OBJECT_FIELDS.has(camelKey) &&
         typeof value === "object" &&

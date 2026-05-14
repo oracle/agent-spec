@@ -766,7 +766,6 @@ def _extract_message_content_and_tool_calls(
     if len(response.generations) != 1 or len(response.generations[0]) != 1:
         raise ValueError("Expected response to contain one generation and one chat_generation")
     chat_generation = response.generations[0][0]
-    finish_reason = chat_generation.generation_info["finish_reason"]
     content = chat_generation.message.content
     tool_calls = (
         chat_generation.message.tool_calls

@@ -19,6 +19,17 @@ Generated source should only be produced from specifications that passed validat
 
 Treat values inserted into prompts, URLs, headers, request bodies, or other executable/runtime-sensitive fields as untrusted data.
 
+Considerations regarding prompt templates
+-----------------------------------------
+
+Prompt templates can combine trusted instructions with runtime values.
+When a placeholder in a system prompt or other instruction-bearing prompt is filled from end-user input, tool output, retrieved documents, MCP responses, or other untrusted sources, the model may interpret the substituted text as instructions rather than data.
+
+Use placeholders in system prompts only for trusted configuration values.
+Avoid inserting user-provided, tool-derived, RAG, or MCP output directly into system prompts.
+When untrusted content must be included in a prompt, keep it separate from system instructions where possible, delimit it clearly as data, validate and normalize it, and apply length limits or filtering in the runtime.
+These controls reduce prompt-injection risk, but they do not eliminate it.
+
 Considerations regarding tools
 ------------------------------
 

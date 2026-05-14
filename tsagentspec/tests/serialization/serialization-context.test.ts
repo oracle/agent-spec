@@ -435,6 +435,18 @@ describe("camelToSnake edge cases", () => {
   it("should handle empty string", () => {
     expect(camelToSnake("")).toBe("");
   });
+
+  it("should insert underscore between lowercase and digit", () => {
+    expect(camelToSnake("serviceErrorRetryOnAny5xx")).toBe(
+      "service_error_retry_on_any_5xx",
+    );
+  });
+
+  it("should round-trip through snakeToCamel for digit-containing names", () => {
+    const snake = camelToSnake("serviceErrorRetryOnAny5xx");
+    expect(snake).toBe("service_error_retry_on_any_5xx");
+    expect(snakeToCamel(snake)).toBe("serviceErrorRetryOnAny5xx");
+  });
 });
 
 describe("snakeToCamel edge cases", () => {

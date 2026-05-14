@@ -7,6 +7,12 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **Improved HTTPS handling for LangGraph MCP remote transports**
+
+  Non-mTLS LangGraph MCP SSE and Streamable HTTP transports now use the standard
+  system trust store for server certificate checks, while mTLS transports continue
+  to use explicit client certificate configuration.
+
 * **More reliable tool payload tracing in LangGraph adapter**
 
   The LangGraph adapter now normalizes tool callback inputs before emitting tracing events,
@@ -194,6 +200,14 @@ New features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
+* **HTTPS certificate validation for LangGraph MCP remote transports**
+
+  Non-mTLS LangGraph MCP SSE and Streamable HTTP transports now validate the
+  server certificate using the system trust store by default. Connections that
+  previously relied on self-signed, privately issued, expired, or hostname-mismatched
+  certificates may now require updating the certificate setup, trusting the CA in
+  the system store, or switching to the mTLS transport configuration.
+
 * **Numeric model settings in OpenAI Agents code generation**
 
   ``temperature`` and ``top_p`` must now be numeric values, and ``max_tokens``
@@ -204,9 +218,9 @@ Breaking Changes
 
 * **Empty titles in properties**
 
-Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
+  Property titles in Agent Spec must not be empty. This is now enforced by validation in the pyagentspec SDK.
 
-Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
+  Migration: If your YAML/JSON configurations have properties without titles, you’ll need to set a non-empty, descriptive title for those properties to pass validation. If you generate Agent Spec configurations via the SDK, your code may still work, but we recommend explicitly setting property titles to ensure forward compatibility.
 
 * **MCP stdio transport is blocked by default in Agent Spec loaders**
 
