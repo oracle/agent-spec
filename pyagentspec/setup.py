@@ -27,10 +27,10 @@ def read(file_name):
 
 LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
-    "langgraph>=1.1.10,<1.2.0",
-    "langchain-core>=1.3.3,<1.4.0",
-    "langchain>=1.2.17,<1.3.0",
-    "langchain-openai>=1.1.14,<1.2.0",
+    "langgraph>=1.2.0,<1.3.0",
+    "langchain-core>=1.4.0,<1.5.0",
+    "langchain>=1.3.0,<1.4.0",
+    "langchain-openai>=1.2.1,<1.3.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
     "httpx>0.28.0",
@@ -44,8 +44,8 @@ LANGGRAPH_DEPS = [
 
 LANGGRAPH_FULL_DEPS = LANGGRAPH_DEPS + [
     # 3rd party dependencies (imported in code)
-    "langchain-mcp-adapters",
-    "langchain-oci",
+    "langchain-mcp-adapters>=0.2.2",
+    "langchain-oci>=0.2.6",
     # 4rth party dependencies
     "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
     "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
@@ -81,7 +81,7 @@ setup(
     install_requires=[
         # 3rd party dependencies (imported in code)
         "jsonschema>=4.23.0,<5",
-        "pydantic>=2.10,<2.13",
+        "pydantic>=2.12.5,<2.14",
         "pyyaml>=6,<7",
         "typing-extensions>=4.15.0",
     ],
