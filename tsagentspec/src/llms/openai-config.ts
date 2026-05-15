@@ -2,18 +2,19 @@
  * OpenAI config (no url field).
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
-import { LlmGenerationConfigSchema, OpenAIAPIType } from "./llm-config.js";
+import { LlmConfigBaseSchema, LlmGenerationConfigSchema, OpenAIAPIType } from "./llm-config.js";
+import { RetryPolicySchema } from "./retry-policy.js";
 
-export const OpenAiConfigSchema = ComponentBaseSchema.extend({
-  componentType: z.literal("OpenAiConfig"),
-  modelId: z.string(),
-  apiType: z
-    .enum([OpenAIAPIType.CHAT_COMPLETIONS, OpenAIAPIType.RESPONSES])
-    .default(OpenAIAPIType.CHAT_COMPLETIONS),
-  defaultGenerationParameters: LlmGenerationConfigSchema.optional(),
-  apiKey: z.string().optional(),
-});
+// provider and apiProvider are fixed to "openai" and excluded from serialization,
+// so they are omitted from the schema. url is not applicable to OpenAI's hosted API.
+export const OpenAiConfigSchema = LlmConfigBaseSchema
+  .omit({ url: true, provider: true, apiProvider: true })
+  .extend({
+    componentType: z.literal("OpenAiConfig"),
+    apiType: z
+      .enum([OpenAIAPIType.CHAT_COMPLETIONS, OpenAIAPIType.RESPONSES])
+      .default(OpenAIAPIType.CHAT_COMPLETIONS),
+  });
 
 export type OpenAiConfig = z.infer<typeof OpenAiConfigSchema>;
 
@@ -26,10 +27,9 @@ export function createOpenAiConfig(opts: {
   apiType?: OpenAIAPIType;
   defaultGenerationParameters?: z.infer<typeof LlmGenerationConfigSchema>;
   apiKey?: string;
+  retryPolicy?: z.infer<typeof RetryPolicySchema>;
 }): OpenAiConfig {
-  const parsed = OpenAiConfigSchema.parse({
-    ...opts,
-    componentType: "OpenAiConfig" as const,
-  });
-  return Object.freeze(parsed);
+  return Object.freeze(
+    OpenAiConfigSchema.parse({ ...opts, componentType: "OpenAiConfig" }),
+  );
 }

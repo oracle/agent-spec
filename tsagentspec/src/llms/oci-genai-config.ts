@@ -2,9 +2,9 @@
  * OCI GenAI LLM config.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
-import { LlmGenerationConfigSchema } from "./llm-config.js";
+import { LlmConfigBaseSchema, LlmGenerationConfigSchema } from "./llm-config.js";
 import { OciClientConfigUnion, type OciClientConfig } from "./oci-client-config.js";
+import { RetryPolicySchema } from "./retry-policy.js";
 
 /** Serving mode enum */
 export const ServingMode = {
@@ -20,6 +20,7 @@ export const ModelProvider = {
   GROK: "GROK",
   COHERE: "COHERE",
   OTHER: "OTHER",
+  XAI: "XAI",
 } as const;
 
 export type ModelProvider = (typeof ModelProvider)[keyof typeof ModelProvider];
@@ -33,32 +34,35 @@ export const OciAPIType = {
 
 export type OciAPIType = (typeof OciAPIType)[keyof typeof OciAPIType];
 
-export const OciGenAiConfigSchema = ComponentBaseSchema.extend({
-  componentType: z.literal("OciGenAiConfig"),
-  modelId: z.string(),
-  compartmentId: z.string(),
-  servingMode: z
-    .enum([ServingMode.ON_DEMAND, ServingMode.DEDICATED])
-    .default(ServingMode.ON_DEMAND),
-  provider: z
-    .enum([
-      ModelProvider.META,
-      ModelProvider.GROK,
-      ModelProvider.COHERE,
-      ModelProvider.OTHER,
-    ])
-    .optional(),
-  clientConfig: OciClientConfigUnion,
-  apiType: z
-    .enum([
-      OciAPIType.OPENAI_CHAT_COMPLETIONS,
-      OciAPIType.OPENAI_RESPONSES,
-      OciAPIType.OCI,
-    ])
-    .default(OciAPIType.OCI),
-  conversationStoreId: z.string().optional(),
-  defaultGenerationParameters: LlmGenerationConfigSchema.optional(),
-});
+// apiProvider is fixed to "oci", url and apiKey are not applicable to OCI GenAI.
+// provider and apiType are overridden with OCI-specific enums.
+export const OciGenAiConfigSchema = LlmConfigBaseSchema
+  .omit({ url: true, apiKey: true, apiProvider: true, apiType: true })
+  .extend({
+    componentType: z.literal("OciGenAiConfig"),
+    compartmentId: z.string(),
+    servingMode: z
+      .enum([ServingMode.ON_DEMAND, ServingMode.DEDICATED])
+      .default(ServingMode.ON_DEMAND),
+    provider: z
+      .enum([
+        ModelProvider.META,
+        ModelProvider.GROK,
+        ModelProvider.COHERE,
+        ModelProvider.OTHER,
+        ModelProvider.XAI,
+      ])
+      .optional(),
+    clientConfig: OciClientConfigUnion,
+    apiType: z
+      .enum([
+        OciAPIType.OPENAI_CHAT_COMPLETIONS,
+        OciAPIType.OPENAI_RESPONSES,
+        OciAPIType.OCI,
+      ])
+      .default(OciAPIType.OCI),
+    conversationStoreId: z.string().optional(),
+  });
 
 export type OciGenAiConfig = z.infer<typeof OciGenAiConfigSchema>;
 
@@ -75,11 +79,9 @@ export function createOciGenAiConfig(opts: {
   apiType?: OciAPIType;
   conversationStoreId?: string;
   defaultGenerationParameters?: z.infer<typeof LlmGenerationConfigSchema>;
+  retryPolicy?: z.infer<typeof RetryPolicySchema>;
 }): OciGenAiConfig {
   return Object.freeze(
-    OciGenAiConfigSchema.parse({
-      ...opts,
-      componentType: "OciGenAiConfig" as const,
-    }),
+    OciGenAiConfigSchema.parse({ ...opts, componentType: "OciGenAiConfig" }),
   );
 }

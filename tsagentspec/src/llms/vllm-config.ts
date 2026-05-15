@@ -2,19 +2,16 @@
  * vLLM config.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
-import { LlmGenerationConfigSchema, OpenAIAPIType } from "./llm-config.js";
+import { LlmConfigBaseSchema, LlmGenerationConfigSchema, LocalInferenceFields, OpenAIAPIType } from "./llm-config.js";
+import { RetryPolicySchema } from "./retry-policy.js";
 
-export const VllmConfigSchema = ComponentBaseSchema.extend({
-  componentType: z.literal("VllmConfig"),
-  url: z.string(),
-  modelId: z.string(),
-  apiType: z
-    .enum([OpenAIAPIType.CHAT_COMPLETIONS, OpenAIAPIType.RESPONSES])
-    .default(OpenAIAPIType.CHAT_COMPLETIONS),
-  defaultGenerationParameters: LlmGenerationConfigSchema.optional(),
-  apiKey: z.string().optional(),
-});
+// apiProvider is fixed to "vllm" and excluded from serialization, so omitted here.
+export const VllmConfigSchema = LlmConfigBaseSchema
+  .omit({ apiProvider: true })
+  .extend({
+    componentType: z.literal("VllmConfig"),
+    ...LocalInferenceFields,
+  });
 
 export type VllmConfig = z.infer<typeof VllmConfigSchema>;
 
@@ -28,10 +25,13 @@ export function createVllmConfig(opts: {
   apiType?: OpenAIAPIType;
   defaultGenerationParameters?: z.infer<typeof LlmGenerationConfigSchema>;
   apiKey?: string;
+  provider?: string;
+  keyFile?: string;
+  certFile?: string;
+  caFile?: string;
+  retryPolicy?: z.infer<typeof RetryPolicySchema>;
 }): VllmConfig {
-  const parsed = VllmConfigSchema.parse({
-    ...opts,
-    componentType: "VllmConfig" as const,
-  });
-  return Object.freeze(parsed);
+  return Object.freeze(
+    VllmConfigSchema.parse({ ...opts, componentType: "VllmConfig" }),
+  );
 }

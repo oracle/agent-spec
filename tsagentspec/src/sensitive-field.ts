@@ -7,9 +7,12 @@ export const SENSITIVE_FIELD_MARKER = "SENSITIVE_FIELD_MARKER" as const;
 
 /** Maps componentType -> set of field names that are sensitive */
 export const SENSITIVE_FIELDS = {
-  OpenAiCompatibleConfig: new Set(["apiKey"]),
-  OllamaConfig: new Set(["apiKey"]),
-  VllmConfig: new Set(["apiKey"]),
+  LlmConfig: new Set(["apiKey"]),
+  GeminiAIStudioAuthConfig: new Set(["apiKey"]),
+  GeminiVertexAIAuthConfig: new Set(["credentials"]),
+  OpenAiCompatibleConfig: new Set(["apiKey", "keyFile", "certFile", "caFile"]),
+  OllamaConfig: new Set(["apiKey", "keyFile", "certFile", "caFile"]),
+  VllmConfig: new Set(["apiKey", "keyFile", "certFile", "caFile"]),
   OpenAiConfig: new Set(["apiKey"]),
   RemoteTool: new Set(["sensitiveHeaders"]),
   ApiNode: new Set(["sensitiveHeaders"]),

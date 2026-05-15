@@ -8,6 +8,9 @@ import {
   createBuiltinTool,
   createMCPToolBox,
   createStdioTransport,
+  createLlmConfig,
+  createGeminiConfig,
+  createGeminiAIStudioAuthConfig,
   stringProperty,
 } from "../../src/index.js";
 
@@ -185,6 +188,69 @@ describe("version-gated field serialization", () => {
     expect("human_in_the_loop" in dict).toBe(true);
     const tools = dict["tools"] as Record<string, unknown>[];
     expect("requires_confirmation" in tools[0]!).toBe(true);
+  });
+
+  it("should throw when serializing LlmConfig at version before 26.2.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const llm = createLlmConfig({ name: "generic", modelId: "gpt-4o" });
+    expect(() =>
+      serializer.toYaml(llm, { agentspecVersion: AgentSpecVersion.V25_4_2 }),
+    ).toThrow(/26\.2\.0/);
+  });
+
+  it("should throw when serializing GeminiConfig at version before 26.2.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const gemini = createGeminiConfig({
+      name: "gemini",
+      modelId: "gemini-1.5-pro",
+      auth: createGeminiAIStudioAuthConfig({ name: "auth" }),
+    });
+    expect(() =>
+      serializer.toYaml(gemini, { agentspecVersion: AgentSpecVersion.V25_4_2 }),
+    ).toThrow(/26\.2\.0/);
+  });
+
+  it("should exclude retryPolicy from OpenAiCompatibleConfig for versions before 26.2.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const llm = createOpenAiCompatibleConfig({
+      name: "llm",
+      url: "http://localhost",
+      modelId: "model",
+      retryPolicy: { maxAttempts: 5 },
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: llm,
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, {
+      agentspecVersion: AgentSpecVersion.V25_4_2,
+    }) as string;
+    const dict = JSON.parse(json);
+    const llmDict = dict["llm_config"] as Record<string, unknown>;
+    expect("retry_policy" in llmDict).toBe(false);
+  });
+
+  it("should include retryPolicy from OpenAiCompatibleConfig for version 26.2.0+", () => {
+    const serializer = new AgentSpecSerializer();
+    const llm = createOpenAiCompatibleConfig({
+      name: "llm",
+      url: "http://localhost",
+      modelId: "model",
+      retryPolicy: { maxAttempts: 5 },
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: llm,
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, {
+      agentspecVersion: AgentSpecVersion.V26_2_0,
+    }) as string;
+    const dict = JSON.parse(json);
+    const llmDict = dict["llm_config"] as Record<string, unknown>;
+    expect("retry_policy" in llmDict).toBe(true);
+    expect((llmDict["retry_policy"] as Record<string, unknown>)["max_attempts"]).toBe(5);
   });
 
   it("should throw when serializing BuiltinTool at version before 25.4.2", () => {

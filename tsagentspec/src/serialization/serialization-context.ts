@@ -33,6 +33,7 @@ export function camelToSnake(str: string): string {
   return str
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
     .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([a-z])([0-9])/g, "$1_$2")
     .toLowerCase();
 }
 
@@ -62,6 +63,7 @@ function isProperty(value: unknown): value is Property {
 export class SerializationContext {
   agentspecVersion: AgentSpecVersion;
   camelCase: boolean;
+  includeSensitiveFields: boolean;
   private componentTypesToPlugins: Map<string, ComponentSerializationPlugin>;
   private resolvedComponents: Map<string, SerializedDict> = new Map();
   private referencingStructure: Record<string, string> = {};
@@ -73,9 +75,11 @@ export class SerializationContext {
     resolvedComponents?: Map<string, SerializedDict>,
     componentsIdMapping?: Map<string, string>,
     camelCase?: boolean,
+    includeSensitiveFields?: boolean,
   ) {
     this.agentspecVersion = targetVersion ?? CURRENT_VERSION;
     this.camelCase = camelCase ?? false;
+    this.includeSensitiveFields = includeSensitiveFields ?? false;
     this.componentTypesToPlugins = this.buildComponentTypesToPlugins(plugins);
     this.resolvedComponents = resolvedComponents ?? new Map();
     this.componentsIdMapping = componentsIdMapping ?? new Map();
@@ -317,6 +321,7 @@ export class SerializationContext {
 
   /** Check if a field is sensitive and should be excluded */
   isFieldSensitive(componentType: string, fieldName: string): boolean {
+    if (this.includeSensitiveFields) return false;
     return isSensitiveField(componentType, fieldName);
   }
 

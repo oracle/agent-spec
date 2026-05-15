@@ -19,11 +19,19 @@ import {
   createAgentSpecializationParameters,
 } from "./agents/specialized-agent.js";
 
+import { LlmConfigSchema, createLlmConfig } from "./llms/llm-config.js";
 import { OpenAiCompatibleConfigSchema, createOpenAiCompatibleConfig } from "./llms/openai-compatible-config.js";
 import { OllamaConfigSchema, createOllamaConfig } from "./llms/ollama-config.js";
 import { VllmConfigSchema, createVllmConfig } from "./llms/vllm-config.js";
 import { OpenAiConfigSchema, createOpenAiConfig } from "./llms/openai-config.js";
 import { OciGenAiConfigSchema, createOciGenAiConfig } from "./llms/oci-genai-config.js";
+import { GeminiConfigSchema, createGeminiConfig } from "./llms/gemini-config.js";
+import {
+  GeminiAIStudioAuthConfigSchema,
+  GeminiVertexAIAuthConfigSchema,
+  createGeminiAIStudioAuthConfig,
+  createGeminiVertexAIAuthConfig,
+} from "./llms/gemini-auth-config.js";
 import {
   OciClientConfigWithApiKeySchema,
   OciClientConfigWithInstancePrincipalSchema,
@@ -140,6 +148,10 @@ export const BUILTIN_SCHEMA_MAP: Record<string, z.ZodType> = {
   SpecializedAgent: SpecializedAgentSchema,
   AgentSpecializationParameters: AgentSpecializationParametersSchema,
 
+  LlmConfig: LlmConfigSchema,
+  GeminiConfig: GeminiConfigSchema,
+  GeminiAIStudioAuthConfig: GeminiAIStudioAuthConfigSchema,
+  GeminiVertexAIAuthConfig: GeminiVertexAIAuthConfigSchema,
   OpenAiCompatibleConfig: OpenAiCompatibleConfigSchema,
   OllamaConfig: OllamaConfigSchema,
   VllmConfig: VllmConfigSchema,
@@ -211,6 +223,10 @@ export const BUILTIN_FACTORY_MAP: Record<string, FactoryFn> = {
   SpecializedAgent: createSpecializedAgent,
   AgentSpecializationParameters: createAgentSpecializationParameters,
 
+  LlmConfig: createLlmConfig,
+  GeminiConfig: createGeminiConfig,
+  GeminiAIStudioAuthConfig: createGeminiAIStudioAuthConfig,
+  GeminiVertexAIAuthConfig: createGeminiVertexAIAuthConfig,
   OpenAiCompatibleConfig: createOpenAiCompatibleConfig,
   OllamaConfig: createOllamaConfig,
   VllmConfig: createVllmConfig,
