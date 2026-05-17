@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Agent Spec Configuration"
+  short_description: "Turn business intent into Agent Spec"
+  default_prompt: "Use $create-agent-spec to turn this business requirement into a portable Agent Spec agent."
