@@ -86,7 +86,11 @@ def _get_retry_success_side_effects(case_name: str) -> list[Any]:
 
 
 class RemoteToolRetryPolicyCases:
-    """Shared RemoteTool retry-policy behavior checks for adapter wrappers."""
+    """Shared RemoteTool retry-policy behavior checks for adapter wrappers.
+
+    Adapters can reuse these tests by subclassing this class and implementing
+    ``invoke_remote_tool``.
+    """
 
     def invoke_remote_tool(self, remote_tool: RemoteTool) -> Any | Awaitable[Any]:
         raise NotImplementedError
