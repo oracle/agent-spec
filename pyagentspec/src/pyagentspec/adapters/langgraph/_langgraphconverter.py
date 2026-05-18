@@ -83,6 +83,7 @@ from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageN
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfig,
     OciClientConfigWithApiKey,
@@ -113,6 +114,7 @@ from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import StringProperty as AgentSpecStringProperty
 from pyagentspec.property import _empty_default as _agentspec_empty_default
 from pyagentspec.property import json_schemas_have_same_type
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
 from pyagentspec.swarm import Swarm as AgentSpecSwarm
 from pyagentspec.tools import ClientTool as AgentSpecClientTool
@@ -1227,13 +1229,9 @@ class AgentSpecToLangGraphConverter:
         self, llm_config: AgentSpecLlmConfig, config: RunnableConfig
     ) -> BaseChatModel:
         """Create the LLM model object for the chosen llm configuration."""
-        generation_config: Dict[str, Any] = {}
-        generation_parameters = llm_config.default_generation_parameters
-
-        if generation_parameters is not None:
-            generation_config["temperature"] = generation_parameters.temperature
-            generation_config["max_tokens"] = generation_parameters.max_tokens
-            generation_config["top_p"] = generation_parameters.top_p
+        generation_config = _generation_config_from_agentspec(
+            llm_config.default_generation_parameters
+        )
 
         use_responses_api = False
         if isinstance(llm_config, (OpenAiCompatibleConfig, OpenAiConfig)):
@@ -1255,20 +1253,23 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OllamaConfig):
+            if llm_config.retry_policy is not None:
+                raise NotImplementedError(
+                    "LangGraph ChatOllama conversion does not support `RetryPolicy`."
+                )
+
             from langchain_ollama import ChatOllama
 
-            generation_config = {
-                "temperature": generation_config.get("temperature"),
-                "num_predict": generation_config.get("max_tokens"),
-                "top_p": generation_config.get("top_p"),
-            }
             return ChatOllama(
                 base_url=llm_config.url,
                 model=llm_config.model_id,
                 callbacks=callbacks,
-                **generation_config,
+                temperature=generation_config.get("temperature"),
+                num_predict=generation_config.get("max_tokens"),
+                top_p=generation_config.get("top_p"),
             )
         elif isinstance(llm_config, OpenAiConfig):
             return _create_chat_openai_model(
@@ -1277,6 +1278,7 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OpenAiCompatibleConfig):
             return _create_chat_openai_model(
@@ -1286,23 +1288,37 @@ class AgentSpecToLangGraphConverter:
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
+                retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
             )
         elif isinstance(llm_config, OciGenAiConfig):
-            from langchain_oci import ChatOCIGenAI  # type: ignore
-
             if use_responses_api:
                 raise NotImplementedError(
                     "OCI GenAI models with OpenAI Responses API is not yet supported"
                 )
 
-            model_kwargs = {**generation_config}
-            if "openai" in llm_config.model_id and "max_tokens" in model_kwargs:
-                model_kwargs["max_completion_tokens"] = model_kwargs.pop("max_tokens")
+            if llm_config.retry_policy is not None:
+                raise NotImplementedError(
+                    "LangGraph OCI GenAI conversion does not support `RetryPolicy`."
+                )
+
+            from langchain_oci import ChatOCIGenAI  # type: ignore
+
+            oci_model_kwargs: dict[str, int | float] = {}
+            if "temperature" in generation_config:
+                oci_model_kwargs["temperature"] = generation_config["temperature"]
+            if "top_p" in generation_config:
+                oci_model_kwargs["top_p"] = generation_config["top_p"]
+            max_tokens = generation_config.get("max_tokens")
+            if max_tokens is not None:
+                token_key = (
+                    "max_completion_tokens" if "openai" in llm_config.model_id else "max_tokens"
+                )
+                oci_model_kwargs[token_key] = max_tokens
 
             return ChatOCIGenAI(  # type: ignore
                 model_id=llm_config.model_id,
                 compartment_id=llm_config.compartment_id,
-                model_kwargs=model_kwargs,
+                model_kwargs=oci_model_kwargs,
                 **self._oci_client_config_to_langgraph(llm_config.client_config),
             )
         else:
@@ -1319,11 +1335,46 @@ class AgentSpecToLangGraphConverter:
                     use_responses_api=llm_config.api_type == "responses",
                     callbacks=callbacks,
                     generation_config=generation_config,
+                    retry_config=self._retry_policy_convert_to_langgraph(llm_config.retry_policy),
                 )
             raise NotImplementedError(
                 f"LlmConfig with api_provider='{llm_config.api_provider}' is not yet supported "
                 f"in langgraph. Consider using a specific LlmConfig subclass instead."
             )
+
+    def _retry_policy_convert_to_langgraph(
+        self, retry_policy: Optional[RetryPolicy]
+    ) -> "_ChatRetryConfig":
+        """Convert Agent Spec retry policy settings into ChatOpenAI keyword arguments."""
+        if retry_policy is None:
+            return {}
+
+        default_retry_policy = type(retry_policy)()
+        unsupported_fields = [
+            field_name
+            for field_name in (
+                "initial_retry_delay",
+                "max_retry_delay",
+                "backoff_factor",
+                "jitter",
+                "service_error_retry_on_any_5xx",
+                "recoverable_statuses",
+            )
+            if getattr(retry_policy, field_name) != getattr(default_retry_policy, field_name)
+        ]
+        if unsupported_fields:
+            raise NotImplementedError(
+                "LangGraph ChatOpenAI conversion supports only "
+                "`RetryPolicy.max_attempts` and `RetryPolicy.request_timeout`. "
+                "This is because the underlying ChatOpenAI/OpenAI client only exposes "
+                "retry count and timeout settings. "
+                "Unsupported retry policy fields: " + ", ".join(unsupported_fields)
+            )
+
+        retry_config: _ChatRetryConfig = {"max_retries": retry_policy.max_attempts}
+        if retry_policy.request_timeout is not None:
+            retry_config["timeout"] = retry_policy.request_timeout
+        return retry_config
 
     def _client_transport_convert_to_langgraph(
         self, agentspec_component: AgentSpecClientTransport
@@ -1439,31 +1490,33 @@ class AgentSpecToLangGraphConverter:
 
         return _get_session_tools_from_tool_registry(tool_registry, conn_prefix)
 
-    def _oci_client_config_to_langgraph(self, client_config: OciClientConfig) -> Dict[str, Any]:
+    def _oci_client_config_to_langgraph(
+        self, client_config: OciClientConfig
+    ) -> "_OciClientConfigKwargs":
         if isinstance(client_config, OciClientConfigWithSecurityToken):
-            return dict(
-                auth_type=client_config.auth_type,
-                service_endpoint=client_config.service_endpoint,
-                auth_profile=client_config.auth_profile,
-                auth_file_location=client_config.auth_file_location,
-            )
+            return {
+                "auth_type": client_config.auth_type,
+                "service_endpoint": client_config.service_endpoint,
+                "auth_profile": client_config.auth_profile,
+                "auth_file_location": client_config.auth_file_location,
+            }
         elif isinstance(client_config, OciClientConfigWithInstancePrincipal):
-            return dict(
-                auth_type=client_config.auth_type,
-                service_endpoint=client_config.service_endpoint,
-            )
+            return {
+                "auth_type": client_config.auth_type,
+                "service_endpoint": client_config.service_endpoint,
+            }
         elif isinstance(client_config, OciClientConfigWithResourcePrincipal):
-            return dict(
-                auth_type=client_config.auth_type,
-                service_endpoint=client_config.service_endpoint,
-            )
+            return {
+                "auth_type": client_config.auth_type,
+                "service_endpoint": client_config.service_endpoint,
+            }
         elif isinstance(client_config, OciClientConfigWithApiKey):
-            return dict(
-                auth_type=client_config.auth_type,
-                service_endpoint=client_config.service_endpoint,
-                auth_profile=client_config.auth_profile,
-                auth_file_location=client_config.auth_file_location,
-            )
+            return {
+                "auth_type": client_config.auth_type,
+                "service_endpoint": client_config.service_endpoint,
+                "auth_profile": client_config.auth_profile,
+                "auth_file_location": client_config.auth_file_location,
+            }
         else:
             raise ValueError(
                 f"Agent Spec OciClientConfig '{client_config.__class__.__name__}' is not supported yet."
@@ -1507,12 +1560,28 @@ def _add_session_tools_to_registry(
     tool_registry.update(staged)
 
 
+def _generation_config_from_agentspec(
+    generation_parameters: Optional[LlmGenerationConfig],
+) -> "_GenerationConfig":
+    generation_config: _GenerationConfig = {}
+    if generation_parameters is None:
+        return generation_config
+    if generation_parameters.temperature is not None:
+        generation_config["temperature"] = generation_parameters.temperature
+    if generation_parameters.max_tokens is not None:
+        generation_config["max_tokens"] = generation_parameters.max_tokens
+    if generation_parameters.top_p is not None:
+        generation_config["top_p"] = generation_parameters.top_p
+    return generation_config
+
+
 def _create_chat_openai_model(
     *,
     model_id: str,
     use_responses_api: bool,
     callbacks: List[BaseCallbackHandler],
-    generation_config: Dict[str, Any],
+    generation_config: "_GenerationConfig",
+    retry_config: "_ChatRetryConfig",
     base_url: Optional[str] = None,
     api_key: Optional[str] = None,
 ) -> BaseChatModel:
@@ -1524,17 +1593,60 @@ def _create_chat_openai_model(
     """
     from langchain_openai import ChatOpenAI
 
-    kwargs: Dict[str, Any] = {
-        "model": model_id,
-        "use_responses_api": use_responses_api,
-        "callbacks": callbacks,
-        **generation_config,
-    }
+    optional_kwargs: _ChatOpenAIOptionalKwargs = {}
+    max_retries = retry_config.get("max_retries")
+    if max_retries is not None:
+        optional_kwargs["max_retries"] = max_retries
+    timeout = retry_config.get("timeout")
+    if timeout is not None:
+        optional_kwargs["timeout"] = timeout
     if base_url is not None:
-        kwargs["base_url"] = base_url
+        optional_kwargs["base_url"] = base_url
     if api_key is not None:
-        kwargs["api_key"] = SecretStr(api_key)
-    return ChatOpenAI(**kwargs)
+        optional_kwargs["api_key"] = SecretStr(api_key)
+
+    return ChatOpenAI(
+        model=model_id,
+        use_responses_api=use_responses_api,
+        callbacks=callbacks,
+        temperature=generation_config.get("temperature"),
+        max_completion_tokens=generation_config.get("max_tokens"),
+        top_p=generation_config.get("top_p"),
+        **optional_kwargs,
+    )
+
+
+class _ChatOpenAIOptionalKwargs(TypedDict):
+    """Optional ChatOpenAI arguments that must be omitted when unset."""
+
+    max_retries: NotRequired[int]
+    timeout: NotRequired[float]
+    base_url: NotRequired[str]
+    api_key: NotRequired[SecretStr]
+
+
+class _GenerationConfig(TypedDict):
+    """Normalized Agent Spec generation settings supported by LangGraph adapters."""
+
+    temperature: NotRequired[float]
+    max_tokens: NotRequired[int]
+    top_p: NotRequired[float]
+
+
+class _ChatRetryConfig(TypedDict):
+    """Keyword arguments for ChatOpenAI retry and timeout configuration."""
+
+    max_retries: NotRequired[int]
+    timeout: NotRequired[float]
+
+
+class _OciClientConfigKwargs(TypedDict):
+    """Keyword arguments for OCI GenAI client authentication configuration."""
+
+    auth_type: Required[str]
+    service_endpoint: Required[str]
+    auth_profile: NotRequired[str]
+    auth_file_location: NotRequired[str]
 
 
 def _ensure_url_has_scheme(url: str) -> str:

@@ -16,7 +16,7 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
 from pyagentspec.flows.nodes import BranchingNode, FlowNode
-from pyagentspec.llms import OpenAiCompatibleConfig
+from pyagentspec.llms import OpenAiCompatibleConfig, OpenAiConfig
 
 from .conftest import get_weather
 
@@ -86,6 +86,44 @@ def test_convert_react_agent_without_tools_to_agentspec(
     assert config.model_id == model_id
     assert config.url == f"https://{url}/v1"
     assert not agentspec_agent.tools
+
+
+@pytest.mark.parametrize(
+    "base_url, expected_config_type",
+    [
+        pytest.param(
+            "https://api.openai.com/v1",
+            OpenAiConfig,
+            id="openai",
+        ),
+        pytest.param(
+            "https://compatible.example.com/v1",
+            OpenAiCompatibleConfig,
+            id="openai-compatible",
+        ),
+    ],
+)
+def test_convert_chat_openai_to_agentspec_maps_retry_policy(
+    agentspec_exporter: "AgentSpecExporter",
+    base_url: str,
+    expected_config_type: type[OpenAiConfig | OpenAiCompatibleConfig],
+) -> None:
+    from langchain_openai.chat_models import ChatOpenAI
+
+    model = ChatOpenAI(
+        model="gpt-4o-mini",
+        api_key=SecretStr("sk-test"),
+        base_url=base_url,
+        max_retries=4,
+        timeout=2.5,
+    )
+
+    config = agentspec_exporter.to_component(model)
+
+    assert isinstance(config, expected_config_type)
+    assert config.retry_policy is not None
+    assert config.retry_policy.max_attempts == 4
+    assert config.retry_policy.request_timeout == 2.5
 
 
 def test_convert_async_structured_tool_to_agentspec_server_tool(

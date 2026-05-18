@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import os
+from typing import Any
 
 import pytest
 from langchain_ollama import ChatOllama
@@ -14,9 +15,13 @@ from pyagentspec.adapters.langgraph._langgraphconverter import (
     AgentSpecToLangGraphConverter,
     _prepare_openai_compatible_url,
 )
+from pyagentspec.llms import LlmGenerationConfig
+from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
+from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.retrypolicy import RetryPolicy
 
 
 @pytest.mark.parametrize(
@@ -78,6 +83,110 @@ def test_openaicompatible_conversion_sets_responses_flag(
     assert model.use_responses_api is expected_flag
     assert model.max_tokens == default_generation_parameters.max_tokens
     assert model.temperature == default_generation_parameters.temperature
+
+
+def test_openai_chat_conversion_does_not_forward_extra_generation_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
+    agentspec_llm = OpenAiConfig(
+        name="openai",
+        model_id="gpt-4o-mini",
+        default_generation_parameters=LlmGenerationConfig(
+            temperature=0.2,
+            max_tokens=128,
+            top_p=0.8,
+            presence_penalty=1.0,
+        ),
+    )
+
+    model = AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+    assert isinstance(model, ChatOpenAI)
+    assert model.temperature == 0.2
+    assert model.max_tokens == 128
+    assert "presence_penalty" not in model.model_kwargs
+
+
+@pytest.mark.parametrize(
+    "llm_config_class, llm_config_kwargs",
+    [
+        pytest.param(
+            VllmConfig,
+            {
+                "name": "llm",
+                "model_id": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+                "url": "localhost:8000",
+            },
+            id="vllm",
+        ),
+        pytest.param(
+            OpenAiCompatibleConfig,
+            {
+                "name": "oaic",
+                "model_id": "gpt-4o-mini",
+                "url": "https://api.compatible",
+            },
+            id="openai-compatible",
+        ),
+        pytest.param(
+            OpenAiConfig,
+            {
+                "name": "openai",
+                "model_id": "gpt-4o-mini",
+                "api_key": "sk-test",
+            },
+            id="openai",
+        ),
+        pytest.param(
+            LlmConfig,
+            {
+                "name": "openai",
+                "model_id": "gpt-4o-mini",
+                "api_provider": "openai",
+            },
+            id="bare-openai",
+        ),
+    ],
+)
+def test_openai_chat_conversion_maps_retry_policy(
+    llm_config_class: type[LlmConfig],
+    llm_config_kwargs: dict[str, Any],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
+    retry_policy = RetryPolicy(max_attempts=0, request_timeout=2.5)
+    agentspec_llm = llm_config_class(**llm_config_kwargs, retry_policy=retry_policy)
+
+    model = AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+    assert isinstance(model, ChatOpenAI)
+    assert model.request_timeout == retry_policy.request_timeout
+    assert model.max_retries == retry_policy.max_attempts
+
+
+def test_openai_chat_conversion_rejects_unsupported_retry_policy_fields() -> None:
+    agentspec_llm = VllmConfig(
+        name="llm",
+        model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+        url="localhost:8000",
+        retry_policy=RetryPolicy(initial_retry_delay=0.5),
+    )
+
+    with pytest.raises(NotImplementedError, match="initial_retry_delay"):
+        AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
+
+
+def test_non_openai_chat_conversion_rejects_retry_policy() -> None:
+    agentspec_llm = OllamaConfig(
+        name="oll",
+        model_id="llama3.2",
+        url="http://localhost:11434",
+        retry_policy=RetryPolicy(max_attempts=0),
+    )
+
+    with pytest.raises(NotImplementedError, match="ChatOllama.*RetryPolicy"):
+        AgentSpecToLangGraphConverter().convert(agentspec_llm, {})
 
 
 def test_ollama_conversion_maps_generation_config_names(default_generation_parameters):

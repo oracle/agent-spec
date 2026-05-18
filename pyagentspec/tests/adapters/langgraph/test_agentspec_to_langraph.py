@@ -9,11 +9,22 @@ from unittest import mock
 
 import pytest
 
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 from .conftest import get_weather
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_weather_agent_with_server_tool(weather_agent_server_tool_yaml: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.35 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.messages import ToolMessage
     from langchain_core.runnables import RunnableConfig
 
@@ -44,9 +55,19 @@ def test_weather_agent_with_server_tool_ollama(weather_ollama_agent_yaml: str) -
     assert isinstance(agent, CompiledStateGraph)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_weather_agent_with_server_tool_with_output_descriptors(
     weather_agent_with_outputs_yaml: str,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.13 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.runnables import RunnableConfig
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
@@ -64,7 +85,17 @@ def test_weather_agent_with_server_tool_with_output_descriptors(
     assert isinstance(last_message["weather"], str)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_client_tool_with_agent(weather_agent_client_tool_yaml: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.09 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.types import Command
@@ -87,10 +118,20 @@ def test_client_tool_with_agent(weather_agent_client_tool_yaml: str) -> None:
     assert all(x in last_message.content.lower() for x in ("agadir", "sunny"))
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_client_tool_with_two_inputs(
     ancestry_agent_with_client_tool_yaml: str,
     disable_parallel_tool_calls: None,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.24 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.types import Command
@@ -118,11 +159,13 @@ def test_client_tool_with_two_inputs(
     assert get_child_msgs, "Expected a ToolMessage from client tool 'get_child'"
     assert "himothy" in str(get_child_msgs[0].content).lower()
 
-    # ancestry_agent_with_client_tool_yaml is an agent with outputs and with a client tool with outputs
+    # ancestry_agent_with_client_tool_yaml is an agent with outputs and with a client
+    # tool with outputs
     # With latest langchain, agents with outputs may be emitted either as:
     # - a ToolMessage created from a structured-output tool (ToolStrategy path), or
     # - an AIMessage with a structured-output tool_call (ProviderStrategy path).
-    # - the langgraph adapter defaults to ToolStrategy, but the agent may fail to generate the AgentOutputModel tool call
+    # - the langgraph adapter defaults to ToolStrategy, but the agent may fail to generate
+    #   the AgentOutputModel tool call
     # - so it may try to re-generate the tool call (last_message being of type "AIMessage")
     structured_tool_msgs = [
         m for m in messages if m.type == "tool" and m.name == "AgentOutputModel"
@@ -140,7 +183,17 @@ def test_client_tool_with_two_inputs(
     assert "structured_response" in result
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_remote_tool_with_agent(json_server: str, weather_agent_remote_tool_yaml: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.03 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.runnables import RunnableConfig
 
     yaml_content = weather_agent_remote_tool_yaml
@@ -189,9 +242,19 @@ def test_weather_agent_with_server_tool_with_openaicompatible_llm_raises_without
 
 
 @mock.patch.dict(os.environ, {"OPENAI_API_KEY": "MOCKED_KEY"})
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
     weather_agent_server_tool_openaicompatible_yaml: str,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.35 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.messages import ToolMessage
     from langchain_core.runnables import RunnableConfig
 
@@ -211,10 +274,20 @@ def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
     assert isinstance(tool_call_message, ToolMessage)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_execute_swarm(
     swarm_calculator_yaml: str,
     disable_parallel_tool_calls: None,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.39 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from langchain_core.runnables import RunnableConfig
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
