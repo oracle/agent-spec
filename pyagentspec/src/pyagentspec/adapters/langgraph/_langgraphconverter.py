@@ -738,6 +738,22 @@ class AgentSpecToLangGraphConverter:
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import ToolNodeExecutor
 
+        # A rejected confirmation returns a single denial string, which cannot be
+        # split across multiple declared outputs of a Flow ToolNode. Catch this
+        # at load time rather than letting it surface as an opaque mapping error
+        # at runtime on the rejection path.
+        agentspec_tool = tool_node.tool
+        tool_outputs = agentspec_tool.outputs or []
+        if agentspec_tool.requires_confirmation and len(tool_outputs) > 1:
+            raise ValueError(
+                f"Tool '{agentspec_tool.name}' declares multiple outputs and "
+                f"requires_confirmation=True inside Flow ToolNode '{tool_node.name}'. "
+                f"On rejection, the tool returns a single denial string, which "
+                f"cannot be mapped to multiple declared outputs. "
+                f"Use a single output (object-typed if structured data is needed), "
+                f"or move the tool out of the Flow ToolNode."
+            )
+
         tool = self.convert(
             tool_node.tool,
             tool_registry=tool_registry,
@@ -1884,14 +1900,3 @@ def _ensure_checkpointer_and_valid_tool_config(
         )
     elif isinstance(agentspec_tool, AgentSpecClientTool) and checkpointer is None:
         raise ValueError(f"A Checkpointer is required when using ClientTool '{tool_name}'.")
-
-    tool_output = agentspec_tool.outputs or []
-    if agentspec_tool.requires_confirmation and (
-        len(tool_output) != 1 or "type" in tool_output[0].json_schema
-    ):
-        # TODO: refine to only raise output property does not support string
-        raise ValueError(
-            f"Invalid output schema for tool '{tool_name}' requiring tool confirmation: "
-            f"json schema should be left unspecified when using tool confirmation, was {tool_output}. "
-            f'Please use outputs=[Property(title="{tool_name}", json_schema={{}})]'
-        )
