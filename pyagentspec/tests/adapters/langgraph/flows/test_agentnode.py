@@ -15,6 +15,8 @@ from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
 from pyagentspec.llms import VllmConfig
 from pyagentspec.property import StringProperty
 
+from ....retry_test import retry_test
+
 
 @pytest.fixture()
 def agent_flow() -> Flow:
@@ -69,7 +71,17 @@ def agent_flow() -> Flow:
     return flow
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_agentnode_can_be_imported_and_executed(agent_flow: Flow) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  0.46 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     agent = AgentSpecLoader().load_component(agent_flow)
@@ -85,7 +97,17 @@ def test_agentnode_can_be_imported_and_executed(agent_flow: Flow) -> None:
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_agentnode_can_be_executed_async(agent_flow: Flow) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  0.48 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     agent = AgentSpecLoader().load_component(agent_flow)

@@ -71,6 +71,7 @@ from pyagentspec.mcp.clienttransport import (
     StdioTransport,
     StreamableHTTPTransport,
 )
+from pyagentspec.retrypolicy import RetryPolicy as AgentSpecRetryPolicy
 from pyagentspec.swarm import HandoffMode as AgentSpecHandoffMode
 from pyagentspec.swarm import Swarm as AgentSpecSwarm
 from pyagentspec.tools import ServerTool
@@ -273,9 +274,13 @@ class LangGraphToAgentSpecConverter:
                 if model.use_responses_api
                 else AgentSpecOpenAIAPIType.CHAT_COMPLETIONS
             )
+            retry_policy = self._chat_openai_retry_policy_convert_to_agentspec(model)
             if (model.openai_api_base or "").startswith("https://api.openai.com"):
                 return AgentSpecOpenAiConfig(
-                    name=model.model_name, model_id=model.model_name, api_type=api_type
+                    name=model.model_name,
+                    model_id=model.model_name,
+                    api_type=api_type,
+                    retry_policy=retry_policy,
                 )
             else:
                 return AgentSpecOpenAiCompatibleConfig(
@@ -283,8 +288,40 @@ class LangGraphToAgentSpecConverter:
                     url=model.openai_api_base or "",
                     model_id=model.model_name,
                     api_type=api_type,
+                    retry_policy=retry_policy,
                 )
         raise ValueError(f"The LLM instance provided is of an unsupported type `{type(model)}`.")
+
+    def _chat_openai_retry_policy_convert_to_agentspec(
+        self, model: "langchain_openai.ChatOpenAI"
+    ) -> Optional[AgentSpecRetryPolicy]:
+        """Convert ChatOpenAI retry and timeout settings into an Agent Spec retry policy."""
+        default_retry_policy = AgentSpecRetryPolicy()
+        max_retries = model.max_retries
+        raw_request_timeout = model.request_timeout
+        if raw_request_timeout is None:
+            request_timeout = None
+        elif isinstance(raw_request_timeout, (int, float)):
+            request_timeout = float(raw_request_timeout)
+        else:
+            raise NotImplementedError(
+                "LangGraph ChatOpenAI timeout conversion supports only a single timeout value "
+                "because Agent Spec `RetryPolicy.request_timeout` exposes one per-request timeout."
+            )
+
+        has_custom_retry_count = (
+            max_retries is not None and max_retries != default_retry_policy.max_attempts
+        )
+        has_custom_timeout = request_timeout != default_retry_policy.request_timeout
+        if not has_custom_retry_count and not has_custom_timeout:
+            return None
+
+        return AgentSpecRetryPolicy(
+            max_attempts=(
+                max_retries if max_retries is not None else default_retry_policy.max_attempts
+            ),
+            request_timeout=request_timeout,
+        )
 
     def _langgraph_agent_convert_to_agentspec(
         self,

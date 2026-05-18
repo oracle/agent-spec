@@ -108,6 +108,8 @@ pip-delete-this-directory.txt
 .rsync-exclude.txt
 activate
 scripts/
+!.agents/skills/*/scripts/
+!.agents/skills/*/scripts/**
 outputs/
 mypy-precision/
 catboost_info/

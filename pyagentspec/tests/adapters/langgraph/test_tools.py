@@ -8,6 +8,7 @@ import threading
 from typing import Any
 from unittest.mock import patch
 
+import httpx
 import pytest
 
 from pyagentspec.agent import Agent
@@ -23,12 +24,33 @@ from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
 
 
 class DummyResponse:
-    def __init__(self, obj):
+    def __init__(self, obj, status_code: int = 200):
         self._obj = obj
+        self._status_code = status_code
+        self.headers = {}
 
     @property
     def status_code(self):
-        return 200
+        return self._status_code
+
+    @property
+    def is_success(self):
+        return 200 <= self._status_code < 300
+
+    @property
+    def text(self):
+        return str(self._obj)
+
+    def close(self):
+        pass
+
+    def raise_for_status(self):
+        if not self.is_success:
+            raise httpx.HTTPStatusError(
+                f"Error response {self._status_code}",
+                request=httpx.Request("GET", "https://example.com"),
+                response=httpx.Response(self._status_code),
+            )
 
     def json(self):
         return self._obj
@@ -219,7 +241,8 @@ def test_remote_tool_actual_endpoint_with_langgraph(
 ) -> None:
     """
     Real-server test using the in-repo FastAPI app (json_server fixture).
-    Validates templating, JSON vs form vs raw payload handling, headers, query params, and path rendering.
+    Validates templating, JSON vs form vs raw payload handling, headers, query params,
+    and path rendering.
     """
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 

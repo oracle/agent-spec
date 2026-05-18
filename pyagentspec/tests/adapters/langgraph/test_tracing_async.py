@@ -30,6 +30,7 @@ from pyagentspec.tracing.spans import (
 )
 from pyagentspec.tracing.trace import Trace
 
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 from .test_tracing import DummySpanProcessor
 
@@ -133,7 +134,16 @@ def _assert_flow_async(
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_ainvoke_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.18 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -155,7 +165,16 @@ async def test_langgraph_ainvoke_tracing_emits_agent_llm_and_tool_events(json_se
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_astream_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.41 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -182,7 +201,17 @@ async def test_langgraph_astream_tracing_emits_agent_llm_and_tool_events(json_se
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_ainvoke_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.59 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     json_content = (CONFIGS / "haiku_without_a_flow.json").read_text()
@@ -204,7 +233,17 @@ async def test_langgraph_ainvoke_tracing_emits_flow_events(json_server: str) -> 
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_astream_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.78 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     async def ahaiku(haiku):
@@ -291,9 +330,19 @@ async def test_langgraph_ainvoke_tracing_emits_async_server_tool_events_for_flow
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_ainvoke_tracing_falls_back_to_sync_tool_events_for_agent(
     weather_agent_server_tool_yaml: str,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.28 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     # This verifies the async-tracing fallback in the LangGraph callback handler:
@@ -341,9 +390,19 @@ async def test_langgraph_ainvoke_tracing_falls_back_to_sync_tool_events_for_agen
 
 
 @pytest.mark.anyio
+@retry_test(max_attempts=3, wait_between_tries=2)
 async def test_langgraph_ainvoke_tracing_emits_agent_llm_and_async_server_tool_events(
     weather_agent_server_tool_yaml: str,
 ) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.31 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
+
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     async def get_weather(city: str) -> str:

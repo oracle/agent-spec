@@ -84,8 +84,10 @@ Following security considerations is important when working with remote/mcp tool
 * **Secure Connections**: Use HTTPS for all remote calls.
 * **HTTP Method**: When possible, use fixed and explicit HTTP methods for the ``http_method`` parameter in the ``RemoteTool`` or ``ApiNode`` (e.g., ``"GET"``, ``"POST"``) rather than dynamic templates.
 * **Timeouts**: Remote/MCP tools or API nodes may block indefinitely if the external service is unresponsive. \
-  Currently, Agent Spec does not support specifying request timeouts. \
-  Timeout behavior should be enforced by the execution environment or tool implementation to avoid resource exhaustion.
+  Timeout behavior should be enforced by the execution environment or tool implementation to avoid resource exhaustion. \
+  ``RemoteTool`` and LLM configurations can use ``RetryPolicy.request_timeout`` to express a per-request timeout; runtimes and adapters should pass it through to provider SDKs or HTTP clients when supported.
+* **Retries**: ``RemoteTool`` can use ``RetryPolicy.max_attempts`` to retry transient HTTP client errors and recoverable HTTP responses. \
+  Keep retry counts bounded and pair them with request timeouts to avoid extending failures indefinitely.
 
 While Agent Spec does not manage infrastructure, authors should still be aware of how their configurations interact with secure deployment environments.
 We recommend to make sure that the deployment enforces strict network communication rules to make sure that only the desired and required network services are allowed (communication with external public IPs).
@@ -322,7 +324,7 @@ However, it's important to be aware of these gaps when designing or deploying ag
   These controls - available in some execution engines - can stop long-running agents or limit LLM token usage, but only between steps. \
 * Hard timeouts inside a Tool – a Tool that calls a REST API may block indefinitely.
 * Concurrent-request ceilings – there is no built-in limit on how many tool calls or sub-flows can run in parallel. Without external throttling, excessive fan-out may exhaust system resources.
-* LLM generation cancellation – once a prompt is sent, the agent will block until the generation is done.
+* LLM generation cancellation – without a provider-supported request timeout or cancellation mechanism, once a prompt is sent, the agent will block until the generation is done.
 * Conversation isolation – the Agent Spec does not support isolation between sub-flows or sub-agents; conversations are shared and may be forwarded externally if an external endpoint is involved.
 
 Considerations regarding assistant and flow serialization

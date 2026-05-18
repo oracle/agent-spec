@@ -7,6 +7,14 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **LangGraph adapter timeout and retry improvements**
+
+  The LangGraph adapter now applies ``RetryPolicy.request_timeout`` and
+  ``RetryPolicy.max_attempts`` when converting OpenAI-compatible LLM
+  configurations to ``ChatOpenAI``. It also applies ``RemoteTool`` retry
+  policies to HTTP execution by enforcing per-request timeouts and retrying
+  transient HTTP client failures and recoverable HTTP responses.
+
 * **Improved HTTPS handling for LangGraph MCP remote transports**
 
   Non-mTLS LangGraph MCP SSE and Streamable HTTP transports now use the standard

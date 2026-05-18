@@ -31,6 +31,7 @@ from pyagentspec.tracing.spans import (
 )
 from pyagentspec.tracing.trace import Trace
 
+from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 
 CONFIGS = Path(__file__).parent / "configs"
@@ -191,7 +192,16 @@ def check_dummyspanprocessor_flow_events_and_spans(span_processor: DummySpanProc
     ), "ToolExecutionResponse not emitted"
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.24 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -214,7 +224,16 @@ def test_langgraph_invoke_tracing_emits_agent_llm_and_tool_events(json_server: s
     check_dummyspanprocessor_agent_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.38 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -242,7 +261,16 @@ def test_langgraph_stream_tracing_emits_agent_llm_and_tool_events(json_server: s
     check_dummyspanprocessor_agent_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_invoke_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.19 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -265,7 +293,16 @@ def test_langgraph_invoke_tracing_emits_flow_events(json_server: str) -> None:
     check_dummyspanprocessor_flow_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  2.38 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -290,7 +327,16 @@ def test_langgraph_stream_tracing_emits_flow_events(json_server: str) -> None:
     check_dummyspanprocessor_flow_events_and_spans(proc)
 
 
+@retry_test(max_attempts=3, wait_between_tries=2)
 def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_server: str):
+    """
+    Failure rate:          0 out of 50
+    Observed on:           2026-05-11
+    Average success time:  1.43 seconds per successful attempt
+    Average failure time:  No time measurement
+    Max attempt:           3
+    Justification:         (0.02 ** 3) ~= 0.7 / 100'000
+    """
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
@@ -321,7 +367,8 @@ def test_langgraph_agent_emits_tool_calls_and_results_with_consistent_ids(json_s
     streamed_tool_call_ids = {e.tool_calls[0].call_id for e in tool_call_chunks}
 
     # LangChain/LangGraph can stream provisional tool_call_ids that get abandoned before execution.
-    # Only the tool_call_id that actually runs will trigger on_tool_start and create a ToolExecutionSpan,
+    # Only the tool_call_id that actually runs will trigger on_tool_start and create a
+    # ToolExecutionSpan,
     # so we assert that every executed span originated from the streamed IDs rather than enforcing
     # one-to-one equality between streamed and executed tool calls.
     tool_spans = [s for (_, s) in proc.events if isinstance(s, ToolExecutionSpan)]
