@@ -11,7 +11,6 @@ from typing import Any, Dict, List, Mapping, Type
 from pydantic import BaseModel
 
 from pyagentspec.component import Component
-from pyagentspec.sensitive_field import is_sensitive_field
 from pyagentspec.serialization.serializationcontext import SerializationContext
 from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
 
@@ -68,7 +67,7 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                 # If a sensitive value is left as a falsy value (e.g. None, False, {}, "") then it
                 # is not replaced by a reference, such that the empty value does not need to be
                 # explicitly specified when loading the component configuration.
-                if is_sensitive_field(field_info) and field_value:
+                if field_value and serialization_context.should_redact_field(field_info):
                     serialized_component[field_name] = {
                         "$component_ref": f"{component.id}.{field_name}"
                     }

@@ -16,6 +16,7 @@ from pydantic.fields import FieldInfo
 from typing_extensions import TypeGuard
 
 from pyagentspec.component import Component
+from pyagentspec.sensitive_field import is_sensitive_field
 from pyagentspec.versioning import AGENTSPEC_VERSION_FIELD_NAME, AgentSpecVersionEnum
 
 from .types import ComponentAsDictT, WatchingDict
@@ -32,6 +33,13 @@ class SerializationContext:
     """Interface for the serialization of Components."""
 
     agentspec_version: AgentSpecVersionEnum
+    _include_sensitive_fields: bool = False
+
+    def should_redact_field(self, field_info: FieldInfo) -> bool:
+        """Return True if the field should be redacted; False when opt-in bypass is active."""
+        if self._include_sensitive_fields:
+            return False
+        return is_sensitive_field(field_info)
 
     @abstractmethod
     def _dump_component_to_dict(self, component: Component) -> ComponentAsDictT:
@@ -81,9 +89,11 @@ class _SerializationContextImpl(SerializationContext):
         resolved_components: Optional[Dict[str, ComponentAsDictT]] = None,
         components_id_mapping: Optional[WatchingDict] = None,
         _allow_partial_model_serialization: bool = False,
+        include_sensitive_fields: bool = False,
     ) -> None:
 
         self._allow_partial_model_serialization = _allow_partial_model_serialization
+        self._include_sensitive_fields = include_sensitive_fields
         self.plugins = list(plugins) if plugins is not None else []
 
         from pyagentspec.serialization.builtinserializationplugin import (
