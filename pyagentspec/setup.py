@@ -29,7 +29,7 @@ LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
     "langgraph>=1.2.0,<1.3.0",
     "langchain-core>=1.4.0,<1.5.0",
-    "langchain>=1.3.0,<1.4.0",
+    "langchain>=1.3.1,<1.4.0",
     "langchain-openai>=1.2.1,<1.3.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
