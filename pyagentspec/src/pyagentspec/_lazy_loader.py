@@ -7,6 +7,7 @@
 """Class to lazily load modules."""
 
 import importlib
+import types
 from typing import Any, Dict, Optional, Tuple, Type
 
 
@@ -157,19 +158,56 @@ class _LazyTypeMeta(type):
     * ``isinstance(obj, Proxy)`` calls ``_LazyTypeMeta.__instancecheck__``.
     * ``issubclass(cls, Proxy)`` calls ``_LazyTypeMeta.__subclasscheck__``.
     * ``Proxy.some_attr`` calls ``_LazyTypeMeta.__getattr__``.
+    * ``class Subclass(Proxy)`` replaces the proxy base with the real class
+      when available, or with ``object`` when the optional dependency is absent.
 
     This keeps adapter ``_types.py`` modules importable when optional runtime
     packages are absent, while preserving the normal class-shaped API once the
     optional dependency is actually used.
     """
 
+    def __new__(
+        mcls: Type["_LazyTypeMeta"],
+        name: str,
+        bases: Tuple[type, ...],
+        namespace: Dict[str, Any],
+        **kwargs: Any,
+    ) -> Type[Any]:
+        resolved_bases = []
+        for base in bases:
+            if isinstance(base, _LazyTypeMeta) and "_lazy_loader" in base.__dict__:
+                try:
+                    base = base._load_target()
+                except ImportError:
+                    base = object
+            resolved_bases.append(base)
+        resolved_bases_tuple = tuple(resolved_bases)
+        if resolved_bases_tuple != bases:
+            # Subclassing a lazy proxy must create a real subclass of the target
+            # class. Otherwise the subclass inherits this metaclass and calling it
+            # is redirected to the proxy target's constructor.
+            #
+            # If the optional dependency is absent, use object as the base so the
+            # importing module can still define its class and fail later at the
+            # actual optional-dependency use site.
+            def exec_body(ns: Dict[str, Any]) -> None:
+                ns.update(namespace)
+
+            return types.new_class(name, resolved_bases_tuple, {}, exec_body)
+
+        return super().__new__(mcls, name, bases, namespace, **kwargs)
+
     def _load_target(cls) -> Any:
-        return cls._lazy_loader._load()
+        return cls.__dict__["_lazy_loader"]._load()
 
     def __call__(cls, *args: Any, **kwargs: Any) -> Any:
-        return cls._load_target()(*args, **kwargs)
+        if "_lazy_loader" in cls.__dict__:
+            return cls._load_target()(*args, **kwargs)
+        return super().__call__(*args, **kwargs)
 
     def __getattr__(cls, name: str) -> Any:
+        if "_lazy_loader" not in cls.__dict__:
+            raise AttributeError(name)
         return getattr(cls._load_target(), name)
 
     def __instancecheck__(cls, instance: Any) -> bool:
@@ -179,7 +217,10 @@ class _LazyTypeMeta(type):
         return issubclass(subclass, cls._load_target())
 
     def __repr__(cls) -> str:
-        return f"<lazy type {cls._lazy_loader.lib_name}.{cls._lazy_loader.callable_name}>"
+        if "_lazy_loader" not in cls.__dict__:
+            return super().__repr__()
+        lazy_loader = cls.__dict__["_lazy_loader"]
+        return f"<lazy type {lazy_loader.lib_name}.{lazy_loader.callable_name}>"
 
 
 def _lazy_type_class_getitem(cls: type, item: Any) -> type:
@@ -194,6 +235,7 @@ def LazyType(lib_name: str, type_name: str) -> Type[Any]:
     Use this when source code needs to keep an optional dependency class in a
     module-level alias for runtime checks or construction:
 
+    >>> from pyagentspec._lazy_loader import LazyType
     >>> StateGraph = LazyType("langgraph.graph", "StateGraph")
 
     Unlike ``LazyLoader("langgraph.graph").StateGraph``, creating the alias does
