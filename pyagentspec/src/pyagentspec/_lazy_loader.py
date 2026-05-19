@@ -75,6 +75,15 @@ class LazyLoader:
                     "installed separately with one of the PyAgentSpec installation options."
                 ) from e
 
+    def _load(self) -> Any:
+        """Load and return the wrapped module or callable."""
+        self.__load_module()
+        if self._mod is None:
+            raise ImportError(
+                f"Something went wrong when lazily loading the module {self.lib_name}"
+            )
+        return self._mod
+
     def __getattr__(self, name: str) -> Any:
         """
         Load the module or the callable
@@ -130,3 +139,78 @@ class LazyLoader:
                 f"Something went wrong when lazily loading the module {self.lib_name}"
             )
         return self._mod(*args, **kwargs)
+
+
+class _LazyTypeMeta(type):
+    """Metaclass for class-like lazy proxies returned by :func:`LazyType`.
+
+    ``LazyLoader`` works well for module aliases, but ``LazyLoader("pkg").Cls``
+    imports ``pkg`` immediately because attribute access is the loading trigger.
+    ``LazyType`` instead creates a placeholder class whose metaclass loads the
+    real class only when code constructs it, reads an attribute from it, or uses
+    it in ``isinstance``/``issubclass`` checks.
+
+    The metaclass is what lets the proxy participate in operations that Python
+    normally performs on classes rather than instances:
+
+    * ``Proxy(...)`` calls ``_LazyTypeMeta.__call__`` and constructs the real class.
+    * ``isinstance(obj, Proxy)`` calls ``_LazyTypeMeta.__instancecheck__``.
+    * ``issubclass(cls, Proxy)`` calls ``_LazyTypeMeta.__subclasscheck__``.
+    * ``Proxy.some_attr`` calls ``_LazyTypeMeta.__getattr__``.
+
+    This keeps adapter ``_types.py`` modules importable when optional runtime
+    packages are absent, while preserving the normal class-shaped API once the
+    optional dependency is actually used.
+    """
+
+    def _load_target(cls) -> Any:
+        return cls._lazy_loader._load()
+
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
+        return cls._load_target()(*args, **kwargs)
+
+    def __getattr__(cls, name: str) -> Any:
+        return getattr(cls._load_target(), name)
+
+    def __instancecheck__(cls, instance: Any) -> bool:
+        return isinstance(instance, cls._load_target())
+
+    def __subclasscheck__(cls, subclass: type) -> bool:
+        return issubclass(subclass, cls._load_target())
+
+    def __repr__(cls) -> str:
+        return f"<lazy type {cls._lazy_loader.lib_name}.{cls._lazy_loader.callable_name}>"
+
+
+def _lazy_type_class_getitem(cls: type, item: Any) -> type:
+    # Allows annotations like ``StateGraph[Any, Any]`` without importing the
+    # optional package at module import time.
+    return cls
+
+
+def LazyType(lib_name: str, type_name: str) -> Type[Any]:
+    """Create a lazy class-like proxy for a type from an optional dependency.
+
+    Use this when source code needs to keep an optional dependency class in a
+    module-level alias for runtime checks or construction:
+
+    >>> StateGraph = LazyType("langgraph.graph", "StateGraph")
+
+    Unlike ``LazyLoader("langgraph.graph").StateGraph``, creating the alias does
+    not import ``langgraph``. Importing happens only when the proxy is used like
+    the real class.
+
+    This is intentionally narrower than ``LazyLoader``: it is meant for classes
+    that appear in unions, ``isinstance`` checks, constructors, or generic type
+    aliases inside adapter modules. For optional dependency modules or functions,
+    prefer ``LazyLoader`` directly.
+    """
+    return _LazyTypeMeta(
+        type_name,
+        (),
+        {
+            "__module__": lib_name,
+            "_lazy_loader": LazyLoader(lib_name, type_name),
+            "__class_getitem__": classmethod(_lazy_type_class_getitem),
+        },
+    )

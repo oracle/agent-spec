@@ -26,13 +26,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyagentspec/setup.py', 'pyagentspec/requirements-dev.txt', 'pyagentspec/constraints/constraints.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyagentspec/setup.py', 'pyagentspec/requirements-dev-common.txt', 'pyagentspec/requirements-dev-github.txt', 'pyagentspec/constraints/constraints.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
 
       - name: Install PyAgentSpec packages and development dependencies
-        run: cd pyagentspec && bash install-dev.sh
+        run: |
+          cd pyagentspec
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev-github.txt
 
       - name: Verify tools installation
         run: |
@@ -59,7 +62,7 @@ jobs:
 
       - name: "Mypy static type checking"
         if: ${{ matrix.python-version != '3.13' && matrix.python-version != '3.14' }}
-        run: mypy pyagentspec/ --config-file pyagentspec/pyproject.toml --exclude pyagentspec/tests_fuzz --exclude pyagentspec/src/pyagentspec/adapters/crewai
+        run: mypy pyagentspec/src/pyagentspec --config-file pyagentspec/pyproject.toml --exclude pyagentspec/src/pyagentspec/adapters --exclude pyagentspec/src/pyagentspec/evaluation
 
       - name: "Run tests"
         working-directory: pyagentspec

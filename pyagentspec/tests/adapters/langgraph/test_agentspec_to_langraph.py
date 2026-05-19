@@ -9,6 +9,8 @@ from unittest import mock
 
 import pytest
 
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+
 from ...retry_test import retry_test
 from ..conftest import _replace_config_placeholders
 from .conftest import get_weather
@@ -326,7 +328,6 @@ def test_execute_swarm(
 def test_openaiconfig_passes_api_key_to_langchain(monkeypatch: pytest.MonkeyPatch) -> None:
     import openai
 
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
     from pyagentspec.llms.openaiconfig import OpenAiConfig
 
     # Ensure the api_key comes from the config, not the environment.
@@ -347,7 +348,6 @@ def test_openaicompatibleconfig_passes_api_key_to_langchain(
 ) -> None:
     import openai
 
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
     from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 
     # Ensure the api_key comes from the config, not the environment.
@@ -369,7 +369,6 @@ def test_openaicompatibleconfig_passes_api_key_to_langchain(
 
 
 def test_vllmconfig_passes_api_key_to_langchain(monkeypatch: pytest.MonkeyPatch) -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
     from pyagentspec.llms.vllmconfig import VllmConfig
 
     # Ensure the api_key comes from the config, not the environment.

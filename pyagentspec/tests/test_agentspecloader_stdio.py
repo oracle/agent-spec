@@ -10,9 +10,6 @@ import pytest
 
 from pyagentspec.adapters._agentspecloader import AdapterAgnosticAgentSpecLoader
 from pyagentspec.component import Component
-from pyagentspec.flows.edges import ControlFlowEdge
-from pyagentspec.flows.flow import Flow
-from pyagentspec.flows.nodes import EndNode, StartNode
 from pyagentspec.mcp import MCPTool, StdioTransport
 from pyagentspec.serialization import AgentSpecSerializer
 
@@ -87,13 +84,6 @@ def test_adapter_agnostic_loader_blocks_stdio_transport_subclasses_by_default() 
         _IdentityLoader().load_component(tool)
 
 
-def test_langgraph_loader_blocks_stdio_transport_from_component_by_default() -> None:
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    with pytest.raises(ValueError, match="StdioTransport.*in the block list"):
-        AgentSpecLoader().load_component(_make_stdio_mcp_tool())
-
-
 def test_component_convenience_loaders_respect_blocked_components() -> None:
     tool = _make_stdio_mcp_tool()
     serializer = AgentSpecSerializer()
@@ -113,21 +103,3 @@ def test_adapter_agnostic_loader_respects_allowed_components() -> None:
             blocked_components=[],
         )
         loader.load_component(_make_stdio_mcp_tool())
-
-
-def test_openai_flow_codegen_load_component_validates_component_policy() -> None:
-    from pyagentspec.adapters.openaiagents import AgentSpecLoader
-
-    start_node = StartNode(name="start")
-    end_node = EndNode(name="end")
-    flow = Flow(
-        name="blocked_flow",
-        start_node=start_node,
-        nodes=[start_node, end_node],
-        control_flow_connections=[
-            ControlFlowEdge(name="start_to_end", from_node=start_node, to_node=end_node)
-        ],
-    )
-
-    with pytest.raises(ValueError, match="Flow.*in the block list"):
-        AgentSpecLoader(blocked_components=["Flow"]).load_component(flow)

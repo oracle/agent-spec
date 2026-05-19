@@ -8,12 +8,18 @@ import ssl
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
-from typing import Any, Awaitable, Callable, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar
 
 import anyio
-import httpx
 from anyio import from_thread
 from sniffio import AsyncLibraryNotFoundError, current_async_library
+
+from pyagentspec._lazy_loader import LazyLoader
+
+if TYPE_CHECKING:
+    import httpx
+else:
+    httpx = LazyLoader("httpx")
 
 T = TypeVar("T")
 
@@ -66,9 +72,9 @@ class _HttpxClientFactory:
     def __call__(
         self,
         headers: dict[str, str] | None = None,
-        timeout: httpx.Timeout | None = None,
-        auth: httpx.Auth | None = None,
-    ) -> httpx.AsyncClient:
+        timeout: "httpx.Timeout | None" = None,
+        auth: "httpx.Auth | None" = None,
+    ) -> "httpx.AsyncClient":
         # Set MCP defaults
         kwargs: dict[str, Any] = {
             "follow_redirects": self.follow_redirects,

@@ -125,7 +125,7 @@ class Dataset(_DataSource):
         return Dataset(_DictDataSource(data, features_consistency=features_consistency))
 
     @staticmethod
-    def from_df(df: pd.DataFrame) -> "Dataset":
+    def from_df(df: "pd.DataFrame") -> "Dataset":
         """
         Creating a dataset from a pandas dataframe. The dataframe must have a single level header.
 

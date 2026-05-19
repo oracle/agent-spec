@@ -31,8 +31,9 @@ from pyagentspec.tools.servertool import ServerTool as AgentSpecServerTool
 if TYPE_CHECKING:
     from pyagentspec.adapters.langgraph._agentspecconverter import LangGraphToAgentSpecConverter
 
-END = langgraph_graph.END
-START = langgraph_graph.START
+
+def _langgraph_start_end() -> Tuple[str, str]:
+    return langgraph_graph.START, langgraph_graph.END
 
 
 def _validate_conditional_edges_support(graph: LangGraphComponent) -> None:
@@ -50,6 +51,7 @@ def _langgraph_graph_convert_to_agentspec(
     graph: LangGraphComponent,
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> AgentSpecFlow:
+    START, END = _langgraph_start_end()
     _validate_conditional_edges_support(graph)
     nodes: List[AgentSpecNode] = []
     flow_name = graph.name if isinstance(graph, CompiledStateGraph) else "LangGraph Flow"
@@ -126,6 +128,7 @@ def _langgraph_branch_convert_to_agentspec(
     graph: StateGraph[Any, Any, Any, Any],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> Tuple[List[AgentSpecNode], List[ControlFlowEdge], List[DataFlowEdge]]:
+    _, END = _langgraph_start_end()
     additional_nodes: List[AgentSpecNode] = []
     additional_ctrl_flows: List[ControlFlowEdge] = []
     additional_data_flows: List[DataFlowEdge] = []
@@ -235,6 +238,7 @@ def _get_start_end_nodes(
     graph: StateGraph[Any, Any, Any],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> Tuple[AgentSpecNode, AgentSpecNode]:
+    START, END = _langgraph_start_end()
     if START not in referenced_objects:
         if START not in graph.nodes:
             referenced_objects[START] = StartNode(
@@ -299,6 +303,7 @@ def _resolve_output_properties(
     graph: StateGraph[Any, Any, Any],
     target_nodes: List[str],
 ) -> Property:
+    START, END = _langgraph_start_end()
     match target_nodes:
         case []:
             # This case handles nodes that don't have an explicit outgoing edge
@@ -376,6 +381,7 @@ def _langgraph_edges_convert_to_agentspec_data_flow(
     edge: Tuple[str, str],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> DataFlowEdge:
+    START, _ = _langgraph_start_end()
     from_, to = edge
     name = f"{from_}_to_{to}_data_edge"
 
