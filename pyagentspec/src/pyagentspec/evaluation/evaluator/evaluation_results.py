@@ -84,7 +84,7 @@ class EvaluationResults:
             for sample_id in self.sample_ids
         }
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> "pd.DataFrame":
         """Return the results as a :class:`pandas.DataFrame` indexed by sample id.
 
         Returns

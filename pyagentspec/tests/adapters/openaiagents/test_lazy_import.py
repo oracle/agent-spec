@@ -6,7 +6,9 @@
 
 import pytest
 
+from pyagentspec.adapters.openaiagents._types import OAAgent
+
 
 def test_import_raises_if_agents_not_installed():
     with pytest.raises(ImportError, match="Package agents is not installed."):
-        import pyagentspec.adapters.openaiagents  # type: ignore
+        OAAgent(name="assistant", instructions="You are helpful.", model="gpt-4.1", tools=[])

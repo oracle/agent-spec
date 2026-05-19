@@ -5,9 +5,10 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from types import FunctionType
-from typing import Any, Literal, Optional, Tuple, Union, overload
+from typing import TYPE_CHECKING, Any, Literal, Optional, Tuple, Union, overload
 
-from libcst._nodes.module import Module
+if TYPE_CHECKING:
+    from libcst._nodes.module import Module
 
 from pyagentspec.adapters._agentspecexporter import (
     AdapterAgnosticAgentSpecExporter,
@@ -29,7 +30,7 @@ class AgentSpecExporter(AdapterAgnosticAgentSpecExporter):
         return OpenAIToAgentSpecConverter()
 
     # ---- Flows: Python (OpenAI Agents) -> Agent Spec Flow ----
-    def _flow_src_to_module(self, py_src: str | FunctionType) -> Module:
+    def _flow_src_to_module(self, py_src: str | FunctionType) -> "Module":
         """Parse a Python source string or function object into a LibCST module."""
         import inspect
 

@@ -6,7 +6,9 @@
 
 import pytest
 
+from pyagentspec.adapters.langgraph._types import StateGraph
+
 
 def test_import_raises_if_langgraph_not_installed():
-    with pytest.raises(ImportError, match="Package langchain_core is not installed."):
-        import pyagentspec.adapters.langgraph  # type: ignore
+    with pytest.raises(ImportError, match="Package langgraph is not installed."):
+        StateGraph(dict)

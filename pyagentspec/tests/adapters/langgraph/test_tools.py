@@ -11,6 +11,7 @@ from unittest.mock import patch
 import httpx
 import pytest
 
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.agent import Agent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.edges.dataflowedge import DataFlowEdge
@@ -695,7 +696,6 @@ def test_server_tool_confirmation_in_agent_approve_executes_tool() -> None:
     from langgraph.checkpoint.memory import MemorySaver
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
     def double_tool_func(x: int) -> int:
         return x * 2
@@ -742,7 +742,6 @@ def test_server_tool_confirmation_in_agent_reject_denies_and_does_not_execute() 
     from langgraph.checkpoint.memory import MemorySaver
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
     called = {"n": 0}
 
@@ -794,7 +793,6 @@ async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
     from langchain_core.messages import AIMessage
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
     called = {"n": 0}
 

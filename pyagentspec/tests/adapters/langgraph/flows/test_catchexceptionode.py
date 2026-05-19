@@ -4,7 +4,6 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import CatchExceptionNode, EndNode, StartNode, ToolNode
@@ -225,6 +224,8 @@ def _create_flow_with_catch_default_branch(
 def test_catchexceptionnode_can_be_imported_and_executed_without_exception_and_with_exception() -> (
     None
 ):
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
     # Build a subflow that simply passes input to output
     # ServerTool that raises ValueError when x < 0, otherwise returns "ok"
     inp = Property(json_schema={"title": "x", "type": "integer"})

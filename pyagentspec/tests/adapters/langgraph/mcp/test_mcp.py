@@ -9,10 +9,6 @@ import sys
 from contextlib import nullcontext
 
 import pytest
-from langchain_core.runnables import RunnableConfig
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph.state import CompiledStateGraph
-from langgraph.types import Command
 from pydantic import SecretStr
 
 from pyagentspec.adapters.langgraph import AgentSpecExporter, AgentSpecLoader
@@ -181,6 +177,8 @@ def agentspec_agent_with_mcp_toolbox(sse_client_transport, big_llama):
 
 @pytest.mark.parametrize("client_transport_name", CLIENT_TRANSPORT_NAMES)
 def test_can_import_agent_with_various_mcp_connections(loaded_langgraph_agent):
+    from langgraph.graph.state import CompiledStateGraph
+
     assert isinstance(loaded_langgraph_agent, CompiledStateGraph)
 
 
@@ -282,6 +280,10 @@ async def test_export_langgraph_agent_with_mcp_to_agentspec_agent_with_mcp(sse_c
 
 @pytest.mark.anyio
 async def test_flow_with_mcp_tool_with_interrupt(sse_client_transport):
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
     from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
     from pyagentspec.flows.flow import Flow
     from pyagentspec.flows.nodes import EndNode, InputMessageNode, StartNode, ToolNode

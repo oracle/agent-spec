@@ -11,14 +11,12 @@ We keep these in a dedicated module to centralize the unions used for
 runtime isinstance checks and for type hints in converter modules.
 """
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, TypeAlias, Union
 
-from pyagentspec._lazy_loader import LazyLoader
+from pyagentspec._lazy_loader import LazyLoader, LazyType
 
 if TYPE_CHECKING:
-    # Important: do not move this import out of the TYPE_CHECKING block so long as langgraph is an optional dependency.
+    # Important: do not move this import out of the TYPE_CHECKING block so long as OpenAI Agents is an optional dependency.
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
     # Import OpenAI Agents SDK classes
@@ -41,22 +39,22 @@ if TYPE_CHECKING:
     from agents.tool_context import ToolContext as OAToolContext
 else:
     agents = LazyLoader("agents")
-    OAAgent = LazyLoader("agents.agent").Agent
-    OACodeInterpreterTool = LazyLoader("agents.tool").CodeInterpreterTool
-    OAComputerTool = LazyLoader("agents.tool").ComputerTool
-    OAFileSearchTool = LazyLoader("agents.tool").FileSearchTool
-    OAFunctionTool = LazyLoader("agents.tool").FunctionTool
-    OAHostedMCPTool = LazyLoader("agents.tool").HostedMCPTool
-    OAImageGenerationTool = LazyLoader("agents.tool").ImageGenerationTool
-    OALocalShellTool = LazyLoader("agents.tool").LocalShellTool
-    OAWebSearchTool = LazyLoader("agents.tool").WebSearchTool
-    OAToolContext = LazyLoader("agents.tool_context").ToolContext
-    function_tool = LazyLoader("agents.tool").function_tool
-    OAOpenAIProvider = LazyLoader("agents.models.openai_provider").OpenAIProvider
-    OAChatCompletionsModel = LazyLoader(
-        "agents.models.openai_chatcompletions"
-    ).OpenAIChatCompletionsModel
-    OAResponsesModel = LazyLoader("agents.models.openai_responses").OpenAIResponsesModel
+    OAAgent = LazyType("agents.agent", "Agent")
+    OACodeInterpreterTool = LazyType("agents.tool", "CodeInterpreterTool")
+    OAComputerTool = LazyType("agents.tool", "ComputerTool")
+    OAFileSearchTool = LazyType("agents.tool", "FileSearchTool")
+    OAFunctionTool = LazyType("agents.tool", "FunctionTool")
+    OAHostedMCPTool = LazyType("agents.tool", "HostedMCPTool")
+    OAImageGenerationTool = LazyType("agents.tool", "ImageGenerationTool")
+    OALocalShellTool = LazyType("agents.tool", "LocalShellTool")
+    OAWebSearchTool = LazyType("agents.tool", "WebSearchTool")
+    OAToolContext = LazyType("agents.tool_context", "ToolContext")
+    function_tool = LazyLoader("agents.tool", "function_tool")
+    OAOpenAIProvider = LazyType("agents.models.openai_provider", "OpenAIProvider")
+    OAChatCompletionsModel = LazyType(
+        "agents.models.openai_chatcompletions", "OpenAIChatCompletionsModel"
+    )
+    OAResponsesModel = LazyType("agents.models.openai_responses", "OpenAIResponsesModel")
 
 # An OpenAI Agents component we support exporting (agent or function tool)
 OAComponent: TypeAlias = Union[OAAgent, OAFunctionTool]

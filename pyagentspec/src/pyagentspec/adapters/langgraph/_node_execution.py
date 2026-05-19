@@ -31,7 +31,6 @@ from pyagentspec.adapters.langgraph._types import (
     RunnableConfig,
     StructuredTool,
     interrupt,
-    langchain_core_messages_content,
     langgraph_graph,
 )
 from pyagentspec.adapters.langgraph.mcp_utils import run_async_in_sync
@@ -60,6 +59,11 @@ from pyagentspec.tracing.spans.span import get_current_span
 
 if TYPE_CHECKING:
     import httpx
+    from langchain_core.messages.content import (
+        FileContentBlock,
+        ImageContentBlock,
+        TextContentBlock,
+    )
 else:
     httpx = LazyLoader("httpx")
 
@@ -398,17 +402,17 @@ class ToolNodeExecutor(NodeExecutor):
     def _extract_value_from_block(
         self,
         block: Union[
-            langchain_core_messages_content.FileContentBlock,
-            langchain_core_messages_content.TextContentBlock,
-            langchain_core_messages_content.ImageContentBlock,
+            "FileContentBlock",
+            "TextContentBlock",
+            "ImageContentBlock",
         ],
     ) -> Any:
         t = block["type"]
         if t == "text":
-            text_block = cast(langchain_core_messages_content.TextContentBlock, block)
+            text_block = cast("TextContentBlock", block)
             return text_block["text"]
         if t == "image":
-            image_block = cast(langchain_core_messages_content.ImageContentBlock, block)
+            image_block = cast("ImageContentBlock", block)
             if "base64" in image_block:
                 return image_block["base64"]
             if "url" in image_block:
@@ -417,7 +421,7 @@ class ToolNodeExecutor(NodeExecutor):
                 return image_block["file_id"]
             raise ValueError(f"No payload found in image block: {image_block}")
         if t == "file":
-            file_block = cast(langchain_core_messages_content.FileContentBlock, block)
+            file_block = cast("FileContentBlock", block)
             if "base64" in file_block:
                 return file_block["base64"]
             if "url" in file_block:
@@ -432,9 +436,9 @@ class ToolNodeExecutor(NodeExecutor):
         self,
         blocks: List[
             Union[
-                langchain_core_messages_content.FileContentBlock,
-                langchain_core_messages_content.TextContentBlock,
-                langchain_core_messages_content.ImageContentBlock,
+                "FileContentBlock",
+                "TextContentBlock",
+                "ImageContentBlock",
             ]
         ],
     ) -> List[Any]:

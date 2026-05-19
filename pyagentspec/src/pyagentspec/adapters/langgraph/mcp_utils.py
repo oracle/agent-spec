@@ -4,8 +4,6 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from __future__ import annotations
-
 import ssl
 import warnings
 from concurrent.futures import ThreadPoolExecutor
@@ -74,9 +72,9 @@ class _HttpxClientFactory:
     def __call__(
         self,
         headers: dict[str, str] | None = None,
-        timeout: httpx.Timeout | None = None,
-        auth: httpx.Auth | None = None,
-    ) -> httpx.AsyncClient:
+        timeout: "httpx.Timeout | None" = None,
+        auth: "httpx.Auth | None" = None,
+    ) -> "httpx.AsyncClient":
         # Set MCP defaults
         kwargs: dict[str, Any] = {
             "follow_redirects": self.follow_redirects,
