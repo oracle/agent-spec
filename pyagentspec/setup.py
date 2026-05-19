@@ -128,33 +128,33 @@ setup(
         # WayFlow dev release until a compatible stable release is published.
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=26.2.0.dev3",
+            "wayflowcore>=26.2.0.dev3; python_version < '3.14'",
             # 4rth party dependencies
-            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=26.2.0.dev3",
+            "wayflowcore[oci]>=26.2.0.dev3; python_version < '3.14'",
             # 4rth party dependencies
-            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
-            "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
-            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "pyOpenSSL>=26.0.0,<27.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=26.2.0.dev3",
+            "wayflowcore[a2a]>=26.2.0.dev3; python_version < '3.14'",
             # 4rth party dependencies
-            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=26.2.0.dev3",
+            "wayflowcore[datastore]>=26.2.0.dev3; python_version < '3.14'",
             # 4rth party dependencies
-            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
