@@ -1,3 +1,5 @@
+-c constraints/constraints.txt
+
 # pre-commit is used for installing commit hooks which ensure code quality
 # Learn more at: https://pre-commit.com/
 pre-commit
