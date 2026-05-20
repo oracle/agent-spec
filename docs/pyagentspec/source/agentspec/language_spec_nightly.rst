@@ -189,6 +189,9 @@ In order to further simplify input-output connections, we define some simple typ
   The convention for the conversion is the one adopted by most programming languages:
   0 refers to ``false``, while any other number refers to ``true``.
 
+Default values follow the same compatibility rules. If a property defines ``default``,
+that value must be compatible with the property's declared schema.
+
 These rules apply recursively in complex types:
 
 - To the types of the elements of an ``array``;
