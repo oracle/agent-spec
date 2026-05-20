@@ -87,6 +87,13 @@ fields. For example, a node with the same ``id`` must not be defined inline in
 more than one of ``start_node``, ``nodes``, or ``$referenced_components``;
 define it once and use ``$component_ref`` everywhere else.
 
+Component references are resolved from the referencing component outward through
+its parent components. A nested component can reference a component defined by a
+parent, including a node. A component cannot reference components that are only
+defined inside one of its children or inside a sibling component. Component IDs
+must be unique within a single Agent Spec configuration, including nested
+components.
+
 
 Input/output schemas
 --------------------
