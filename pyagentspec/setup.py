@@ -119,7 +119,7 @@ setup(
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # litellm is included to fix CVEs
-            "litellm>=1.84.0,<1.85.0; python_version < '3.14'",
+            "litellm>=1.84.0,<2.0; python_version < '3.14'",
             "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "langgraph": LANGGRAPH_DEPS,
@@ -128,14 +128,14 @@ setup(
         # WayFlow dev release until a compatible stable release is published.
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=26.2.0.dev3; python_version < '3.14'",
+            "wayflowcore>=26.2.0.dev3",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=26.2.0.dev3; python_version < '3.14'",
+            "wayflowcore[oci]>=26.2.0.dev3",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
@@ -144,14 +144,14 @@ setup(
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=26.2.0.dev3; python_version < '3.14'",
+            "wayflowcore[a2a]>=26.2.0.dev3",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=26.2.0.dev3; python_version < '3.14'",
+            "wayflowcore[datastore]>=26.2.0.dev3",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
@@ -170,7 +170,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.10.0,<4.12.0",
-            "litellm>=1.84.0,<1.85.0; python_version < '3.14'",
+            "litellm>=1.84.0,<2.0; python_version < '3.14'",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.158.2",
             "numpy>=2.2.6",
