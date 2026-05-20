@@ -82,6 +82,10 @@ Note that a subcomponent reused in multiple parts of a complex nested component
 a flow) must be defined using a component reference. If two components in an
 Agent Spec configuration use the same `id`, the configuration will be considered
 invalid.
+Duplicate inline definitions are invalid even when they appear in different
+fields. For example, a node with the same ``id`` must not be defined inline in
+more than one of ``start_node``, ``nodes``, or ``$referenced_components``;
+define it once and use ``$component_ref`` everywhere else.
 
 
 Input/output schemas
