@@ -1598,6 +1598,9 @@ Here's the list of nodes supported in Agent Spec:
 
 A more detailed description of each node follows.
 
+.. note::
+    On narrower screens, the node table is horizontally scrollable. Scroll horizontally to view all columns.
+
 .. list-table::
     :widths: 5 20 15 15 15 15
     :class: wideoutertable
