@@ -182,7 +182,7 @@ but an output of type ``string`` cannot connect to an input of type ``number``.
 
 In order to further simplify input-output connections, we define some simple type compatibility rules that are accepted by Agent Spec.
 
-- Every type can be converted to string.
+- Every type except ``null`` can be converted to string.
 - Numeric types (i.e., ``integer`` and ``number``) can be converted to each other.
   Note that this conversion could cause the loss of decimals.
 - The Boolean type can be converted to numeric ones and vice-versa.
