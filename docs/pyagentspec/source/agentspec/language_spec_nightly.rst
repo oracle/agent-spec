@@ -1530,9 +1530,10 @@ Conditional branching in Agent Spec is supported through a special step called
 BranchingNode (detailed later), a node that maps input values to
 different branches through a key-value mapping.
 
-Nodes can have multiple outgoing branches, as previously mentioned in this page.
-The ``branches`` attribute of the Node is automatically filled and managed
-by the implementation of the Node, but it will appear in the representation. Both
+Only node types that explicitly support branching, such as ``BranchingNode``
+and ``FlowNode``, can have multiple outgoing branches. The ``branches`` attribute
+of the Node is automatically filled and managed
+by the implementation of those nodes, but it will appear in the representation. Both
 ``Node.branches`` and ``ControlFlowEdge.from_branch`` are set to null by
 default, and that is the default behavior in case one single branch is
 going out of a node (this is compatible with the definition of Node and
