@@ -9,7 +9,6 @@ from typing import Iterable
 import pytest
 from pydantic import Field
 
-from pyagentspec import __version__
 from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
@@ -29,6 +28,12 @@ from pyagentspec.versioning import (
 
 from .conftest import read_agentspec_config_file
 from .serialization.conftest import simplest_flow  # noqa: F401
+
+
+def test_current_version_is_26_1_2_but_26_2_0_remains_supported() -> None:
+    assert AgentSpecVersionEnum.current_version == AgentSpecVersionEnum.v26_1_2
+    assert AgentSpecVersionEnum.latest_supported_version == AgentSpecVersionEnum.v26_2_0
+    assert AgentSpecVersionEnum("26.2.0") == AgentSpecVersionEnum.v26_2_0
 
 
 def test_flow_exports_with_agentspec_version(simplest_flow: Flow) -> None:
