@@ -1795,9 +1795,9 @@ A more detailed description of each node follows.
         It's the set of outputs defined in the ``subflow``'s specification
       - Inferred from the inner flow: one per unique ``branch_name`` of the ``subflow``'s EndNodes
     * - MapNode
-      - The MapNode is used when we need to map a sequence of nodes to each of the values
-        defined in a list (from output of a previous node). This node is responsible to
-        asynchronically map each value of a collection (defined in input_schema) to the first node
+      - The MapNode is used when we need to map a sequence of nodes to inputs
+        defined by a previous node. This node is responsible to
+        asynchronically map input values to the first node
         of the 'subflow' and reduce the outputs of the last node of the 'subflow' to
         defined variables (defined in output_schema)
       - .. list-table::
@@ -1852,7 +1852,7 @@ A more detailed description of each node follows.
         The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``, ``max``, ``min``
+        - same type of the respective output type in case of ``sum``, ``average``, ``max``, ``min``
 
       - One, the default next
     * - CatchExceptionNode
@@ -1896,8 +1896,8 @@ A more detailed description of each node follows.
         * The branches of the ``sub_flow``;
         * A branch ``caught_exception_branch`` for when an exception is caught.
     * - ParallelMapNode
-      - The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
-        defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
+      - The ParallelMapNode is used when we need to map a sequence of nodes to inputs
+        defined by a previous node. Its functionality is equivalent to the MapNode,
         the only difference is that in this node the map operation is supposed to be performed in parallel.
         Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
       - .. list-table::
@@ -1952,7 +1952,7 @@ A more detailed description of each node follows.
         The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``, ``max``, ``min``
+        - same type of the respective output type in case of ``sum``, ``average``, ``max``, ``min``
 
       - One, the default next
     * - ParallelFlowNode
