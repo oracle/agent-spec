@@ -94,6 +94,17 @@ defined inside one of its children or inside a sibling component. Component IDs
 must be unique within a single Agent Spec configuration, including nested
 components.
 
+Reference validity rules:
+
+- A ``$component_ref`` may appear multiple times; all occurrences resolve to the
+  same definition.
+- A reference ID must be defined at most once in ``$referenced_components`` within
+  a serialized configuration.
+- A reference is valid if it resolves to an in-scope ``$referenced_components`` entry
+  or to an externally supplied disaggregated component.
+- If a reference is unresolved after external disaggregated components are supplied,
+  deserialization must fail.
+
 
 Input/output schemas
 --------------------
