@@ -1620,6 +1620,8 @@ Here's the list of nodes supported in Agent Spec:
 - ParallelMapNode: performs a parallel map-reduce operation on a given input collection
 - ParallelFlowNode: execute a list of subflows in parallel
 
+Node configurations must not include parameters outside the node type definition.
+
 
 A more detailed description of each node follows.
 
