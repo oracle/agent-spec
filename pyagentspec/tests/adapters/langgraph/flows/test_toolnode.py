@@ -8,9 +8,6 @@ import sys
 from typing import Any, Dict, List
 
 import pytest
-from langchain_core.runnables import RunnableConfig
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.types import Command
 
 from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
@@ -76,8 +73,6 @@ def test_toolnode_can_be_imported_and_executed(tool_flow: Flow) -> None:
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.types import Command
 
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
     agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(tool_flow)
 
     config = RunnableConfig({"configurable": {"thread_id": "1"}})
@@ -96,8 +91,6 @@ async def test_toolnode_can_be_executed_async_with_interrupt_resume(tool_flow: F
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.types import Command
-
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
 
     agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(tool_flow)
 
@@ -165,6 +158,10 @@ def _build_flow_with_client_tool(
 
 
 def _run_flow_and_resume(flow: Flow, resume_payload: Any) -> Dict[str, Any]:
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
     agent = AgentSpecLoader(checkpointer=MemorySaver()).load_component(flow)
     config = RunnableConfig({"configurable": {"thread_id": "t"}})
     # First call interrupts at the client tool

@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List, cast
 from urllib.parse import urlparse, urlunparse
 
 from pyagentspec._lazy_loader import LazyLoader
@@ -21,15 +21,14 @@ from pyagentspec.llms.ociclientconfig import (
 )
 
 if TYPE_CHECKING:
-    # Important: do not move this import out of the TYPE_CHECKING block so long as oci and litellm are optional dependencies.
+    # Important: do not move these imports out of the TYPE_CHECKING block so long as
+    # oci and litellm are optional dependencies.
     # Otherwise, importing the modules when they are not installed would lead to an import error.
     import oci  # type: ignore
     from litellm import acompletion
-    from litellm.types.utils import ModelResponse
 else:
     oci = LazyLoader("oci")
-    acompletion = LazyLoader("litellm").acompletion
-    ModelResponse = LazyLoader("litellm.types.utils").ModelResponse
+    acompletion = LazyLoader("litellm", "acompletion")
 
 
 def _prepare_openai_compatible_url(url: str) -> str:
@@ -106,7 +105,11 @@ async def complete_conversation(
         **_get_llm_config_as_litellm_dict(llm_config),
     )
 
+    # Keep this as a local import instead of LazyLoader: isinstance() needs
+    # the actual ModelResponse type, not a lazy proxy.
+    from litellm.types.utils import ModelResponse
+
     if not isinstance(response, ModelResponse):
         raise RuntimeError("Unexpected response from the LLM provider.")
 
-    return response.to_dict()
+    return cast(Dict[str, Any], response.to_dict())

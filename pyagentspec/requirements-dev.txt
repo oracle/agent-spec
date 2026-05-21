@@ -1,24 +1,6 @@
-# pre-commit is used for installing commit hooks which ensure code quality
-# Learn more at: https://pre-commit.com/
-pre-commit
+-r requirements-dev-common.txt
 
-black==26.3.1
-isort==6.0.1
-mypy==1.15.0
-bandit==1.8.3
-flake8==5.0.4
-flake8-copyright==0.2.4
-pyflakes==2.5.0
-pytest==9.0.3
-pytest-asyncio==1.3.0
-setuptools==81.0.0
-
-# stubs for mypy
-types-PyYAML
-types-jsonschema
-pandas-stubs
-
-# install dev requirements
+# Documentation dependencies
 sphinx==6.1
 sphinx-substitution-extensions==2022.2.16
 sphinx-tabs==3.4.5
@@ -34,16 +16,9 @@ sphinxcontrib.qthelp<1.0.7
 sphinx_toolbox<=3.8.0
 sphinx_design==0.6.1
 
--c constraints/constraints.txt
 # Frameworks do not support all python versions up to 3.14 yet
 -e .[autogen,langgraph-full,wayflow_oci,wayflow_datastore,wayflow_a2a,agent-framework,openai-agents,evaluation]
 # CrewAI is not installed by default due to dependency incompatability with other frameworks
 # -e .[crewai]
 # or
 -e .
-
-# Additional packages for tests
-cryptography
-
-# For remote tool tests
-fastapi[standard-no-fastapi-cloud-cli]

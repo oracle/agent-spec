@@ -7,8 +7,8 @@
 """Tests for bare LlmConfig adapter dispatch via LangGraph."""
 
 import pytest
-from langchain_core.runnables import RunnableConfig
 
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.llms import LlmConfig
 
 
@@ -39,7 +39,7 @@ def _get_bare_llmconfig_unsupported() -> LlmConfig:
 
 
 def test_openai_provider_respects_api_type_responses() -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from langchain_core.runnables import RunnableConfig
 
     converter = AgentSpecToLangGraphConverter()
     result = converter._llm_convert_to_langgraph(
@@ -49,7 +49,7 @@ def test_openai_provider_respects_api_type_responses() -> None:
 
 
 def test_openai_provider_defaults_to_chat_completions() -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from langchain_core.runnables import RunnableConfig
 
     converter = AgentSpecToLangGraphConverter()
     result = converter._llm_convert_to_langgraph(_get_bare_llmconfig_openai(), RunnableConfig())
@@ -57,7 +57,7 @@ def test_openai_provider_defaults_to_chat_completions() -> None:
 
 
 def test_openai_provider_with_base_url_and_api_key() -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from langchain_core.runnables import RunnableConfig
 
     converter = AgentSpecToLangGraphConverter()
     result = converter._llm_convert_to_langgraph(
@@ -68,7 +68,7 @@ def test_openai_provider_with_base_url_and_api_key() -> None:
 
 
 def test_openai_provider_with_raw_base_url_adds_scheme() -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from langchain_core.runnables import RunnableConfig
 
     converter = AgentSpecToLangGraphConverter()
     result = converter._llm_convert_to_langgraph(
@@ -78,7 +78,7 @@ def test_openai_provider_with_raw_base_url_adds_scheme() -> None:
 
 
 def test_unsupported_provider_raises() -> None:
-    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from langchain_core.runnables import RunnableConfig
 
     converter = AgentSpecToLangGraphConverter()
     with pytest.raises(NotImplementedError, match="unsupported_provider"):

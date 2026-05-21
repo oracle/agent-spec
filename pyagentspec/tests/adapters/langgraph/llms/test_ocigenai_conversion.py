@@ -7,13 +7,9 @@
 import os
 from pathlib import Path
 
-import oci
 import pytest
-from langchain_oci import ChatOCIGenAI
 
-from pyagentspec.adapters.langgraph._langgraphconverter import (
-    AgentSpecToLangGraphConverter,
-)
+from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfigWithApiKey,
     OciClientConfigWithInstancePrincipal,
@@ -59,6 +55,8 @@ def _oci_user_config_exists() -> bool:
 
 def auth_profile_contains_security_token(client_config):
     try:
+        import oci
+
         oci_config = oci.config.from_file(
             file_location=client_config.auth_file_location,
             profile_name=client_config.auth_profile,
@@ -86,6 +84,8 @@ _SEC_TOKEN_PRESENT = auth_profile_contains_security_token(
     reason="Missing OCI API key env/config, COMPARTMENT_ID, or ~/.oci/config",
 )
 def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
+    from langchain_oci import ChatOCIGenAI
+
     client_config = OciClientConfigWithApiKey(
         name="with_api_key",
         service_endpoint=OCI_SERVICE_ENDPOINT,
@@ -119,6 +119,9 @@ def test_ocigenai_llm_conversion_api_key(default_generation_parameters):
     reason="Missing COMPARTMENT_ID or security token profile; skipping.",
 )
 def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
+    import oci
+    from langchain_oci import ChatOCIGenAI
+
     client_config = OciClientConfigWithSecurityToken(
         name="with_security_token",
         service_endpoint=OCI_SERVICE_ENDPOINT,
@@ -154,6 +157,8 @@ def test_ocigenai_llm_conversion_security_token(default_generation_parameters):
     reason="Missing INSTANCE_PRINCIPAL_ENDPOINT_BASE_URL or COMPARTMENT_ID",
 )
 def test_ocigenai_llm_conversion_instance_principal(default_generation_parameters, monkeypatch):
+    from langchain_oci import ChatOCIGenAI
+
     # this test passes in an instance principal machine, in which the `ChatOCIGenAI` object can be invoked
     model_id = "meta.llama-3.3-70b-instruct"
     for proxy_var_name in ["HTTP_PROXY", "http_proxy"]:

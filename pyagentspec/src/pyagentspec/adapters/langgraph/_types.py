@@ -8,14 +8,13 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Hashable, Tuple, TypedDic
 
 from typing_extensions import TypeAlias
 
-from pyagentspec._lazy_loader import LazyLoader
+from pyagentspec._lazy_loader import LazyLoader, LazyType
 
 if TYPE_CHECKING:
     # Important: do not move this import out of the TYPE_CHECKING block so long as langgraph is an optional dependency.
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
     import langchain.agents as langchain_agents
-    import langchain_core.messages.content as langchain_core_messages_content
     import langchain_ollama
     import langchain_openai
     import langgraph.graph as langgraph_graph
@@ -40,32 +39,33 @@ else:
     langchain_openai = LazyLoader("langchain_openai")
     langgraph_graph = LazyLoader("langgraph.graph")
     langchain_agents = LazyLoader("langchain.agents")
-    langchain_core_messages_content = LazyLoader("langchain_core.messages.content")
-    # We need to import the classes this way because it's the only one accepted by the lazy loader
-    BaseTool = LazyLoader("langchain_core.tools").BaseTool
-    StructuredTool = LazyLoader("langchain_core.tools").StructuredTool
-    Checkpointer = LazyLoader("langgraph.types").Checkpointer
-    interrupt = LazyLoader("langgraph.types").interrupt
-    StateGraph = langgraph_graph.StateGraph
-    Messages = LazyLoader("langgraph.graph.message").Messages
-    CompiledStateGraph = LazyLoader("langgraph.graph.state").CompiledStateGraph
-    BaseCallbackHandler = LazyLoader("langchain_core.callbacks").BaseCallbackHandler
-    RunnableConfig = LazyLoader("langchain_core.runnables").RunnableConfig
-    RunnableLambda = LazyLoader("langchain_core.runnables").RunnableLambda
-    StateNodeSpec = LazyLoader("langgraph.graph._node").StateNodeSpec
-    BranchSpec = LazyLoader("langgraph.graph._branch").BranchSpec
-    SystemMessage = LazyLoader("langchain_core.messages").SystemMessage
-    BaseMessage = LazyLoader("langchain_core.messages").BaseMessage
-    ToolMessage = LazyLoader("langchain_core.messages").ToolMessage
-    BaseChatModel = LazyLoader("langchain_core.language_models").BaseChatModel
-    ChatGenerationChunk = LazyLoader("langchain_core.outputs").ChatGenerationChunk
-    GenerationChunk = LazyLoader("langchain_core.outputs").GenerationChunk
-    LLMResult = LazyLoader("langchain_core.outputs").LLMResult
-    AgentState = LazyLoader("langchain.agents.middleware.types").AgentState
+    BaseTool = LazyType("langchain_core.tools", "BaseTool")
+    StructuredTool = LazyType("langchain_core.tools", "StructuredTool")
+    Checkpointer = LazyType("langgraph.types", "Checkpointer")
+    interrupt = LazyLoader("langgraph.types", "interrupt")
+    StateGraph = LazyType("langgraph.graph", "StateGraph")
+    Messages = LazyLoader("langgraph.graph.message", "Messages")
+    CompiledStateGraph = LazyType("langgraph.graph.state", "CompiledStateGraph")
+    BaseCallbackHandler = LazyType("langchain_core.callbacks", "BaseCallbackHandler")
+    RunnableConfig = LazyType("langchain_core.runnables", "RunnableConfig")
+    RunnableLambda = LazyType("langchain_core.runnables", "RunnableLambda")
+    StateNodeSpec = LazyType("langgraph.graph._node", "StateNodeSpec")
+    BranchSpec = LazyType("langgraph.graph._branch", "BranchSpec")
+    SystemMessage = LazyType("langchain_core.messages", "SystemMessage")
+    BaseMessage = LazyType("langchain_core.messages", "BaseMessage")
+    ToolMessage = LazyType("langchain_core.messages", "ToolMessage")
+    BaseChatModel = LazyType("langchain_core.language_models", "BaseChatModel")
+    ChatGenerationChunk = LazyType("langchain_core.outputs", "ChatGenerationChunk")
+    GenerationChunk = LazyType("langchain_core.outputs", "GenerationChunk")
+    LLMResult = LazyType("langchain_core.outputs", "LLMResult")
+    AgentState = LazyType("langchain.agents.middleware.types", "AgentState")
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
-LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]
+if TYPE_CHECKING:
+    LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]
+else:
+    LangGraphComponent = Union[StateGraph, CompiledStateGraph]
 LangGraphRuntimeComponent: TypeAlias = Union[LangGraphComponent, BaseChatModel, StructuredTool]
 LangGraphComponentsRegistryT: TypeAlias = Dict[str, Union[LangGraphRuntimeComponent, Any]]
 
@@ -107,7 +107,6 @@ ControlFlow: TypeAlias = Dict[SourceNodeId, Dict[BranchName, TargetNodeId]]
 
 __all__ = [
     "langgraph_graph",
-    "langchain_core_messages_content",
     "langchain_agents",
     "langchain_ollama",
     "langchain_openai",

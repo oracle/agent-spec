@@ -43,7 +43,7 @@ if DEV_FALLBACK:
 
 
 def pytest_collection_modifyitems(config: Any, items: Any):
-    # We skip all the tests in this folder if langgraph is not installed
+    # We skip all the tests in this folder if agents is not installed
     skip_tests_if_dependency_not_installed(
         module_name="agents",
         directory=Path(__file__).parent,

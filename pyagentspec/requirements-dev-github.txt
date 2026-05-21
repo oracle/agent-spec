@@ -1,0 +1,5 @@
+-r requirements-dev-common.txt
+
+# Public GitHub CI intentionally installs only the core package.
+# Optional framework extras are omitted from this lightweight install.
+-e .

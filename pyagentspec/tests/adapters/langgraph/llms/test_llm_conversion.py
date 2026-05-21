@@ -8,8 +8,6 @@ import os
 from typing import Any
 
 import pytest
-from langchain_ollama import ChatOllama
-from langchain_openai import ChatOpenAI
 
 from pyagentspec.adapters.langgraph._langgraphconverter import (
     AgentSpecToLangGraphConverter,
@@ -39,6 +37,8 @@ def test_prepare_openai_compatible_url_formats_various_inputs(raw: str, expected
 
 
 def test_vllm_conversion_maps_url_and_generation_config(default_generation_parameters):
+    from langchain_openai import ChatOpenAI
+
     agentspec_llm = VllmConfig(
         name="llm",
         model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
@@ -66,6 +66,8 @@ def test_vllm_conversion_maps_url_and_generation_config(default_generation_param
 def test_openaicompatible_conversion_sets_responses_flag(
     api_type, expected_flag, monkeypatch, default_generation_parameters
 ):
+    from langchain_openai import ChatOpenAI
+
     monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
     agentspec_llm = OpenAiCompatibleConfig(
         name="oaic",
@@ -88,6 +90,8 @@ def test_openaicompatible_conversion_sets_responses_flag(
 def test_openai_chat_conversion_does_not_forward_extra_generation_fields(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    from langchain_openai import ChatOpenAI
+
     monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
     agentspec_llm = OpenAiConfig(
         name="openai",
@@ -154,6 +158,8 @@ def test_openai_chat_conversion_maps_retry_policy(
     llm_config_kwargs: dict[str, Any],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    from langchain_openai import ChatOpenAI
+
     monkeypatch.setenv("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "DUMMY_KEY"))
     retry_policy = RetryPolicy(max_attempts=0, request_timeout=2.5)
     agentspec_llm = llm_config_class(**llm_config_kwargs, retry_policy=retry_policy)
@@ -190,6 +196,8 @@ def test_non_openai_chat_conversion_rejects_retry_policy() -> None:
 
 
 def test_ollama_conversion_maps_generation_config_names(default_generation_parameters):
+    from langchain_ollama import ChatOllama
+
     agentspec_llm = OllamaConfig(
         name="oll",
         model_id="llama3.1",
@@ -208,6 +216,8 @@ def test_ollama_conversion_maps_generation_config_names(default_generation_param
 
 
 def test_invoke_vllm_model(default_generation_parameters, monkeypatch):
+    from langchain_openai import ChatOpenAI
+
     agentspec_llm = OpenAiCompatibleConfig(
         name="gpt-oss-120b",
         model_id="openai/gpt-oss-120b",
