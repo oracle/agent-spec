@@ -99,7 +99,7 @@ class OAuthClientConfig(Component):
     """Optional dynamic registration endpoint. If omitted, runtimes may obtain it
         from authorization server discovery metadata when available."""
 
-    min_agentspec_version: AgentSpecVersionEnum = AgentSpecVersionEnum.v26_2_0
+    min_agentspec_version: AgentSpecVersionEnum = AgentSpecVersionEnum.v26_1_2
 
 
 class ScopePolicy(str, Enum):
@@ -143,4 +143,4 @@ class OAuthConfig(AuthConfig):
     """Optional resource indicator value (RFC 8707). If set, runtimes should
         include it in relevant authorization and token requests when applicable."""
 
-    min_agentspec_version: AgentSpecVersionEnum = AgentSpecVersionEnum.v26_2_0
+    min_agentspec_version: AgentSpecVersionEnum = AgentSpecVersionEnum.v26_1_2

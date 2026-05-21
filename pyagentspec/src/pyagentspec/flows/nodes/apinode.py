@@ -176,7 +176,7 @@ class ApiNode(Node):
         fields_to_exclude = set()
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("url_allow_list")
             fields_to_exclude.add("retry_policy")
         return fields_to_exclude
@@ -188,9 +188,9 @@ class ApiNode(Node):
         if self.sensitive_headers:
             min_version = max(min_version, AgentSpecVersionEnum.v25_4_2)
         if self.url_allow_list is not None:
-            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+            min_version = max(min_version, AgentSpecVersionEnum.v26_1_2)
         if self.retry_policy is not None:
-            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+            min_version = max(min_version, AgentSpecVersionEnum.v26_1_2)
         return min_version
 
     @model_validator_with_error_accumulation

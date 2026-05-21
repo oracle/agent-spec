@@ -96,7 +96,7 @@ def test_can_serialize_and_deserialize_a2aagent_with_retry_policy(
 ) -> None:
     dumped_agent = AgentSpecSerializer().to_dict(a2aagent_with_retry_policy)
 
-    assert dumped_agent["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped_agent["agentspec_version"] == AgentSpecVersionEnum.v26_1_2.value
     assert "retry_policy" not in dumped_agent
     assert "retry_policy" in dumped_agent["connection_config"]
 
