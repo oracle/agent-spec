@@ -124,18 +124,16 @@ setup(
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_FULL_DEPS,
-        # wayflowcore 26.1.x caps starlette<0.48.0, so use the fixed
-        # WayFlow dev release until a compatible stable release is published.
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=26.2.0.dev3",
+            "wayflowcore>=26.1.2",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=26.2.0.dev3",
+            "wayflowcore[oci]>=26.1.2",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
@@ -144,14 +142,14 @@ setup(
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=26.2.0.dev3",
+            "wayflowcore[a2a]>=26.1.2",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=26.2.0.dev3",
+            "wayflowcore[datastore]>=26.1.2",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions

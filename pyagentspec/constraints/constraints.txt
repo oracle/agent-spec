@@ -23,7 +23,7 @@ langchain-mcp-adapters==0.2.2
 langgraph-swarm==0.1.0
 
 # WayFlow adapter
-wayflowcore==26.2.0.dev3
+wayflowcore==26.1.2
 
 # AgentFramework adapter
 agent-framework==1.0.0b260130
