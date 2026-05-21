@@ -1829,25 +1829,30 @@ A more detailed description of each node follows.
               - null, each output is aggregated through value concatenation (append)
 
       - Inferred from the inner structure (as defined in FlowNode).
-        The names of the inputs will be the ones of the inner flow,
-        complemented with the ``iterated_`` prefix. Their type is
+        The inputs must exactly match the inputs of the inner flow,
+        with each name complemented with the ``iterated_`` prefix.
+        Extra or missing inputs are invalid. Their type is
         ``Union[inner_type, List[inner_type]]``, where ``inner_type``
         is the type of the respective input in the inner flow.
 
-        - If an input of type ``inner_type`` is connected, the same value will used in
+        - If an input of type ``inner_type`` is connected, the same value is used in
           all the executions of the inner flow
         - If an input of type ``List[inner_type]`` is connected, the input values will be iterated over
+        - If all inputs are scalar, the inner flow is executed once
+        - If multiple inputs are lists, they must have the same length and are consumed together for each execution
 
         Note that all the input lists must have the same length, otherwise a runtime error will be thrown.
 
       - Inferred from the inner structure (as defined in FlowNode),
         combined with the reducer method of each output.
-        The names of the outputs will be the ones of the inner flow,
-        complemented with the ``collected_`` prefix. Their type depends
-        on the ``reduce`` method specified for that output:
+        The outputs must exactly match the outputs of the inner flow,
+        with each name complemented with the ``collected_`` prefix.
+        Extra or missing outputs are invalid. Reducer keys must be inner output names;
+        missing reducers default to ``append``.
+        The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``
+        - same type of the respective output type in case of ``sum``, ``avg``, ``max``, ``min``
 
       - One, the default next
     * - CatchExceptionNode
@@ -1924,25 +1929,30 @@ A more detailed description of each node follows.
               - null, each output is aggregated through value concatenation (append)
 
       - Inferred from the inner structure (as defined in FlowNode).
-        The names of the inputs will be the ones of the inner flow,
-        complemented with the ``iterated_`` prefix. Their type is
+        The inputs must exactly match the inputs of the inner flow,
+        with each name complemented with the ``iterated_`` prefix.
+        Extra or missing inputs are invalid. Their type is
         ``Union[inner_type, List[inner_type]]``, where ``inner_type``
         is the type of the respective input in the inner flow.
 
-        - If an input of type ``inner_type`` is connected, the same value will used in
+        - If an input of type ``inner_type`` is connected, the same value is used in
           all the executions of the inner flow
         - If an input of type ``List[inner_type]`` is connected, the input values will be iterated over
+        - If all inputs are scalar, the inner flow is executed once
+        - If multiple inputs are lists, they must have the same length and are consumed together for each execution
 
         Note that all the input lists must have the same length, otherwise a runtime error will be thrown.
 
       - Inferred from the inner structure (as defined in FlowNode),
         combined with the reducer method of each output.
-        The names of the outputs will be the ones of the inner flow,
-        complemented with the ``collected_`` prefix. Their type depends
-        on the ``reduce`` method specified for that output:
+        The outputs must exactly match the outputs of the inner flow,
+        with each name complemented with the ``collected_`` prefix.
+        Extra or missing outputs are invalid. Reducer keys must be inner output names;
+        missing reducers default to ``append``.
+        The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``
+        - same type of the respective output type in case of ``sum``, ``avg``, ``max``, ``min``
 
       - One, the default next
     * - ParallelFlowNode
