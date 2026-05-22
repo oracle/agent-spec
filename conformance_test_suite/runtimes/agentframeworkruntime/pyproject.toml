@@ -1,0 +1,41 @@
+[project]
+name = "agentframeworkruntime"
+dynamic = ["version", "dependencies"]
+description = "Package defining the Microsoft Agent Framework Runtime for AgentSpec"
+readme = "README.md"
+authors = [
+	{ name = "Oracle" },
+]
+classifiers = [
+	"Development Status :: 3 - Alpha",
+	"Natural Language :: English",
+	"Intended Audience :: Science/Research",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3.10",
+	"Operating System :: OS Dependent",
+	"Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+
+[tool.uv.sources.agentspec-cts-sdk]
+path = "../../conformance_test_suite/"
+editable = true
+
+[tool.uv.sources.pyagentspec]
+path = "../../../pyagentspec/"
+editable = true
+
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = [
+	'setuptools',
+	'wheel',
+	'setuptools-scm==7.1.0',
+]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100  # should be the same as black above

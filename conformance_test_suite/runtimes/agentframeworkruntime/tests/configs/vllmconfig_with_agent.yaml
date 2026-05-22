@@ -1,0 +1,25 @@
+component_type: Agent
+description: null
+id: 9a11d3d0-5e90-4c83-ac5b-15ef713b8789
+inputs: []
+llm_config:
+  component_type: VllmConfig
+  default_generation_parameters: null
+  description: null
+  id: 611e9463-eb36-4d85-80d8-226ad24deaac
+  metadata: {}
+  model_id: /storage/models/Llama-3.3-70B-Instruct
+  name: Llama-3.3-70B-Instruct
+  url: [[LLAMA70BV33_API_URL]]
+metadata: {}
+name: Calculator agent
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: "You are a math calculating agent.\n    Your answer should be a single\
+  \ string. If it is a mathematical expression then return its calculation result\
+  \ only.\n    Example: if 5x2, return 10 (not 5x2 = 10).\n    Do not include any\
+  \ units, reasoning, or extra text."
+tools: []
+agentspec_version: 25.4.1

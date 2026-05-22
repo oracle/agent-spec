@@ -1,0 +1,49 @@
+component_type: Agent
+id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+name: Agent with RemoteTool form-encoded data
+description: Agent calling a RemoteTool that posts application/x-www-form-urlencoded body
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: VllmConfig
+  id: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: |
+  You are a helpful weather agent.
+  Your duty is to compute the result of the given operation using tools, and to output the result.
+  It's important that you reply with the result only.
+tools:
+- component_type: RemoteTool
+  id: cccccccc-cccc-4ccc-8ccc-cccccccccccc
+  name: forecast_weather_form
+  description: Returns a forecast of the weather for the chosen city using form-encoded payload
+  metadata: {}
+  inputs:
+  - title: city
+    type: string
+  - title: note
+    type: string
+  - title: user
+    type: string
+  outputs:
+  - title: weather
+    type: string
+  url: http://localhost:5008/weather/forecast_form
+  http_method: POST
+  api_spec_uri: null
+  data: {"city": "{{city}}", "note": "{{note}}"}
+  query_params: {}
+  headers:
+    Content-Type: application/x-www-form-urlencoded
+    X-Caller: '{{user}}'
+agentspec_version: 25.4.2

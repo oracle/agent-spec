@@ -1,0 +1,121 @@
+component_type: Agent
+id: fe037af1-646d-4500-b076-b78735164cc4
+name: Calculator agent with multiple tools and animal finder
+description: An agent that provides assistance with tool usage.
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: ae1bceaa-f389-461a-9efc-329a35df7b4c
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: 'You are a helpful calculator agent.
+
+  Your duty is to compute the result of the given operation using tools or to find
+  an animal given a country using the tools, and to output the result.
+
+  It''s important that you reply with the result only.
+
+  '
+tools:
+- component_type: ClientTool
+  id: e06f83c8-127c-4f08-87cd-79c4095b6bbe
+  name: sum_tool
+  description: Sum two numbers
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+- component_type: ClientTool
+  id: 3125cb6d-23e4-4421-a7c9-6f3f3e153cdc
+  name: subtract_tool
+  description: Subtract two numbers
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+- component_type: ServerTool
+  id: a3000c46-dd91-40d7-8b99-ca900ba66d0b
+  name: multiply_tool
+  description: Multiply two numbers
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+- component_type: ServerTool
+  id: 077ea1e4-deb0-4cea-8401-0b86437eea39
+  name: divide_tool
+  description: Divide two numbers
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+- component_type: RemoteTool
+  id: be12c3f4-6605-402f-b95f-4bbe20a49240
+  name: exponential_tool
+  description: Exponential of a number by another (a^b)
+  metadata: {}
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  outputs:
+  - title: result
+    type: number
+  url: http://localhost:5008/calculator/exponential
+  http_method: POST
+  api_spec_uri: null
+  data:
+    a: '{{a}}'
+    b: '{{b}}'
+  query_params: {}
+  headers: {}
+- component_type: RemoteTool
+  id: 6dd4e286-8485-4f5f-807e-42ca25145613
+  name: animal_tool
+  description: find animal per country
+  metadata: {}
+  inputs:
+  - title: country
+    type: string
+  outputs:
+  - title: animal
+    type: string
+  url: http://localhost:5008/animalFinder
+  http_method: POST
+  api_spec_uri: null
+  data:
+    country: '{{country}}'
+  query_params: {}
+  headers: {}
+agentspec_version: 25.4.1

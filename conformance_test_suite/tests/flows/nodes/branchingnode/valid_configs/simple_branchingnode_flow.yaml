@@ -1,0 +1,125 @@
+$referenced_components:
+  302567b1-3f1a-4a50-8c2e-1d0706fdab69:
+    branch_name: ACCESS_GRANTED
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 302567b1-3f1a-4a50-8c2e-1d0706fdab69
+    inputs:
+    - default: ACCESS_GRANTED
+      title: access_message
+      type: string
+    metadata: {}
+    name: access granted end
+    outputs:
+    - default: ACCESS_GRANTED
+      title: access_message
+      type: string
+  75f424c0-48a9-4f54-99d9-c101628b189a:
+    branch_name: ACCESS_DENIED
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 75f424c0-48a9-4f54-99d9-c101628b189a
+    inputs:
+    - default: ACCESS_DENIED
+      title: access_message
+      type: string
+    metadata: {}
+    name: access denied end
+    outputs:
+    - default: ACCESS_DENIED
+      title: access_message
+      type: string
+  85e7dd23-1163-428e-b5c6-d0b575a55ed6:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: 85e7dd23-1163-428e-b5c6-d0b575a55ed6
+    inputs:
+    - title: user_input
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - title: user_input
+      type: string
+  d36c856d-eb51-4bb8-a16d-7a3f8c4bb533:
+    branches:
+    - CODE_OK
+    - default
+    component_type: BranchingNode
+    description: null
+    id: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+    inputs:
+    - title: CODE
+      type: string
+    mapping:
+      '123456': CODE_OK
+    metadata: {}
+    name: CODE check
+    outputs: []
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 85e7dd23-1163-428e-b5c6-d0b575a55ed6
+  id: 7f0861a4-e0e6-4da0-9857-c3466cdb47fd
+  metadata: {}
+  name: start_to_branching
+  to_node:
+    $component_ref: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: CODE_OK
+  from_node:
+    $component_ref: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+  id: 2809501e-3310-4934-bd5b-02a5d6b0b12d
+  metadata: {}
+  name: branching_to_access_granted
+  to_node:
+    $component_ref: 302567b1-3f1a-4a50-8c2e-1d0706fdab69
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: default
+  from_node:
+    $component_ref: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+  id: 754072fb-d743-4b8f-aed0-92161c76a35b
+  metadata: {}
+  name: branching_to_access_denied
+  to_node:
+    $component_ref: 75f424c0-48a9-4f54-99d9-c101628b189a
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: CODE
+  destination_node:
+    $component_ref: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+  id: 02a6d438-8f96-4aa3-a6c6-c581d94da9cb
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: 85e7dd23-1163-428e-b5c6-d0b575a55ed6
+  source_output: user_input
+description: null
+id: 0e9feb10-f1a3-435a-88a6-df87350a6850
+inputs:
+- title: user_input
+  type: string
+metadata: {}
+name: Check access flow
+nodes:
+- $component_ref: 85e7dd23-1163-428e-b5c6-d0b575a55ed6
+- $component_ref: d36c856d-eb51-4bb8-a16d-7a3f8c4bb533
+- $component_ref: 302567b1-3f1a-4a50-8c2e-1d0706fdab69
+- $component_ref: 75f424c0-48a9-4f54-99d9-c101628b189a
+outputs:
+- default: ACCESS_DENIED
+  title: access_message
+  type: string
+start_node:
+  $component_ref: 85e7dd23-1163-428e-b5c6-d0b575a55ed6
+agentspec_version: 25.4.1

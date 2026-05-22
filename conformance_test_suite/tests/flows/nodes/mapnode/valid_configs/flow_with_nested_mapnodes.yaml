@@ -1,0 +1,500 @@
+$referenced_components:
+  585f6d59-8519-4c74-a0d4-c1ce9a8c17f0:
+    branches:
+    - next
+    component_type: ToolNode
+    description: null
+    id: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+    inputs:
+    - items:
+        type: number
+      title: input_list
+      type: array
+    metadata: {}
+    name: squared sum tool node
+    outputs:
+    - title: squared_sum_root
+      type: number
+    tool:
+      component_type: ServerTool
+      description: Computes the squared sum of a list of numbers
+      id: 07298266-afee-49cf-be6e-c8b82a14d306
+      inputs:
+      - items:
+          type: number
+        title: input_list
+        type: array
+      metadata: {}
+      name: squared_sum_root_tool
+      outputs:
+      - title: squared_sum_root
+        type: number
+  74919850-b9c4-4cd0-9949-dd46d45ae920:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 74919850-b9c4-4cd0-9949-dd46d45ae920
+    inputs:
+    - items:
+        type: number
+      title: collected_result
+      type: array
+    metadata: {}
+    name: end
+    outputs:
+    - items:
+        type: number
+      title: collected_result
+      type: array
+  a59b7b4f-116f-4cbb-9ad4-424e19642da9:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+    inputs:
+    - items:
+        type: number
+      title: input_list
+      type: array
+    metadata: {}
+    name: start
+    outputs:
+    - items:
+        type: number
+      title: input_list
+      type: array
+  a7bb88bf-710b-4cc2-b22a-90885cd972aa:
+    branches:
+    - next
+    component_type: MapNode
+    description: null
+    id: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+    inputs:
+    - anyOf:
+      - title: numerator
+        type: number
+      - items:
+          title: numerator
+          type: number
+        type: array
+      title: iterated_numerator
+    - anyOf:
+      - title: denominator
+        type: number
+      - items:
+          title: denominator
+          type: number
+        type: array
+      title: iterated_denominator
+    metadata: {}
+    name: normalize map node
+    outputs:
+    - items:
+        title: result
+        type: number
+      title: collected_result
+      type: array
+    reducers:
+      result: append
+    subflow:
+      $referenced_components:
+        11dbe1a4-a07d-4813-add3-f53f7e3bba7e:
+          branch_name: next
+          branches: []
+          component_type: EndNode
+          description: null
+          id: 11dbe1a4-a07d-4813-add3-f53f7e3bba7e
+          inputs:
+          - title: result
+            type: number
+          metadata: {}
+          name: end
+          outputs:
+          - title: result
+            type: number
+        70fbe157-6b9a-4836-a3db-e7ced67e06aa:
+          branches:
+          - next
+          component_type: StartNode
+          description: null
+          id: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+          inputs:
+          - title: numerator
+            type: number
+          - title: denominator
+            type: number
+          metadata: {}
+          name: start
+          outputs:
+          - title: numerator
+            type: number
+          - title: denominator
+            type: number
+        8899ad1c-56c6-4820-90d7-b3a74305b6db:
+          branches:
+          - next
+          component_type: ToolNode
+          description: null
+          id: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+          inputs:
+          - title: numerator
+            type: number
+          - title: denominator
+            type: number
+          metadata: {}
+          name: divide node
+          outputs:
+          - title: result
+            type: number
+          tool:
+            component_type: ServerTool
+            description: Computes the ratio between two numbers
+            id: c7d6490a-a8bb-4c18-9383-e615d988a97b
+            inputs:
+            - title: numerator
+              type: number
+            - title: denominator
+              type: number
+            metadata: {}
+            name: division_tool
+            outputs:
+            - title: result
+              type: number
+      component_type: Flow
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        description: null
+        from_branch: null
+        from_node:
+          $component_ref: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+        id: 2b8279bc-08dc-48b4-a932-2a40d637adf8
+        metadata: {}
+        name: start_to_tool
+        to_node:
+          $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+      - component_type: ControlFlowEdge
+        description: null
+        from_branch: null
+        from_node:
+          $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+        id: 8745a4dc-7ce4-4325-bd8e-4609733cea91
+        metadata: {}
+        name: tool_to_end
+        to_node:
+          $component_ref: 11dbe1a4-a07d-4813-add3-f53f7e3bba7e
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        description: null
+        destination_input: numerator
+        destination_node:
+          $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+        id: be382cd9-6b2f-4d59-ba41-ad8d7d617fb2
+        metadata: {}
+        name: numerator_edge
+        source_node:
+          $component_ref: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+        source_output: numerator
+      - component_type: DataFlowEdge
+        description: null
+        destination_input: denominator
+        destination_node:
+          $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+        id: a156e0a7-b8c1-4387-a85e-46e5ce1996bd
+        metadata: {}
+        name: denominator_edge
+        source_node:
+          $component_ref: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+        source_output: denominator
+      - component_type: DataFlowEdge
+        description: null
+        destination_input: result
+        destination_node:
+          $component_ref: 11dbe1a4-a07d-4813-add3-f53f7e3bba7e
+        id: a8534f62-82a1-4d6d-8a89-2625eccf65b5
+        metadata: {}
+        name: result_edge
+        source_node:
+          $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+        source_output: result
+      description: null
+      id: a3e6ce1f-baef-452f-8334-4ac50e747f65
+      inputs:
+      - title: numerator
+        type: number
+      - title: denominator
+        type: number
+      metadata: {}
+      name: Normalize flow
+      nodes:
+      - $component_ref: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+      - $component_ref: 8899ad1c-56c6-4820-90d7-b3a74305b6db
+      - $component_ref: 11dbe1a4-a07d-4813-add3-f53f7e3bba7e
+      outputs:
+      - title: result
+        type: number
+      start_node:
+        $component_ref: 70fbe157-6b9a-4836-a3db-e7ced67e06aa
+  d9c242ce-4dcc-4936-87c2-8a52b64bf8d3:
+    branches:
+    - next
+    component_type: MapNode
+    description: null
+    id: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+    inputs:
+    - anyOf:
+      - title: input
+        type: number
+      - items:
+          type: number
+        title: input
+        type: array
+      title: iterated_input
+    metadata: {}
+    name: square_number_map_node
+    outputs:
+    - items:
+        type: number
+      title: collected_input_square
+      type: array
+    reducers:
+      input_square: append
+    subflow:
+      $referenced_components:
+        1931837c-370b-4a4e-b59e-36441401d540:
+          branches:
+          - next
+          component_type: ToolNode
+          description: null
+          id: 1931837c-370b-4a4e-b59e-36441401d540
+          inputs:
+          - title: input
+            type: number
+          metadata: {}
+          name: square_tool_node
+          outputs:
+          - title: input_square
+            type: number
+          tool:
+            component_type: ServerTool
+            description: Computes the square of a number
+            id: 9550590d-c2a9-4c3e-8847-19879353b504
+            inputs:
+            - title: input
+              type: number
+            metadata: {}
+            name: square_tool
+            outputs:
+            - title: input_square
+              type: number
+        1be24e8d-f4d7-4992-b405-351e80e9e14d:
+          branch_name: next
+          branches: []
+          component_type: EndNode
+          description: null
+          id: 1be24e8d-f4d7-4992-b405-351e80e9e14d
+          inputs:
+          - title: input_square
+            type: number
+          metadata: {}
+          name: subflow_end
+          outputs:
+          - title: input_square
+            type: number
+        f912dbdd-c56a-42af-853b-967445bd9e4c:
+          branches:
+          - next
+          component_type: StartNode
+          description: null
+          id: f912dbdd-c56a-42af-853b-967445bd9e4c
+          inputs:
+          - title: input
+            type: number
+          metadata: {}
+          name: subflow_start
+          outputs:
+          - title: input
+            type: number
+      component_type: Flow
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        description: null
+        from_branch: null
+        from_node:
+          $component_ref: f912dbdd-c56a-42af-853b-967445bd9e4c
+        id: 6f847515-1799-40eb-9ad4-2a181794f20a
+        metadata: {}
+        name: start_to_tool
+        to_node:
+          $component_ref: 1931837c-370b-4a4e-b59e-36441401d540
+      - component_type: ControlFlowEdge
+        description: null
+        from_branch: null
+        from_node:
+          $component_ref: 1931837c-370b-4a4e-b59e-36441401d540
+        id: 85a9fd8a-b87f-4f19-9f6b-c2d06c291bd7
+        metadata: {}
+        name: tool_to_end
+        to_node:
+          $component_ref: 1be24e8d-f4d7-4992-b405-351e80e9e14d
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        description: null
+        destination_input: input
+        destination_node:
+          $component_ref: 1931837c-370b-4a4e-b59e-36441401d540
+        id: 16804446-f964-4460-b52d-3e2176d11496
+        metadata: {}
+        name: input_edge
+        source_node:
+          $component_ref: f912dbdd-c56a-42af-853b-967445bd9e4c
+        source_output: input
+      - component_type: DataFlowEdge
+        description: null
+        destination_input: input_square
+        destination_node:
+          $component_ref: 1be24e8d-f4d7-4992-b405-351e80e9e14d
+        id: ac97c814-6ac0-445b-a2c3-2fd0c4c7362b
+        metadata: {}
+        name: input_square_edge
+        source_node:
+          $component_ref: 1931837c-370b-4a4e-b59e-36441401d540
+        source_output: input_square
+      description: null
+      id: 05f3b71d-a1e1-48b4-a4d2-438aae07d8d8
+      inputs:
+      - title: input
+        type: number
+      metadata: {}
+      name: Square number flow
+      nodes:
+      - $component_ref: f912dbdd-c56a-42af-853b-967445bd9e4c
+      - $component_ref: 1931837c-370b-4a4e-b59e-36441401d540
+      - $component_ref: 1be24e8d-f4d7-4992-b405-351e80e9e14d
+      outputs:
+      - title: input_square
+        type: number
+      start_node:
+        $component_ref: f912dbdd-c56a-42af-853b-967445bd9e4c
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+  id: c5acd5cf-79f1-454c-9a12-763507ebcef1
+  metadata: {}
+  name: start_to_square_numbers
+  to_node:
+    $component_ref: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+  id: 6bc1d860-6ffc-4576-85d9-95ea58ad587d
+  metadata: {}
+  name: square_numbers_to_squared_sum_root_tool
+  to_node:
+    $component_ref: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+  id: 8057084a-daba-4c9f-b34e-757bd5edf078
+  metadata: {}
+  name: squared_sum_root_tool_to_normalize
+  to_node:
+    $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+  id: 4c222d8a-fbae-411d-a2f3-700d36cdf16c
+  metadata: {}
+  name: normalize_to_end
+  to_node:
+    $component_ref: 74919850-b9c4-4cd0-9949-dd46d45ae920
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: iterated_input
+  destination_node:
+    $component_ref: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+  id: c3262a7d-ebb9-4d47-bee0-2a4401a4bd33
+  metadata: {}
+  name: list_of_x_edge
+  source_node:
+    $component_ref: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+  source_output: input_list
+- component_type: DataFlowEdge
+  description: null
+  destination_input: input_list
+  destination_node:
+    $component_ref: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+  id: b8b8353f-fca7-4e82-84f5-abbbbfb21c25
+  metadata: {}
+  name: x_square_list_edge
+  source_node:
+    $component_ref: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+  source_output: collected_input_square
+- component_type: DataFlowEdge
+  description: null
+  destination_input: iterated_numerator
+  destination_node:
+    $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+  id: ddb2ea50-4f6d-4349-81e8-76b2fd2951d6
+  metadata: {}
+  name: numerator_edge
+  source_node:
+    $component_ref: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+  source_output: input_list
+- component_type: DataFlowEdge
+  description: null
+  destination_input: iterated_denominator
+  destination_node:
+    $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+  id: d47d696b-e346-4cce-813b-ccd701bce759
+  metadata: {}
+  name: denominator_edge
+  source_node:
+    $component_ref: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+  source_output: squared_sum_root
+- component_type: DataFlowEdge
+  description: null
+  destination_input: collected_result
+  destination_node:
+    $component_ref: 74919850-b9c4-4cd0-9949-dd46d45ae920
+  id: a9549285-0416-4887-a405-85eac83803c8
+  metadata: {}
+  name: x_list_normalized_edge
+  source_node:
+    $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+  source_output: collected_result
+description: null
+id: dc954cce-6226-4b3f-b1d8-84ed5453a98c
+inputs:
+- items:
+    type: number
+  title: input_list
+  type: array
+metadata: {}
+name: L2 normalize flow
+nodes:
+- $component_ref: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+- $component_ref: d9c242ce-4dcc-4936-87c2-8a52b64bf8d3
+- $component_ref: 585f6d59-8519-4c74-a0d4-c1ce9a8c17f0
+- $component_ref: a7bb88bf-710b-4cc2-b22a-90885cd972aa
+- $component_ref: 74919850-b9c4-4cd0-9949-dd46d45ae920
+outputs:
+- items:
+    type: number
+  title: collected_result
+  type: array
+start_node:
+  $component_ref: a59b7b4f-116f-4cbb-9ad4-424e19642da9
+agentspec_version: 25.4.1

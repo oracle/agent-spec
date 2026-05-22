@@ -1,0 +1,87 @@
+component_type: Agent
+id: 927cfcc5-bf4b-4ebf-8bab-c065866b05f6
+name: test-agent
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  $component_ref: 25c568e6-237f-4371-9c1d-70c5a8ab2d5a
+system_prompt: You are a helpful assistant.
+tools: []
+toolboxes: []
+human_in_the_loop: true
+transforms:
+- component_type: MessageSummarizationTransform
+  id: 0f3fdb73-cb73-4bc6-81de-b675fc62810b
+  name: message-summarizer
+  description: null
+  metadata: {}
+  llm:
+    $component_ref: 25c568e6-237f-4371-9c1d-70c5a8ab2d5a
+  max_message_size: 100
+  summarization_instructions: 'Please Summarize this message: '
+  summarized_message_template: 'Summarized message: {{summary}}'
+  max_cache_size: 10000
+  max_cache_lifetime: 14400
+  cache_collection_name: message_summarization_cache
+  datastore:
+    component_type: PostgresDatabaseDatastore
+    id: postgres_ds
+    name: postgres_ds
+    description: null
+    metadata: {}
+    datastore_schema:
+      message_summarization_cache:
+        properties:
+          cache_key:
+            type: string
+          cache_content:
+            type: string
+          created_at:
+            type: number
+          last_used_at:
+            type: number
+        type: object
+      conversation_summarization_cache:
+        properties:
+          cache_key:
+            type: string
+          cache_content:
+            type: string
+          prefix_size:
+            type: integer
+          created_at:
+            type: number
+          last_used_at:
+            type: number
+        type: object
+    connection_config:
+      component_type: TlsPostgresDatabaseConnectionConfig
+      id: postgres_config
+      name: postgres_config
+      description: null
+      metadata: {}
+      user:
+        $component_ref: postgres_config.user
+      password:
+        $component_ref: postgres_config.password
+      url: localhost:5432
+      sslmode: disable
+      sslcert: null
+      sslkey: null
+      sslrootcert: null
+      sslcrl: null
+$referenced_components:
+  25c568e6-237f-4371-9c1d-70c5a8ab2d5a:
+    component_type: VllmConfig
+    id: 25c568e6-237f-4371-9c1d-70c5a8ab2d5a
+    name: llm
+    description: null
+    metadata: {}
+    default_generation_parameters: null
+    url: http://localhost:5006
+    model_id: Llama-4-Maverick
+    api_type: chat_completions
+    api_key: null
+agentspec_version: 26.2.0
