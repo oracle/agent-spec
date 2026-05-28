@@ -397,7 +397,8 @@ def test_include_sensitive_fields_opt_in() -> None:
         api_key="THIS_IS_SECRET",
         key_file="/etc/certs/client.key",
     )
-    serialized = AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
+    with pytest.warns(UserWarning):
+        serialized = AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
     assert "THIS_IS_SECRET" in serialized
     assert "/etc/certs/client.key" in serialized
     assert "$component_ref" not in serialized
@@ -406,6 +407,47 @@ def test_include_sensitive_fields_opt_in() -> None:
     assert isinstance(deserialized, OpenAiCompatibleConfig)
     assert deserialized.api_key == "THIS_IS_SECRET"
     assert deserialized.key_file == "/etc/certs/client.key"
+
+
+def test_include_sensitive_fields_warns_opt_in() -> None:
+    llm_config = OpenAiCompatibleConfig(
+        name="openai-compatible-config",
+        id="openai-compatible-config-id",
+        url="https://api.closedai.com/v2",
+        model_id="gpt-7",
+        api_key="THIS_IS_SECRET",
+    )
+    with pytest.warns(UserWarning, match="include_sensitive_fields=True"):
+        AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
+
+
+def test_include_sensitive_fields_warns_per_serialized_field() -> None:
+    llm_config = OpenAiCompatibleConfig(
+        name="openai-compatible-config",
+        id="openai-compatible-config-id",
+        url="https://api.closedai.com/v2",
+        model_id="gpt-7",
+        api_key="THIS_IS_SECRET",
+        key_file="/etc/certs/client.key",
+    )
+    with pytest.warns(UserWarning) as warning_list:
+        AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
+    messages = [str(w.message) for w in warning_list]
+    assert any("include_sensitive_fields=True" in m for m in messages)
+    assert any("'api_key'" in m and "openai-compatible-config-id" in m for m in messages)
+    assert any("'key_file'" in m and "openai-compatible-config-id" in m for m in messages)
+
+
+def test_no_warning_when_sensitive_fields_are_empty() -> None:
+    llm_config = OpenAiCompatibleConfig(
+        name="openai-compatible-config",
+        url="https://api.closedai.com/v2",
+        model_id="gpt-7",
+    )
+    # No sensitive field values set — no per-field warnings should be emitted.
+    # The opt-in warning is still expected.
+    with pytest.warns(UserWarning, match="include_sensitive_fields=True"):
+        AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
 
 
 def test_partial_configurations_exclude_secrets():

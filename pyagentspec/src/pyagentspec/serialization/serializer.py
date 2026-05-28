@@ -165,6 +165,14 @@ class AgentSpecSerializer:
                 even if ``export_disaggregated_components`` is ``False``.
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
+        include_sensitive_fields:
+            If ``True``, sensitive fields like API keys and certificate paths are written to the
+            output as plain text rather than replaced with ``$component_ref`` placeholders.
+            Defaults to ``False``.
+
+            .. warning::
+
+                The output will contain credentials in plain text. Treat it accordingly.
 
         Returns
         -------
@@ -327,6 +335,14 @@ class AgentSpecSerializer:
             Whether to export the disaggregated components or not. Defaults to ``False``.
         indent:
             The number of spaces to use for the JSON indentation.
+        include_sensitive_fields:
+            If ``True``, sensitive fields like API keys and certificate paths are written to the
+            output as plain text rather than replaced with ``$component_ref`` placeholders.
+            Defaults to ``False``.
+
+            .. warning::
+
+                The output will contain credentials in plain text. Treat it accordingly.
 
         Returns
         -------
@@ -471,6 +487,14 @@ class AgentSpecSerializer:
                 even if ``export_disaggregated_components`` is ``False``.
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
+        include_sensitive_fields:
+            If ``True``, sensitive fields like API keys and certificate paths are written to the
+            output as plain text rather than replaced with ``$component_ref`` placeholders.
+            Defaults to ``False``.
+
+            .. warning::
+
+                The output will contain credentials in plain text. Treat it accordingly.
 
         Returns
         -------
@@ -535,6 +559,13 @@ class AgentSpecSerializer:
         ['custom_llm_id']
 
         """
+        if include_sensitive_fields:
+            warnings.warn(
+                "include_sensitive_fields=True: credentials will appear in plain text in the output.",
+                UserWarning,
+                stacklevel=2,
+            )
+
         # 1. we serialize the disaggregated components
         converted_config: List[Tuple[Component, str]] = []
         components_id_mapping: Dict[str, str] = {}

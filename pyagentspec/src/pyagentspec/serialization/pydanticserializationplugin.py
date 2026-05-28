@@ -6,11 +6,13 @@
 
 """This module defines the serialization plugin for Pydantic Components."""
 
+import warnings
 from typing import Any, Dict, List, Mapping, Type
 
 from pydantic import BaseModel
 
 from pyagentspec.component import Component
+from pyagentspec.sensitive_field import is_sensitive_field
 from pyagentspec.serialization.serializationcontext import SerializationContext
 from pyagentspec.serialization.serializationplugin import ComponentSerializationPlugin
 
@@ -72,6 +74,17 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                         "$component_ref": f"{component.id}.{field_name}"
                     }
                 else:
+                    if (
+                        field_value
+                        and serialization_context._include_sensitive_fields
+                        and is_sensitive_field(field_info)
+                    ):
+                        warnings.warn(
+                            f"'{field_name}' on '{component.id}' is a sensitive field and will be "
+                            "written to the output in plain text.",
+                            UserWarning,
+                            stacklevel=2,
+                        )
                     serialized_component[field_name] = serialization_context.dump_field(
                         value=field_value, info=field_info
                     )
