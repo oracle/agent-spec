@@ -5,7 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any
 
 import pytest
 
@@ -19,33 +19,6 @@ def pytest_collection_modifyitems(config: Any, items: Any):
         directory=Path(__file__).parent,
         items=items,
     )
-
-
-def make_fake_chat_model(responses: Optional[List[Any]] = None) -> Any:
-    """Build a chat model stub that replays a fixed list of ``AIMessage`` responses.
-
-    Mixes ``FakeMessagesListChatModel`` into ``ChatOpenAI`` so call sites that
-    do ``isinstance(model, ChatOpenAI)`` (or rely on ``ChatOpenAI``-specific
-    bindings) continue to work. When ``responses`` is omitted, a one-shot
-    tool-calling sequence is returned to match the historical default used by
-    confirmation tests.
-    """
-    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
-    from langchain_core.messages import AIMessage
-    from langchain_openai import ChatOpenAI
-
-    class _FakeModel(FakeMessagesListChatModel, ChatOpenAI):
-        pass
-
-    if responses is None:
-        responses = [
-            AIMessage(
-                content="Calling tool",
-                tool_calls=[{"name": "double_tool", "args": {"x": 5}, "id": "call_1"}],
-            ),
-            AIMessage(content="Done"),
-        ]
-    return _FakeModel(responses=responses)
 
 
 def get_weather(city: str) -> str:

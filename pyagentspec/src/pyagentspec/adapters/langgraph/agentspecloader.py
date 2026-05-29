@@ -54,8 +54,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         ``langchain_agents.create_agent(middleware=...)`` when compiling an Agent Spec
         ``Agent`` into a ReAct graph. Order is preserved — index ``0`` is the outermost
         middleware. When ``None`` or an empty list, the ``middleware`` keyword is
-        omitted entirely from the ``create_agent`` call and behavior is identical to
-        earlier releases.
+        omitted entirely from the ``create_agent`` call.
     """
 
     def __init__(
@@ -81,7 +80,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
 
     @property
     def agentspec_to_runtime_converter(self) -> AgentSpecToLangGraphConverter:
-        return AgentSpecToLangGraphConverter(middleware=self._middleware)
+        return AgentSpecToLangGraphConverter()
 
     @property
     def runtime_to_agentspec_converter(self) -> LangGraphToAgentSpecConverter:
@@ -296,5 +295,6 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
                 tool_registry=self.tool_registry,
                 checkpointer=self.checkpointer,
                 config=self.config,
+                middleware=self._middleware,
             ),
         )

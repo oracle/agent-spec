@@ -23,8 +23,6 @@ from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.property import IntegerProperty, Property
 from pyagentspec.tools import ClientTool, RemoteTool, ServerTool
 
-from .conftest import make_fake_chat_model as _get_fake_model
-
 
 class DummyResponse:
     def __init__(self, obj, status_code: int = 200):
@@ -672,6 +670,25 @@ def test_flow_with_remote_tool_confirmation_reject_does_not_call_http() -> None:
         patched.assert_not_called()
         assert "outputs" in result
         assert "denied execution" in str(result["outputs"])
+
+
+def _get_fake_model() -> Any:
+    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.messages import AIMessage
+    from langchain_openai import ChatOpenAI
+
+    class FakeModel(FakeMessagesListChatModel, ChatOpenAI):
+        pass
+
+    return FakeModel(
+        responses=[
+            AIMessage(
+                content="Calling tool",
+                tool_calls=[{"name": "double_tool", "args": {"x": 5}, "id": "call_1"}],
+            ),
+            AIMessage(content="Done"),
+        ]
+    )
 
 
 def test_server_tool_confirmation_in_agent_approve_executes_tool() -> None:

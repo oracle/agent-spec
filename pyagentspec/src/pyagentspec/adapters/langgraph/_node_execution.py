@@ -510,9 +510,7 @@ class AgentNodeExecutor(NodeExecutor):
         agentspec_component = self.node.agent
         system_prompt = render_template(agentspec_component.system_prompt, inputs)
         if system_prompt not in self._agents_cache:
-            self._agents_cache[system_prompt] = AgentSpecToLangGraphConverter(
-                middleware=self._middleware
-            )._create_react_agent_with_given_info(
+            self._agents_cache[system_prompt] = AgentSpecToLangGraphConverter()._create_react_agent_with_given_info(
                 name=agentspec_component.name,
                 system_prompt=system_prompt,
                 agent=agentspec_component,
@@ -525,6 +523,7 @@ class AgentNodeExecutor(NodeExecutor):
                 converted_components=self.converted_components,
                 checkpointer=self.checkpointer,
                 config=self.config,
+                middleware=self._middleware,
             )
         return self._agents_cache[system_prompt]
 
