@@ -151,13 +151,7 @@ def test_middleware_list_is_copied(
 
 
 def test_middleware_forwarded_through_flow_agent_node(agent_flow: Flow) -> None:
-    """Regression: middleware must reach ``create_agent`` for agents inside flows.
-
-    Before this fix, ``AgentNodeExecutor`` instantiated a fresh
-    ``AgentSpecToLangGraphConverter()`` (no middleware), so any middleware
-    configured on the outer ``AgentSpecLoader`` was silently dropped for
-    agents embedded in flows.
-    """
+    """Middleware must reach ``create_agent`` for agents inside flows."""
     from langgraph.checkpoint.memory import MemorySaver
 
     from pyagentspec.adapters.langgraph._langgraphconverter import (
