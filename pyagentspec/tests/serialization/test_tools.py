@@ -187,7 +187,7 @@ def test_remote_tool_url_allow_list_serialization_roundtrip(
     dumped = AgentSpecSerializer().to_dict(remote_tool_with_url_allow_list)
     loaded = AgentSpecDeserializer().from_dict(dumped)
 
-    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_1_2.value
     assert loaded.url_allow_list == remote_tool_with_url_allow_list.url_allow_list
     assert AgentSpecSerializer().to_dict(loaded) == dumped
 

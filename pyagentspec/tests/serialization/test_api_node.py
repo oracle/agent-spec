@@ -52,7 +52,7 @@ def test_api_node_serialization_roundtrip(api_node_with_url_allow_list: ApiNode)
     assert AgentSpecSerializer().to_dict(loaded) == dumped
 
 
-def test_api_node_with_url_allow_list_requires_v26_2_0(
+def test_api_node_with_url_allow_list_requires_v26_1_2(
     api_node_with_url_allow_list: ApiNode,
 ) -> None:
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

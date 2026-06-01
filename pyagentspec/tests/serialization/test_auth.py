@@ -48,25 +48,25 @@ def example_transport_with_oauth(example_oauth_config: OAuthConfig) -> SSETransp
 
 
 def test_oauth_components_have_min_version(example_oauth_config: OAuthConfig):
-    assert example_oauth_config.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
-    assert example_oauth_config.client.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert example_oauth_config.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
+    assert example_oauth_config.client.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
     assert example_oauth_config.endpoints is not None
     assert example_oauth_config.pkce is not None
 
 
 def test_remote_transport_infers_min_version_from_auth(example_transport_with_oauth: SSETransport):
-    assert example_transport_with_oauth.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert example_transport_with_oauth.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
 
 
 def test_can_serialize_and_deserialize_oauth_transport(example_transport_with_oauth: SSETransport):
     transport = example_transport_with_oauth
 
-    assert transport.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert transport.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
 
     serialized = AgentSpecSerializer().to_yaml(transport)
     deserialized = AgentSpecDeserializer().from_yaml(serialized)
 
-    assert deserialized.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert deserialized.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
     assert isinstance(deserialized, SSETransport)
 
     # Align versions to avoid equality mismatches due to deserialization context.

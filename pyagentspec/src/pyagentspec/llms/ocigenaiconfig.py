@@ -70,9 +70,9 @@ class OciGenAiConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
-        # First, we reintroduce the attributes that were introduced in 26.2.0 LlmConfig, but were
+        # First, we reintroduce the attributes that were introduced in 26.1.2 LlmConfig, but were
         # already here before that version. Then the rest of the logic will handle older versions.
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.remove("api_type")
             fields_to_exclude.remove("provider")
             fields_to_exclude.remove("model_id")
@@ -96,6 +96,6 @@ class OciGenAiConfig(LlmConfig):
             # If not, the old version will work as it was the de-facto
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
         if self.provider == ModelProvider.XAI:
-            # `XAI` model provider is only introduced starting from 26.2.0
-            current_object_min_version = AgentSpecVersionEnum.v26_2_0
+            # `XAI` model provider is only introduced starting from 26.1.2
+            current_object_min_version = AgentSpecVersionEnum.v26_1_2
         return max(current_object_min_version, parent_min_version)

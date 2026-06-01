@@ -177,7 +177,7 @@ class Component(AbstractableModel, abstract=True):
         default=AgentSpecVersionEnum.v25_4_1, init=False, exclude=True
     )
     max_agentspec_version: SkipJsonSchema[SerializeAsEnum["AgentSpecVersionEnum"]] = Field(
-        default=AgentSpecVersionEnum.current_version, init=False, exclude=True
+        default=AgentSpecVersionEnum.latest_supported_version, init=False, exclude=True
     )
 
     def model_post_init(self, __context: Any) -> None:

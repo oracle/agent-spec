@@ -129,7 +129,7 @@ def test_can_serialize_and_deserialize_xai_ocigenai_config(
     oci_xai_llm_config: OciGenAiConfig,
 ) -> None:
     serialized_assistant = AgentSpecSerializer().to_yaml(
-        oci_xai_llm_config, agentspec_version=AgentSpecVersionEnum.v26_2_0
+        oci_xai_llm_config, agentspec_version=AgentSpecVersionEnum.v26_1_2
     )
     assert len(serialized_assistant.strip()) > 0
     assert "XAI" in serialized_assistant

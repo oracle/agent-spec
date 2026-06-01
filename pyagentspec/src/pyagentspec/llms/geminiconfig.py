@@ -20,7 +20,7 @@ class GeminiConfig(LlmConfig):
     """Configure a connection to a Gemini LLM (AI Studio or Vertex AI)."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v26_2_0,
+        default=AgentSpecVersionEnum.v26_1_2,
         init=False,
         exclude=True,
     )

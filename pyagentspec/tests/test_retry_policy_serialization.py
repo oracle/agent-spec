@@ -163,12 +163,12 @@ def test_retry_policy_present_in_current_version_serialization(
         "remote_transport_with_retry_policy",
     ],
 )
-def test_retry_policy_defaults_to_v26_2_0(component_fixture_name: str, request) -> None:
+def test_retry_policy_defaults_to_v26_1_2(component_fixture_name: str, request) -> None:
     component = request.getfixturevalue(component_fixture_name)
 
     dumped = AgentSpecSerializer().to_dict(component)
 
-    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_1_2.value
 
 
 @pytest.mark.parametrize(
@@ -204,7 +204,7 @@ def test_retry_policy_deserialization_with_unsupported_version_raises(
     component = request.getfixturevalue(component_fixture_name)
     dumped = AgentSpecSerializer().to_dict(component)
 
-    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped["agentspec_version"] == AgentSpecVersionEnum.v26_1_2.value
     dumped["agentspec_version"] = AgentSpecVersionEnum.v26_1_0.value
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

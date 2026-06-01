@@ -129,7 +129,7 @@ def test_configuration_containing_inlined_certificate_sensitive_fields_can_be_lo
       "key_file": "/etc/certs/client.key",
       "cert_file": "/etc/certs/client.pem",
       "ca_file": "/etc/certs/ca.pem",
-      "agentspec_version": "26.2.0"
+      "agentspec_version": "26.1.2"
     }"""
     llm_config = AgentSpecDeserializer().from_json(serialized_llm)
     assert isinstance(llm_config, OpenAiCompatibleConfig)

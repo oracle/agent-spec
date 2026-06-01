@@ -53,8 +53,8 @@ class LlmConfig(Component):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
-        # All these attributes were introduced in Agent Spec 26.2.0.
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        # All these attributes were introduced in Agent Spec 26.1.2.
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("retry_policy")
             fields_to_exclude.add("provider")
             fields_to_exclude.add("api_key")
@@ -67,9 +67,9 @@ class LlmConfig(Component):
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         min_version = super()._infer_min_agentspec_version_from_configuration()
         if self.retry_policy is not None:
-            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
-        # Bare LlmConfig is a v26_2_0 feature — it was abstract before.
+            min_version = max(min_version, AgentSpecVersionEnum.v26_1_2)
+        # Bare LlmConfig is a v26_1_2 feature — it was abstract before.
         # Subclasses handle their own versioning independently.
         if type(self) is LlmConfig:
-            min_version = max(AgentSpecVersionEnum.v26_2_0, min_version)
+            min_version = max(AgentSpecVersionEnum.v26_1_2, min_version)
         return min_version

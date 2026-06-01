@@ -51,9 +51,9 @@ class OpenAiCompatibleConfig(LlmConfig):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
-        # First, we reintroduce the attributes that were introduced in 26.2.0 LlmConfig, but were
+        # First, we reintroduce the attributes that were introduced in 26.1.2 LlmConfig, but were
         # already here before that version. Then the rest of the logic will handle older versions.
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.remove("api_key")
             fields_to_exclude.remove("api_type")
             fields_to_exclude.remove("url")
@@ -62,7 +62,7 @@ class OpenAiCompatibleConfig(LlmConfig):
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("api_type")
             fields_to_exclude.add("api_key")
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("key_file")
             fields_to_exclude.add("cert_file")
             fields_to_exclude.add("ca_file")
@@ -83,6 +83,6 @@ class OpenAiCompatibleConfig(LlmConfig):
             for certificate_path in (self.key_file, self.cert_file, self.ca_file)
         ):
             current_object_min_version = max(
-                current_object_min_version, AgentSpecVersionEnum.v26_2_0
+                current_object_min_version, AgentSpecVersionEnum.v26_1_2
             )
         return max(current_object_min_version, parent_min_version)
