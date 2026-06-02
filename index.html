@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting…</title>
-  <meta http-equiv="refresh" content="0; url=development/">
-  <link rel="canonical" href="development/">
+  <meta http-equiv="refresh" content="0; url=26.1.2/">
+  <link rel="canonical" href="26.1.2/">
 </head>
 <body>
     <p>Redirecting to the latest stable documentation…</p>
@@ -14,10 +14,10 @@
       .then(response => response.json())
       .then(versions => {
         const stable = versions.find(v => v.version !== "dev");
-        window.location.replace(stable ? stable.url : "development/");
+        window.location.replace(stable ? stable.url : "26.1.2/");
       })
       .catch(() => {
-        window.location.replace("development/");
+        window.location.replace("26.1.2/");
       });
   </script>
 </body>
