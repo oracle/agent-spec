@@ -756,9 +756,7 @@ class AgentSpecToLangGraphConverter:
                     agentspec_tool, config=config, raise_on_denial=True
                 )
             elif isinstance(agentspec_tool, AgentSpecClientTool):
-                tool = self._client_tool_convert_to_langgraph(
-                    agentspec_tool, raise_on_denial=True
-                )
+                tool = self._client_tool_convert_to_langgraph(agentspec_tool, raise_on_denial=True)
             else:
                 raise ValueError(
                     f"Tool '{agentspec_tool.name}' of type "
