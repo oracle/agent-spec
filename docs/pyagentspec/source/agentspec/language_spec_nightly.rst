@@ -3160,7 +3160,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_26_1_2.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_2_0.json
         :language: json
 
 Note about serialization of components
