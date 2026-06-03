@@ -21,6 +21,7 @@ from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     BaseMessage,
     Checkpointer,
+    Command,
     CompiledStateGraph,
     ExecuteOutput,
     FlowStateSchema,
@@ -768,18 +769,76 @@ class FlowNodeExecutor(NodeExecutor):
         self.subflow = subflow
         self.config = config
 
+    def _disabled_pending_input_error(self) -> RuntimeError:
+        return RuntimeError(
+            f"FlowNode `{self.node.name}` received a pending input request from its "
+            "subflow, but propagate_pending_input is disabled."
+        )
+
+    def _invoke_subflow(self, inputs: Dict[str, Any], messages: Messages) -> Dict[str, Any]:
+        from langgraph.errors import GraphInterrupt
+
+        try:
+            return self.subflow.invoke({"messages": messages, "inputs": inputs}, self.config)
+        except GraphInterrupt as e:
+            if self.node.propagate_pending_input:
+                raise
+            raise self._disabled_pending_input_error() from e
+
+    async def _ainvoke_subflow(self, inputs: Dict[str, Any], messages: Messages) -> Dict[str, Any]:
+        from langgraph.errors import GraphInterrupt
+
+        try:
+            return await self.subflow.ainvoke(
+                {"messages": messages, "inputs": inputs}, self.config
+            )
+        except GraphInterrupt as e:
+            if self.node.propagate_pending_input:
+                raise
+            raise self._disabled_pending_input_error() from e
+
+    def _resume_or_raise_for_nested_interrupt(self, flow_output: Dict[str, Any]) -> Any:
+        if not self.node.propagate_pending_input:
+            raise self._disabled_pending_input_error()
+        nested_interrupts = flow_output["__interrupt__"]
+        if (
+            isinstance(nested_interrupts, (list, tuple))
+            and len(nested_interrupts) == 1
+            and hasattr(nested_interrupts[0], "value")
+        ):
+            return interrupt(nested_interrupts[0].value)
+        return interrupt(nested_interrupts)
+
+    def _get_generated_messages(
+        self, initial_messages: Messages, flow_output: Dict[str, Any]
+    ) -> Messages:
+        flow_messages = flow_output.get("messages", [])
+        if not isinstance(flow_messages, list):
+            return []
+        if isinstance(initial_messages, list) and flow_messages[: len(initial_messages)] == list(
+            initial_messages
+        ):
+            return flow_messages[len(initial_messages) :]
+        return flow_messages
+
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
-        flow_output = self.subflow.invoke({"messages": messages, "inputs": inputs}, self.config)
+        flow_output = self._invoke_subflow(inputs, messages)
+        while "__interrupt__" in flow_output:
+            resume_value = self._resume_or_raise_for_nested_interrupt(flow_output)
+            flow_output = self.subflow.invoke(Command(resume=resume_value), self.config)
         return flow_output["outputs"], NodeExecutionDetails(
-            branch=flow_output["node_execution_details"]["branch"]
+            branch=flow_output["node_execution_details"]["branch"],
+            generated_messages=self._get_generated_messages(messages, flow_output),
         )
 
     async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
-        flow_output = await self.subflow.ainvoke(
-            {"messages": messages, "inputs": inputs}, self.config
-        )
+        flow_output = await self._ainvoke_subflow(inputs, messages)
+        while "__interrupt__" in flow_output:
+            resume_value = self._resume_or_raise_for_nested_interrupt(flow_output)
+            flow_output = await self.subflow.ainvoke(Command(resume=resume_value), self.config)
         return flow_output["outputs"], NodeExecutionDetails(
-            branch=flow_output["node_execution_details"]["branch"]
+            branch=flow_output["node_execution_details"]["branch"],
+            generated_messages=self._get_generated_messages(messages, flow_output),
         )
 
 

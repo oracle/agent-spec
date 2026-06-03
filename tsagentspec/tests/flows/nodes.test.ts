@@ -266,6 +266,22 @@ describe("FlowNode", () => {
     expect(node.outputs!.map((o) => o.title)).toContain("result");
   });
 
+  it("should propagate pending subflow input by default", () => {
+    const flow = makeSimpleFlow();
+    const node = createFlowNode({ name: "flow-node", subflow: flow });
+    expect(node.propagatePendingInput).toBe(true);
+  });
+
+  it("should allow pending subflow input propagation to be disabled", () => {
+    const flow = makeSimpleFlow();
+    const node = createFlowNode({
+      name: "flow-node",
+      subflow: flow,
+      propagatePendingInput: false,
+    });
+    expect(node.propagatePendingInput).toBe(false);
+  });
+
   it("should infer branches from subflow EndNode branchNames", () => {
     const start = createStartNode({ name: "start" });
     const branching = createBranchingNode({
