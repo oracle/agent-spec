@@ -2,23 +2,15 @@
  * OpenAI-compatible LLM config.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
-import { LlmGenerationConfigSchema, OpenAIAPIType } from "./llm-config.js";
+import { LlmConfigBaseSchema, LlmGenerationConfigSchema, LocalInferenceFields, OpenAIAPIType } from "./llm-config.js";
+import { RetryPolicySchema } from "./retry-policy.js";
 
-export const OpenAiCompatibleConfigSchema = ComponentBaseSchema.extend({
+export const OpenAiCompatibleConfigSchema = LlmConfigBaseSchema.extend({
   componentType: z.literal("OpenAiCompatibleConfig"),
-  url: z.string(),
-  modelId: z.string(),
-  apiType: z
-    .enum([OpenAIAPIType.CHAT_COMPLETIONS, OpenAIAPIType.RESPONSES])
-    .default(OpenAIAPIType.CHAT_COMPLETIONS),
-  defaultGenerationParameters: LlmGenerationConfigSchema.optional(),
-  apiKey: z.string().optional(),
+  ...LocalInferenceFields,
 });
 
-export type OpenAiCompatibleConfig = z.infer<
-  typeof OpenAiCompatibleConfigSchema
->;
+export type OpenAiCompatibleConfig = z.infer<typeof OpenAiCompatibleConfigSchema>;
 
 export function createOpenAiCompatibleConfig(opts: {
   name: string;
@@ -30,11 +22,14 @@ export function createOpenAiCompatibleConfig(opts: {
   apiType?: OpenAIAPIType;
   defaultGenerationParameters?: z.infer<typeof LlmGenerationConfigSchema>;
   apiKey?: string;
+  apiProvider?: string;
+  provider?: string;
+  keyFile?: string;
+  certFile?: string;
+  caFile?: string;
+  retryPolicy?: z.infer<typeof RetryPolicySchema>;
 }): OpenAiCompatibleConfig {
-  const raw = {
-    ...opts,
-    componentType: "OpenAiCompatibleConfig" as const,
-  };
-  const parsed = OpenAiCompatibleConfigSchema.parse(raw);
-  return Object.freeze(parsed);
+  return Object.freeze(
+    OpenAiCompatibleConfigSchema.parse({ ...opts, componentType: "OpenAiCompatibleConfig" }),
+  );
 }

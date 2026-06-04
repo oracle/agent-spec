@@ -33,12 +33,14 @@ export class AgentSpecSerializer {
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): SerializedDict | [SerializedDict, DisaggregatedComponentsDict] {
     const opts = options ?? {};
     const disaggregated = opts.disaggregatedComponents ?? [];
     const exportDisag = opts.exportDisaggregatedComponents ?? false;
     const useCamelCase = opts.camelCase ?? false;
+    const includeSensitive = opts.includeSensitiveFields ?? false;
 
     // Build ID mapping for disaggregated components
     const componentsIdMapping = new Map<string, string>();
@@ -58,6 +60,7 @@ export class AgentSpecSerializer {
         undefined,
         undefined,
         useCamelCase,
+        includeSensitive,
       );
       const dump = disagCtx.saveToDict(disag, opts.agentspecVersion);
       disaggregatedDict[disag.id] = dump;
@@ -74,6 +77,7 @@ export class AgentSpecSerializer {
       resolvedComponents,
       componentsIdMapping,
       useCamelCase,
+      includeSensitive,
     );
     const mainDump = mainCtx.saveToDict(component, opts.agentspecVersion);
 
@@ -96,6 +100,7 @@ export class AgentSpecSerializer {
       exportDisaggregatedComponents?: boolean;
       indent?: number;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): string | [string, string] {
     const indent = options?.indent ?? 2;
@@ -118,6 +123,7 @@ export class AgentSpecSerializer {
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): string | [string, string] {
     const result = this._toDict(component, options);

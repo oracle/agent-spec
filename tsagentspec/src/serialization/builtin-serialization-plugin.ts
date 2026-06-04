@@ -19,6 +19,7 @@ const EXCLUDED_FIELDS = new Set(["componentType"]);
  */
 const MODEL_OBJECT_FIELDS: Record<string, boolean> = {
   defaultGenerationParameters: true, // LlmGenerationConfig - exclude nulls
+  retryPolicy: true, // RetryPolicy - exclude nulls
 };
 
 export class BuiltinsComponentSerializationPlugin
@@ -50,7 +51,6 @@ export class BuiltinsComponentSerializationPlugin
 
       const snakeName = context.toSerializedFieldName(fieldName);
 
-      // Handle model object fields specially (convert keys, optionally exclude nulls)
       if (
         fieldName in MODEL_OBJECT_FIELDS &&
         typeof fieldValue === "object" &&

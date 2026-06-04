@@ -48,14 +48,45 @@ export const VERSION_GATED_FIELDS = {
   ManagerWorkers: {
     _self: AgentSpecVersion.V25_4_2,
   },
+  LlmConfig: {
+    _self: AgentSpecVersion.V26_2_0,
+  },
+  GeminiConfig: {
+    _self: AgentSpecVersion.V26_2_0,
+  },
   OpenAiConfig: {
     apiType: AgentSpecVersion.V25_4_2,
+    apiKey: AgentSpecVersion.V25_4_2,
+    retryPolicy: AgentSpecVersion.V26_2_0,
   },
   OpenAiCompatibleConfig: {
     apiType: AgentSpecVersion.V25_4_2,
+    apiKey: AgentSpecVersion.V25_4_2,
+    apiProvider: AgentSpecVersion.V26_2_0,
+    keyFile: AgentSpecVersion.V26_2_0,
+    certFile: AgentSpecVersion.V26_2_0,
+    caFile: AgentSpecVersion.V26_2_0,
+    provider: AgentSpecVersion.V26_2_0,
+    retryPolicy: AgentSpecVersion.V26_2_0,
+  },
+  OllamaConfig: {
+    keyFile: AgentSpecVersion.V26_2_0,
+    certFile: AgentSpecVersion.V26_2_0,
+    caFile: AgentSpecVersion.V26_2_0,
+    provider: AgentSpecVersion.V26_2_0,
+    retryPolicy: AgentSpecVersion.V26_2_0,
+  },
+  VllmConfig: {
+    keyFile: AgentSpecVersion.V26_2_0,
+    certFile: AgentSpecVersion.V26_2_0,
+    caFile: AgentSpecVersion.V26_2_0,
+    provider: AgentSpecVersion.V26_2_0,
+    retryPolicy: AgentSpecVersion.V26_2_0,
   },
   OciGenAiConfig: {
     apiType: AgentSpecVersion.V25_4_2,
+    conversationStoreId: AgentSpecVersion.V25_4_2,
+    retryPolicy: AgentSpecVersion.V26_2_0,
   },
   ApiNode: {
     sensitiveHeaders: AgentSpecVersion.V25_4_2,
