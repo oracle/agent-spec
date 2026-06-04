@@ -68,6 +68,7 @@
         "25.4.1",
         "25.4.2",
         "26.1.0",
+        "26.1.2",
         "26.2.0"
       ],
       "title": "AgentSpecVersionEnum",
@@ -4403,7 +4404,7 @@
         },
         "min_agentspec_version": {
           "$ref": "#/$defs/AgentSpecVersionEnum",
-          "default": "26.2.0"
+          "default": "26.1.2"
         },
         "type": {
           "enum": [
@@ -4527,7 +4528,7 @@
         },
         "min_agentspec_version": {
           "$ref": "#/$defs/AgentSpecVersionEnum",
-          "default": "26.2.0"
+          "default": "26.1.2"
         },
         "issuer": {
           "anyOf": [
