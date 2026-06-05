@@ -151,7 +151,7 @@ def test_agent_with_human_in_the_loop(vllmconfig, tools):
     "require_confirmation,config_filename",
     [
         (False, "example_serialized_agent_with_tools_and_toolboxes_25_4_2.yaml"),
-        (True, "example_serialized_agent_with_tools_and_toolboxes_26_2_0.yaml"),
+        (True, "example_serialized_agent_with_tools_and_toolboxes_26_1_2.yaml"),
     ],
 )
 def test_agent_with_toolbox_can_be_serialized(
@@ -355,9 +355,9 @@ def test_deserializing_agent_with_non_empty_transforms_and_unsupported_version_r
 ):
     serializer = AgentSpecSerializer()
     serialized_agent = serializer.to_yaml(agent_with_non_empty_transforms)
-    assert "agentspec_version: 26.2.0" in serialized_agent
+    assert "agentspec_version: 26.1.2" in serialized_agent
     serialized_agent = serialized_agent.replace(
-        "agentspec_version: 26.2.0", "agentspec_version: 26.1.0"
+        "agentspec_version: 26.1.2", "agentspec_version: 26.1.0"
     )
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

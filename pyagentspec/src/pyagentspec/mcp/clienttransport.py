@@ -88,7 +88,7 @@ class RemoteTransport(ClientTransport, abstract=True):
         fields_to_exclude = set()
         if agentspec_version < AgentSpecVersionEnum.v25_4_2:
             fields_to_exclude.add("sensitive_headers")
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("auth")
             fields_to_exclude.add("retry_policy")
         return fields_to_exclude
@@ -100,11 +100,11 @@ class RemoteTransport(ClientTransport, abstract=True):
             # `api_key` is only introduced starting from 25.4.2
             current_object_min_version = AgentSpecVersionEnum.v25_4_2
         if self.auth is not None:
-            # `auth` is only introduced starting from 26.2.0
-            current_object_min_version = AgentSpecVersionEnum.v26_2_0
+            # `auth` is only introduced starting from 26.1.2
+            current_object_min_version = AgentSpecVersionEnum.v26_1_2
         if self.retry_policy is not None:
-            # `retry_policy` is only introduced starting from 26.2.0
-            current_object_min_version = AgentSpecVersionEnum.v26_2_0
+            # `retry_policy` is only introduced starting from 26.1.2
+            current_object_min_version = AgentSpecVersionEnum.v26_1_2
         return max(parent_min_version, current_object_min_version)
 
     @model_validator_with_error_accumulation

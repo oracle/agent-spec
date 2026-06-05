@@ -134,7 +134,7 @@ def test_deserializing_mcp_tool_box_with_confirmation_raises_on_version_less_tha
     mcp_toolbox_as_dict = AgentSpecSerializer().to_dict(mcp_toolbox)
     assert (
         AgentSpecVersionEnum(mcp_toolbox_as_dict["agentspec_version"])
-        >= AgentSpecVersionEnum.v26_2_0
+        >= AgentSpecVersionEnum.v26_1_2
     )
     mcp_toolbox_as_dict["agentspec_version"] = "26.1.0"
     with pytest.raises(ValueError, match="Invalid agentspec_version"):

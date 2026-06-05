@@ -20,7 +20,7 @@ class ToolBox(Component, abstract=True):
         self, agentspec_version: AgentSpecVersionEnum
     ) -> set[str]:
         fields_to_exclude = set()
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("requires_confirmation")
         return fields_to_exclude
 
@@ -30,5 +30,5 @@ class ToolBox(Component, abstract=True):
         if self.requires_confirmation:
             # If the toolbox has requires confirmation flag set, then we need to use the new AgentSpec version
             # If not, the old version will work as it was the de-facto
-            current_object_min_version = AgentSpecVersionEnum.v26_2_0
+            current_object_min_version = AgentSpecVersionEnum.v26_1_2
         return max(current_object_min_version, parent_min_version)

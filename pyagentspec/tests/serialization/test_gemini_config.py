@@ -33,7 +33,7 @@ def _assert_serialized_geminiconfig_fields(
     assert serialized_llm_as_dict["metadata"] == {}
     assert serialized_llm_as_dict["default_generation_parameters"] is None
     assert serialized_llm_as_dict["model_id"] == model_id
-    assert serialized_llm_as_dict["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert serialized_llm_as_dict["agentspec_version"] == AgentSpecVersionEnum.v26_1_2.value
 
 
 @pytest.mark.parametrize(
@@ -119,7 +119,7 @@ def test_can_serialize_and_deserialize_gemini_config_with_inline_auth(
     deserialized_llm = AgentSpecDeserializer().from_json(serialized_llm)
 
     assert deserialized_llm == llm_config
-    assert deserialized_llm.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert deserialized_llm.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
     assert isinstance(deserialized_llm.auth, expected_auth_type)
 
 
@@ -245,7 +245,7 @@ def test_can_deserialize_gemini_config_with_inline_vertex_auth_component() -> No
                 "id": GEMINI_VERTEX_AUTH_ID,
                 "name": GEMINI_VERTEX_AUTH_NAME,
             },
-            "agentspec_version": AgentSpecVersionEnum.v26_2_0.value,
+            "agentspec_version": AgentSpecVersionEnum.v26_1_2.value,
         }
     )
 
@@ -266,7 +266,7 @@ def test_deserializing_gemini_config_without_auth_raises_error() -> None:
             "id": GEMINI_CONFIG_ID,
             "name": GEMINI_CONFIG_NAME,
             "model_id": "gemini-2.0-flash-lite",
-            "agentspec_version": AgentSpecVersionEnum.v26_2_0.value,
+            "agentspec_version": AgentSpecVersionEnum.v26_1_2.value,
         }
     )
 

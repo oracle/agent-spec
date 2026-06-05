@@ -39,7 +39,7 @@ class OciAgent(RemoteAgent):
         """Return fields that are not available for the requested Agent Spec version."""
 
         fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
-        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+        if agentspec_version < AgentSpecVersionEnum.v26_1_2:
             fields_to_exclude.add("retry_policy")
         return fields_to_exclude
 
@@ -48,5 +48,5 @@ class OciAgent(RemoteAgent):
 
         min_version = super()._infer_min_agentspec_version_from_configuration()
         if self.retry_policy is not None:
-            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+            min_version = max(min_version, AgentSpecVersionEnum.v26_1_2)
         return min_version

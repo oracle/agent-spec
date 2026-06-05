@@ -70,7 +70,7 @@ class CatchExceptionNode(Node):
     """Flow to execute and catch errors from."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v26_2_0, init=False, exclude=True
+        default=AgentSpecVersionEnum.v26_1_2, init=False, exclude=True
     )
 
     @model_validator_with_error_accumulation

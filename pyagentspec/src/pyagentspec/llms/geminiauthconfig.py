@@ -20,7 +20,7 @@ class GeminiAuthConfig(Component, abstract=True):
     """Base class for Gemini authentication configuration."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v26_2_0,
+        default=AgentSpecVersionEnum.v26_1_2,
         init=False,
         exclude=True,
     )

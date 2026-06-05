@@ -219,14 +219,14 @@ def test_frozen_fields_not_serialized_on_subclasses() -> None:
     assert "provider:" not in serialized_ollama
 
 
-def test_version_inference_bare_llmconfig_always_requires_v26_2_0() -> None:
-    # Bare LlmConfig is a v26_2_0 feature (it was abstract before),
+def test_version_inference_bare_llmconfig_always_requires_v26_1_2() -> None:
+    # Bare LlmConfig is a v26_1_2 feature (it was abstract before),
     # regardless of which fields are set
     config_minimal = LlmConfig(
         name="basic",
         model_id="some-model",
     )
-    assert config_minimal.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert config_minimal.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
 
     config_with_fields = LlmConfig(
         name="with_provider",
@@ -235,7 +235,7 @@ def test_version_inference_bare_llmconfig_always_requires_v26_2_0() -> None:
         api_provider="openai",
         api_type="chat_completions",
     )
-    assert config_with_fields.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert config_with_fields.min_agentspec_version == AgentSpecVersionEnum.v26_1_2
 
 
 def test_openai_config_rejects_invalid_generic_overrides() -> None:

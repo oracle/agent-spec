@@ -34,12 +34,12 @@ def openai_compatible_config_without_certificates() -> OpenAiCompatibleConfig:
     )
 
 
-def test_openaicompatible_config_with_certificates_has_min_version_26_2_0(
+def test_openaicompatible_config_with_certificates_has_min_version_26_1_2(
     openai_compatible_config_with_certificates: OpenAiCompatibleConfig,
 ) -> None:
     assert (
         openai_compatible_config_with_certificates.min_agentspec_version
-        == AgentSpecVersionEnum.v26_2_0
+        == AgentSpecVersionEnum.v26_1_2
     )
 
 
