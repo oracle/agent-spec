@@ -234,7 +234,12 @@ class AgentSpecToLangGraphConverter:
                 config = RunnableConfig({})
         if agentspec_component.id not in converted_components:
             converted_components[agentspec_component.id] = self._convert(
-                agentspec_component, tool_registry, converted_components, checkpointer, config, middleware_list
+                agentspec_component,
+                tool_registry,
+                converted_components,
+                checkpointer,
+                config,
+                middleware_list,
             )
         return converted_components[agentspec_component.id]
 

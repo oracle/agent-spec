@@ -84,7 +84,9 @@ def capture_create_agent_kwargs(
         from pyagentspec.adapters.langgraph._types import langchain_agents
 
         captured: Dict[str, Any] = {}
-        with patch.object(langchain_agents, "create_agent", side_effect=_spy_create_agent(captured)):
+        with patch.object(
+            langchain_agents, "create_agent", side_effect=_spy_create_agent(captured)
+        ):
             loader = AgentSpecToLangGraphConverter()
             with pytest.raises(_StopCreateAgent):
                 loader.convert(
