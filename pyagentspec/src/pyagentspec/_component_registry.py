@@ -85,6 +85,7 @@ from pyagentspec.tools.remotetool import RemoteTool
 from pyagentspec.tools.servertool import ServerTool
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
+from pyagentspec.tools.toolpolicy import ApprovalGuard, JustificationGuard, RateLimitGuard, ToolPolicy
 from pyagentspec.transforms import ConversationSummarizationTransform, MessageSummarizationTransform
 
 BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
@@ -148,6 +149,10 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "Tool": Tool,
     "ToolBox": ToolBox,
     "ToolNode": ToolNode,
+    "ToolPolicy": ToolPolicy,
+    "RateLimitGuard": RateLimitGuard,
+    "ApprovalGuard": ApprovalGuard,
+    "JustificationGuard": JustificationGuard,
     "TlsOracleDatabaseConnectionConfig": TlsOracleDatabaseConnectionConfig,
     "MTlsOracleDatabaseConnectionConfig": MTlsOracleDatabaseConnectionConfig,
     "TlsPostgresDatabaseConnectionConfig": TlsPostgresDatabaseConnectionConfig,
