@@ -417,8 +417,12 @@ def test_include_sensitive_fields_warns_opt_in() -> None:
         model_id="gpt-7",
         api_key="THIS_IS_SECRET",
     )
-    with pytest.warns(UserWarning, match="include_sensitive_fields=True"):
+    with pytest.warns(UserWarning) as warning_list:
         AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
+    messages = [str(w.message) for w in warning_list]
+    assert any(
+        "returned serialization may contain unredacted sensitive values" in m for m in messages
+    )
 
 
 def test_include_sensitive_fields_warns_per_serialized_field() -> None:
@@ -433,9 +437,21 @@ def test_include_sensitive_fields_warns_per_serialized_field() -> None:
     with pytest.warns(UserWarning) as warning_list:
         AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
     messages = [str(w.message) for w in warning_list]
-    assert any("include_sensitive_fields=True" in m for m in messages)
-    assert any("'api_key'" in m and "openai-compatible-config-id" in m for m in messages)
-    assert any("'key_file'" in m and "openai-compatible-config-id" in m for m in messages)
+    assert any("include_sensitive_fields=True: returned serialization" in m for m in messages)
+    assert any(
+        "Sensitive field exported" in m
+        and "field='api_key'" in m
+        and "component_id='openai-compatible-config-id'" in m
+        for m in messages
+    )
+    assert any(
+        "Sensitive field exported" in m
+        and "field='key_file'" in m
+        and "component_id='openai-compatible-config-id'" in m
+        for m in messages
+    )
+    assert all("THIS_IS_SECRET" not in m for m in messages)
+    assert all("/etc/certs/client.key" not in m for m in messages)
 
 
 def test_no_warning_when_sensitive_fields_are_empty() -> None:
@@ -446,7 +462,9 @@ def test_no_warning_when_sensitive_fields_are_empty() -> None:
     )
     # No sensitive field values set — no per-field warnings should be emitted.
     # The opt-in warning is still expected.
-    with pytest.warns(UserWarning, match="include_sensitive_fields=True"):
+    with pytest.warns(
+        UserWarning, match="returned serialization may contain unredacted sensitive values"
+    ):
         AgentSpecSerializer().to_json(llm_config, include_sensitive_fields=True)
 
 

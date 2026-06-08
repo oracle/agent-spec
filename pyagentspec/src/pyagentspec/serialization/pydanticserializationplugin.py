@@ -74,14 +74,12 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                         "$component_ref": f"{component.id}.{field_name}"
                     }
                 else:
-                    if (
-                        field_value
-                        and serialization_context._include_sensitive_fields
-                        and is_sensitive_field(field_info)
-                    ):
+                    # A truthy sensitive field that reaches this branch is being exported.
+                    if field_value and is_sensitive_field(field_info):
                         warnings.warn(
-                            f"'{field_name}' on '{component.id}' is a sensitive field and will be "
-                            "written to the output in plain text.",
+                            "Sensitive field exported: "
+                            f"component_id={component.id!r}, field={field_name!r}. "
+                            "Review the serialized value before storing or sharing the output.",
                             UserWarning,
                             stacklevel=2,
                         )

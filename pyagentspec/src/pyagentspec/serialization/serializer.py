@@ -166,13 +166,16 @@ class AgentSpecSerializer:
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
         include_sensitive_fields:
-            If ``True``, sensitive fields like API keys and certificate paths are written to the
-            output as plain text rather than replaced with ``$component_ref`` placeholders.
-            Defaults to ``False``.
+            If ``False`` (default), non-empty sensitive fields are exported as
+            ``$component_ref`` placeholders. If ``True``, their values are included in the
+            returned serialization. Use this only for trusted local workflows; the returned
+            value may contain secrets or other sensitive data and should not be logged,
+            committed, or shared.
 
             .. warning::
 
-                The output will contain credentials in plain text. Treat it accordingly.
+                Enabling this option can expose API keys, credentials, file paths, headers, DSNs,
+                or other sensitive values in the returned data.
 
         Returns
         -------
@@ -336,13 +339,16 @@ class AgentSpecSerializer:
         indent:
             The number of spaces to use for the JSON indentation.
         include_sensitive_fields:
-            If ``True``, sensitive fields like API keys and certificate paths are written to the
-            output as plain text rather than replaced with ``$component_ref`` placeholders.
-            Defaults to ``False``.
+            If ``False`` (default), non-empty sensitive fields are exported as
+            ``$component_ref`` placeholders. If ``True``, their values are included in the
+            returned serialization. Use this only for trusted local workflows; the returned
+            value may contain secrets or other sensitive data and should not be logged,
+            committed, or shared.
 
             .. warning::
 
-                The output will contain credentials in plain text. Treat it accordingly.
+                Enabling this option can expose API keys, credentials, file paths, headers, DSNs,
+                or other sensitive values in the returned data.
 
         Returns
         -------
@@ -488,13 +494,16 @@ class AgentSpecSerializer:
         export_disaggregated_components:
             Whether to export the disaggregated components or not. Defaults to ``False``.
         include_sensitive_fields:
-            If ``True``, sensitive fields like API keys and certificate paths are written to the
-            output as plain text rather than replaced with ``$component_ref`` placeholders.
-            Defaults to ``False``.
+            If ``False`` (default), non-empty sensitive fields are exported as
+            ``$component_ref`` placeholders. If ``True``, their values are included in the
+            returned serialization. Use this only for trusted local workflows; the returned
+            value may contain secrets or other sensitive data and should not be logged,
+            committed, or shared.
 
             .. warning::
 
-                The output will contain credentials in plain text. Treat it accordingly.
+                Enabling this option can expose API keys, credentials, file paths, headers, DSNs,
+                or other sensitive values in the returned data.
 
         Returns
         -------
@@ -561,7 +570,9 @@ class AgentSpecSerializer:
         """
         if include_sensitive_fields:
             warnings.warn(
-                "include_sensitive_fields=True: credentials will appear in plain text in the output.",
+                "include_sensitive_fields=True: returned serialization may contain "
+                "unredacted sensitive values; do not log, commit, or share it unless "
+                "those values are intended to be exposed.",
                 UserWarning,
                 stacklevel=2,
             )

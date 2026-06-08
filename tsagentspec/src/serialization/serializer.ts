@@ -42,6 +42,14 @@ export class AgentSpecSerializer {
     const useCamelCase = opts.camelCase ?? false;
     const includeSensitive = opts.includeSensitiveFields ?? false;
 
+    if (includeSensitive) {
+      console.warn(
+        "includeSensitiveFields=true was set. Serialized output may contain " +
+          "unredacted sensitive values; do not log, commit, or share it unless " +
+          "those values are intended to be exposed.",
+      );
+    }
+
     // Build ID mapping for disaggregated components
     const componentsIdMapping = new Map<string, string>();
     for (const disag of disaggregated) {
