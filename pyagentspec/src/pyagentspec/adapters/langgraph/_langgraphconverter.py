@@ -599,6 +599,7 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
                 checkpointer=checkpointer,
                 config=config,
+                middleware=middleware,
             )
         elif isinstance(node, AgentSpecCatchExceptionNode):
             return self._catch_exception_node_convert_to_langgraph(
@@ -607,6 +608,7 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
                 checkpointer=checkpointer,
                 config=config,
+                middleware=middleware,
             )
         elif isinstance(node, AgentSpecInputMessageNode):
             return self._input_message_node_convert_to_langgraph(node)
@@ -619,6 +621,7 @@ class AgentSpecToLangGraphConverter:
                 converted_components=converted_components,
                 checkpointer=checkpointer,
                 config=config,
+                middleware=middleware,
             )
         else:
             raise NotImplementedError(
@@ -648,6 +651,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        middleware: List[Any],
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import MapNodeExecutor
 
@@ -657,6 +661,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
             checkpointer=checkpointer,
             config=config,
+            middleware=middleware,
         )
         if not isinstance(subflow, CompiledStateGraph):
             raise TypeError("MapNodeExecutor can only be initialized with MapNode")
@@ -670,6 +675,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        middleware: List[Any],
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import FlowNodeExecutor
 
@@ -679,6 +685,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
             checkpointer=checkpointer,
             config=config,
+            middleware=middleware,
         )
         if not isinstance(subflow, CompiledStateGraph):
             raise TypeError("FlowNodeExecutor can only initialize FlowNode")
@@ -696,6 +703,7 @@ class AgentSpecToLangGraphConverter:
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        middleware: List[Any],
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import CatchExceptionNodeExecutor
 
@@ -705,6 +713,7 @@ class AgentSpecToLangGraphConverter:
             converted_components=converted_components,
             checkpointer=checkpointer,
             config=config,
+            middleware=middleware,
         )
         if not isinstance(subflow, CompiledStateGraph):
             raise TypeError(

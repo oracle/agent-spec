@@ -12,7 +12,7 @@ import pytest
 from pyagentspec.agent import Agent
 from pyagentspec.flows.edges import ControlFlowEdge
 from pyagentspec.flows.flow import Flow
-from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
+from pyagentspec.flows.nodes import AgentNode, EndNode, FlowNode, StartNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.property import Property
 from pyagentspec.tools import ClientTool
@@ -64,6 +64,29 @@ def agent_flow(agent: Agent) -> Flow:
         control_flow_connections=[
             ControlFlowEdge(name="start_to_agent", from_node=start_node, to_node=agent_node),
             ControlFlowEdge(name="agent_to_end", from_node=agent_node, to_node=end_node),
+        ],
+        data_flow_connections=[],
+    )
+
+
+@pytest.fixture
+def nested_agent_flow(agent_flow: Flow) -> Flow:
+    """An outer flow whose single ``FlowNode`` wraps ``agent_flow`` as a subflow.
+
+    Exercises the recursive ``self.convert(subflow, ...)`` path in
+    ``_flow_node_convert_to_langgraph`` to ensure the ``middleware`` threaded into
+    ``convert`` still reaches an ``AgentNode`` nested inside a subflow.
+    """
+    start_node = StartNode(name="outer_start")
+    flow_node = FlowNode(name="flow_node", subflow=agent_flow)
+    end_node = EndNode(name="outer_end")
+    return Flow(
+        name="outer_flow",
+        start_node=start_node,
+        nodes=[start_node, flow_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_flow", from_node=start_node, to_node=flow_node),
+            ControlFlowEdge(name="flow_to_end", from_node=flow_node, to_node=end_node),
         ],
         data_flow_connections=[],
     )
@@ -180,6 +203,41 @@ def test_middleware_forwarded_through_flow_agent_node(agent_flow: Flow) -> None:
             compiled.invoke(
                 {"inputs": {}, "messages": [{"role": "user", "content": ""}]},
                 config={"configurable": {"thread_id": "flow-mw-regression"}},
+            )
+
+    assert captured.get("middleware") == [sentinel]
+
+
+def test_middleware_forwarded_through_nested_subflow_agent_node(nested_agent_flow: Flow) -> None:
+    """Regression: middleware must reach agents nested inside a ``FlowNode`` subflow.
+
+    ``_flow_node_convert_to_langgraph`` recurses via ``self.convert(subflow, ...)``,
+    so the ``middleware`` threaded into ``convert`` must be forwarded through the
+    subflow conversion to reach an ``AgentNode`` one (or more) subflows deep.
+    """
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph._langgraphconverter import (
+        AgentSpecToLangGraphConverter,
+    )
+    from pyagentspec.adapters.langgraph._types import langchain_agents
+
+    nested_agent = nested_agent_flow.nodes[1].subflow.nodes[1].agent  # type: ignore[union-attr]
+    captured: Dict[str, Any] = {}
+    sentinel = object()
+    compiled = AgentSpecToLangGraphConverter().convert(
+        nested_agent_flow,
+        tool_registry={},
+        converted_components={nested_agent.llm_config.id: object()},
+        checkpointer=MemorySaver(),
+        middleware=[sentinel],
+    )
+
+    with patch.object(langchain_agents, "create_agent", side_effect=_spy_create_agent(captured)):
+        with pytest.raises(_StopCreateAgent):
+            compiled.invoke(
+                {"inputs": {}, "messages": [{"role": "user", "content": ""}]},
+                config={"configurable": {"thread_id": "nested-flow-mw-regression"}},
             )
 
     assert captured.get("middleware") == [sentinel]
