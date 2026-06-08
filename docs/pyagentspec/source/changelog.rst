@@ -7,6 +7,28 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **Sensitive field export opt-in**
+
+  Serializers now support ``include_sensitive_fields`` to include sensitive field values in
+  trusted local exports instead of replacing them with ``$component_ref`` placeholders. When
+  enabled, serialization emits warnings so users know the returned data may contain sensitive
+  values and can identify which sensitive fields were exported.
+
+  We thank @spichen for the contribution!
+
+New features
+^^^^^^^^^^^^
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+
+Agent Spec 26.1.2
+-----------------
+
+Improvements
+^^^^^^^^^^^^
+
 * **LangGraph adapter timeout and retry improvements**
 
   The LangGraph adapter now applies ``RetryPolicy.request_timeout`` and
