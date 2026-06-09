@@ -156,7 +156,11 @@ setup(
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
-            "agent-framework>=1.0.0b260130; python_version < '3.14'",
+            # The adapter targets this beta API. Newer agent-framework beta
+            # releases have introduced breaking changes, so keep the extra on
+            # the known-compatible package pair until the adapter is updated.
+            "agent-framework==1.0.0b260130; python_version < '3.14'",
+            "agent-framework-core==1.0.0b260130; python_version < '3.14'",
             "httpx>0.28.0; python_version < '3.14'",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
