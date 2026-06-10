@@ -11,11 +11,19 @@ Adds local src paths for the adapter and vendored Agents SDK so imports
 like `pyagentspec.adapters.openaiagents` and `agents` resolve during tests.
 """
 
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from ..conftest import skip_tests_if_dependency_not_installed
+
+# OpenAI Agents exports traces to api.openai.com when tracing is enabled and an
+# OPENAI_API_KEY is present. Adapter tests use a fake key, so disable SDK trace
+# export before test modules import `agents`.
+os.environ["OPENAI_AGENTS_DISABLE_TRACING"] = "1"
 
 
 def _add_path(p: Path) -> None:
@@ -40,6 +48,16 @@ DEV_FALLBACK = (Path.cwd() / ".dev_fallback").exists()
 if DEV_FALLBACK:
     _add_path(ADAPTER_DIR / "src")
     _add_path(PYAGENTSPEC_DIR / "openai-agents-python" / "src")
+
+
+@pytest.fixture(scope="package", autouse=True)
+def _disable_openai_agents_trace_export() -> None:
+    try:
+        from agents import set_tracing_disabled
+    except ImportError:
+        return
+
+    set_tracing_disabled(True)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any):
