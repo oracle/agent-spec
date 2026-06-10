@@ -14,16 +14,11 @@ like `pyagentspec.adapters.openaiagents` and `agents` resolve during tests.
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import pytest
 
 from ..conftest import skip_tests_if_dependency_not_installed
-
-# OpenAI Agents exports traces to api.openai.com when tracing is enabled and an
-# OPENAI_API_KEY is present. Adapter tests use a fake key, so disable SDK trace
-# export before test modules import `agents`.
-os.environ["OPENAI_AGENTS_DISABLE_TRACING"] = "1"
 
 
 def _add_path(p: Path) -> None:
@@ -51,13 +46,36 @@ if DEV_FALLBACK:
 
 
 @pytest.fixture(scope="package", autouse=True)
-def _disable_openai_agents_trace_export() -> None:
+def _disable_openai_agents_trace_export() -> Iterator[None]:
+    """
+    Disable OpenAI Agents SDK trace export while adapter tests run.
+
+    The SDK exports traces to api.openai.com when tracing is enabled and an
+    OPENAI_API_KEY is present. Adapter tests use a fake key, so keep SDK trace
+    export disabled without leaving the environment changed for later tests.
+    """
+    env_name = "OPENAI_AGENTS_DISABLE_TRACING"
+    old_value = os.environ.get(env_name)
+    os.environ[env_name] = "1"
+
     try:
         from agents import set_tracing_disabled
     except ImportError:
-        return
+        set_tracing_disabled = None
+    else:
+        set_tracing_disabled(True)
 
-    set_tracing_disabled(True)
+    try:
+        yield
+    finally:
+        if old_value is not None:
+            os.environ[env_name] = old_value
+        else:
+            os.environ.pop(env_name, None)
+
+        if set_tracing_disabled is not None:
+            tracing_disabled = os.environ.get(env_name, "false").lower() in ("1", "true")
+            set_tracing_disabled(tracing_disabled)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any):
