@@ -487,6 +487,7 @@ class AgentNodeExecutor(NodeExecutor):
         converted_components: Dict[str, Any],
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
+        middleware: Optional[List[Any]] = None,
     ) -> None:
         super().__init__(node)
         if not isinstance(self.node, AgentSpecAgentNode):
@@ -495,6 +496,7 @@ class AgentNodeExecutor(NodeExecutor):
         self.checkpointer = checkpointer
         self.converted_components = converted_components
         self.config = config
+        self._middleware: List[Any] = list(middleware or [])
         self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
 
     def _create_react_agent_with_given_input_values(
@@ -523,6 +525,7 @@ class AgentNodeExecutor(NodeExecutor):
                 converted_components=self.converted_components,
                 checkpointer=self.checkpointer,
                 config=self.config,
+                middleware=self._middleware,
             )
         return self._agents_cache[system_prompt]
 
