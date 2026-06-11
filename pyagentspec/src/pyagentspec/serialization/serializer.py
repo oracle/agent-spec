@@ -58,6 +58,8 @@ class AgentSpecSerializer:
     def to_yaml(
         self,
         component: Component,
+        *,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -65,6 +67,8 @@ class AgentSpecSerializer:
         self,
         component: Component,
         agentspec_version: Optional[AgentSpecVersionEnum] = None,
+        *,
+        include_sensitive_fields: bool = False,
     ) -> str: ...
 
     @overload
@@ -386,6 +390,8 @@ class AgentSpecSerializer:
     def to_dict(
         self,
         component: Component,
+        *,
+        include_sensitive_fields: bool = False,
     ) -> ComponentAsDictT: ...
 
     @overload
@@ -393,6 +399,8 @@ class AgentSpecSerializer:
         self,
         component: Component,
         agentspec_version: Optional[AgentSpecVersionEnum],
+        *,
+        include_sensitive_fields: bool = False,
     ) -> ComponentAsDictT: ...
 
     @overload

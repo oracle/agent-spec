@@ -67,7 +67,8 @@ The ``RemoteTool``, ``MCPTool`` and the ``ApiNode`` define HTTP-based interactio
 
 .. important::
 
-  Never embed API keys, passwords, or other secrets directly in Agent Spec.
+  Do not embed API keys, passwords, or other secrets directly in Agent Spec
+  configurations intended for storage, sharing, version control, logging, or deployment.
 
 Always use secure injection mechanisms and follow the principle of least privilege for credential access.
 
@@ -113,17 +114,24 @@ Considerations regarding API keys and secrets management
 
 .. important::
 
-  Never embed API keys, passwords, or other secrets directly in Agent Spec.
+  Do not embed API keys, passwords, or other secrets directly in Agent Spec
+  configurations intended for storage, sharing, version control, logging, or deployment.
 
 Agent Spec is a declarative language for agents, tools, and flows.
 It may be stored, versioned, or inspected; it is **not a secure medium for sensitive data**.
-Hardcoding secrets in the representation increases the risk of accidental exposure and must be avoided.
+Hardcoding secrets in shared or persistent representations increases the risk of accidental
+exposure and must be avoided.
 
-Instead of embedding secrets in the representation, ensure that secrets are injected securely at runtime via:
+Instead of embedding secrets in the representation, ensure that secrets are injected securely
+at runtime via:
 
 * Integration with a secrets manager (e.g., OCI Vault)
 * Use instance principal when working on OCI Computes
 * Use Kubernetes/Docker secrets if the deployments supports it
+
+If sensitive values are explicitly included in an Agent Spec configuration for a trusted
+local workflow, treat that configuration as secret material. Do not commit, log, share,
+or persist it except in systems approved for storing secrets.
 
 Furthermore, follow these general best practices around credential management
 
