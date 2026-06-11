@@ -1742,6 +1742,9 @@ A more detailed description of each node follows.
         * The flow is started giving the specified inputs
         * The flow provides the specified outputs
         * The flow is run as it was inlined with the overall flow
+        * If the child flow enters an ``input-required`` state, that pending input
+          is propagated through the ``FlowNode`` by default so the parent flow also
+          waits for the same input before continuing.
       - .. list-table::
             :header-rows: 1
             :widths: 20 35 15 15 15
@@ -1757,6 +1760,15 @@ A more detailed description of each node follows.
               - Flow
               - Yes
               - -
+            * - propagate_pending_input
+              - Whether pending input requests raised by the subflow propagate through the
+                ``FlowNode``. When ``true``, the parent flow must surface the child prompt
+                and resume only after the child input is supplied. When ``false``, a runtime
+                may keep the pending input local to the child execution, but must fail
+                explicitly if it cannot preserve that isolation.
+              - bool
+              - No
+              - true
 
       - Inferred from the inner structure.
         It's the sets of inputs required by the StartNode of the inner flow
