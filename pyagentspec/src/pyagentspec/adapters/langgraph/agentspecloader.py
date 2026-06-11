@@ -39,6 +39,12 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         enables features that require a checkpointer (e.g., client tools).
     config:
         Optional ``RunnableConfig`` to pass to created runnables/graphs.
+    middleware:
+        Optional list of LangChain agent middleware instances forwarded verbatim to
+        ``langchain_agents.create_agent(middleware=...)`` when compiling an Agent Spec
+        ``Agent`` into a ReAct graph. Order is preserved — index ``0`` is the outermost
+        middleware. When ``None`` or an empty list, the ``middleware`` keyword is
+        omitted entirely from the ``create_agent`` call.
     allowed_components:
         Optional iterable of Agent Spec component type names or Component classes allowed
         to be loaded. If omitted, all component types are allowed unless blocked.
@@ -57,7 +63,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         plugins: Optional[List[ComponentDeserializationPlugin]] = None,
         checkpointer: Optional[Checkpointer] = None,
         config: Optional[RunnableConfig] = None,
-        *,
+        middleware: Optional[List[Any]] = None,
         allowed_components: Optional[ComponentPolicyInput] = None,
         blocked_components: Optional[ComponentPolicyInput] = None,
     ) -> None:
@@ -69,6 +75,7 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
         )
         self.checkpointer = checkpointer
         self.config = config
+        self._middleware: List[Any] = list(middleware or [])
 
     @property
     def agentspec_to_runtime_converter(self) -> AgentSpecToLangGraphConverter:
@@ -287,5 +294,6 @@ class AgentSpecLoader(AdapterAgnosticAgentSpecLoader):
                 tool_registry=self.tool_registry,
                 checkpointer=self.checkpointer,
                 config=self.config,
+                middleware=self._middleware,
             ),
         )
