@@ -190,9 +190,6 @@ def _create_agent_state_typed_dict(
 
 
 class AgentSpecToLangGraphConverter:
-    def __init__(self) -> None:
-        pass
-
     def convert(
         self,
         agentspec_component: AgentSpecComponent,
