@@ -82,6 +82,28 @@ Note that a subcomponent reused in multiple parts of a complex nested component
 a flow) must be defined using a component reference. If two components in an
 Agent Spec configuration use the same `id`, the configuration will be considered
 invalid.
+Duplicate inline definitions are invalid even when they appear in different
+fields. For example, a node with the same ``id`` must not be defined inline in
+more than one of ``start_node``, ``nodes``, or ``$referenced_components``;
+define it once and use ``$component_ref`` everywhere else.
+
+Component references are resolved from the referencing component outward through
+its parent components. A nested component can reference a component defined by a
+parent, including a node. A component cannot reference components that are only
+defined inside one of its children or inside a sibling component. Component IDs
+must be unique within a single Agent Spec configuration, including nested
+components.
+
+Reference validity rules:
+
+- A ``$component_ref`` may appear multiple times; all occurrences resolve to the
+  same definition.
+- A reference ID must be defined at most once in ``$referenced_components`` within
+  a serialized configuration.
+- A reference is valid if it resolves to an in-scope ``$referenced_components`` entry
+  or to an externally supplied disaggregated component.
+- If a reference is unresolved after external disaggregated components are supplied,
+  deserialization must fail.
 
 
 Input/output schemas
@@ -171,12 +193,15 @@ but an output of type ``string`` cannot connect to an input of type ``number``.
 
 In order to further simplify input-output connections, we define some simple type compatibility rules that are accepted by Agent Spec.
 
-- Every type can be converted to string.
+- Every type except ``null`` can be converted to string.
 - Numeric types (i.e., ``integer`` and ``number``) can be converted to each other.
   Note that this conversion could cause the loss of decimals.
 - The Boolean type can be converted to numeric ones and vice-versa.
   The convention for the conversion is the one adopted by most programming languages:
   0 refers to ``false``, while any other number refers to ``true``.
+
+Default values follow the same compatibility rules. If a property defines ``default``,
+that value must be compatible with the property's declared schema.
 
 These rules apply recursively in complex types:
 
@@ -1530,9 +1555,10 @@ Conditional branching in Agent Spec is supported through a special step called
 BranchingNode (detailed later), a node that maps input values to
 different branches through a key-value mapping.
 
-Nodes can have multiple outgoing branches, as previously mentioned in this page.
-The ``branches`` attribute of the Node is automatically filled and managed
-by the implementation of the Node, but it will appear in the representation. Both
+Only node types that explicitly support branching, such as ``BranchingNode``
+and ``FlowNode``, can have multiple outgoing branches. The ``branches`` attribute
+of the Node is automatically filled and managed
+by the implementation of those nodes, but it will appear in the representation. Both
 ``Node.branches`` and ``ControlFlowEdge.from_branch`` are set to null by
 default, and that is the default behavior in case one single branch is
 going out of a node (this is compatible with the definition of Node and
@@ -1594,8 +1620,13 @@ Here's the list of nodes supported in Agent Spec:
 - ParallelMapNode: performs a parallel map-reduce operation on a given input collection
 - ParallelFlowNode: execute a list of subflows in parallel
 
+Node configurations must not include parameters outside the node type definition.
+
 
 A more detailed description of each node follows.
+
+.. note::
+    On narrower screens, the node table is horizontally scrollable. Scroll horizontally to view all columns.
 
 .. list-table::
     :widths: 5 20 15 15 15 15
@@ -1764,9 +1795,9 @@ A more detailed description of each node follows.
         It's the set of outputs defined in the ``subflow``'s specification
       - Inferred from the inner flow: one per unique ``branch_name`` of the ``subflow``'s EndNodes
     * - MapNode
-      - The MapNode is used when we need to map a sequence of nodes to each of the values
-        defined in a list (from output of a previous node). This node is responsible to
-        asynchronically map each value of a collection (defined in input_schema) to the first node
+      - The MapNode is used when we need to map a sequence of nodes to inputs
+        defined by a previous node. This node is responsible to
+        asynchronically map input values to the first node
         of the 'subflow' and reduce the outputs of the last node of the 'subflow' to
         defined variables (defined in output_schema)
       - .. list-table::
@@ -1798,25 +1829,30 @@ A more detailed description of each node follows.
               - null, each output is aggregated through value concatenation (append)
 
       - Inferred from the inner structure (as defined in FlowNode).
-        The names of the inputs will be the ones of the inner flow,
-        complemented with the ``iterated_`` prefix. Their type is
+        The inputs must exactly match the inputs of the inner flow,
+        with each name complemented with the ``iterated_`` prefix.
+        Extra or missing inputs are invalid. Their type is
         ``Union[inner_type, List[inner_type]]``, where ``inner_type``
         is the type of the respective input in the inner flow.
 
-        - If an input of type ``inner_type`` is connected, the same value will used in
+        - If an input of type ``inner_type`` is connected, the same value is used in
           all the executions of the inner flow
         - If an input of type ``List[inner_type]`` is connected, the input values will be iterated over
+        - If all inputs are scalar, the inner flow is executed once
+        - If multiple inputs are lists, they must have the same length and are consumed together for each execution
 
         Note that all the input lists must have the same length, otherwise a runtime error will be thrown.
 
       - Inferred from the inner structure (as defined in FlowNode),
         combined with the reducer method of each output.
-        The names of the outputs will be the ones of the inner flow,
-        complemented with the ``collected_`` prefix. Their type depends
-        on the ``reduce`` method specified for that output:
+        The outputs must exactly match the outputs of the inner flow,
+        with each name complemented with the ``collected_`` prefix.
+        Extra or missing outputs are invalid. Reducer keys must be inner output names;
+        missing reducers default to ``append``.
+        The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``
+        - same type of the respective output type in case of ``sum``, ``average``, ``max``, ``min``
 
       - One, the default next
     * - CatchExceptionNode
@@ -1860,8 +1896,8 @@ A more detailed description of each node follows.
         * The branches of the ``sub_flow``;
         * A branch ``caught_exception_branch`` for when an exception is caught.
     * - ParallelMapNode
-      - The ParallelMapNode is used when we need to map a sequence of nodes to each of the values
-        defined in a list (from output of a previous node). Its functionality is equivalent to the MapNode,
+      - The ParallelMapNode is used when we need to map a sequence of nodes to inputs
+        defined by a previous node. Its functionality is equivalent to the MapNode,
         the only difference is that in this node the map operation is supposed to be performed in parallel.
         Please check the concerns regarding parallel execution depicted in the :ref:`parallelization section <parallelization>`.
       - .. list-table::
@@ -1893,25 +1929,30 @@ A more detailed description of each node follows.
               - null, each output is aggregated through value concatenation (append)
 
       - Inferred from the inner structure (as defined in FlowNode).
-        The names of the inputs will be the ones of the inner flow,
-        complemented with the ``iterated_`` prefix. Their type is
+        The inputs must exactly match the inputs of the inner flow,
+        with each name complemented with the ``iterated_`` prefix.
+        Extra or missing inputs are invalid. Their type is
         ``Union[inner_type, List[inner_type]]``, where ``inner_type``
         is the type of the respective input in the inner flow.
 
-        - If an input of type ``inner_type`` is connected, the same value will used in
+        - If an input of type ``inner_type`` is connected, the same value is used in
           all the executions of the inner flow
         - If an input of type ``List[inner_type]`` is connected, the input values will be iterated over
+        - If all inputs are scalar, the inner flow is executed once
+        - If multiple inputs are lists, they must have the same length and are consumed together for each execution
 
         Note that all the input lists must have the same length, otherwise a runtime error will be thrown.
 
       - Inferred from the inner structure (as defined in FlowNode),
         combined with the reducer method of each output.
-        The names of the outputs will be the ones of the inner flow,
-        complemented with the ``collected_`` prefix. Their type depends
-        on the ``reduce`` method specified for that output:
+        The outputs must exactly match the outputs of the inner flow,
+        with each name complemented with the ``collected_`` prefix.
+        Extra or missing outputs are invalid. Reducer keys must be inner output names;
+        missing reducers default to ``append``.
+        The output type depends on the reducer method specified for that output:
 
         - ``List`` of the respective output type in case of ``append``
-        - same type of the respective output type in case of ``sum``, ``avg``
+        - same type of the respective output type in case of ``sum``, ``average``, ``max``, ``min``
 
       - One, the default next
     * - ParallelFlowNode
