@@ -965,6 +965,8 @@ the correct built-in tool.
    class Tool(ComponentWithIO):
      # Flag to make tool require user confirmation before execution.
      requires_confirmation: bool
+     # Optional governance policy for this tool.
+     tool_policy: Optional[ToolPolicy]
 
    class ClientTool(Tool):
      pass
@@ -1091,6 +1093,8 @@ for individual tools which explicitly specify it.
 
    class ToolBox(Component):
      requires_confirmation: bool = False
+     # Optional governance policy applying to all tools in this ToolBox.
+     tool_policy: Optional[ToolPolicy]
 
 
 MCPToolBox
@@ -1151,6 +1155,112 @@ pin and validate specific remote MCP tools.
 
 See the :ref:`filter rules for the MCPToolBox <mcp_toolfilter_rules>` to see how the ``MCPToolSpec``
 is used.
+
+.. _tool_policy:
+
+Tool Policy
+'''''''''''
+
+A ``ToolPolicy`` is a governance component that defines constraints on tool invocation.
+It can be attached to a ``Tool`` or ``ToolBox`` via the ``tool_policy`` field. As a
+``Component``, it can be defined once and referenced from multiple tools via
+``$component_ref``, or inlined on a single tool when reuse is not needed.
+
+.. code-block:: python
+
+   class ToolPolicy(Component):
+     data_classification: Literal["public", "internal", "confidential", "restricted"]
+     requires_justification: bool
+     allowed_callers: Optional[List[Component]]
+     denied_callers: Optional[List[Component]]
+     guards: List[ExecutionGuard]
+
+* ``data_classification``: the sensitivity level of data this tool accesses or produces.
+  Runtimes use this for access control, audit routing, and data-handling decisions.
+  Defaults to ``"public"`` when not specified.
+* ``requires_justification``: when true, the invoking agent must provide a reason for
+  calling this tool. How justification is captured is runtime-defined.
+* ``allowed_callers``: component references of agents or flows permitted to invoke
+  the tool. When ``None``, no caller restriction is applied. An empty list means no
+  caller is allowed.
+* ``denied_callers``: component references explicitly denied from invoking the tool.
+  Takes precedence over ``allowed_callers``. When ``None``, no explicit denials are applied.
+* ``guards``: ordered list of execution guards evaluated before tool invocation. Guards are
+  checked in declaration order; the first guard whose condition is met triggers its
+  ``on_violation`` action.
+
+**Execution Guards**
+
+Guards are execution-time constraints on tool invocation. Each guard type defines a
+specific constraint, an optional condition, and what happens when the constraint is
+not satisfied. The ``ExecutionGuard`` is a discriminated union of the following types:
+
+.. code-block:: python
+
+   class RateLimitGuard(Component):
+     max_calls: int
+     window_seconds: int
+     on_violation: Literal["block", "flag", "log", "escalate"]
+
+   class ApprovalGuard(Component):
+     condition: Literal["always", "input_equals", "input_contains", "input_not_equals"]
+     field: Optional[str]
+     value: Optional[str]
+     on_violation: Literal["block", "escalate"]
+
+   class JustificationGuard(Component):
+     condition: Literal["always", "input_equals", "input_contains", "input_not_equals"]
+     field: Optional[str]
+     value: Optional[str]
+     on_violation: Literal["block", "flag"]
+
+* ``RateLimitGuard``: constrains how frequently a tool can be invoked within a rolling
+  time window. ``max_calls`` and ``window_seconds`` are required.
+* ``ApprovalGuard``: requires human or supervisor approval before the tool call proceeds.
+  When ``condition`` is ``"always"``, approval is required unconditionally. Input-conditional
+  values (``input_equals``, ``input_contains``, ``input_not_equals``) require ``field`` and
+  ``value`` to be specified.
+* ``JustificationGuard``: requires the invoking agent to provide a reason for the tool call.
+  Supports the same condition values as ``ApprovalGuard``.
+
+**Policy Composition (ToolBox + Tool)**
+
+When a ``ToolBox`` has a ``tool_policy`` and individual tools within that box also have
+their own ``tool_policy``, the effective policy is determined per-field:
+
+* ``data_classification``: the higher sensitivity level wins
+  (``restricted`` > ``confidential`` > ``internal`` > ``public``).
+* ``requires_justification``: ``true`` at either level means justification is required.
+* ``guards``: union of both guard lists. All guards from both levels apply.
+* ``allowed_callers``: intersection (caller must be allowed at both levels).
+* ``denied_callers``: union (denied at either level means denied).
+
+.. note::
+
+   ``Tool.requires_confirmation: true`` is equivalent to ``ApprovalGuard`` with
+   ``condition: "always"`` and ``on_violation: "block"``. It remains as the simpler
+   form for the common unconditional case. Runtimes SHOULD treat the shorthand and
+   guard forms identically.
+
+**PolicyViolation Event**
+
+When a tool invocation is blocked or flagged due to a policy constraint, runtimes
+emit a ``PolicyViolation`` event for audit and observability:
+
+.. code-block:: python
+
+   class PolicyViolation(Event):
+     tool: Tool
+     policy: ToolPolicy
+     guard: ExecutionGuard
+     violation_type: Literal[
+       "rate_limit_exceeded", "caller_denied", "justification_missing",
+       "approval_required", "classification_breach"
+     ]
+     action_taken: Literal["blocked", "flagged", "logged", "escalated"]
+     caller: Optional[Component]
+     inputs: SensitiveField[Optional[Dict[str, Any]]]
+     detail: Optional[str]
 
 Built-in Tools
 ^^^^^^^^^^^^^^

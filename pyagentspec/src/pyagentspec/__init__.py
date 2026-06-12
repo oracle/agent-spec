@@ -25,6 +25,7 @@ from .property import Property
 from .retrypolicy import RetryPolicy
 from .serialization import AgentSpecDeserializer, AgentSpecSerializer
 from .swarm import Swarm
+from .tools.toolpolicy import ToolPolicy
 
 __all__ = [
     "A2AAgent",
@@ -34,6 +35,7 @@ __all__ = [
     "AgentSpecSerializer",
     "Property",
     "RetryPolicy",
+    "ToolPolicy",
     "Component",
     "Agent",
     "OpenAiAgent",

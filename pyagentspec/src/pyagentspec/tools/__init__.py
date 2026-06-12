@@ -12,12 +12,30 @@ from .remotetool import RemoteTool
 from .servertool import ServerTool
 from .tool import Tool
 from .toolbox import ToolBox
+from .toolpolicy import (
+    ApprovalGuard,
+    DataClassificationT,
+    ExecutionGuard,
+    GuardConditionT,
+    JustificationGuard,
+    RateLimitGuard,
+    ToolPolicy,
+    ViolationActionT,
+)
 
 __all__ = [
-    "ClientTool",
-    "ServerTool",
+    "ApprovalGuard",
     "BuiltinTool",
+    "ClientTool",
+    "DataClassificationT",
+    "ExecutionGuard",
+    "GuardConditionT",
+    "JustificationGuard",
+    "RateLimitGuard",
     "RemoteTool",
+    "ServerTool",
     "Tool",
     "ToolBox",
+    "ToolPolicy",
+    "ViolationActionT",
 ]
