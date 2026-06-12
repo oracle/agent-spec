@@ -6,6 +6,7 @@
 
 """This module defines the serialization plugin for Pydantic Components."""
 
+import warnings
 from typing import Any, Dict, List, Mapping, Type
 
 from pydantic import BaseModel
@@ -68,11 +69,20 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                 # If a sensitive value is left as a falsy value (e.g. None, False, {}, "") then it
                 # is not replaced by a reference, such that the empty value does not need to be
                 # explicitly specified when loading the component configuration.
-                if is_sensitive_field(field_info) and field_value:
+                if field_value and serialization_context.should_redact_field(field_info):
                     serialized_component[field_name] = {
                         "$component_ref": f"{component.id}.{field_name}"
                     }
                 else:
+                    # A truthy sensitive field that reaches this branch is being exported.
+                    if field_value and is_sensitive_field(field_info):
+                        warnings.warn(
+                            "Sensitive field exported: "
+                            f"component_id={component.id!r}, field={field_name!r}. "
+                            "Review the serialized value before storing or sharing the output.",
+                            UserWarning,
+                            stacklevel=2,
+                        )
                     serialized_component[field_name] = serialization_context.dump_field(
                         value=field_value, info=field_info
                     )

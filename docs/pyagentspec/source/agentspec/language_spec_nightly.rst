@@ -2858,7 +2858,10 @@ as part of the main assistant's configuration. For example when:
   without duplicating the configuration for every Component's version.
 
 .. important::
-    Agent Spec exported configurations should never contain sensitive information.
+    Agent Spec configurations intended for storage, sharing, version control, logging,
+    or deployment should not contain sensitive information. Sensitive values should be
+    represented as references and supplied through trusted runtime or deserialization
+    mechanisms.
 
 For this reason, Agent Spec supports referencing **components and values** that are not serialized
 in the same configuration, therefore called *disaggregated*.
@@ -2941,7 +2944,9 @@ Some of the fields in the configuration of Agent Spec components may contain sen
 such as API keys or authentication tokens. To help developers securely support these components,
 AgentSpec runtimes and SDKs must follow these three guidelines:
 
-- **When exporting configurations**: Any sensitive field must be excluded from the configurations.
+- **When exporting configurations**: Sensitive fields should be excluded by default and represented
+  as references. Any export that intentionally includes sensitive values must be treated as secret
+  material, not as an ordinary portable Agent Spec configuration.
 - **When loading configurations**: Runtime adapters and SDKs must allow passing the excluded sensitive information.
 - **When loading configurations**: If developers have already inlined the sensitive information into their
   configurations, runtimes and SDKs should allow loading these configurations too.
