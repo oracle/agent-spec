@@ -785,13 +785,41 @@ class AgentSpecToLangGraphConverter:
     ) -> "NodeExecutor":
         from pyagentspec.adapters.langgraph._node_execution import ToolNodeExecutor
 
-        tool = self.convert(
-            tool_node.tool,
-            tool_registry=tool_registry,
-            converted_components=converted_components,
-            checkpointer=checkpointer,
-            config=config,
-        )
+        agentspec_tool = tool_node.tool
+        tool_outputs = agentspec_tool.outputs or []
+
+        # When a confirmation tool declares multiple outputs, a denial returns a single
+        # string that cannot be mapped to those outputs. Bypass self.convert() for all
+        # affected tool types so we can pass raise_on_denial=True: on rejection the
+        # tool raises RuntimeError with a clear message instead of an opaque crash.
+        if agentspec_tool.requires_confirmation and len(tool_outputs) > 1:
+            _ensure_checkpointer_and_valid_tool_config(agentspec_tool, checkpointer)
+            if isinstance(agentspec_tool, AgentSpecServerTool):
+                tool = self._server_tool_convert_to_langgraph(
+                    agentspec_tool, tool_registry, config=config, raise_on_denial=True
+                )
+            elif isinstance(agentspec_tool, AgentSpecRemoteTool):
+                tool = self._remote_tool_convert_to_langgraph(
+                    agentspec_tool, config=config, raise_on_denial=True
+                )
+            elif isinstance(agentspec_tool, AgentSpecClientTool):
+                tool = self._client_tool_convert_to_langgraph(agentspec_tool, raise_on_denial=True)
+            else:
+                raise ValueError(
+                    f"Tool '{agentspec_tool.name}' of type "
+                    f"'{type(agentspec_tool).__name__}' declares multiple outputs and "
+                    f"requires_confirmation=True inside Flow ToolNode '{tool_node.name}'. "
+                    f"Multi-output confirmation is supported for ServerTool, RemoteTool, "
+                    f"and ClientTool. Use a single output or a supported tool type."
+                )
+        else:
+            tool = self.convert(
+                tool_node.tool,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+            )
 
         return ToolNodeExecutor(tool_node, tool)
 
@@ -809,6 +837,7 @@ class AgentSpecToLangGraphConverter:
         self,
         remote_tool: AgentSpecRemoteTool,
         config: RunnableConfig,
+        raise_on_denial: bool = False,
     ) -> StructuredTool:
         tool_name = remote_tool.name
         tool_description = remote_tool.description or ""
@@ -816,6 +845,7 @@ class AgentSpecToLangGraphConverter:
             func=_create_remote_tool_func(remote_tool),
             tool_name=tool_name,
             requires_confirmation=remote_tool.requires_confirmation,
+            raise_on_denial=raise_on_denial,
         )
 
         # Use a Pydantic model for args_schema
@@ -841,6 +871,7 @@ class AgentSpecToLangGraphConverter:
         agentspec_server_tool: AgentSpecServerTool,
         tool_registry: Dict[str, LangGraphTool],
         config: RunnableConfig,
+        raise_on_denial: bool = False,
     ) -> StructuredTool:
         def _is_structured_tool(x: Any) -> TypeGuard[StructuredTool]:
             return isinstance(x, StructuredTool)
@@ -869,6 +900,7 @@ class AgentSpecToLangGraphConverter:
             tool_obj,
             tool_name=tool_name,
             requires_confirmation=requires_confirmation,
+            raise_on_denial=raise_on_denial,
         )
         if _is_structured_tool(tool_obj):
             if not tool_callable_kwargs:
@@ -918,7 +950,7 @@ class AgentSpecToLangGraphConverter:
         )
 
     def _client_tool_convert_to_langgraph(
-        self, agentspec_client_tool: AgentSpecClientTool
+        self, agentspec_client_tool: AgentSpecClientTool, raise_on_denial: bool = False
     ) -> StructuredTool:
         # Warn at load time for Python < 3.11 since client tools use interrupt under the hood.
         if sys.version_info < (3, 11):
@@ -938,6 +970,11 @@ class AgentSpecToLangGraphConverter:
                 confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
 
                 if not confirmed:
+                    if raise_on_denial:
+                        raise RuntimeError(
+                            f"Tool '{tool_name}' was denied by the user (reason: {reason}). "
+                            f"Denial cannot be mapped to multiple declared outputs."
+                        )
                     return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
 
             tool_request = {
@@ -1812,6 +1849,7 @@ def _confirm_then(
     func: Callable[..., Awaitable[Any]],
     tool_name: str,
     requires_confirmation: bool,
+    raise_on_denial: bool = ...,
 ) -> Callable[..., Awaitable[Any]]: ...
 
 
@@ -1820,6 +1858,7 @@ def _confirm_then(
     func: Callable[..., Any],
     tool_name: str,
     requires_confirmation: bool,
+    raise_on_denial: bool = ...,
 ) -> Callable[..., Any]: ...
 
 
@@ -1827,8 +1866,14 @@ def _confirm_then(
     func: Callable[..., Any],
     tool_name: str,
     requires_confirmation: bool,
+    raise_on_denial: bool = False,
 ) -> Callable[..., Any]:
-    """Wrap a callable so that it first interrupts for confirmation (if required)."""
+    """Wrap a callable so that it first interrupts for confirmation (if required).
+
+    When raise_on_denial is True, denial raises RuntimeError instead of returning a
+    string. Use this inside a Flow ToolNode with multiple outputs where a denial
+    string cannot be mapped to the declared output structure.
+    """
     if not requires_confirmation:
         return func
 
@@ -1839,6 +1884,11 @@ def _confirm_then(
             confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
             if not confirmed:
+                if raise_on_denial:
+                    raise RuntimeError(
+                        f"Tool '{tool_name}' was denied by the user (reason: {reason}). "
+                        f"Denial cannot be mapped to multiple declared outputs."
+                    )
                 return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
 
             return await func(*args, **kwargs)
@@ -1850,6 +1900,11 @@ def _confirm_then(
         confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
         if not confirmed:
+            if raise_on_denial:
+                raise RuntimeError(
+                    f"Tool '{tool_name}' was denied by the user (reason: {reason}). "
+                    f"Denial cannot be mapped to multiple declared outputs."
+                )
             return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
 
         return func(*args, **kwargs)
@@ -1884,6 +1939,7 @@ def _get_structured_tool_callable_kwargs(
     tool_obj: Union[StructuredTool, BaseTool, Callable[..., Any]],
     tool_name: str,
     requires_confirmation: bool = False,
+    raise_on_denial: bool = False,
 ) -> StructuredToolCallableKwargs:
     """Return the callables to pass to StructuredTool.
 
@@ -1903,6 +1959,7 @@ def _get_structured_tool_callable_kwargs(
                 func=tool_func,
                 tool_name=tool_name,
                 requires_confirmation=requires_confirmation,
+                raise_on_denial=raise_on_denial,
             )
 
         tool_coroutine = getattr(tool_obj, "coroutine", None)
@@ -1911,12 +1968,14 @@ def _get_structured_tool_callable_kwargs(
                 func=tool_coroutine,
                 tool_name=tool_name,
                 requires_confirmation=requires_confirmation,
+                raise_on_denial=raise_on_denial,
             )
     elif callable(tool_obj):
         wrapped_tool = _confirm_then(
             func=tool_obj,
             tool_name=tool_name,
             requires_confirmation=requires_confirmation,
+            raise_on_denial=raise_on_denial,
         )
         if _is_async_callable(wrapped_tool):
             structured_tool_callable_kwargs["coroutine"] = wrapped_tool
@@ -1940,14 +1999,3 @@ def _ensure_checkpointer_and_valid_tool_config(
         )
     elif isinstance(agentspec_tool, AgentSpecClientTool) and checkpointer is None:
         raise ValueError(f"A Checkpointer is required when using ClientTool '{tool_name}'.")
-
-    tool_output = agentspec_tool.outputs or []
-    if agentspec_tool.requires_confirmation and (
-        len(tool_output) != 1 or "type" in tool_output[0].json_schema
-    ):
-        # TODO: refine to only raise output property does not support string
-        raise ValueError(
-            f"Invalid output schema for tool '{tool_name}' requiring tool confirmation: "
-            f"json schema should be left unspecified when using tool confirmation, was {tool_output}. "
-            f'Please use outputs=[Property(title="{tool_name}", json_schema={{}})]'
-        )
