@@ -19,6 +19,12 @@ Improvements
 New features
 ^^^^^^^^^^^^
 
+* **MCP tool retry policies**
+
+  Added ``retry_policy`` support to ``MCPTool`` and ``MCPToolBox`` so runtimes can
+  configure retries for MCP tool resolution and execution separately from
+  transport-level request retries.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

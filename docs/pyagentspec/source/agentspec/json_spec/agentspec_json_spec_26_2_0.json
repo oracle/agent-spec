@@ -3713,6 +3713,17 @@
         "client_transport": {
           "$ref": "#/$defs/ClientTransport"
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -3771,6 +3782,17 @@
         },
         "client_transport": {
           "$ref": "#/$defs/ClientTransport"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
         },
         "tool_filter": {
           "anyOf": [

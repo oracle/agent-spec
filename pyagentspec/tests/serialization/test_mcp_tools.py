@@ -123,6 +123,94 @@ def test_agent_with_mcp_tool_and_transport_retry_policy_can_be_serialized_then_d
     assert AgentSpecSerializer().to_dict(loaded_agent) == dumped_agent
 
 
+def test_mcp_tool_with_retry_policy_can_be_serialized_then_deserialized() -> None:
+    mcp_tool = MCPTool(
+        id="mcp_tool",
+        name="mcp_tool_with_retry",
+        client_transport=SSETransport(
+            id="client_transport_component_id",
+            name="sse_mcp_transport",
+            url="https://some.where/sse",
+        ),
+        retry_policy=RetryPolicy(max_attempts=3, initial_retry_delay=0.25),
+    )
+
+    dumped_tool = AgentSpecSerializer().to_dict(mcp_tool)
+    loaded_tool = AgentSpecDeserializer().from_dict(dumped_tool)
+
+    assert dumped_tool["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped_tool["retry_policy"]["max_attempts"] == 3
+    assert AgentSpecSerializer().to_dict(loaded_tool) == dumped_tool
+
+
+def test_mcp_toolbox_with_retry_policy_can_be_serialized_then_deserialized() -> None:
+    mcp_toolbox = MCPToolBox(
+        id="mcp_toolbox",
+        name="mcp_toolbox_with_retry",
+        client_transport=SSETransport(
+            id="client_transport_component_id",
+            name="sse_mcp_transport",
+            url="https://some.where/sse",
+        ),
+        tool_filter=["mcp_tool"],
+        retry_policy=RetryPolicy(max_attempts=4, initial_retry_delay=0.5),
+    )
+
+    dumped_toolbox = AgentSpecSerializer().to_dict(mcp_toolbox)
+    loaded_toolbox = AgentSpecDeserializer().from_dict(dumped_toolbox)
+
+    assert dumped_toolbox["agentspec_version"] == AgentSpecVersionEnum.v26_2_0.value
+    assert dumped_toolbox["retry_policy"]["max_attempts"] == 4
+    assert AgentSpecSerializer().to_dict(loaded_toolbox) == dumped_toolbox
+
+
+@pytest.mark.parametrize(
+    "component",
+    [
+        MCPTool(
+            name="mcp_tool_with_retry",
+            client_transport=SSETransport(name="sse_mcp_transport", url="https://some.where/sse"),
+            retry_policy=RetryPolicy(max_attempts=3),
+        ),
+        MCPToolBox(
+            name="mcp_toolbox_with_retry",
+            client_transport=SSETransport(name="sse_mcp_transport", url="https://some.where/sse"),
+            retry_policy=RetryPolicy(max_attempts=3),
+        ),
+    ],
+)
+def test_mcp_retry_policy_requires_v26_2(component) -> None:
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecSerializer().to_dict(component, agentspec_version=AgentSpecVersionEnum.v26_1_2)
+
+    dumped = AgentSpecSerializer().to_dict(component)
+    dumped["agentspec_version"] = AgentSpecVersionEnum.v26_1_2.value
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecDeserializer().from_dict(dumped)
+
+
+@pytest.mark.parametrize(
+    "component",
+    [
+        MCPTool(
+            name="mcp_tool_without_retry",
+            client_transport=SSETransport(name="sse_mcp_transport", url="https://some.where/sse"),
+        ),
+        MCPToolBox(
+            name="mcp_toolbox_without_retry",
+            client_transport=SSETransport(name="sse_mcp_transport", url="https://some.where/sse"),
+        ),
+    ],
+)
+def test_mcp_components_without_retry_policy_can_serialize_before_v26_2(component) -> None:
+    dumped = AgentSpecSerializer().to_dict(
+        component,
+        agentspec_version=AgentSpecVersionEnum.v26_1_2,
+    )
+
+    assert "retry_policy" not in dumped
+
+
 def test_deserializing_mcp_tool_box_with_confirmation_raises_on_version_less_than_26_2():
     mcp_server_url = f"http://localhost:8080/sse"
     mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)
