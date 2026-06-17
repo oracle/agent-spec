@@ -106,9 +106,13 @@ You can then equip an agent with the toolbox similarly to tools.
 Configuring MCP retry policies
 ------------------------------
 
-``MCPTool`` and ``MCPToolBox`` accept an optional ``retry_policy``. Runtimes can
-use this policy for MCP tool resolution and execution, while retry policies on
-remote transports apply to requests sent through the transport layer.
+``MCPTool`` and ``MCPToolBox`` accept an optional ``retry_policy`` for semantic
+MCP retries. It applies to missing expected tools during MCP tool resolution and
+to tool execution failures where the selected MCP tool is temporarily missing or
+unavailable. For this use, only the attempt and backoff fields of
+``RetryPolicy`` apply. Request timeouts, ``5xx`` status retry rules, and
+recoverable HTTP statuses belong to retry policies configured on remote MCP
+transports, which operate on requests sent through the transport layer.
 
 .. literalinclude:: ../code_examples/howto_mcp.py
     :language: python

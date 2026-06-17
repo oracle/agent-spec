@@ -26,7 +26,13 @@ class MCPTool(Tool):
     """Transport to use for establishing and managing connections to the MCP server."""
 
     retry_policy: Optional[RetryPolicy] = None
-    """Optional retry configuration for MCP tool resolution and execution."""
+    """
+    Optional retry configuration for semantic MCP tool resolution and execution.
+
+    Only the attempt and backoff fields apply to this semantic retry. Transport
+    request timeout and HTTP status retry fields belong to retry policies on
+    remote MCP transports.
+    """
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum
@@ -74,7 +80,13 @@ class MCPToolBox(ToolBox):
     """Transport to use for establishing and managing connections to the MCP server."""
 
     retry_policy: Optional[RetryPolicy] = None
-    """Optional retry configuration for MCP toolbox discovery and generated tool execution."""
+    """
+    Optional retry configuration for semantic MCP toolbox discovery and generated tool execution.
+
+    Only the attempt and backoff fields apply to this semantic retry. Transport
+    request timeout and HTTP status retry fields belong to retry policies on
+    remote MCP transports.
+    """
 
     tool_filter: Optional[List[Union[MCPToolSpec, str]]] = None
     """
