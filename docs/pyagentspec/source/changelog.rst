@@ -16,6 +16,26 @@ Improvements
 
   We thank @spichen for the contribution!
 
+Bug fixes
+^^^^^^^^^
+
+* **LangGraph tool confirmation handling**
+
+  Fixed LangGraph adapter handling for tools with ``requires_confirmation=True`` so confirmed
+  tools can use their declared output schemas, including typed and multi-output schemas, without
+  requiring an unspecified single output schema. Denied confirmations now raise a clear runtime
+  error instead of returning a synthetic denial value, and Flow ``ToolNode`` conversion continues
+  through the shared converter path for all supported tool types.
+
+  We thank @spichen for the contribution!
+
+* **LangGraph MCP custom CA verification**
+
+  Fixed LangGraph MCP HTTPS client setup so a configured custom CA file is treated as the
+  complete trust anchor set rather than being added to the system trust store.
+
+  We thank @spichen for the contribution!
+
 New features
 ^^^^^^^^^^^^
 

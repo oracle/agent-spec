@@ -60,7 +60,10 @@ from pyagentspec.adapters.langgraph._types import (
     langgraph_graph,
     langgraph_swarm,
 )
-from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory, run_async_in_sync
+from pyagentspec.adapters.langgraph.mcp_utils import (
+    _HttpxClientFactory,
+    run_async_in_sync,
+)
 from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecLlmCallbackHandler,
     AgentSpecToolCallbackHandler,
@@ -93,7 +96,10 @@ from pyagentspec.llms.ociclientconfig import (
 )
 from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
-from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import (
+    OpenAIAPIType,
+    OpenAiCompatibleConfig,
+)
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
@@ -345,9 +351,12 @@ class AgentSpecToLangGraphConverter:
         graph_builder: StateGraph["FlowStateSchema", None, "FlowInputSchema", "FlowOutputSchema"],
     ) -> None:
         for source_node_id, control_flow_mapping in control_flow.items():
-            get_branch = lambda state: state["node_execution_details"].get(
-                "branch", AgentSpecNode.DEFAULT_NEXT_BRANCH
-            )
+
+            def get_branch(state: "FlowStateSchema") -> str:
+                return state["node_execution_details"].get(
+                    "branch", AgentSpecNode.DEFAULT_NEXT_BRANCH
+                )
+
             graph_builder.add_conditional_edges(source_node_id, get_branch, control_flow_mapping)
 
     def _flow_convert_to_langgraph(
@@ -359,9 +368,10 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
         middleware: List[Any],
     ) -> CompiledStateGraph[Any, Any, Any]:
-
         graph_builder = StateGraph(
-            FlowStateSchema, input_schema=FlowInputSchema, output_schema=FlowOutputSchema
+            FlowStateSchema,
+            input_schema=FlowInputSchema,
+            output_schema=FlowOutputSchema,
         )
 
         graph_builder.add_edge(langgraph_graph.START, flow.start_node.id)
@@ -629,7 +639,9 @@ class AgentSpecToLangGraphConverter:
         self,
         node: AgentSpecInputMessageNode,
     ) -> "NodeExecutor":
-        from pyagentspec.adapters.langgraph._node_execution import InputMessageNodeExecutor
+        from pyagentspec.adapters.langgraph._node_execution import (
+            InputMessageNodeExecutor,
+        )
 
         return InputMessageNodeExecutor(node)
 
@@ -637,7 +649,9 @@ class AgentSpecToLangGraphConverter:
         self,
         node: AgentSpecOutputMessageNode,
     ) -> "NodeExecutor":
-        from pyagentspec.adapters.langgraph._node_execution import OutputMessageNodeExecutor
+        from pyagentspec.adapters.langgraph._node_execution import (
+            OutputMessageNodeExecutor,
+        )
 
         return OutputMessageNodeExecutor(node)
 
@@ -702,7 +716,9 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
         middleware: List[Any],
     ) -> "NodeExecutor":
-        from pyagentspec.adapters.langgraph._node_execution import CatchExceptionNodeExecutor
+        from pyagentspec.adapters.langgraph._node_execution import (
+            CatchExceptionNodeExecutor,
+        )
 
         subflow = self.convert(
             catch_node.subflow,
@@ -938,7 +954,9 @@ class AgentSpecToLangGraphConverter:
                 confirmed, reason = _confirm_tool_use(tool_name, **kwargs)
 
                 if not confirmed:
-                    return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
+                    raise RuntimeError(
+                        f"Tool '{tool_name}' was denied by the user (reason: {reason})."
+                    )
 
             tool_request = {
                 "type": "client_tool_request",
@@ -1798,7 +1816,7 @@ def _confirm_tool_use(tool_name: str, **tool_arguments: Any) -> Tuple[bool, str]
             f"should be of length 1, was of length {len(decision_list)}"
         )
     decision = decision_list[0]
-    if "type" not in decision or not decision["type"] in ALLOWED_DECISIONS:
+    if "type" not in decision or decision["type"] not in ALLOWED_DECISIONS:
         raise ValueError(
             f"Tool confirmation result for tool {tool_name} is not valid, "
             f"decision should be in {ALLOWED_DECISIONS}, was {decision}."
@@ -1839,7 +1857,7 @@ def _confirm_then(
             confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
             if not confirmed:
-                return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
+                raise RuntimeError(f"Tool '{tool_name}' was denied by the user (reason: {reason}).")
 
             return await func(*args, **kwargs)
 
@@ -1850,14 +1868,16 @@ def _confirm_then(
         confirmed, reason = _confirm_tool_use(tool_name, **confirmation_arguments)
 
         if not confirmed:
-            return f"Tool '{tool_name}' was denied execution by the user. Reason: {reason}"
+            raise RuntimeError(f"Tool '{tool_name}' was denied by the user (reason: {reason}).")
 
         return func(*args, **kwargs)
 
     return _wrapped_sync
 
 
-def _is_async_callable(func: Callable[..., Any]) -> TypeGuard[Callable[..., Awaitable[Any]]]:
+def _is_async_callable(
+    func: Callable[..., Any],
+) -> TypeGuard[Callable[..., Awaitable[Any]]]:
     return inspect.iscoroutinefunction(func) or inspect.iscoroutinefunction(
         getattr(func, "__call__", None)
     )
@@ -1940,14 +1960,3 @@ def _ensure_checkpointer_and_valid_tool_config(
         )
     elif isinstance(agentspec_tool, AgentSpecClientTool) and checkpointer is None:
         raise ValueError(f"A Checkpointer is required when using ClientTool '{tool_name}'.")
-
-    tool_output = agentspec_tool.outputs or []
-    if agentspec_tool.requires_confirmation and (
-        len(tool_output) != 1 or "type" in tool_output[0].json_schema
-    ):
-        # TODO: refine to only raise output property does not support string
-        raise ValueError(
-            f"Invalid output schema for tool '{tool_name}' requiring tool confirmation: "
-            f"json schema should be left unspecified when using tool confirmation, was {tool_output}. "
-            f'Please use outputs=[Property(title="{tool_name}", json_schema={{}})]'
-        )

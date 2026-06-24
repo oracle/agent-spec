@@ -38,9 +38,13 @@ class _HttpxClientFactory:
     ):
         self.verify: bool | ssl.SSLContext
         if verify:
-            ssl_ctx = ssl.create_default_context()
+            # When a custom CA is provided, use it as the sole trust anchor (replacing the
+            # system CA bundle) so the trust boundary stays exactly as configured.
+            # When no custom CA is given, fall back to the system CA bundle.
             if ssl_ca_cert:
-                ssl_ctx.load_verify_locations(cafile=ssl_ca_cert)
+                ssl_ctx = ssl.create_default_context(cafile=ssl_ca_cert)
+            else:
+                ssl_ctx = ssl.create_default_context()
 
             if key_file or cert_file:
                 # Client authentication requires both pieces of certificate material.

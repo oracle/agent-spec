@@ -11,7 +11,9 @@ from unittest.mock import patch
 import httpx
 import pytest
 
-from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+from pyagentspec.adapters.langgraph._langgraphconverter import (
+    AgentSpecToLangGraphConverter,
+)
 from pyagentspec.agent import Agent
 from pyagentspec.flows.edges.controlflowedge import ControlFlowEdge
 from pyagentspec.flows.edges.dataflowedge import DataFlowEdge
@@ -116,7 +118,12 @@ def test_remote_tool_having_nested_inputs_with_langgraph() -> None:
         # Call the underlying function of the StructuredTool directly with keyword args.
         # The LangGraph converter wraps the function as a StructuredTool with .func attribute.
         result = lang_tool.func(
-            city="Agadir", lat="30.4", lon="-9.6", user="alice", suffix="world", bin_suffix="blob"
+            city="Agadir",
+            lat="30.4",
+            lon="-9.6",
+            user="alice",
+            suffix="world",
+            bin_suffix="blob",
         )
         # Ensure httpx.request was invoked and inspect the kwargs it was called with.
         patched_request.assert_called_once()
@@ -230,11 +237,22 @@ def test_remote_tool_post_raw_body_with_langgraph() -> None:
         ),
         (
             {"value": "{{ v1 }}", "listofvalues": ["a", "{{ v2 }}", "c"]},
-            {"header1": "{{ h1 }}", "Content-Type": "application/x-www-form-urlencoded"},
+            {
+                "header1": "{{ h1 }}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
             False,
         ),
-        ("value: {{ v1 }}, listofvalues: [a, {{ v2 }}, c]", {"header1": "{{ h1 }}"}, False),
-        (["value: {{ v1 }}", "listofvalues: [a, {{ v2 }}, c]"], {"header1": "{{ h1 }}"}, True),
+        (
+            "value: {{ v1 }}, listofvalues: [a, {{ v2 }}, c]",
+            {"header1": "{{ h1 }}"},
+            False,
+        ),
+        (
+            ["value: {{ v1 }}", "listofvalues: [a, {{ v2 }}, c]"],
+            {"header1": "{{ h1 }}"},
+            True,
+        ),
     ],
 )
 def test_remote_tool_actual_endpoint_with_langgraph(
@@ -490,7 +508,7 @@ def test_server_tool_confirmation_flow_approve_executes() -> None:
     assert result["outputs"] == {"result": 10}
 
 
-def test_flow_with_server_tool_confirmation_reject_skips_executes_denial_message() -> None:
+def test_flow_with_server_tool_confirmation_reject_raises_and_skips_execute() -> None:
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
 
@@ -521,12 +539,10 @@ def test_flow_with_server_tool_confirmation_reject_skips_executes_denial_message
     config = RunnableConfig({"configurable": {"thread_id": "t2"}})
 
     _ = _invoke_until_interrupt(langgraph_agent, {"inputs": {"x": 5}}, config=config)
-    result = langgraph_agent.invoke(_reject_command("nope"), config=config)
+    with pytest.raises(RuntimeError, match="Tool 'double_tool' was denied"):
+        langgraph_agent.invoke(_reject_command("nope"), config=config)
 
     assert called["n"] == 0  # Tool should not be executed
-
-    assert "outputs" in result
-    assert "denied execution" in str(result["outputs"])
 
 
 def test_flow_with_client_tool_confirmation_approve_then_interrupts_for_client_execution() -> None:
@@ -561,7 +577,7 @@ def test_flow_with_client_tool_confirmation_approve_then_interrupts_for_client_e
     assert client_tool_request["inputs"]["kwargs"] == {"x": 7}
 
 
-def test_flow_with_client_tool_confirmation_reject_returns_denial_and_no_client_request() -> None:
+def test_flow_with_client_tool_confirmation_reject_raises_and_no_client_request() -> None:
     from langchain_core.runnables import RunnableConfig
     from langgraph.checkpoint.memory import MemorySaver
 
@@ -581,10 +597,8 @@ def test_flow_with_client_tool_confirmation_reject_returns_denial_and_no_client_
 
     _ = _invoke_until_interrupt(app, {"inputs": {"x": 7}}, config=config)
 
-    result = app.invoke(_reject_command("no"), config=config)
-    assert "__interrupt__" not in result  # should not proceed to client request
-    assert "outputs" in result
-    assert "denied execution" in str(result["outputs"])
+    with pytest.raises(RuntimeError, match="Tool 'client_double' was denied"):
+        app.invoke(_reject_command("no"), config=config)
 
 
 def test_client_tool_converts_to_structured_tool_with_func_and_coroutine() -> None:
@@ -666,14 +680,15 @@ def test_flow_with_remote_tool_confirmation_reject_does_not_call_http() -> None:
     _ = _invoke_until_interrupt(app, {"inputs": {"x": 3}}, config=config)
 
     with patch("httpx.request") as patched:
-        result = app.invoke(_reject_command("no"), config=config)
+        with pytest.raises(RuntimeError, match="Tool 'remote_echo' was denied"):
+            app.invoke(_reject_command("no"), config=config)
         patched.assert_not_called()
-        assert "outputs" in result
-        assert "denied execution" in str(result["outputs"])
 
 
 def _get_fake_model() -> Any:
-    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.language_models.fake_chat_models import (
+        FakeMessagesListChatModel,
+    )
     from langchain_core.messages import AIMessage
     from langchain_openai import ChatOpenAI
 
@@ -720,7 +735,9 @@ def test_server_tool_confirmation_in_agent_approve_executes_tool() -> None:
         checkpointer=MemorySaver(),
     )
     with patch.object(
-        AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=_get_fake_model()
+        AgentSpecToLangGraphConverter,
+        "_llm_convert_to_langgraph",
+        return_value=_get_fake_model(),
     ):
         app = loader.load_component(agent_spec)
 
@@ -772,24 +789,26 @@ def test_server_tool_confirmation_in_agent_reject_denies_and_does_not_execute() 
     )
 
     with patch.object(
-        AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=_get_fake_model()
+        AgentSpecToLangGraphConverter,
+        "_llm_convert_to_langgraph",
+        return_value=_get_fake_model(),
     ):
         app = loader.load_component(agent_spec)
 
     config = RunnableConfig({"configurable": {"thread_id": "ag2"}})
 
     _ = _invoke_until_interrupt(app, {"inputs": {"x": 5}}, config=config)
-    result = app.invoke(_reject_command("no"), config=config)
+    with pytest.raises(RuntimeError, match="Tool 'double_tool' was denied"):
+        app.invoke(_reject_command("no"), config=config)
 
     assert called["n"] == 0
-    assert "messages" in result and len(result["messages"]) > 1
-    tool_result_message = result["messages"][-2]
-    assert "denied execution" in tool_result_message.content
 
 
 @pytest.mark.anyio
 async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
-    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.language_models.fake_chat_models import (
+        FakeMessagesListChatModel,
+    )
     from langchain_core.messages import AIMessage
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
@@ -824,7 +843,9 @@ async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
     )
     with patch.object(FakeMessagesListChatModel, "bind_tools", return_value=fake_model):
         with patch.object(
-            AgentSpecToLangGraphConverter, "_llm_convert_to_langgraph", return_value=fake_model
+            AgentSpecToLangGraphConverter,
+            "_llm_convert_to_langgraph",
+            return_value=fake_model,
         ):
             app = AgentSpecLoader(tool_registry={"double_tool": double_tool_func}).load_component(
                 agent_spec
@@ -835,6 +856,228 @@ async def test_async_server_tool_in_agent_executes_via_ainvoke() -> None:
     assert "messages" in result and len(result["messages"]) > 1
     tool_result_message = result["messages"][-2]
     assert "10" in str(tool_result_message.content)
+
+
+def test_server_tool_confirmation_with_typed_object_output_works() -> None:
+    """Tools with requires_confirmation and a typed (object) output schema
+    should load without error and execute the approved path. The output schema
+    is metadata for the LLM, not a runtime constraint."""
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    bash_result = {"stdout": "hello", "stderr": "", "exit_code": 0}
+
+    def bash_func(command: str) -> dict:
+        return bash_result
+
+    server_tool = ServerTool(
+        name="bash",
+        description="Run a shell command",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+        outputs=[
+            Property(
+                title="result",
+                json_schema={
+                    "type": "object",
+                    "properties": {
+                        "stdout": {"type": "string"},
+                        "stderr": {"type": "string"},
+                        "exit_code": {"type": "number"},
+                    },
+                },
+            ),
+        ],
+        requires_confirmation=True,
+    )
+    flow = _make_simple_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
+
+    app = AgentSpecLoader(
+        tool_registry={"bash": bash_func},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "typed-out-1"}})
+
+    interrupt_payload = _invoke_until_interrupt(
+        app, {"inputs": {"command": "echo hello"}}, config=config
+    )
+    assert interrupt_payload["action_requests"][0]["name"] == "bash"
+
+    result = app.invoke(_approve_command(), config=config)
+    assert result["outputs"]["result"] == bash_result
+
+
+def _make_multi_output_flow_with_tool(tool_node):
+    """Build Start -> Tool -> End wiring all three bash outputs (stdout, stderr, exit_code)."""
+    from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
+    from pyagentspec.flows.flow import Flow
+    from pyagentspec.flows.nodes import EndNode, StartNode
+
+    start_node = StartNode(
+        name="start",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+    )
+    end_node = EndNode(
+        name="end",
+        outputs=[
+            Property(title="stdout", json_schema={"type": "string"}),
+            Property(title="stderr", json_schema={"type": "string"}),
+            Property(title="exit_code", json_schema={"type": "number"}),
+        ],
+    )
+    return Flow(
+        name="flow",
+        start_node=start_node,
+        nodes=[start_node, tool_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_tool", from_node=start_node, to_node=tool_node),
+            ControlFlowEdge(name="tool_to_end", from_node=tool_node, to_node=end_node),
+        ],
+        data_flow_connections=[
+            DataFlowEdge(
+                name="cmd_edge",
+                source_node=start_node,
+                source_output="command",
+                destination_node=tool_node,
+                destination_input="command",
+            ),
+            DataFlowEdge(
+                name="stdout_edge",
+                source_node=tool_node,
+                source_output="stdout",
+                destination_node=end_node,
+                destination_input="stdout",
+            ),
+            DataFlowEdge(
+                name="stderr_edge",
+                source_node=tool_node,
+                source_output="stderr",
+                destination_node=end_node,
+                destination_input="stderr",
+            ),
+            DataFlowEdge(
+                name="exit_code_edge",
+                source_node=tool_node,
+                source_output="exit_code",
+                destination_node=end_node,
+                destination_input="exit_code",
+            ),
+        ],
+    )
+
+
+@pytest.fixture
+def multi_output_bash_server_tool() -> ServerTool:
+    return ServerTool(
+        name="bash",
+        description="Run a shell command",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+        outputs=[
+            Property(title="stdout", json_schema={"type": "string"}),
+            Property(title="stderr", json_schema={"type": "string"}),
+            Property(title="exit_code", json_schema={"type": "number"}),
+        ],
+        requires_confirmation=True,
+    )
+
+
+def test_server_tool_confirmation_with_multi_output_in_flow_tool_node_approve_executes(
+    multi_output_bash_server_tool: ServerTool,
+) -> None:
+    """A ServerTool with multiple outputs and requires_confirmation loads and executes
+    correctly when the user approves. The outputs are mapped from the returned dict."""
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    bash_result = {"stdout": "hello", "stderr": "", "exit_code": 0}
+
+    def bash_func(command: str) -> dict:
+        return bash_result
+
+    server_tool = multi_output_bash_server_tool
+    flow = _make_multi_output_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
+
+    app = AgentSpecLoader(
+        tool_registry={"bash": bash_func},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "multi-out-approve-1"}})
+    interrupt_payload = _invoke_until_interrupt(
+        app, {"inputs": {"command": "echo hello"}}, config=config
+    )
+    assert interrupt_payload["action_requests"][0]["name"] == "bash"
+
+    result = app.invoke(_approve_command(), config=config)
+    assert result["outputs"]["stdout"] == "hello"
+    assert result["outputs"]["stderr"] == ""
+    assert result["outputs"]["exit_code"] == 0
+
+
+def test_server_tool_confirmation_with_multi_output_in_flow_tool_node_reject_raises(
+    multi_output_bash_server_tool: ServerTool,
+) -> None:
+    """When a ServerTool with multiple outputs is denied inside a Flow ToolNode, a
+    RuntimeError is raised with a clear message rather than returning an unmappable
+    denial string."""
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def bash_func(command: str) -> dict:
+        return {"stdout": "hello", "stderr": "", "exit_code": 0}
+
+    server_tool = multi_output_bash_server_tool
+    flow = _make_multi_output_flow_with_tool(ToolNode(name="bash_node", tool=server_tool))
+
+    app = AgentSpecLoader(
+        tool_registry={"bash": bash_func},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "multi-out-reject-1"}})
+    _ = _invoke_until_interrupt(app, {"inputs": {"command": "echo hello"}}, config=config)
+
+    with pytest.raises(RuntimeError, match="denied"):
+        app.invoke(_reject_command("nope"), config=config)
+
+
+def test_client_tool_confirmation_with_multi_output_in_flow_tool_node_reject_raises() -> None:
+    """When a ClientTool with multiple outputs is denied inside a Flow ToolNode, a
+    RuntimeError is raised with a clear message rather than an unmappable denial string."""
+    from langchain_core.runnables import RunnableConfig
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    client_tool = ClientTool(
+        name="bash",
+        description="Run a shell command",
+        inputs=[Property(title="command", json_schema={"title": "command", "type": "string"})],
+        outputs=[
+            Property(title="stdout", json_schema={"type": "string"}),
+            Property(title="stderr", json_schema={"type": "string"}),
+            Property(title="exit_code", json_schema={"type": "number"}),
+        ],
+        requires_confirmation=True,
+    )
+    flow = _make_multi_output_flow_with_tool(ToolNode(name="bash_node", tool=client_tool))
+
+    app = AgentSpecLoader(
+        tool_registry={},
+        checkpointer=MemorySaver(),
+    ).load_component(flow)
+
+    config = RunnableConfig({"configurable": {"thread_id": "client-multi-out-reject-1"}})
+    _ = _invoke_until_interrupt(app, {"inputs": {"command": "echo hello"}}, config=config)
+
+    with pytest.raises(RuntimeError, match="denied"):
+        app.invoke(_reject_command("nope"), config=config)
 
 
 def test_requires_confirmation_without_checkpointer_raises_for_server_tool_in_flow() -> None:
