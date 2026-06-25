@@ -6,6 +6,7 @@
  */
 import { BUILTIN_SCHEMA_MAP } from "../component-registry.js";
 import type { ComponentBase } from "../component.js";
+import { isSensitiveField } from "../sensitive-field.js";
 import type { ComponentSerializationPlugin } from "./serialization-plugin.js";
 import type { SerializationContext } from "./serialization-context.js";
 import { OPAQUE_FIELDS, sanitizeOpaqueField, type SerializedFields } from "./types.js";
@@ -20,6 +21,19 @@ const EXCLUDED_FIELDS = new Set(["componentType"]);
 const MODEL_OBJECT_FIELDS: Record<string, boolean> = {
   defaultGenerationParameters: true, // LlmGenerationConfig - exclude nulls
 };
+
+function hasSerializedSensitiveValue(value: unknown): boolean {
+  if (value === null || value === undefined || value === false || value === "") {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (typeof value === "object") {
+    return Object.keys(value as Record<string, unknown>).length > 0;
+  }
+  return true;
+}
 
 export class BuiltinsComponentSerializationPlugin
   implements ComponentSerializationPlugin
@@ -42,13 +56,27 @@ export class BuiltinsComponentSerializationPlugin
       // Skip internal fields
       if (EXCLUDED_FIELDS.has(fieldName)) continue;
 
+      const sensitiveField = isSensitiveField(componentType, fieldName);
+
       // Skip sensitive fields
-      if (context.isFieldSensitive(componentType, fieldName)) continue;
+      if (context.shouldRedactField(componentType, fieldName)) continue;
 
       // Skip version-gated fields
       if (context.isFieldVersionGated(componentType, fieldName)) continue;
 
       const snakeName = context.toSerializedFieldName(fieldName);
+
+      if (
+        context.includeSensitiveFields &&
+        sensitiveField &&
+        hasSerializedSensitiveValue(fieldValue)
+      ) {
+        console.warn(
+          `Sensitive field exported: component_id=${JSON.stringify(component.id)}, ` +
+            `field=${JSON.stringify(snakeName)}. Review the serialized value before ` +
+            "storing or sharing the output.",
+        );
+      }
 
       // Handle model object fields specially (convert keys, optionally exclude nulls)
       if (

@@ -11,6 +11,7 @@ from typing import List, Optional, Union
 from pydantic import SerializeAsAny
 
 from pyagentspec.component import ComponentWithIO
+from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.tools.tool import Tool
 from pyagentspec.tools.toolbox import ToolBox
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -23,6 +24,29 @@ class MCPTool(Tool):
 
     client_transport: SerializeAsAny[ClientTransport]
     """Transport to use for establishing and managing connections to the MCP server."""
+
+    retry_policy: Optional[RetryPolicy] = None
+    """
+    Optional retry configuration for semantic MCP tool resolution and execution.
+
+    Only the attempt and backoff fields apply to this semantic retry. Transport
+    request timeout and HTTP status retry fields belong to retry policies on
+    remote MCP transports.
+    """
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("retry_policy")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        min_version = super()._infer_min_agentspec_version_from_configuration()
+        if self.retry_policy is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+        return min_version
 
 
 class MCPToolSpec(ComponentWithIO):
@@ -55,6 +79,15 @@ class MCPToolBox(ToolBox):
     client_transport: ClientTransport
     """Transport to use for establishing and managing connections to the MCP server."""
 
+    retry_policy: Optional[RetryPolicy] = None
+    """
+    Optional retry configuration for semantic MCP toolbox discovery and generated tool execution.
+
+    Only the attempt and backoff fields apply to this semantic retry. Transport
+    request timeout and HTTP status retry fields belong to retry policies on
+    remote MCP transports.
+    """
+
     tool_filter: Optional[List[Union[MCPToolSpec, str]]] = None
     """
 	Optional filter to select specific tools.
@@ -69,3 +102,17 @@ class MCPToolBox(ToolBox):
         * If provided, the outputs must be a single ``StringProperty`` with the expected tool output name and optional description.
         * If the tool requires confirmation before use, it overrides the exposed tool's confirmation flag.
     """
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("retry_policy")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        min_version = super()._infer_min_agentspec_version_from_configuration()
+        if self.retry_policy is not None:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+        return min_version

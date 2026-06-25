@@ -86,6 +86,7 @@ def start_mcp_server() -> str:
 # .. start-##_Imports_for_this_guide
 
 from pyagentspec.agent import Agent
+from pyagentspec import RetryPolicy
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, StartNode, ToolNode
@@ -107,6 +108,30 @@ oauth = OAuthConfig(
 )
 mcp_client_with_oauth = SSETransport(name="MCP Client", url=mcp_server_url, auth=oauth)
 # .. end-##_OAuth_in_MCP_Tools
+
+# .. start-##_MCP_Retry_Policy
+transport_retry_policy = RetryPolicy(
+    max_attempts=3,
+    request_timeout=10.0,
+    service_error_retry_on_any_5xx=True,
+)
+mcp_semantic_retry_policy = RetryPolicy(
+    max_attempts=3,
+    initial_retry_delay=0.25,
+    max_retry_delay=2.0,
+)
+mcp_client_for_retry = SSETransport(
+    name="MCP Client",
+    url=mcp_server_url,
+    retry_policy=transport_retry_policy,
+)
+mcp_toolbox_with_retry = MCPToolBox(
+    name="Payslip MCP ToolBox",
+    client_transport=mcp_client_for_retry,
+    tool_filter=["get_user_session", "get_payslips"],
+    retry_policy=mcp_semantic_retry_policy,
+)
+# .. end-##_MCP_Retry_Policy
 
 # .. start-##_Connecting_an_agent_to_the_MCP_server
 mcp_client = SSETransport(name="MCP Client", url=mcp_server_url)

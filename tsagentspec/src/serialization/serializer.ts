@@ -33,12 +33,22 @@ export class AgentSpecSerializer {
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): SerializedDict | [SerializedDict, DisaggregatedComponentsDict] {
     const opts = options ?? {};
     const disaggregated = opts.disaggregatedComponents ?? [];
     const exportDisag = opts.exportDisaggregatedComponents ?? false;
     const useCamelCase = opts.camelCase ?? false;
+    const includeSensitive = opts.includeSensitiveFields ?? false;
+
+    if (includeSensitive) {
+      console.warn(
+        "includeSensitiveFields=true was set. Serialized output may contain " +
+          "unredacted sensitive values; do not log, commit, or share it unless " +
+          "those values are intended to be exposed.",
+      );
+    }
 
     // Build ID mapping for disaggregated components
     const componentsIdMapping = new Map<string, string>();
@@ -52,13 +62,11 @@ export class AgentSpecSerializer {
       if (disag === component) {
         throw new Error("Cannot disaggregate the root component");
       }
-      const disagCtx = new SerializationContext(
-        this.plugins,
-        opts.agentspecVersion,
-        undefined,
-        undefined,
-        useCamelCase,
-      );
+      const disagCtx = new SerializationContext(this.plugins, {
+        targetVersion: opts.agentspecVersion,
+        camelCase: useCamelCase,
+        includeSensitiveFields: includeSensitive,
+      });
       const dump = disagCtx.saveToDict(disag, opts.agentspecVersion);
       disaggregatedDict[disag.id] = dump;
     }
@@ -68,13 +76,13 @@ export class AgentSpecSerializer {
     for (const [id, dump] of Object.entries(disaggregatedDict)) {
       resolvedComponents.set(id, dump);
     }
-    const mainCtx = new SerializationContext(
-      this.plugins,
-      opts.agentspecVersion,
+    const mainCtx = new SerializationContext(this.plugins, {
+      targetVersion: opts.agentspecVersion,
       resolvedComponents,
       componentsIdMapping,
-      useCamelCase,
-    );
+      camelCase: useCamelCase,
+      includeSensitiveFields: includeSensitive,
+    });
     const mainDump = mainCtx.saveToDict(component, opts.agentspecVersion);
 
     if (!exportDisag) {
@@ -96,6 +104,7 @@ export class AgentSpecSerializer {
       exportDisaggregatedComponents?: boolean;
       indent?: number;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): string | [string, string] {
     const indent = options?.indent ?? 2;
@@ -118,6 +127,7 @@ export class AgentSpecSerializer {
       disaggregatedComponents?: ComponentBase[];
       exportDisaggregatedComponents?: boolean;
       camelCase?: boolean;
+      includeSensitiveFields?: boolean;
     },
   ): string | [string, string] {
     const result = this._toDict(component, options);

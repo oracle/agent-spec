@@ -7,6 +7,54 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **Sensitive field export opt-in**
+
+  Serializers now support ``include_sensitive_fields`` to include sensitive field values in
+  trusted local exports instead of replacing them with ``$component_ref`` placeholders. When
+  enabled, serialization emits warnings so users know the returned data may contain sensitive
+  values and can identify which sensitive fields were exported.
+
+  We thank @spichen for the contribution!
+
+Bug fixes
+^^^^^^^^^
+
+* **LangGraph tool confirmation handling**
+
+  Fixed LangGraph adapter handling for tools with ``requires_confirmation=True`` so confirmed
+  tools can use their declared output schemas, including typed and multi-output schemas, without
+  requiring an unspecified single output schema. Denied confirmations now raise a clear runtime
+  error instead of returning a synthetic denial value, and Flow ``ToolNode`` conversion continues
+  through the shared converter path for all supported tool types.
+
+  We thank @spichen for the contribution!
+
+* **LangGraph MCP custom CA verification**
+
+  Fixed LangGraph MCP HTTPS client setup so a configured custom CA file is treated as the
+  complete trust anchor set rather than being added to the system trust store.
+
+  We thank @spichen for the contribution!
+
+New features
+^^^^^^^^^^^^
+
+* **MCP tool retry policies**
+
+  Added ``retry_policy`` support to ``MCPTool`` and ``MCPToolBox`` so runtimes can
+  configure retries for MCP tool resolution and execution separately from
+  transport-level request retries.
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+
+Agent Spec 26.1.2
+-----------------
+
+Improvements
+^^^^^^^^^^^^
+
 * **LangGraph adapter timeout and retry improvements**
 
   The LangGraph adapter now applies ``RetryPolicy.request_timeout`` and
