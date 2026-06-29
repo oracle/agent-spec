@@ -1,6 +1,6 @@
 # Mastra Adapter Examples
 
-These examples show the two conversion directions supported by the TypeScript
+These examples show two conversion directions supported by the TypeScript
 Mastra adapter:
 
 - `agentspec2mastra_tools.ts`: create an Agent Spec agent and load it into a
