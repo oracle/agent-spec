@@ -1,0 +1,39 @@
+name: "CI Pipeline: Lint, Test, and Build (tsagentspec)"
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/tsagentspec.yaml"
+      - "tsagentspec/**"
+  workflow_dispatch:
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tsagentspec
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tsagentspec/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
