@@ -37,6 +37,16 @@ from pyagentspec.adapters._utils import (
     _build_type_from_schema,
     create_pydantic_model_from_properties,
 )
+from pyagentspec.adapters.langgraph._managerworkers import (
+    _MANAGER_NODE_KEY,
+    _append_workers_roster,
+    _make_worker_delegation_tool,
+    _patch_hide_delegation_in_astream_events,
+    _patch_with_manager_workers_execution_span,
+    _route_manager_to_worker_or_end,
+    _safe_node_name,
+    _wrap_worker_for_subgraph,
+)
 from pyagentspec.adapters.langgraph._node_execution import (
     NodeExecutor,
     extract_outputs_from_invoke_result,
@@ -103,6 +113,7 @@ from pyagentspec.llms.openaicompatibleconfig import (
 )
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.managerworkers import ManagerWorkers as AgentSpecManagerWorkers
 from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
 from pyagentspec.mcp.clienttransport import SSEmTLSTransport as AgentSpecSSEmTLSTransport
 from pyagentspec.mcp.clienttransport import SSETransport as AgentSpecSSETransport
@@ -267,6 +278,15 @@ class AgentSpecToLangGraphConverter:
             )
         elif isinstance(agentspec_component, AgentSpecSwarm):
             return self._swarm_convert_to_langgraph(
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+                middleware=middleware,
+            )
+        elif isinstance(agentspec_component, AgentSpecManagerWorkers):
+            return self._manager_workers_convert_to_langgraph(
                 agentspec_component,
                 tool_registry=tool_registry,
                 converted_components=converted_components,
@@ -1122,6 +1142,147 @@ class AgentSpecToLangGraphConverter:
             agents=langgraph_agents,  # type: ignore
             default_active_agent=agentspec_component.first_agent.name,
         ).compile(name=agentspec_component.name, checkpointer=checkpointer)
+
+    def _manager_workers_convert_to_langgraph(
+        self,
+        mw: AgentSpecManagerWorkers,
+        tool_registry: Dict[str, "LangGraphTool"],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+        middleware: List[Any],
+    ) -> CompiledStateGraph[Any, Any, Any]:
+        """Compile a ``ManagerWorkers`` into a hierarchical LangGraph.
+
+        Topology::
+
+                          ┌─ delegate_to_w1 ─→ worker_1 ─┐
+            START → manager ┤                              ├→ manager (loop)
+                          └─ delegate_to_w2 ─→ worker_2 ─┘
+                                  │
+                                  └─ no tool_call ─→ END
+
+        Each worker is recursively converted into a ``CompiledStateGraph``
+        and wired in as a *subgraph node*, so ``astream_events`` exposes
+        the parent/child boundary (``subgraph=True``) for tracing and SSE
+        streaming. The manager is a react-agent given one synthetic
+        ``delegate_to_<worker>`` tool per worker; the parent graph's
+        conditional edge inspects the manager's last AIMessage to choose
+        the next node, then the worker node runs in an isolated message
+        context and emits a ``ToolMessage`` matched to the pending
+        delegation tool-call id. Recursive ``ManagerWorkers`` (workers
+        that are themselves ``ManagerWorkers``) compose for free through
+        ``self.convert(...)``.
+        """
+        if not isinstance(mw.group_manager, AgentSpecAgent):
+            # Pyagentspec allows any AgenticComponent as group_manager,
+            # but the manager has to *decide* which worker to delegate to,
+            # which means it needs a chat-LLM that emits tool_calls. Today
+            # only Agent (and SpecializedAgent, a subclass) does that — a
+            # Flow / Swarm / nested ManagerWorkers as the group_manager
+            # doesn't have a "tool-call to delegate" output shape we can
+            # route on.
+            raise NotImplementedError(
+                f"ManagerWorkers.group_manager must be an Agent for LangGraph "
+                f"conversion; got {type(mw.group_manager).__name__}."
+            )
+
+        worker_node_names: List[str] = [
+            _safe_node_name(worker.name, fallback_id=worker.id) for worker in mw.workers
+        ]
+        if len(set(worker_node_names)) != len(worker_node_names):
+            raise ValueError(
+                "ManagerWorkers worker names collide after normalization: "
+                f"{worker_node_names}. Give each worker a unique name."
+            )
+
+        # 1. Recursively compile each worker as its own CompiledStateGraph.
+        worker_graphs: Dict[str, CompiledStateGraph[Any, Any, Any]] = {}
+        for worker, node_name in zip(mw.workers, worker_node_names):
+            worker_graphs[node_name] = self.convert(
+                worker,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+                middleware=middleware,
+            )
+
+        # 2. Render the workers roster into the manager's system prompt
+        #    so the LLM knows which delegation tool maps to which worker.
+        manager_agent = mw.group_manager
+        rendered_prompt = _append_workers_roster(
+            manager_agent.system_prompt,
+            [
+                (node_name, worker.description or "")
+                for worker, node_name in zip(mw.workers, worker_node_names)
+            ],
+        )
+
+        # 3. Synthesize one delegation tool per worker. The tool body is a
+        #    placeholder — the parent graph intercepts the manager's tool
+        #    call before it executes and routes to the worker node.
+        delegation_tools: List[Any] = [
+            _make_worker_delegation_tool(node_name) for node_name in worker_node_names
+        ]
+
+        # 4. Compile the manager as a react-agent with the delegation tools.
+        manager_graph = self._create_react_agent_with_given_info(
+            name=manager_agent.name,
+            system_prompt=rendered_prompt,
+            agent=manager_agent,
+            llm_config=manager_agent.llm_config,
+            tools=manager_agent.tools,
+            toolboxes=manager_agent.toolboxes,
+            inputs=manager_agent.inputs or [],
+            outputs=manager_agent.outputs or [],
+            tool_registry=tool_registry,
+            converted_components=converted_components,
+            checkpointer=checkpointer,
+            config=config,
+            middleware=middleware,
+            additional_langgraph_tools=delegation_tools,
+        )
+
+        # 5. Compose the parent StateGraph. The manager and every worker
+        #    are CompiledStateGraphs added as subgraph nodes; LangGraph's
+        #    streaming surfaces them with ``subgraph=True``.
+        from langgraph.graph import MessagesState  # local: optional dep
+
+        manager_node_key = _MANAGER_NODE_KEY
+        builder = StateGraph(MessagesState)
+        builder.add_node(manager_node_key, manager_graph)
+        for node_name, worker_graph in worker_graphs.items():
+            builder.add_node(
+                node_name,
+                _wrap_worker_for_subgraph(worker_graph, node_name),
+            )
+
+        # Path-map covers delegate-to-worker and the END branch so langgraph
+        # can statically validate the routing.
+        routing_path_map: Dict[str, str] = {node_name: node_name for node_name in worker_node_names}
+        routing_path_map[langgraph_graph.END] = langgraph_graph.END
+
+        builder.add_edge(langgraph_graph.START, manager_node_key)
+        builder.add_conditional_edges(
+            manager_node_key,
+            _route_manager_to_worker_or_end,
+            routing_path_map,
+        )
+        for node_name in worker_node_names:
+            builder.add_edge(node_name, manager_node_key)
+
+        compiled_graph = builder.compile(checkpointer=checkpointer, name=mw.name)
+
+        # 6. Tracing — wrap stream/astream so ManagerWorkersExecutionSpan
+        #    surrounds each run. Mirrors the patches applied to Agent and
+        #    Flow graphs above.
+        _patch_with_manager_workers_execution_span(compiled_graph, mw)
+        # Hide the delegate_to_<worker> routing protocol from the
+        # astream_events view (tool calls, their tool lifecycle events, and
+        # the worker's synthetic reply ToolMessage) without touching state.
+        _patch_hide_delegation_in_astream_events(compiled_graph)
+        return compiled_graph
 
     def _create_react_agent_with_given_info(
         self,

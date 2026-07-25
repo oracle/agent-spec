@@ -49,6 +49,7 @@ from pyagentspec.flows.nodes import MapNode as AgentSpecMapNode
 from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageNode
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
+from pyagentspec.managerworkers import ManagerWorkers as AgentSpecManagerWorkers
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as pyagentspec_empty_default
 from pyagentspec.tracing.events import NodeExecutionEnd as AgentSpecNodeExecutionEnd
@@ -529,16 +530,73 @@ class AgentNodeExecutor(NodeExecutor):
             )
         return self._agents_cache[system_prompt]
 
+    def _create_composite_graph_with_given_input_values(
+        self, inputs: Dict[str, Any]
+    ) -> CompiledStateGraph[Any, Any]:
+        """Compile the node's ``ManagerWorkers`` into a runnable graph for these inputs,
+        cached by the rendered group-manager prompt.
+
+        Such a graph runs over ``MessagesState`` and can't carry structured inputs to its
+        inner agents, so the node inputs are baked into the ``group_manager``'s
+        ``system_prompt`` and the now-satisfied input ports dropped, so declared ==
+        inferred for the downstream span re-validation. A non-Agent group manager is
+        passed through unchanged so the converter raises its own clear error.
+        """
+        from pyagentspec.adapters.langgraph._langgraphconverter import (
+            AgentSpecToLangGraphConverter,
+        )
+
+        converter = AgentSpecToLangGraphConverter()
+        component = self.node.agent
+        if not isinstance(component, AgentSpecManagerWorkers):
+            raise TypeError(
+                "_create_composite_graph_with_given_input_values requires a ManagerWorkers"
+            )
+
+        entry_agent = component.group_manager
+        is_agent_entry = isinstance(entry_agent, AgentSpecAgent)
+        cache_key = (
+            render_template(entry_agent.system_prompt, inputs) if is_agent_entry else component.id
+        )
+        if cache_key not in self._agents_cache:
+            rendered = (
+                component.model_copy(
+                    update={
+                        "group_manager": entry_agent.model_copy(
+                            update={"system_prompt": cache_key, "inputs": []}
+                        ),
+                        "inputs": [],
+                    }
+                )
+                if is_agent_entry
+                else component
+            )
+            self._agents_cache[cache_key] = converter._manager_workers_convert_to_langgraph(
+                rendered,
+                tool_registry=self.tool_registry,
+                converted_components=self.converted_components,
+                checkpointer=self.checkpointer,
+                config=self.config,
+                middleware=self._middleware,
+            )
+        return self._agents_cache[cache_key]
+
     def _prepare_agent_and_inputs(
         self, inputs: Dict[str, Any], messages: Messages
     ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
-        agent = self._create_react_agent_with_given_input_values(inputs)
         # LangGraph's agent expects at least one user message to drive execution.
         # When an AgentNode is used with a templated system prompt and no messages are provided
         # by the flow, the agent can crash. To avoid this, we artificially insert an empty
         # user message when the message list is empty.
         if not messages:
             messages = cast(Messages, [{"role": "user", "content": ""}])
+        if isinstance(self.node.agent, AgentSpecManagerWorkers):
+            # A ManagerWorkers flow step runs as a hierarchical graph over MessagesState:
+            # node inputs were baked into the group-manager's prompt, so the graph is
+            # driven by messages alone (not the agent's remaining_steps state).
+            graph = self._create_composite_graph_with_given_input_values(inputs)
+            return graph, {"messages": messages}
+        agent = self._create_react_agent_with_given_input_values(inputs)
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
             "messages": messages,

@@ -13,6 +13,7 @@ from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Self
 
 from pyagentspec.agenticcomponent import AgenticComponent
+from pyagentspec.property import Property
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -64,6 +65,24 @@ class ManagerWorkers(AgenticComponent):
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
         default=AgentSpecVersionEnum.v25_4_2, init=False, exclude=True
     )
+
+    def _get_inferred_inputs(self) -> List[Property]:
+        """A ``ManagerWorkers`` exposes the inputs of its group manager.
+
+        The group manager is the component that drives the conversation and whose prompt
+        the run-time renders, so the manager-workers component accepts exactly the inputs
+        the group manager accepts (e.g. the ``{{placeholder}}`` inputs of an ``Agent``
+        group manager). Without this, the base default infers no inputs, so a
+        ``ManagerWorkers`` used as a flow ``AgentNode`` would expose no input ports and a
+        data-flow edge into it could not resolve.
+        """
+        group_manager = getattr(self, "group_manager", None)
+        return list(getattr(group_manager, "inputs", None) or [])
+
+    def _get_inferred_outputs(self) -> List[Property]:
+        """Outputs of the group manager; see :meth:`_get_inferred_inputs`."""
+        group_manager = getattr(self, "group_manager", None)
+        return list(getattr(group_manager, "outputs", None) or [])
 
     @model_validator_with_error_accumulation
     def _validate_one_or_more_workers(self) -> Self:
