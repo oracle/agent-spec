@@ -15,9 +15,18 @@ Regression coverage for two coupled behaviours:
     manager's prompt and returning its result.
 """
 
+import pytest
+
 from pyagentspec.agent import Agent
 from pyagentspec.managerworkers import ManagerWorkers
 from pyagentspec.property import StringProperty
+
+
+@pytest.fixture(autouse=True)
+def _offline(allow_llm_config_construction: None) -> None:
+    """These tests only need an LLM *config* object: the two inference tests never
+    convert at all, and the flow-step test stubs the chat model. Without this the
+    SKIP_LLM_TESTS guard skips all three and the flow-step path goes unverified."""
 
 
 def test_managerworkers_infers_inputs_from_group_manager_prompt() -> None:
@@ -58,12 +67,12 @@ def test_managerworkers_infers_outputs_from_group_manager() -> None:
 
 
 def test_managerworkers_runs_as_a_flow_step_with_data_edge_inputs() -> None:
-    """A ManagerWorkers flow step loads (data edge resolves) and executes offline.
+    """A ManagerWorkers flow step loads with its data edge resolved, and executes.
 
-    The model is stubbed (no real LLM, no delegation), so the manager produces a final
-    message and the manager graph routes straight to END. Asserts the flow both loads —
-    proving the manager node exposes the ``joke`` input the data edge targets — and runs,
-    surfacing the manager's answer as the node's single string output.
+    The model is stubbed, so there is no delegation: the manager produces a final
+    message and routes straight to END. Loading proves the manager node exposes the
+    ``joke`` input the data edge targets; running proves the manager's answer comes
+    back as the node's single string output.
     """
     from unittest.mock import patch
 

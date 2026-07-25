@@ -6,6 +6,8 @@
 
 import os
 import ssl
+from contextlib import ExitStack
+from importlib import import_module
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -110,6 +112,41 @@ def skip_llm_construction():
     finally:
         for p in patches:
             p.stop()
+
+
+def _resolve(dotted: str) -> Any:
+    module_path, _, attr = dotted.rpartition(".")
+    module_path, _, cls_name = module_path.rpartition(".")
+    return getattr(getattr(import_module(module_path), cls_name), attr)
+
+
+# Captured at conftest import, before any session fixture starts patching, so these
+# are the genuine constructors rather than a skip stub.
+_REAL_LLM_INITS = {dotted: _resolve(dotted) for dotted in LLM_MOCKED_METHODS}
+
+
+@pytest.fixture
+def allow_llm_config_construction():
+    """Opt out of the blanket ``SKIP_LLM_TESTS=1`` construction guard.
+
+    That guard skips a test the moment it constructs an LLM config. Right for tests
+    that go on to call a model, wrong for tests that only need a config object and
+    stub the conversion: those should run offline, and instead they skip silently in
+    CI, leaving the code path they cover unverified.
+
+    Restores the real constructors for one test, overriding the guards in both this
+    conftest and ``tests/conftest.py``.
+
+    Only request this from a test that provably never reaches a model endpoint.
+    """
+    if not should_skip_llm_test():
+        # Nothing patched the constructors, so there is nothing to restore.
+        yield
+        return
+    with ExitStack() as stack:
+        for dotted, real in _REAL_LLM_INITS.items():
+            stack.enter_context(patch(dotted, new=real))
+        yield
 
 
 @pytest.fixture(scope="package")

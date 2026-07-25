@@ -500,6 +500,16 @@ class AgentNodeExecutor(NodeExecutor):
         self._middleware: List[Any] = list(middleware or [])
         self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
 
+    def _conversion_kwargs(self) -> Dict[str, Any]:
+        """The converter arguments every compile from this executor passes through."""
+        return {
+            "tool_registry": self.tool_registry,
+            "converted_components": self.converted_components,
+            "checkpointer": self.checkpointer,
+            "config": self.config,
+            "middleware": self._middleware,
+        }
+
     def _create_react_agent_with_given_input_values(
         self, inputs: Dict[str, Any]
     ) -> CompiledStateGraph[Any, Any]:
@@ -522,64 +532,49 @@ class AgentNodeExecutor(NodeExecutor):
                 toolboxes=agentspec_component.toolboxes,
                 inputs=agentspec_component.inputs or [],
                 outputs=agentspec_component.outputs or [],
-                tool_registry=self.tool_registry,
-                converted_components=self.converted_components,
-                checkpointer=self.checkpointer,
-                config=self.config,
-                middleware=self._middleware,
+                **self._conversion_kwargs(),
             )
         return self._agents_cache[system_prompt]
 
-    def _create_composite_graph_with_given_input_values(
-        self, inputs: Dict[str, Any]
+    def _create_manager_workers_with_given_input_values(
+        self, component: AgentSpecManagerWorkers, inputs: Dict[str, Any]
     ) -> CompiledStateGraph[Any, Any]:
-        """Compile the node's ``ManagerWorkers`` into a runnable graph for these inputs,
-        cached by the rendered group-manager prompt.
+        """Compile a ``ManagerWorkers`` that this node runs as a flow step.
 
-        Such a graph runs over ``MessagesState`` and can't carry structured inputs to its
-        inner agents, so the node inputs are baked into the ``group_manager``'s
-        ``system_prompt`` and the now-satisfied input ports dropped, so declared ==
-        inferred for the downstream span re-validation. A non-Agent group manager is
-        passed through unchanged so the converter raises its own clear error.
+        The graph runs over ``MessagesState``, which can't carry structured inputs
+        inward to the group manager, so the node inputs are rendered into its
+        ``system_prompt`` and the satisfied ports dropped from both the manager and
+        the component. That keeps declared and inferred ports equal for the
+        downstream span re-validation, and the graph runs on messages alone.
+
+        Cached by rendered prompt, the same key
+        :meth:`_create_react_agent_with_given_input_values` uses.
         """
-        from pyagentspec.adapters.langgraph._langgraphconverter import (
-            AgentSpecToLangGraphConverter,
-        )
+        from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
         converter = AgentSpecToLangGraphConverter()
-        component = self.node.agent
-        if not isinstance(component, AgentSpecManagerWorkers):
-            raise TypeError(
-                "_create_composite_graph_with_given_input_values requires a ManagerWorkers"
+        entry_agent = component.group_manager
+        if not isinstance(entry_agent, AgentSpecAgent):
+            # Not routable. Nothing to render or cache, and the converter owns the
+            # error message for this case.
+            return converter._manager_workers_convert_to_langgraph(
+                component, **self._conversion_kwargs()
             )
 
-        entry_agent = component.group_manager
-        is_agent_entry = isinstance(entry_agent, AgentSpecAgent)
-        cache_key = (
-            render_template(entry_agent.system_prompt, inputs) if is_agent_entry else component.id
-        )
-        if cache_key not in self._agents_cache:
-            rendered = (
-                component.model_copy(
-                    update={
-                        "group_manager": entry_agent.model_copy(
-                            update={"system_prompt": cache_key, "inputs": []}
-                        ),
-                        "inputs": [],
-                    }
-                )
-                if is_agent_entry
-                else component
+        system_prompt = render_template(entry_agent.system_prompt, inputs)
+        if system_prompt not in self._agents_cache:
+            rendered = component.model_copy(
+                update={
+                    "group_manager": entry_agent.model_copy(
+                        update={"system_prompt": system_prompt, "inputs": []}
+                    ),
+                    "inputs": [],
+                }
             )
-            self._agents_cache[cache_key] = converter._manager_workers_convert_to_langgraph(
-                rendered,
-                tool_registry=self.tool_registry,
-                converted_components=self.converted_components,
-                checkpointer=self.checkpointer,
-                config=self.config,
-                middleware=self._middleware,
+            self._agents_cache[system_prompt] = converter._manager_workers_convert_to_langgraph(
+                rendered, **self._conversion_kwargs()
             )
-        return self._agents_cache[cache_key]
+        return self._agents_cache[system_prompt]
 
     def _prepare_agent_and_inputs(
         self, inputs: Dict[str, Any], messages: Messages
@@ -590,11 +585,13 @@ class AgentNodeExecutor(NodeExecutor):
         # user message when the message list is empty.
         if not messages:
             messages = cast(Messages, [{"role": "user", "content": ""}])
-        if isinstance(self.node.agent, AgentSpecManagerWorkers):
-            # A ManagerWorkers flow step runs as a hierarchical graph over MessagesState:
-            # node inputs were baked into the group-manager's prompt, so the graph is
-            # driven by messages alone (not the agent's remaining_steps state).
-            graph = self._create_composite_graph_with_given_input_values(inputs)
+        agentspec_component = self.node.agent
+        if isinstance(agentspec_component, AgentSpecManagerWorkers):
+            # Inputs were baked into the group-manager's prompt, so this graph runs on
+            # messages alone rather than the agent's remaining_steps state.
+            graph = self._create_manager_workers_with_given_input_values(
+                agentspec_component, inputs
+            )
             return graph, {"messages": messages}
         agent = self._create_react_agent_with_given_input_values(inputs)
         inputs |= {
