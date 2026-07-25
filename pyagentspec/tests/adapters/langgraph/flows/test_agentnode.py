@@ -96,6 +96,80 @@ def test_agentnode_can_be_imported_and_executed(agent_flow: Flow) -> None:
     assert "car" in outputs
 
 
+def test_single_string_output_taken_from_final_message_without_structured_generation() -> None:
+    """The stub model has no structured output, so if the converter still attached a
+    ``response_format`` the output would come back empty instead of holding "42".
+    """
+    from unittest.mock import patch
+
+    from langchain_core.language_models.fake_chat_models import (
+        FakeMessagesListChatModel,
+    )
+    from langchain_core.messages import AIMessage
+    from langchain_openai import ChatOpenAI
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._langgraphconverter import (
+        AgentSpecToLangGraphConverter,
+    )
+    from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+
+    class _FakeModel(FakeMessagesListChatModel, ChatOpenAI):
+        pass
+
+    fake_llm = _FakeModel(responses=[AIMessage(content="42")])
+
+    answer = StringProperty(title="answer")
+    agent = Agent(
+        name="agent",
+        llm_config=OpenAiCompatibleConfig(name="agent_llm", model_id="fake", url="null"),
+        system_prompt="Answer the question.",
+        outputs=[answer],
+    )
+    agent_node = AgentNode(name="agent_node", agent=agent)
+    start_node = StartNode(name="start")
+    end_node = EndNode(name="end", outputs=[answer])
+    flow = Flow(
+        name="flow",
+        start_node=start_node,
+        nodes=[start_node, agent_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_node", from_node=start_node, to_node=agent_node),
+            ControlFlowEdge(name="node_to_end", from_node=agent_node, to_node=end_node),
+        ],
+        data_flow_connections=[
+            DataFlowEdge(
+                name="answer_edge",
+                source_node=agent_node,
+                source_output=answer.title,
+                destination_node=end_node,
+                destination_input=answer.title,
+            ),
+        ],
+        outputs=[answer],
+    )
+
+    loader = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver())
+    with patch.object(
+        AgentSpecToLangGraphConverter,
+        "_llm_convert_to_langgraph",
+        autospec=True,
+        side_effect=lambda self_obj, llm_config, *a, **k: fake_llm,
+    ), patch.object(
+        FakeMessagesListChatModel,
+        "bind_tools",
+        new=lambda self_obj, *a, **k: self_obj,
+    ):
+        compiled = loader.load_component(flow)
+        result = compiled.invoke(
+            {"inputs": {}, "messages": [{"role": "user", "content": "What is 6*7?"}]},
+            {"configurable": {"thread_id": "agentnode-single-string"}},
+        )
+
+    assert result["outputs"]["answer"] == "42"
+
+
 @pytest.mark.anyio
 @retry_test(max_attempts=3, wait_between_tries=2)
 async def test_agentnode_can_be_executed_async(agent_flow: Flow) -> None:

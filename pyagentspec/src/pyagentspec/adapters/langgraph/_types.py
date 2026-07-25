@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     import langchain_openai
     import langgraph.graph as langgraph_graph
     import langgraph_swarm
-    from langchain.agents.middleware.types import AgentState
+    from langchain.agents.middleware.types import AgentMiddleware, AgentState
     from langchain_core.callbacks import BaseCallbackHandler
     from langchain_core.language_models import BaseChatModel
     from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
@@ -59,6 +59,7 @@ else:
     GenerationChunk = LazyType("langchain_core.outputs", "GenerationChunk")
     LLMResult = LazyType("langchain_core.outputs", "LLMResult")
     AgentState = LazyType("langchain.agents.middleware.types", "AgentState")
+    AgentMiddleware = LazyType("langchain.agents.middleware.types", "AgentMiddleware")
 
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
@@ -136,6 +137,7 @@ __all__ = [
     "ToolMessage",
     "BaseChatModel",
     "AgentState",
+    "AgentMiddleware",
     "Checkpointer",
     "interrupt",
     "RunnableConfig",

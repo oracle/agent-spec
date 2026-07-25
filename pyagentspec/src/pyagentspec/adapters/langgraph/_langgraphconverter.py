@@ -35,6 +35,7 @@ from pyagentspec.adapters._utils import (
     SchemaRegistry,
     _build_type_from_schema,
     create_pydantic_model_from_properties,
+    is_single_string_output,
 )
 from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
 from pyagentspec.adapters.langgraph._managerworkers import (
@@ -49,6 +50,9 @@ from pyagentspec.adapters.langgraph._managerworkers import (
 from pyagentspec.adapters.langgraph._node_execution import (
     NodeExecutor,
     extract_outputs_from_invoke_result,
+)
+from pyagentspec.adapters.langgraph._structured_output import (
+    StructuredOutputGuard,
 )
 from pyagentspec.adapters.langgraph._types import (
     AgentState,
@@ -1235,8 +1239,9 @@ class AgentSpecToLangGraphConverter:
         state_schema: Optional[Any] = None
         response_format: Any = None
 
-        # Build response (output) model (used for response_format)
-        if outputs:
+        # A single string output is read from the final message instead, so it needs no
+        # response_format. Same rule as LlmNodeExecutor.
+        if outputs and not is_single_string_output(outputs):
             output_model = create_pydantic_model_from_properties("AgentOutputModel", outputs)
             # Explicitly use ToolStrategy instead of letting LangChain select a provider
             # strategy. OpenAI-compatible models do not necessarily support provider-native
@@ -1266,6 +1271,17 @@ class AgentSpecToLangGraphConverter:
             response_format=response_format,
             state_schema=state_schema,
         )
+        if output_model is not None:
+            # Rebuild rather than append: `middleware` is shared across every agent of a
+            # swarm / manager-workers graph.
+            middleware = [
+                *middleware,
+                StructuredOutputGuard(
+                    agent_name=name,
+                    output_titles=[output.title for output in outputs],
+                    model_id=llm_config.model_id,
+                ),
+            ]
         if middleware:
             create_agent_kwargs["middleware"] = middleware
         compiled_graph: CompiledStateGraph[Any, Any, Any] = langchain_agents.create_agent(
