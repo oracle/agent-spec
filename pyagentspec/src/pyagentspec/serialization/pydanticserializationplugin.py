@@ -64,13 +64,18 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
             if getattr(field_info, "exclude", False):  # To not include AIR version
                 continue
 
+            serialized_field_name = (
+                field_info.serialization_alias
+                if isinstance(field_info.serialization_alias, str)
+                else field_name
+            )
             try:
                 field_value = getattr(component, field_name)
                 # If a sensitive value is left as a falsy value (e.g. None, False, {}, "") then it
                 # is not replaced by a reference, such that the empty value does not need to be
                 # explicitly specified when loading the component configuration.
                 if field_value and serialization_context.should_redact_field(field_info):
-                    serialized_component[field_name] = {
+                    serialized_component[serialized_field_name] = {
                         "$component_ref": f"{component.id}.{field_name}"
                     }
                 else:
@@ -83,7 +88,7 @@ class PydanticComponentSerializationPlugin(ComponentSerializationPlugin):
                             UserWarning,
                             stacklevel=2,
                         )
-                    serialized_component[field_name] = serialization_context.dump_field(
+                    serialized_component[serialized_field_name] = serialization_context.dump_field(
                         value=field_value, info=field_info
                     )
             except AttributeError as e:

@@ -1,0 +1,92 @@
+# Copyright © 2026 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+from typing import Any
+
+import pytest
+from pydantic import ValidationError
+
+from pyagentspec.llms import DbmsVectorChainLlmConfig
+from pyagentspec.retrypolicy import RetryPolicy
+
+
+def valid_config_kwargs() -> dict[str, Any]:
+    return {
+        "name": "database-openai",
+        "model": "gpt-4o",
+        "provider": "openai",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "host": "public",
+        "credential_name": "MY_OPENAI_CREDENTIAL",
+    }
+
+
+@pytest.mark.parametrize("model_field", ["model", "model_id"])
+def test_dbms_vector_chain_llm_config_accepts_model_and_model_id(model_field: str) -> None:
+    kwargs = valid_config_kwargs()
+    model = kwargs.pop("model")
+    kwargs[model_field] = model
+
+    config = DbmsVectorChainLlmConfig(**kwargs)
+
+    assert config.model_id == "gpt-4o"
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    ["model", "provider", "url"],
+)
+def test_dbms_vector_chain_llm_config_rejects_empty_required_fields(field_name: str) -> None:
+    kwargs = valid_config_kwargs()
+    kwargs[field_name] = ""
+
+    with pytest.raises(ValidationError, match=field_name):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_requires_credential_for_external_host() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs.pop("credential_name")
+
+    with pytest.raises(ValidationError, match="credential_name"):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_allows_local_host_without_credential() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs["host"] = "local"
+    kwargs.pop("credential_name")
+
+    config = DbmsVectorChainLlmConfig(**kwargs)
+
+    assert config.credential_name is None
+
+
+def test_dbms_vector_chain_llm_config_rejects_negative_transfer_timeout() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs["transfer_timeout"] = -1
+
+    with pytest.raises(ValidationError, match="transfer_timeout"):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+@pytest.mark.parametrize(
+    "field_name,value",
+    [
+        ("api_provider", "openai"),
+        ("api_type", "chat_completions"),
+        ("api_key", "not-a-real-key"),
+        ("retry_policy", RetryPolicy(max_attempts=2)),
+    ],
+)
+def test_dbms_vector_chain_llm_config_rejects_unsupported_inherited_fields(
+    field_name: str, value: Any
+) -> None:
+    kwargs = valid_config_kwargs()
+    kwargs[field_name] = value
+
+    with pytest.raises(ValidationError, match=field_name):
+        DbmsVectorChainLlmConfig(**kwargs)

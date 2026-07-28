@@ -7,6 +7,7 @@ field to describe any provider, or you can use a dedicated subclass for provider
 The available LLM configurations are:
 
 - :ref:`LlmConfig <llmconfig>` (generic, provider-agnostic)
+- :ref:`DbmsVectorChainLlmConfig <dbmsvectorchainllmconfig>`
 - :ref:`OpenAiConfig <openaiconfig>`
 - :ref:`GeminiConfig <geminiconfig>`
 - :ref:`OciGenAiConfig <ocigenaiconfig>`
@@ -22,7 +23,7 @@ This guide will show you how to configure LLMs from different LLM providers with
 Configure retry behavior for remote LLM calls
 =============================================
 
-All ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
+Most ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
 Use it to configure retry attempts, per-request timeouts, and backoff behavior
 for transient failures when calling remote LLM endpoints.
 
@@ -79,6 +80,24 @@ or when you want a simple, portable configuration.
     :language: python
     :start-after: .. llmconfig-start
     :end-before: .. llmconfig-end
+
+
+DbmsVectorChainLlmConfig
+========================
+
+Use ``DbmsVectorChainLlmConfig`` when Oracle Database executes the LLM request
+through ``DBMS_VECTOR_CHAIN``. Its serialized representation uses ``model``
+instead of ``model_id`` and refers to a credential managed by the database.
+
+``credential_name`` is the name of an existing database credential, not an API
+key or credential value. It is required unless ``host`` is ``"local"``.
+
+**Examples**
+
+.. literalinclude:: ../code_examples/howto_llm_from_different_providers.py
+    :language: python
+    :start-after: .. dbmsvectorchain-start
+    :end-before: .. dbmsvectorchain-end
 
 
 OciGenAiConfig

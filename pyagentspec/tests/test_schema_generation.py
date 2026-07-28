@@ -19,6 +19,7 @@ from pyagentspec.component import Component
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.node import Node
 from pyagentspec.flows.nodes import LlmNode
+from pyagentspec.llms import DbmsVectorChainLlmConfig
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecSerializer
@@ -41,6 +42,22 @@ def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
     assert AgentSpecVersionEnum.__name__ in schema["$defs"]
     # +1 for ComponentReferenceWithNestedReferences, +1 for LlmConfig itself (concrete)
     assert len(schema["anyOf"]) == len(llm_config_subtypes) + 2
+
+
+def test_dbms_vector_chain_llm_config_is_registered_and_uses_model_alias_in_schema() -> None:
+    assert BUILTIN_CLASS_MAP["DbmsVectorChainLlmConfig"] is DbmsVectorChainLlmConfig
+
+    schema = DbmsVectorChainLlmConfig.model_json_schema(
+        mode="serialization", by_alias=True, only_core_components=True
+    )
+    config_schema = schema["$defs"]["BaseDbmsVectorChainLlmConfig"]
+
+    assert "model" in config_schema["properties"]
+    assert "model_id" not in config_schema["properties"]
+    assert "api_provider" not in config_schema["properties"]
+    assert "api_type" not in config_schema["properties"]
+    assert "api_key" not in config_schema["properties"]
+    assert "retry_policy" not in config_schema["properties"]
 
 
 def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:

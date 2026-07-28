@@ -6,6 +6,7 @@
 
 """Define LLM configuration abstractions and provider-specific implementations."""
 
+from .dbmsvectorchainllmconfig import DbmsVectorChainLlmConfig
 from .geminiconfig import GeminiConfig
 from .llmconfig import LlmConfig
 from .llmgenerationconfig import LlmGenerationConfig
@@ -16,6 +17,7 @@ from .openaiconfig import OpenAiConfig
 from .vllmconfig import VllmConfig
 
 __all__ = [
+    "DbmsVectorChainLlmConfig",
     "LlmConfig",
     "LlmGenerationConfig",
     "GeminiConfig",
