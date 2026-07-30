@@ -208,6 +208,16 @@
         ]
     },
     {
+        "name": "Code Executors",
+        "path": "codeexecutors",
+        "classes": [
+            {"path": "pyagentspec.tools.codeexecutors.CodeExecutor"},
+            {"path": "pyagentspec.tools.codeexecutors.SubProcessCodeExecutor"},
+            {"path": "pyagentspec.tools.codeexecutors.LocalContainerCodeExecutor"},
+            {"path": "pyagentspec.tools.codeexecutors.EndpointCodeExecutor"}
+        ]
+    },
+    {
         "name": "IO Properties",
         "path": "ioproperties",
         "classes": [

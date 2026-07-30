@@ -19,6 +19,12 @@ from ._openaiagent import OpenAiAgent
 from .a2aagent import A2AAgent, A2AConnectionConfig, A2ASessionParameters
 from .agent import Agent
 from .component import Component
+from .tools.codeexecutors import (
+    CodeExecutor,
+    EndpointCodeExecutor,
+    LocalContainerCodeExecutor,
+    SubProcessCodeExecutor,
+)
 from .managerworkers import ManagerWorkers
 from .ociagent import OciAgent
 from .property import Property
@@ -35,6 +41,10 @@ __all__ = [
     "Property",
     "RetryPolicy",
     "Component",
+    "CodeExecutor",
+    "SubProcessCodeExecutor",
+    "LocalContainerCodeExecutor",
+    "EndpointCodeExecutor",
     "Agent",
     "OpenAiAgent",
     "OciAgent",

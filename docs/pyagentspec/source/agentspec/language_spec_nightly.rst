@@ -366,6 +366,9 @@ following goals :
       - A Flow consists of a series of Node instances. There is a "standard library" of nodes
         for things such as executing a prompt with a LLM, branching, etc.
       - * A step in the execution of a flow, it corresponds to a specific action
+    * - Code Executor
+      - A component that configures a backend for executing code.
+      - A local container executor using a configured image, or an endpoint executor connected to a hosted sandbox service.
     * - Relations / edges (flow)
       - Flow of control and I/O (data) are defined by explicit relationships in Agent Spec.
       - * Define which is the sequence of nodes that should be executed
@@ -1293,6 +1296,75 @@ and raise an error if the values are not expected.
 
     **Tool Version:**  Our vector_retrieval_tool is not versioned.
 
+
+Code Executors
+^^^^^^^^^^^^^^
+
+Agent Spec runtimes can provide backends for executing code. A CodeExecutor
+component describes one such backend in a serialized Agent Spec configuration.
+
+Code executor components do not execute code by themselves and do not contain
+the code to execute. They configure runtime-provided execution backends that are
+used by other components or runtime features.
+
+The base CodeExecutor is abstract. Code executor components define
+the executor configuration.
+
+.. code-block:: python
+
+   class CodeExecutor(Component):
+     timeout_seconds: float
+     max_code_chars: int
+
+   class SubProcessCodeExecutor(CodeExecutor):
+     pass
+
+   class LocalContainerCodeExecutor(CodeExecutor):
+     image: str
+
+   class EndpointCodeExecutor(CodeExecutor):
+     url: str
+     headers: Optional[Dictstr, str]
+     sensitive_headers: SensitiveField[Optional[Dictstr, str]]
+     retry_policy: OptionalRetryPolicy
+
+- ``timeout_seconds``: The maximum wall-clock time allowed for one execution.
+  The default value is 30.
+- ``max_code_chars``: The maximum accepted source length in characters.
+  The default value is 50000.
+- ``SubProcessCodeExecutor``: Declares that code execution happens in a local
+  process managed by the runtime. It does not expose process launch details.
+- ``LocalContainerCodeExecutor.image``: Identifies the local container image
+  used by the runtime for code execution.
+- ``EndpointCodeExecutor.url``: Identifies the code execution endpoint.
+- ``EndpointCodeExecutor.headers``: Contains non-sensitive headers sent to the
+  endpoint.
+- ``EndpointCodeExecutor.sensitive_headers``: Contains sensitive headers sent
+  to the endpoint.
+- ``EndpointCodeExecutor.retry_policy``: Configures retries for requests sent
+  to the endpoint.
+
+Runtime responsibilities
+''''''''''''''''''''''''
+
+Agent Spec configurations store the executor configuration and shared limits. Runtime
+implementations may determine the supported languages, execution modes, dependency
+policy, isolation strength, result shape, and any additional execution policy,
+or they may defer this responsibility to the code execution server entirely.
+
+Security considerations
+'''''''''''''''''''''''
+
+Code executor components configure execution backends, and executing code is
+security-sensitive. Runtimes document the security properties of each
+supported executor component, including isolation boundary, network access,
+filesystem access, resource limits, dependency policy, and whether the backend
+is appropriate for untrusted code.
+
+Local process execution is a local execution mechanism, not a strong sandbox.
+Hardened deployments use execution backends with stronger isolation, such as
+containers, virtual machines, or hosted sandbox services, together with
+defense-in-depth controls.
 
 Execution flows
 ~~~~~~~~~~~~~~~
@@ -3218,7 +3290,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_26_2_0.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_3_0.json
         :language: json
 
 Note about serialization of components
