@@ -34,7 +34,7 @@ class CodeExecutor(Component, abstract=True):
     """Maximum accepted source length in characters."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v26_3_0,
+        default=AgentSpecVersionEnum.v26_2_0,
         init=False,
         exclude=True,
     )

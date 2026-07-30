@@ -29,7 +29,7 @@ def test_code_executor_defaults() -> None:
     assert executor.timeout_seconds == 30.0
     assert executor.max_code_chars == 50_000
     assert executor.component_type == "SubProcessCodeExecutor"
-    assert executor.min_agentspec_version == AgentSpecVersionEnum.v26_3_0
+    assert executor.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
 
 
 @pytest.mark.parametrize(
@@ -81,9 +81,7 @@ def test_endpoint_sensitive_headers_are_excluded_by_default_and_exported_on_opt_
     serialized = AgentSpecSerializer().to_dict(endpoint)
     assert serialized["headers"] == {"X-Request-Id": "request-id"}
     # Default serialization replaces non-empty sensitive values with references.
-    assert serialized["sensitive_headers"] == {
-        "$component_ref": f"{endpoint.id}.sensitive_headers"
-    }
+    assert serialized["sensitive_headers"] == {"$component_ref": f"{endpoint.id}.sensitive_headers"}
 
     # Sensitive values require an explicit opt-in before they are serialized.
     with pytest.warns(UserWarning):
@@ -169,19 +167,17 @@ def test_code_executor_json_and_yaml_roundtrips(
         assert "component_type: " + executor.component_type in serialized
 
 
-def test_code_executor_rejects_serialization_before_v26_3_0() -> None:
+def test_code_executor_rejects_serialization_before_v26_2_0() -> None:
     executor = SubProcessCodeExecutor(name="subprocess")
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
-        AgentSpecSerializer().to_dict(
-            executor, agentspec_version=AgentSpecVersionEnum.v26_2_0
-        )
+        AgentSpecSerializer().to_dict(executor, agentspec_version=AgentSpecVersionEnum.v26_1_2)
 
 
-def test_code_executor_rejects_deserialization_before_v26_3_0() -> None:
+def test_code_executor_rejects_deserialization_before_v26_2_0() -> None:
     executor = SubProcessCodeExecutor(name="subprocess")
     serialized = AgentSpecSerializer().to_dict(executor)
-    serialized["agentspec_version"] = AgentSpecVersionEnum.v26_2_0.value
+    serialized["agentspec_version"] = AgentSpecVersionEnum.v26_1_2.value
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         AgentSpecDeserializer().from_dict(serialized)
