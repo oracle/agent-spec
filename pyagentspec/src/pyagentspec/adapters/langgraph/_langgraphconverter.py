@@ -1093,21 +1093,15 @@ class AgentSpecToLangGraphConverter:
                                     └─ no tool_call ─→ END
 
         The manager is a react-agent holding one synthetic ``delegate_to_<worker>``
-        tool per worker. The parent graph's conditional edge inspects its last
-        AIMessage to pick the next node, and the worker node runs in an isolated
-        message context and answers with a ``ToolMessage`` matched to the pending
-        delegation id.
-
-        Workers are converted recursively and wired in as subgraph nodes, so
-        ``astream_events`` still exposes the parent/child boundary
-        (``subgraph=True``) for tracing and SSE streaming. Workers that are
-        themselves ``ManagerWorkers`` compose through ``self.convert(...)``.
+        tool per worker. A conditional edge routes each delegation to its worker,
+        which runs in an isolated message context and answers with a ``ToolMessage``
+        matched to the pending delegation id. Workers are converted recursively and
+        wired in as subgraph nodes, so ``astream_events`` still exposes the
+        parent/child boundary (``subgraph=True``) for tracing and streaming.
         """
         if not isinstance(mw.group_manager, AgentSpecAgent):
-            # The manager has to decide which worker to delegate to, so it needs a
-            # chat-LLM that emits tool_calls. Only Agent (and its SpecializedAgent
-            # subclass) has that shape; a Flow, Swarm or nested ManagerWorkers gives
-            # us nothing to route on.
+            # Delegation is routed off the manager's tool_calls, so the manager needs
+            # a chat-LLM; a Flow, Swarm or nested ManagerWorkers gives nothing to route on.
             raise NotImplementedError(
                 f"ManagerWorkers.group_manager must be an Agent for LangGraph "
                 f"conversion; got {type(mw.group_manager).__name__}."
@@ -1138,9 +1132,8 @@ class AgentSpecToLangGraphConverter:
             [(node_name, worker.description or "") for node_name, worker in named_workers],
         )
 
-        # The delegation tools do execute inside the react loop: their body returns a
-        # Command(graph=PARENT), which is how the call escapes the react subgraph so
-        # the conditional edge below can route on it.
+        # The delegation tools execute inside the react loop: their Command(graph=PARENT)
+        # is how the call escapes the subgraph so the conditional edge below can route on it.
         manager_graph = self._create_react_agent_with_given_info(
             name=manager_agent.name,
             system_prompt=rendered_prompt,
@@ -1274,7 +1267,9 @@ class AgentSpecToLangGraphConverter:
             make_span=lambda: AgentSpecAgentExecutionSpan(
                 name=f"AgentExecution[{agent.name}]", agent=agent
             ),
-            make_start_event=lambda inputs: AgentSpecAgentExecutionStart(agent=agent, inputs=inputs),
+            make_start_event=lambda inputs: AgentSpecAgentExecutionStart(
+                agent=agent, inputs=inputs
+            ),
             make_end_event=lambda result: AgentSpecAgentExecutionEnd(
                 agent=agent,
                 outputs=extract_outputs_from_invoke_result(result, agent.outputs or []),

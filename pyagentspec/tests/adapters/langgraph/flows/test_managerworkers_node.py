@@ -4,37 +4,28 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-"""A ManagerWorkers used as a flow step (AgentNode).
-
-Regression coverage for two coupled behaviours:
-  * ``ManagerWorkers._get_inferred_inputs`` exposes the group manager's inputs, so a
-    flow ``AgentNode`` wrapping a manager declares input ports and a ``DataFlowEdge``
-    into it resolves at load (previously: "node does not have any input property...").
-  * ``AgentNodeExecutor`` runs a ManagerWorkers node (previously: TypeError "can only
-    be used with AgentSpecAgent agents"), rendering the node inputs into the group
-    manager's prompt and returning its result.
-"""
+from unittest.mock import patch
 
 import pytest
 
 from pyagentspec.agent import Agent
+from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.managerworkers import ManagerWorkers
 from pyagentspec.property import StringProperty
 
+# These tests only need an LLM config object and stub the chat model, so they run
+# offline even under SKIP_LLM_TESTS=1.
+pytestmark = pytest.mark.usefixtures("allow_llm_config_construction")
 
-@pytest.fixture(autouse=True)
-def _offline(allow_llm_config_construction: None) -> None:
-    """These tests only need an LLM *config* object: the two inference tests never
-    convert at all, and the flow-step test stubs the chat model. Without this the
-    SKIP_LLM_TESTS guard skips all three and the flow-step path goes unverified."""
+
+def _llm_config() -> OpenAiCompatibleConfig:
+    return OpenAiCompatibleConfig(name="agent_llm", model_id="fake", url="null")
 
 
 def test_managerworkers_infers_inputs_from_group_manager_prompt() -> None:
-    """A ManagerWorkers exposes the group manager's prompt placeholders as inputs."""
-    llm = {"name": "m", "model_id": "fake", "url": "null"}
-    from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
-
-    cfg = OpenAiCompatibleConfig(**llm)
+    """A ManagerWorkers exposes the group manager's prompt placeholders as inputs, so
+    a flow AgentNode wrapping it declares input ports a DataFlowEdge can resolve."""
+    cfg = _llm_config()
     manager = Agent(
         name="manager",
         llm_config=cfg,
@@ -47,18 +38,13 @@ def test_managerworkers_infers_inputs_from_group_manager_prompt() -> None:
 
 
 def test_managerworkers_infers_outputs_from_group_manager() -> None:
-    """Symmetric with inputs: a ManagerWorkers exposes the group manager's outputs,
-    so a flow AgentNode wrapping it can wire its result downstream (or surface it as a
-    leaf)."""
-    from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
-
-    cfg = OpenAiCompatibleConfig(name="m", model_id="fake", url="null")
-    answer = StringProperty(title="answer")
+    """Symmetric with inputs: a ManagerWorkers exposes the group manager's outputs."""
+    cfg = _llm_config()
     manager = Agent(
         name="manager",
         llm_config=cfg,
         system_prompt="Answer the question.",
-        outputs=[answer],
+        outputs=[StringProperty(title="answer")],
     )
     worker = Agent(name="worker", llm_config=cfg, system_prompt="You help.")
     mw = ManagerWorkers(name="mw", group_manager=manager, workers=[worker])
@@ -67,36 +53,27 @@ def test_managerworkers_infers_outputs_from_group_manager() -> None:
 
 
 def test_managerworkers_runs_as_a_flow_step_with_data_edge_inputs() -> None:
-    """A ManagerWorkers flow step loads with its data edge resolved, and executes.
-
-    The model is stubbed, so there is no delegation: the manager produces a final
-    message and routes straight to END. Loading proves the manager node exposes the
-    ``joke`` input the data edge targets; running proves the manager's answer comes
-    back as the node's single string output.
-    """
-    from unittest.mock import patch
-
+    """A ManagerWorkers flow step loads with its data edge resolved and executes:
+    loading proves the node exposes the ``joke`` input the edge targets, running
+    proves the manager's answer comes back as the node's single string output."""
     from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
     from langchain_core.messages import AIMessage
     from langchain_openai import ChatOpenAI
     from langgraph.checkpoint.memory import MemorySaver
 
     from pyagentspec.adapters.langgraph import AgentSpecLoader
-    from pyagentspec.adapters.langgraph._langgraphconverter import (
-        AgentSpecToLangGraphConverter,
-    )
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
     from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
     from pyagentspec.flows.flow import Flow
     from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
-    from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
 
     class _FakeModel(FakeMessagesListChatModel, ChatOpenAI):
         pass
 
-    # Final message has no tool_calls → the manager routes to END without delegating.
+    # The final message has no tool_calls → the manager routes to END without delegating.
     fake_llm = _FakeModel(responses=[AIMessage(content="لماذا...")])
 
-    cfg = OpenAiCompatibleConfig(name="agent_llm", model_id="fake", url="null")
+    cfg = _llm_config()
     joke = StringProperty(title="joke")
     translated = StringProperty(title="translated")
 
@@ -108,8 +85,6 @@ def test_managerworkers_runs_as_a_flow_step_with_data_edge_inputs() -> None:
     )
     worker = Agent(name="worker", llm_config=cfg, system_prompt="You translate.")
     mw = ManagerWorkers(name="translator", group_manager=manager, workers=[worker])
-    # The manager node exposes the group manager's `joke` input, and the single
-    # `translated` output (inherited from the group manager) for the leaf edge.
     assert [p.title for p in (mw.inputs or [])] == ["joke"]
 
     manager_node = AgentNode(name="manager_node", agent=mw)
@@ -162,5 +137,4 @@ def test_managerworkers_runs_as_a_flow_step_with_data_edge_inputs() -> None:
             {"configurable": {"thread_id": "managerworkers-node"}},
         )
 
-    assert "outputs" in result
     assert result["outputs"]["translated"] == "لماذا..."

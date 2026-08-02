@@ -543,20 +543,15 @@ class AgentNodeExecutor(NodeExecutor):
 
         The graph runs over ``MessagesState``, which can't carry structured inputs
         inward to the group manager, so the node inputs are rendered into its
-        ``system_prompt`` and the satisfied ports dropped from both the manager and
-        the component. That keeps declared and inferred ports equal for the
-        downstream span re-validation, and the graph runs on messages alone.
-
-        Cached by rendered prompt, the same key
-        :meth:`_create_react_agent_with_given_input_values` uses.
+        ``system_prompt`` and the satisfied ports dropped. Cached by rendered prompt,
+        the same key :meth:`_create_react_agent_with_given_input_values` uses.
         """
         from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
         converter = AgentSpecToLangGraphConverter()
         entry_agent = component.group_manager
         if not isinstance(entry_agent, AgentSpecAgent):
-            # Not routable. Nothing to render or cache, and the converter owns the
-            # error message for this case.
+            # Nothing to render or cache; the converter owns the error for this case.
             return converter._manager_workers_convert_to_langgraph(
                 component, **self._conversion_kwargs()
             )
@@ -608,6 +603,17 @@ class AgentNodeExecutor(NodeExecutor):
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
+
+        if isinstance(self.node.agent, AgentSpecManagerWorkers):
+            # The hierarchical graph runs over MessagesState, which cannot carry a
+            # structured_response outward: the manager's final message is the result.
+            outputs = self.node.outputs
+            if len(outputs) != 1 or outputs[0].type != "string":
+                raise NotImplementedError(
+                    "A ManagerWorkers flow step supports a single string output; "
+                    f"node `{self.node.name}` declares {[o.title for o in outputs]}."
+                )
+            return {outputs[0].title: result["messages"][-1].content}, NodeExecutionDetails()
 
         outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()

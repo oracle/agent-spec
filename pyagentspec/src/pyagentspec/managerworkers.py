@@ -67,22 +67,14 @@ class ManagerWorkers(AgenticComponent):
     )
 
     def _get_inferred_inputs(self) -> List[Property]:
-        """A ``ManagerWorkers`` exposes the inputs of its group manager.
-
-        The group manager drives the conversation and is the component whose prompt the
-        runtime renders, so the group accepts exactly the inputs the manager accepts
-        (for an ``Agent`` manager, its ``{{placeholder}}`` inputs). The base default
-        infers none, which would leave a ``ManagerWorkers`` used as a flow ``AgentNode``
-        with no input ports for a data-flow edge to resolve against.
-
-        The ``hasattr`` guard matches :meth:`Flow._get_inferred_inputs` and
-        :meth:`AgentNode._get_inferred_inputs`: error-accumulating validators can run
-        this against a partially-constructed model with no ``group_manager`` assigned.
-        """
+        # The group manager drives the conversation and is the component whose prompt
+        # the runtime renders, so the group accepts exactly the inputs the manager
+        # accepts. The hasattr guard matches Flow._get_inferred_inputs: validators can
+        # run this against a partially-constructed model with no group_manager yet.
         return (self.group_manager.inputs or []) if hasattr(self, "group_manager") else []
 
     def _get_inferred_outputs(self) -> List[Property]:
-        """Outputs of the group manager; see :meth:`_get_inferred_inputs`."""
+        # Symmetric with the inferred inputs: the group manager's outputs.
         return (self.group_manager.outputs or []) if hasattr(self, "group_manager") else []
 
     @model_validator_with_error_accumulation

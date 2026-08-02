@@ -127,17 +127,10 @@ _REAL_LLM_INITS = {dotted: _resolve(dotted) for dotted in LLM_MOCKED_METHODS}
 
 @pytest.fixture
 def allow_llm_config_construction():
-    """Opt out of the blanket ``SKIP_LLM_TESTS=1`` construction guard.
-
-    That guard skips a test the moment it constructs an LLM config. Right for tests
-    that go on to call a model, wrong for tests that only need a config object and
-    stub the conversion: those should run offline, and instead they skip silently in
-    CI, leaving the code path they cover unverified.
-
-    Restores the real constructors for one test, overriding the guards in both this
-    conftest and ``tests/conftest.py``.
-
-    Only request this from a test that provably never reaches a model endpoint.
+    """
+    Opt out of the SKIP_LLM_TESTS=1 construction guard for one test, restoring the
+    real LLM config constructors. Only request this from a test that stubs the model
+    and never reaches an endpoint; such tests should run offline instead of skipping.
     """
     if not should_skip_llm_test():
         # Nothing patched the constructors, so there is nothing to restore.

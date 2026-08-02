@@ -7,13 +7,11 @@
 """Wrap a compiled graph's ``stream``/``astream`` in an Agent Spec execution span.
 
 Agent, Flow and ManagerWorkers graphs all need the same wrapper: open a span, emit a
-Start event carrying the invocation inputs, replay the chunks the underlying stream
-yields while remembering the last state chunk, then emit an End event built from that
-final state. Only the span class and the two event payloads differ, so they come in
-as factories.
-
-``invoke``/``ainvoke`` need no patch of their own; they go through ``stream``/
-``astream`` internally.
+Start event carrying the invocation inputs, yield the chunks the underlying stream
+produces while remembering the last state chunk, then emit an End event built from
+that final state. Only the span class and the two event payloads differ, so they come
+in as factories. ``invoke``/``ainvoke`` need no patch; they use ``stream``/``astream``
+internally.
 """
 
 from typing import Any, AsyncGenerator, Callable, Dict, Generator
