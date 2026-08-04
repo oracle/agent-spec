@@ -26,7 +26,8 @@ langgraph-swarm==0.1.0
 wayflowcore==26.1.2
 
 # AgentFramework adapter
-agent-framework==1.0.0b260130
+agent-framework-core==1.13.0
+agent-framework-openai==1.12.0
 
 # OpenAI Agents adapter
 openai-agents==0.6.9

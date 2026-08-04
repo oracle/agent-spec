@@ -156,14 +156,13 @@ setup(
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
-            "agent-framework>=1.0.0b260130; python_version < '3.14'",
-            "httpx>0.28.0; python_version < '3.14'",
+            "agent-framework-core>=1.10.0",
+            "agent-framework-openai>=1.10.0",
+            "httpx>0.28.0",
             # 4rth party dependencies
-            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            # including otel-semconv-ai to address internal agent-framework bug
-            "opentelemetry-semantic-conventions-ai<0.4.14",
-            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
+            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
