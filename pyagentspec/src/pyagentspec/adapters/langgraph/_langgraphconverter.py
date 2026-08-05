@@ -1670,7 +1670,7 @@ def _create_chat_openai_model(
     # If api_key is None (or not passed), and the environment variable is not set, openai raises an error
     # Therefore, we set a fake API key to avoid raising an exception in case no key is required
     if api_key is None:
-        api_key = os.getenv("OPENAI_API_KEY", "EMPTY")
+        api_key = os.getenv("OPENAI_API_KEY", "EMPTY") or "EMPTY"
 
     optional_kwargs: _ChatOpenAIOptionalKwargs = {}
     max_retries = retry_config.get("max_retries")
