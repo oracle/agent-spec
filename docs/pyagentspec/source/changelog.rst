@@ -7,6 +7,14 @@ Agent Spec |release|
 Improvements
 ^^^^^^^^^^^^
 
+* **Updated Microsoft Agent Framework dependency**
+
+  Updated ``agent-framework`` to version ``1.13.0``.
+
+* **Updated OpenAI Agents SDK dependency**
+
+  Updated ``openai-agents`` to version ``0.19.4``.
+
 * **Sensitive field export opt-in**
 
   Serializers now support ``include_sensitive_fields`` to include sensitive field values in

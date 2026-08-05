@@ -66,7 +66,7 @@ async def main():
 # .. end-agentspec_to_runtime
 # .. start-runtime_to_agentspec
 # Create an OpenAI Agent
-from agents.agent import Agent, function_tool
+from agents import Agent, function_tool
 
 @function_tool
 def subtraction_tool(a: float, b: float) -> float:
