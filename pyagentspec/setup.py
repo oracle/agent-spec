@@ -103,7 +103,7 @@ setup(
         ],
         "openai-agents": [
             # 3rd party dependencies (imported in code)
-            "openai-agents>=0.6.9",
+            "openai-agents>=0.19.0",
             "libcst>=1.5,<2",
             "httpx>0.28.0",
             # 4rth party dependencies
