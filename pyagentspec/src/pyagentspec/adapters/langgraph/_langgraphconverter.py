@@ -7,6 +7,7 @@
 
 import inspect
 import logging
+import os
 import sys
 from typing import (
     TYPE_CHECKING,
@@ -1195,7 +1196,9 @@ class AgentSpecToLangGraphConverter:
         )
         if middleware:
             create_agent_kwargs["middleware"] = middleware
-        compiled_graph = langchain_agents.create_agent(**create_agent_kwargs)
+        compiled_graph: CompiledStateGraph[Any, Any, Any] = langchain_agents.create_agent(
+            **create_agent_kwargs
+        )
 
         # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
 
@@ -1323,7 +1326,7 @@ class AgentSpecToLangGraphConverter:
             return _create_chat_openai_model(
                 model_id=llm_config.model_id,
                 base_url=_prepare_openai_compatible_url(llm_config.url),
-                api_key=llm_config.api_key if llm_config.api_key is not None else "EMPTY",
+                api_key=llm_config.api_key,
                 use_responses_api=use_responses_api,
                 callbacks=callbacks,
                 generation_config=generation_config,
@@ -1650,7 +1653,6 @@ def _generation_config_from_agentspec(
 
 
 def _create_chat_openai_model(
-    *,
     model_id: str,
     use_responses_api: bool,
     callbacks: List[BaseCallbackHandler],
@@ -1661,11 +1663,14 @@ def _create_chat_openai_model(
 ) -> BaseChatModel:
     """Create a ChatOpenAI model without overriding env-based defaults.
 
-    Important: passing `api_key=None` disables LangChain's env-based default (`OPENAI_API_KEY`)
-    and results in a model without a sync client. Only pass `api_key` when it is explicitly
-    specified in the Agent Spec config.
+    Important: passing `api_key=None` fallbacks to env-based default (`OPENAI_API_KEY`) or a fake API key.
     """
     from langchain_openai import ChatOpenAI
+
+    # If api_key is None (or not passed), and the environment variable is not set, openai raises an error
+    # Therefore, we set a fake API key to avoid raising an exception in case no key is required
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY", "EMPTY")
 
     optional_kwargs: _ChatOpenAIOptionalKwargs = {}
     max_retries = retry_config.get("max_retries")
@@ -1676,13 +1681,12 @@ def _create_chat_openai_model(
         optional_kwargs["timeout"] = timeout
     if base_url is not None:
         optional_kwargs["base_url"] = base_url
-    if api_key is not None:
-        optional_kwargs["api_key"] = SecretStr(api_key)
 
     return ChatOpenAI(
         model=model_id,
         use_responses_api=use_responses_api,
         callbacks=callbacks,
+        api_key=SecretStr(api_key),
         temperature=generation_config.get("temperature"),
         max_completion_tokens=generation_config.get("max_tokens"),
         top_p=generation_config.get("top_p"),
@@ -1696,7 +1700,6 @@ class _ChatOpenAIOptionalKwargs(TypedDict):
     max_retries: NotRequired[int]
     timeout: NotRequired[float]
     base_url: NotRequired[str]
-    api_key: NotRequired[SecretStr]
 
 
 class _GenerationConfig(TypedDict):
