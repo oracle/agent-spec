@@ -89,8 +89,53 @@ Use ``DbmsVectorChainLlmConfig`` when Oracle Database executes the LLM request
 through ``DBMS_VECTOR_CHAIN``. Its serialized representation uses ``model``
 instead of ``model_id`` and refers to a credential managed by the database.
 
+Refer to the `DBMS_VECTOR_CHAIN documentation <https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_vector_chain1.html>`_
+for supported ``provider`` values and provider-specific configuration
+requirements.
+
 ``credential_name`` is the name of an existing database credential, not an API
-key or credential value. It is required unless ``host`` is ``"local"``.
+key or credential value. Create the credential with
+``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``; refer to the linked documentation for
+credential creation instructions. For a remote provider, specify
+``credential_name`` and omit ``host``. For a local OpenAI or Ollama provider,
+specify ``host="local"`` and omit ``credential_name``.
+
+**Parameters**
+
+.. option:: model: str
+
+  Name of the text-generation model used by the database.
+
+.. option:: provider: str
+
+  Database-supported LLM provider, such as ``openai``, ``cohere``, or
+  ``ollama``.
+
+.. option:: url: str
+
+  Provider endpoint URL used by Oracle Database.
+
+.. option:: credential_name: str, null
+
+  Name of a credential created in Oracle Database with
+  ``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``. Required unless ``host`` is set.
+
+.. option:: host: "local", null
+
+  Set to ``"local"`` for a local OpenAI or Ollama provider. When set, omit
+  ``credential_name``.
+
+.. option:: transfer_timeout: int, null
+
+  Maximum number of seconds the database waits for the provider request.
+
+.. option:: default_generation_parameters: dict, null
+
+  Default generation settings, such as ``temperature`` and ``max_tokens``.
+
+.. option:: retry_policy: dict, null
+
+  Agent Spec retry settings for recoverable LLM-request failures.
 
 **Examples**
 

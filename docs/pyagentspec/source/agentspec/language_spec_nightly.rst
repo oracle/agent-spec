@@ -617,6 +617,31 @@ Null value is equivalent to an empty dictionary, i.e., no default generation par
 and ``api_type`` values. Specific extensions of ``LlmConfig`` for the most common providers are also provided
 for convenience, offering additional provider-specific configuration options.
 
+DBMS Vector Chain
+^^^^^^^^^^^^^^^^^
+
+``DbmsVectorChainLlmConfig`` configures an LLM request executed by Oracle
+Database through ``DBMS_VECTOR_CHAIN``. The Agent Spec runtime that executes
+the flow is responsible for connecting to the database; this configuration
+describes the database's request to the LLM provider, not a database connection.
+
+.. code-block:: python
+
+   class DbmsVectorChainLlmConfig(LlmConfig):
+     model: str
+     provider: str
+     url: str
+     credential_name: Optional[str]
+     host: Optional[Literal["local"]]
+     transfer_timeout: Optional[int]
+
+The serialized configuration uses ``model`` for the database model name.
+For a remote provider, ``credential_name`` identifies a credential created in
+Oracle Database with ``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``. For a local
+OpenAI or Ollama provider, set ``host`` to ``"local"`` and omit
+``credential_name``. Refer to the `DBMS_VECTOR_CHAIN documentation <https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_vector_chain1.html#GUID-017C9002-194C-48E5-B59B-EF5C60BC8405>`_
+for supported providers and provider-specific parameters.
+
 Structured Generation
 ^^^^^^^^^^^^^^^^^^^^^
 

@@ -2710,9 +2710,21 @@
           ],
           "default": null
         },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
         "host": {
           "anyOf": [
             {
+              "const": "local",
               "type": "string"
             },
             {

@@ -57,7 +57,8 @@ def test_dbms_vector_chain_llm_config_is_registered_and_uses_model_alias_in_sche
     assert "api_provider" not in config_schema["properties"]
     assert "api_type" not in config_schema["properties"]
     assert "api_key" not in config_schema["properties"]
-    assert "retry_policy" not in config_schema["properties"]
+    assert "retry_policy" in config_schema["properties"]
+    assert config_schema["properties"]["host"]["anyOf"][0]["const"] == "local"
 
 
 def test_llmnode_schema_contains_all_concrete_llmconfig_types() -> None:

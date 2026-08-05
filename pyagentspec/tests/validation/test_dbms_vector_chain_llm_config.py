@@ -10,7 +10,6 @@ import pytest
 from pydantic import ValidationError
 
 from pyagentspec.llms import DbmsVectorChainLlmConfig
-from pyagentspec.retrypolicy import RetryPolicy
 
 
 def valid_config_kwargs() -> dict[str, Any]:
@@ -19,7 +18,6 @@ def valid_config_kwargs() -> dict[str, Any]:
         "model": "gpt-4o",
         "provider": "openai",
         "url": "https://api.openai.com/v1/chat/completions",
-        "host": "public",
         "credential_name": "MY_OPENAI_CREDENTIAL",
     }
 
@@ -47,7 +45,7 @@ def test_dbms_vector_chain_llm_config_rejects_empty_required_fields(field_name: 
         DbmsVectorChainLlmConfig(**kwargs)
 
 
-def test_dbms_vector_chain_llm_config_requires_credential_for_external_host() -> None:
+def test_dbms_vector_chain_llm_config_requires_credential_without_host() -> None:
     kwargs = valid_config_kwargs()
     kwargs.pop("credential_name")
 
@@ -55,14 +53,45 @@ def test_dbms_vector_chain_llm_config_requires_credential_for_external_host() ->
         DbmsVectorChainLlmConfig(**kwargs)
 
 
-def test_dbms_vector_chain_llm_config_allows_local_host_without_credential() -> None:
+@pytest.mark.parametrize("provider", ["openai", "ollama"])
+def test_dbms_vector_chain_llm_config_allows_local_host_without_credential(
+    provider: str,
+) -> None:
     kwargs = valid_config_kwargs()
+    kwargs["provider"] = provider
     kwargs["host"] = "local"
     kwargs.pop("credential_name")
 
     config = DbmsVectorChainLlmConfig(**kwargs)
 
     assert config.credential_name is None
+
+
+def test_dbms_vector_chain_llm_config_rejects_host_with_credential() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs["host"] = "local"
+
+    with pytest.raises(ValidationError, match="host.*credential_name"):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_rejects_nonlocal_host() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs.pop("credential_name")
+    kwargs["host"] = "public"
+
+    with pytest.raises(ValidationError, match="host"):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_rejects_local_host_for_unsupported_provider() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs["provider"] = "cohere"
+    kwargs["host"] = "local"
+    kwargs.pop("credential_name")
+
+    with pytest.raises(ValidationError, match="openai.*ollama"):
+        DbmsVectorChainLlmConfig(**kwargs)
 
 
 def test_dbms_vector_chain_llm_config_rejects_negative_transfer_timeout() -> None:
@@ -79,7 +108,6 @@ def test_dbms_vector_chain_llm_config_rejects_negative_transfer_timeout() -> Non
         ("api_provider", "openai"),
         ("api_type", "chat_completions"),
         ("api_key", "not-a-real-key"),
-        ("retry_policy", RetryPolicy(max_attempts=2)),
     ],
 )
 def test_dbms_vector_chain_llm_config_rejects_unsupported_inherited_fields(

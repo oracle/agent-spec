@@ -31,7 +31,6 @@ llm = DbmsVectorChainLlmConfig(
     model="gpt-4o",
     provider="openai",
     url="https://api.openai.com/v1/chat/completions",
-    host="public",
     credential_name="MY_OPENAI_CREDENTIAL",
     transfer_timeout=120,
 )

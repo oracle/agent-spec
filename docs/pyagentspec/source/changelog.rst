@@ -39,6 +39,11 @@ Bug fixes
 New features
 ^^^^^^^^^^^^
 
+* **DBMS Vector Chain LLM configuration**
+
+  Added ``DbmsVectorChainLlmConfig`` for configuring LLM requests executed
+  through Oracle Database ``DBMS_VECTOR_CHAIN``.
+
 * **MCP tool retry policies**
 
   Added ``retry_policy`` support to ``MCPTool`` and ``MCPToolBox`` so runtimes can
