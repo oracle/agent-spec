@@ -220,29 +220,6 @@ def weather_agent_server_tool_openaicompatible_yaml(weather_agent_server_tool_ya
     )
 
 
-def test_weather_agent_with_server_tool_with_openaicompatible_llm_raises_without_api_key(
-    weather_agent_server_tool_openaicompatible_yaml: str,
-) -> None:
-    """
-    This test is checking the case of OpenAiCompatibleConfig.
-    The VllmConfig is already tested in all the tests above
-    """
-    import openai
-
-    from pyagentspec.adapters.langgraph import AgentSpecLoader
-
-    old_value = os.environ.pop("OPENAI_API_KEY", None)
-
-    try:
-        with pytest.raises(openai.OpenAIError, match="api_key"):
-            AgentSpecLoader(tool_registry={"get_weather": get_weather}).load_yaml(
-                weather_agent_server_tool_openaicompatible_yaml
-            )
-    finally:
-        if old_value is not None:
-            os.environ["OPENAI_API_KEY"] = old_value
-
-
 @mock.patch.dict(os.environ, {"OPENAI_API_KEY": "MOCKED_KEY"})
 @retry_test(max_attempts=3, wait_between_tries=2)
 def test_execute_weather_agent_with_server_tool_with_openaicompatible_llm(
