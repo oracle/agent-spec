@@ -137,6 +137,14 @@ def _build_type_from_schema(
         return List[item_type]  # type: ignore
     # objects
     if t == "object" or ("properties" in schema or "required" in schema):
+        props = schema.get("properties", {}) or {}
+        # An object schema with no declared properties accepts any object
+        # (JSON Schema semantics). Building an empty create_model() here would
+        # silently strip every key on validation (pydantic defaults to
+        # extra="ignore"), so the tool receives {} instead of the LLM's
+        # arguments. Map it to a passthrough dict instead.
+        if not props and schema.get("additionalProperties") is not False:
+            return Dict[str, Any]
         # Create or reuse a Pydantic model for this object schema
         model_name = schema.get("title") or name
         unique_name = model_name
@@ -145,7 +153,6 @@ def _build_type_from_schema(
             suffix += 1
             unique_name = f"{model_name}_{suffix}"
 
-        props = schema.get("properties", {}) or {}
         required = set(schema.get("required", []))
 
         fields: Dict[str, Tuple[Any, Any]] = {}
