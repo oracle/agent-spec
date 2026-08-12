@@ -4,6 +4,17 @@ Changelog
 Agent Spec |release|
 --------------------
 
+New features
+^^^^^^^^^^^^
+
+* **Code executor components**
+
+  Added ``CodeExecutor``, ``SubProcessCodeExecutor``, ``LocalContainerCodeExecutor``,
+  and ``EndpointCodeExecutor`` components for configuring runtime-provided code execution
+  backends with shared timeout and source-length limits.
+
+
+
 Improvements
 ^^^^^^^^^^^^
 

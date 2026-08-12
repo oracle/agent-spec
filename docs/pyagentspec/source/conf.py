@@ -84,6 +84,11 @@ extensions = [
     "sphinx_design",
 ]
 
+# The API index is generated with a hidden toctree during the build. Sphinx's
+# consistency check reports the generated API pages as not included even
+# though they are intentionally reachable through that index.
+suppress_warnings = ["toc.not_included"]
+
 if docs_version == "dev":
     language_spec_file = "language_spec_nightly"
 else:

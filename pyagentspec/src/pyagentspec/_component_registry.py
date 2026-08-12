@@ -13,6 +13,12 @@ from pyagentspec.agent import Agent
 from pyagentspec.agenticcomponent import AgenticComponent
 from pyagentspec.auth import OAuthClientConfig, OAuthConfig
 from pyagentspec.component import Component, ComponentWithIO
+from pyagentspec.tools.codeexecutors import (
+    CodeExecutor,
+    EndpointCodeExecutor,
+    LocalContainerCodeExecutor,
+    SubProcessCodeExecutor,
+)
 from pyagentspec.datastores.datastore import Datastore, InMemoryCollectionDatastore
 from pyagentspec.datastores.oracle import (
     MTlsOracleDatabaseConnectionConfig,
@@ -100,16 +106,19 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "ClientTransport": ClientTransport,
     "Component": Component,
     "ComponentWithIO": ComponentWithIO,
+    "CodeExecutor": CodeExecutor,
     "ClientTool": ClientTool,
     "BuiltinTool": BuiltinTool,
     "ControlFlowEdge": ControlFlowEdge,
     "DataFlowEdge": DataFlowEdge,
     "Datastore": Datastore,
+    "EndpointCodeExecutor": EndpointCodeExecutor,
     "EndNode": EndNode,
     "Flow": Flow,
     "FlowNode": FlowNode,
     "InMemoryCollectionDatastore": InMemoryCollectionDatastore,
     "InputMessageNode": InputMessageNode,
+    "LocalContainerCodeExecutor": LocalContainerCodeExecutor,
     "LlmConfig": LlmConfig,
     "LlmNode": LlmNode,
     "MapNode": MapNode,
@@ -145,6 +154,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "StdioTransport": StdioTransport,
     "StreamableHTTPTransport": StreamableHTTPTransport,
     "StreamableHTTPmTLSTransport": StreamableHTTPmTLSTransport,
+    "SubProcessCodeExecutor": SubProcessCodeExecutor,
     "Tool": Tool,
     "ToolBox": ToolBox,
     "ToolNode": ToolNode,

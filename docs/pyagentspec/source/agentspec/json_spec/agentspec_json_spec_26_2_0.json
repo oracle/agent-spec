@@ -164,6 +164,16 @@
         }
       ]
     },
+    "CodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseCodeExecutor"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "ComponentWithIO": {
       "anyOf": [
         {
@@ -218,6 +228,16 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseEndNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "EndpointCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseEndpointCodeExecutor"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -372,6 +392,16 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseLlmNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "LocalContainerCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseLocalContainerCodeExecutor"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -994,6 +1024,16 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
+    "SubProcessCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseSubProcessCodeExecutor"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -2241,6 +2281,20 @@
       ],
       "x-abstract-component": true
     },
+    "BaseCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EndpointCodeExecutor"
+        },
+        {
+          "$ref": "#/$defs/LocalContainerCodeExecutor"
+        },
+        {
+          "$ref": "#/$defs/SubProcessCodeExecutor"
+        }
+      ],
+      "x-abstract-component": true
+    },
     "BaseComponentWithIO": {
       "anyOf": [
         {
@@ -2727,6 +2781,114 @@
         "name"
       ],
       "title": "EndNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseEndpointCodeExecutor": {
+      "additionalProperties": false,
+      "description": "Code executor that sends execution requests to an endpoint.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "timeout_seconds": {
+          "default": 30.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "max_code_chars": {
+          "default": 50000,
+          "exclusiveMinimum": 0,
+          "title": "Max Code Chars",
+          "type": "integer"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Headers"
+        },
+        "sensitive_headers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sensitive Headers"
+        },
+        "retry_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RetryPolicy"
+            }
+          ],
+          "default": null
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "EndpointCodeExecutor"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ],
+      "title": "EndpointCodeExecutor",
       "type": "object",
       "x-abstract-component": false
     },
@@ -3636,6 +3798,73 @@
         "prompt_template"
       ],
       "title": "LlmNode",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseLocalContainerCodeExecutor": {
+      "additionalProperties": false,
+      "description": "Code executor that declares local container execution.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "timeout_seconds": {
+          "default": 30.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "max_code_chars": {
+          "default": 50000,
+          "exclusiveMinimum": 0,
+          "title": "Max Code Chars",
+          "type": "integer"
+        },
+        "image": {
+          "title": "Image",
+          "type": "string"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "LocalContainerCodeExecutor"
+        }
+      },
+      "required": [
+        "image",
+        "name"
+      ],
+      "title": "LocalContainerCodeExecutor",
       "type": "object",
       "x-abstract-component": false
     },
@@ -7070,6 +7299,68 @@
       "type": "object",
       "x-abstract-component": false
     },
+    "BaseSubProcessCodeExecutor": {
+      "additionalProperties": false,
+      "description": "Code executor that declares local process execution.\n\nNote: The subprocess executor is intended for prototyping only and must\nnot be used in production deployments.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "timeout_seconds": {
+          "default": 30.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "max_code_chars": {
+          "default": 50000,
+          "exclusiveMinimum": 0,
+          "title": "Max Code Chars",
+          "type": "integer"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "SubProcessCodeExecutor"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "SubProcessCodeExecutor",
+      "type": "object",
+      "x-abstract-component": false
+    },
     "BaseSwarm": {
       "additionalProperties": false,
       "description": "Defines a ``Swarm`` conversational component.\n\nA ``Swarm`` is a multi-agent conversational component in which each agent determines\nthe next agent to be executed, based on a list of pre-defined relationships.\nAgents in Swarm can be any ``AgenticComponent``.\n\nExamples\n--------\n>>> from pyagentspec.agent import Agent\n>>> from pyagentspec.swarm import Swarm\n>>> addition_agent = Agent(name=\"addition_agent\", description=\"Agent that can do additions\", llm_config=llm_config, system_prompt=\"You can do additions.\")\n>>> multiplication_agent = Agent(name=\"multiplication_agent\", description=\"Agent that can do multiplication\", llm_config=llm_config, system_prompt=\"You can do multiplication.\")\n>>> division_agent = Agent(name=\"division_agent\", description=\"Agent that can do division\", llm_config=llm_config, system_prompt=\"You can do division.\")\n>>>\n>>> swarm = Swarm(\n...     name=\"swarm\",\n...     first_agent=addition_agent,\n...     relationships=[\n...         (addition_agent, multiplication_agent),\n...         (addition_agent, division_agent),\n...         (multiplication_agent, division_agent),\n...     ]\n... )",
@@ -7718,6 +8009,9 @@
             "$ref": "#/$defs/BaseClientTransport"
           },
           {
+            "$ref": "#/$defs/BaseCodeExecutor"
+          },
+          {
             "$ref": "#/$defs/BaseComponentWithIO"
           },
           {
@@ -7734,6 +8028,9 @@
           },
           {
             "$ref": "#/$defs/BaseEndNode"
+          },
+          {
+            "$ref": "#/$defs/BaseEndpointCodeExecutor"
           },
           {
             "$ref": "#/$defs/BaseFlow"
@@ -7764,6 +8061,9 @@
           },
           {
             "$ref": "#/$defs/BaseLlmNode"
+          },
+          {
+            "$ref": "#/$defs/BaseLocalContainerCodeExecutor"
           },
           {
             "$ref": "#/$defs/BaseMCPTool"
@@ -7881,6 +8181,9 @@
           },
           {
             "$ref": "#/$defs/BaseStreamableHTTPmTLSTransport"
+          },
+          {
+            "$ref": "#/$defs/BaseSubProcessCodeExecutor"
           },
           {
             "$ref": "#/$defs/BaseSwarm"
@@ -8117,6 +8420,21 @@
         }
       }
     },
+    "VersionedCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseCodeExecutor"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedComponentWithIO": {
       "anyOf": [
         {
@@ -8196,6 +8514,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseEndNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedEndpointCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseEndpointCodeExecutor"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -8346,6 +8679,21 @@
       "anyOf": [
         {
           "$ref": "#/$defs/BaseLlmNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
+    "VersionedLocalContainerCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseLocalContainerCodeExecutor"
         },
         {
           "$ref": "#/$defs/ComponentReference"
@@ -8897,6 +9245,21 @@
         }
       }
     },
+    "VersionedSubProcessCodeExecutor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseSubProcessCodeExecutor"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedSwarm": {
       "anyOf": [
         {
@@ -9060,6 +9423,9 @@
       "$ref": "#/$defs/VersionedClientTransport"
     },
     {
+      "$ref": "#/$defs/VersionedCodeExecutor"
+    },
+    {
       "$ref": "#/$defs/VersionedComponentReferenceWithNestedReferences"
     },
     {
@@ -9079,6 +9445,9 @@
     },
     {
       "$ref": "#/$defs/VersionedEndNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedEndpointCodeExecutor"
     },
     {
       "$ref": "#/$defs/VersionedFlow"
@@ -9109,6 +9478,9 @@
     },
     {
       "$ref": "#/$defs/VersionedLlmNode"
+    },
+    {
+      "$ref": "#/$defs/VersionedLocalContainerCodeExecutor"
     },
     {
       "$ref": "#/$defs/VersionedMCPTool"
@@ -9217,6 +9589,9 @@
     },
     {
       "$ref": "#/$defs/VersionedStreamableHTTPmTLSTransport"
+    },
+    {
+      "$ref": "#/$defs/VersionedSubProcessCodeExecutor"
     },
     {
       "$ref": "#/$defs/VersionedSwarm"
