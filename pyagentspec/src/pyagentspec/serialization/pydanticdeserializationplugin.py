@@ -6,34 +6,15 @@
 
 """This module defines the deserialization plugin for Pydantic Components."""
 
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Type, cast
+from typing import Any, Dict, List, Mapping, Tuple, Type, cast
 
-from pydantic import AliasChoices, BaseModel, ValidationError
-from pydantic.fields import FieldInfo
+from pydantic import BaseModel, ValidationError
 from pydantic_core import InitErrorDetails
 
 from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import DeserializationContext
 from pyagentspec.serialization.deserializationplugin import ComponentDeserializationPlugin
 from pyagentspec.validation_helpers import PyAgentSpecErrorDetails
-
-
-def _get_serialized_field_name(
-    field_name: str,
-    field_info: FieldInfo,
-    serialized_component: Dict[str, Any],
-) -> Optional[str]:
-    """Return the serialized key matching a direct Pydantic component field."""
-    validation_alias = field_info.validation_alias
-    if isinstance(validation_alias, str) and validation_alias in serialized_component:
-        return validation_alias
-    if isinstance(validation_alias, AliasChoices):
-        for alias in validation_alias.choices:
-            if isinstance(alias, str) and alias in serialized_component:
-                return alias
-    if field_name in serialized_component:
-        return field_name
-    return None
 
 
 class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
@@ -108,15 +89,12 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
         resolved_content: Dict[str, Any] = {}
         for field_name, field_info in model_class.model_fields.items():
             annotation = field_info.annotation
-            serialized_field_name = _get_serialized_field_name(
-                field_name, field_info, serialized_component
-            )
-            if serialized_field_name is not None:
+            if field_name in serialized_component:
                 # We always do partial build, and we raise in the caller function
                 # if we are not allowed to have validation issues
                 resolved_content[field_name], nested_validation_errors = (
                     deserialization_context._partial_load_field(
-                        serialized_component[serialized_field_name], annotation
+                        serialized_component[field_name], annotation
                     )
                 )
                 all_validation_errors.extend(

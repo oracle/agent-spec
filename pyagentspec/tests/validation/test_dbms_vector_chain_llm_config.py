@@ -9,39 +9,37 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from pyagentspec.datastores.oracle import TlsOracleDatabaseConnectionConfig
 from pyagentspec.llms import DbmsVectorChainLlmConfig
 
 
 def valid_config_kwargs() -> dict[str, Any]:
     return {
         "name": "database-openai",
-        "model": "gpt-4o",
+        "model_id": "gpt-4o",
         "provider": "openai",
         "url": "https://api.openai.com/v1/chat/completions",
         "credential_name": "MY_OPENAI_CREDENTIAL",
     }
 
 
-@pytest.mark.parametrize("model_field", ["model", "model_id"])
-def test_dbms_vector_chain_llm_config_accepts_model_and_model_id(model_field: str) -> None:
-    kwargs = valid_config_kwargs()
-    model = kwargs.pop("model")
-    kwargs[model_field] = model
-
-    config = DbmsVectorChainLlmConfig(**kwargs)
-
-    assert config.model_id == "gpt-4o"
-
-
 @pytest.mark.parametrize(
     "field_name",
-    ["model", "provider", "url"],
+    ["model_id", "provider", "url"],
 )
 def test_dbms_vector_chain_llm_config_rejects_empty_required_fields(field_name: str) -> None:
     kwargs = valid_config_kwargs()
     kwargs[field_name] = ""
 
     with pytest.raises(ValidationError, match=field_name):
+        DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_rejects_model_alias() -> None:
+    kwargs = valid_config_kwargs()
+    kwargs["model"] = kwargs.pop("model_id")
+
+    with pytest.raises(ValidationError, match="model_id"):
         DbmsVectorChainLlmConfig(**kwargs)
 
 
@@ -100,6 +98,21 @@ def test_dbms_vector_chain_llm_config_rejects_negative_transfer_timeout() -> Non
 
     with pytest.raises(ValidationError, match="transfer_timeout"):
         DbmsVectorChainLlmConfig(**kwargs)
+
+
+def test_dbms_vector_chain_llm_config_accepts_optional_connection_config() -> None:
+    kwargs = valid_config_kwargs()
+    connection_config = TlsOracleDatabaseConnectionConfig(
+        name="database-connection",
+        user="test-user",
+        password="test-password",  # nosec B106
+        dsn="test-dsn",
+    )
+    kwargs["connection_config"] = connection_config
+
+    config = DbmsVectorChainLlmConfig(**kwargs)
+
+    assert config.connection_config is connection_config
 
 
 @pytest.mark.parametrize(

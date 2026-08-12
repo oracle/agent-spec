@@ -2684,9 +2684,9 @@
           ],
           "title": "Metadata"
         },
-        "model": {
+        "model_id": {
           "minLength": 1,
-          "title": "Model",
+          "title": "Model Id",
           "type": "string"
         },
         "provider": {
@@ -2760,6 +2760,17 @@
           "default": null,
           "title": "Transfer Timeout"
         },
+        "connection_config": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/OracleDatabaseConnectionConfig"
+            }
+          ],
+          "default": null
+        },
         "$referenced_components": {
           "$ref": "#/$defs/ReferencedComponents"
         },
@@ -2768,7 +2779,7 @@
         }
       },
       "required": [
-        "model",
+        "model_id",
         "name",
         "provider",
         "url"

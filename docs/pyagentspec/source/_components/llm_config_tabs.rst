@@ -16,6 +16,20 @@
                 model_id="model-id",
             )
 
+    .. tab:: DBMS Vector Chain
+
+        .. code-block:: python
+
+            from pyagentspec.llms import DbmsVectorChainLlmConfig
+
+            llm_config = DbmsVectorChainLlmConfig(
+                name="Database OpenAI",
+                model_id="gpt-4o",
+                provider="openai",
+                url="https://api.openai.com/v1/chat/completions",
+                credential_name="MY_OPENAI_CREDENTIAL",
+            )
+
     .. tab:: OCI GenAI
 
         .. code-block:: python

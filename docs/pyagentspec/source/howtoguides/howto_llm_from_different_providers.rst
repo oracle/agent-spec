@@ -23,7 +23,7 @@ This guide will show you how to configure LLMs from different LLM providers with
 Configure retry behavior for remote LLM calls
 =============================================
 
-Most ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
+All ``LlmConfig`` subclasses accept an optional ``retry_policy`` parameter.
 Use it to configure retry attempts, per-request timeouts, and backoff behavior
 for transient failures when calling remote LLM endpoints.
 
@@ -86,8 +86,8 @@ DbmsVectorChainLlmConfig
 ========================
 
 Use ``DbmsVectorChainLlmConfig`` when Oracle Database executes the LLM request
-through ``DBMS_VECTOR_CHAIN``. Its serialized representation uses ``model``
-instead of ``model_id`` and refers to a credential managed by the database.
+through ``DBMS_VECTOR_CHAIN``. It refers to a credential managed by the
+database.
 
 Refer to the `DBMS_VECTOR_CHAIN documentation <https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_vector_chain1.html>`_
 for supported ``provider`` values and provider-specific configuration
@@ -102,7 +102,7 @@ specify ``host="local"`` and omit ``credential_name``.
 
 **Parameters**
 
-.. option:: model: str
+.. option:: model_id: str
 
   Name of the text-generation model used by the database.
 
@@ -128,6 +128,10 @@ specify ``host="local"`` and omit ``credential_name``.
 .. option:: transfer_timeout: int, null
 
   Maximum number of seconds the database waits for the provider request.
+
+.. option:: connection_config: OracleDatabaseConnectionConfig, null
+
+  Optional Oracle Database connection configuration.
 
 .. option:: default_generation_parameters: dict, null
 

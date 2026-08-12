@@ -8,7 +8,6 @@ from typing import List, Optional, Type, Union, cast
 
 import pytest
 import yaml
-from pydantic import AliasChoices, Field
 
 from pyagentspec.component import Component
 from pyagentspec.flows.edges import ControlFlowEdge
@@ -40,17 +39,6 @@ class MyCustomNode(Node):
 
     def _get_inferred_outputs(self) -> List[Property]:
         return self.outputs or self.inputs or []
-
-
-class MyAliasedComponent(Component):
-    internal_value: str = Field(
-        validation_alias=AliasChoices("wire_value", "internal_value"),
-        serialization_alias="wire_value",
-    )
-    """Value exposed under a different name in the serialized representation."""
-
-    unaliased_value: str
-    """Value whose serialized name must remain unchanged."""
 
 
 @pytest.fixture
@@ -161,30 +149,6 @@ def test_flow_with_custom_node_can_be_serialized_and_deserialized_with_custom_pl
     deser_custom_node = deser_flow.nodes[1]
     original_custom_node = flow_with_custom_node.nodes[1]
     assert deser_custom_node == original_custom_node
-
-
-def test_component_field_alias_is_used_for_serialization_and_deserialization() -> None:
-    component = MyAliasedComponent(
-        name="aliased",
-        internal_value="aliased value",
-        unaliased_value="plain value",
-    )
-    serialization_plugin = PydanticComponentSerializationPlugin(
-        component_types_and_models={MyAliasedComponent.__name__: MyAliasedComponent}
-    )
-    serialized = AgentSpecSerializer(plugins=[serialization_plugin]).to_yaml(component)
-    serialized_dict = yaml.safe_load(serialized)
-
-    assert serialized_dict["wire_value"] == "aliased value"
-    assert "internal_value" not in serialized_dict
-    assert serialized_dict["unaliased_value"] == "plain value"
-
-    deserialization_plugin = PydanticComponentDeserializationPlugin(
-        component_types_and_models={MyAliasedComponent.__name__: MyAliasedComponent}
-    )
-    deserialized = AgentSpecDeserializer(plugins=[deserialization_plugin]).from_yaml(serialized)
-
-    assert deserialized == component
 
 
 def test_serialization_raises_on_two_plugins_for_a_same_component() -> None:

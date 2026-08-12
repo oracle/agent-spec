@@ -44,20 +44,21 @@ def test_llmconfig_schema_contains_all_concrete_llmconfig_types() -> None:
     assert len(schema["anyOf"]) == len(llm_config_subtypes) + 2
 
 
-def test_dbms_vector_chain_llm_config_is_registered_and_uses_model_alias_in_schema() -> None:
+def test_dbms_vector_chain_llm_config_is_registered_in_schema() -> None:
     assert BUILTIN_CLASS_MAP["DbmsVectorChainLlmConfig"] is DbmsVectorChainLlmConfig
 
-    schema = DbmsVectorChainLlmConfig.model_json_schema(
-        mode="serialization", by_alias=True, only_core_components=True
-    )
+    schema = DbmsVectorChainLlmConfig.model_json_schema(only_core_components=True)
     config_schema = schema["$defs"]["BaseDbmsVectorChainLlmConfig"]
 
-    assert "model" in config_schema["properties"]
-    assert "model_id" not in config_schema["properties"]
+    assert "model_id" in config_schema["properties"]
+    assert "model" not in config_schema["properties"]
     assert "api_provider" not in config_schema["properties"]
     assert "api_type" not in config_schema["properties"]
     assert "api_key" not in config_schema["properties"]
     assert "retry_policy" in config_schema["properties"]
+    assert {"$ref": "#/$defs/OracleDatabaseConnectionConfig"} in config_schema["properties"][
+        "connection_config"
+    ]["anyOf"]
     assert config_schema["properties"]["host"]["anyOf"][0]["const"] == "local"
 
 

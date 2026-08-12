@@ -621,21 +621,22 @@ DBMS Vector Chain
 ^^^^^^^^^^^^^^^^^
 
 ``DbmsVectorChainLlmConfig`` configures an LLM request executed by Oracle
-Database through ``DBMS_VECTOR_CHAIN``. The Agent Spec runtime that executes
-the flow is responsible for connecting to the database; this configuration
-describes the database's request to the LLM provider, not a database connection.
+Database through ``DBMS_VECTOR_CHAIN``.
 
 .. code-block:: python
 
    class DbmsVectorChainLlmConfig(LlmConfig):
-     model: str
+     model_id: str
      provider: str
      url: str
      credential_name: Optional[str]
      host: Optional[Literal["local"]]
      transfer_timeout: Optional[int]
+     connection_config: Optional[OracleDatabaseConnectionConfig]
 
-The serialized configuration uses ``model`` for the database model name.
+The ``connection_config`` field is an optional Oracle Database connection
+configuration.
+
 For a remote provider, ``credential_name`` identifies a credential created in
 Oracle Database with ``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``. For a local
 OpenAI or Ollama provider, set ``host`` to ``"local"`` and omit

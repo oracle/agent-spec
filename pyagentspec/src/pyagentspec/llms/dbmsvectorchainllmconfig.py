@@ -8,10 +8,11 @@
 
 from typing import Literal, Optional
 
-from pydantic import AliasChoices, Field
+from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Self
 
+from pyagentspec.datastores.oracle import OracleDatabaseConnectionConfig
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.sensitive_field import SensitiveField
 from pyagentspec.validation_helpers import model_validator_with_error_accumulation
@@ -27,12 +28,8 @@ class DbmsVectorChainLlmConfig(LlmConfig):
         exclude=True,
     )
 
-    model_id: str = Field(
-        min_length=1,
-        validation_alias=AliasChoices("model", "model_id"),
-        serialization_alias="model",
-    )
-    """Model identifier. Serialized as ``model`` for the Oracle Database contract."""
+    model_id: str = Field(min_length=1)
+    """Model identifier used by Oracle Database for the provider request."""
 
     provider: str = Field(min_length=1)
     """Provider of the model, such as ``openai`` or ``cohere``."""
@@ -48,6 +45,9 @@ class DbmsVectorChainLlmConfig(LlmConfig):
 
     transfer_timeout: Optional[int] = Field(default=None, ge=0)
     """Maximum transfer time in seconds for the provider request."""
+
+    connection_config: Optional[OracleDatabaseConnectionConfig] = None
+    """Optional Oracle Database connection configuration."""
 
     # DBMS_VECTOR_CHAIN authenticates with ``credential_name`` and does not use
     # Agent Spec's direct-provider API settings.
