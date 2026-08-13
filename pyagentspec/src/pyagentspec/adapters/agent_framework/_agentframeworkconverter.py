@@ -10,22 +10,23 @@ from pydantic import BaseModel, Field, create_model
 
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.agent_framework._types import (
+    Agent,
     AgentFrameworkComponent,
     AgentFrameworkMCPTool,
     AgentFrameworkTool,
     BaseChatClient,
-    ChatAgent,
     FunctionTool,
     MCPStdioTool,
     MCPStreamableHTTPTool,
     OpenAIChatClient,
+    OpenAIChatCompletionClient,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
-from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.mcp.tools import MCPTool as AgentSpecMCPTool
 from pyagentspec.property import Property as AgentSpecProperty
@@ -234,6 +235,19 @@ class AgentSpecToAgentFrameworkConverter:
         tool_registry: dict[str, AgentFrameworkTool],
         converted_components: dict[str, AgentFrameworkComponent],
     ) -> BaseChatClient:
+        def openai_client(**kwargs: Any) -> BaseChatClient:
+            if llm_config.api_type in (OpenAIAPIType.RESPONSES, "responses"):
+                return OpenAIChatClient(**kwargs)
+            if llm_config.api_type in (
+                None,
+                OpenAIAPIType.CHAT_COMPLETIONS,
+                "chat_completions",
+            ):
+                return OpenAIChatCompletionClient(**kwargs)
+            raise NotImplementedError(
+                f"LlmConfig with api_type='{llm_config.api_type}' is not supported in agent_framework"
+            )
+
         if isinstance(llm_config, OpenAiCompatibleConfig):
             from urllib.parse import urljoin
 
@@ -242,30 +256,28 @@ class AgentSpecToAgentFrameworkConverter:
                 base_url = f"http://{base_url}"
             if "/v1" not in base_url:
                 base_url = urljoin(base_url + "/", "v1")
-            return OpenAIChatClient(
+            return openai_client(
                 api_key="openai",
                 base_url=base_url,
-                model_id=llm_config.model_id,
+                model=llm_config.model_id,
             )
         elif isinstance(llm_config, OllamaConfig):
-            return OpenAIChatClient(
+            return openai_client(
                 api_key="ollama",
                 base_url=llm_config.url,
-                model_id=llm_config.model_id,
+                model=llm_config.model_id,
             )
         elif isinstance(llm_config, OpenAiConfig):
-            return OpenAIChatClient(
-                model_id=llm_config.model_id,
-            )
+            return openai_client(model=llm_config.model_id)
         else:
             # Bare LlmConfig — dispatch on api_provider string
             if llm_config.api_provider == "openai":
-                kwargs: dict[str, Any] = {"model_id": llm_config.model_id}
+                kwargs: dict[str, Any] = {"model": llm_config.model_id}
                 if llm_config.url is not None:
                     kwargs["base_url"] = llm_config.url
                 if llm_config.api_key is not None:
                     kwargs["api_key"] = llm_config.api_key
-                return OpenAIChatClient(**kwargs)
+                return openai_client(**kwargs)
             raise NotImplementedError(
                 f"LlmConfig with api_provider='{llm_config.api_provider}' is not yet supported "
                 f"in agent_framework. Consider using a specific LlmConfig subclass instead."
@@ -283,14 +295,16 @@ class AgentSpecToAgentFrameworkConverter:
         chat_client = self.convert(agent.llm_config, tool_registry, converted_components)
         tools = [self.convert(tool, tool_registry, converted_components) for tool in agent.tools]
         prompt = agent.system_prompt
-        return ChatAgent(
+        return Agent(
             id=agent.id,
             name=agent.name,
             description=agent.description,
-            chat_client=cast(BaseChatClient, chat_client),
+            client=cast(BaseChatClient, chat_client),
             tools=cast(AgentFrameworkTool, tools),
             instructions=prompt,
-            temperature=generation_parameters.temperature,
-            top_p=generation_parameters.top_p,
-            max_tokens=generation_parameters.max_tokens,
+            additional_properties=dict(
+                temperature=generation_parameters.temperature,
+                top_p=generation_parameters.top_p,
+                max_tokens=generation_parameters.max_tokens,
+            ),
         )

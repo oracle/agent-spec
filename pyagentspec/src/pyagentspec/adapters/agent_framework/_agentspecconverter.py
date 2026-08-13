@@ -9,20 +9,21 @@ from typing import Any, Union, cast, get_args, get_origin, get_type_hints
 
 from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.agent_framework._types import (
+    Agent,
     AgentFrameworkLlmConfig,
     AgentFrameworkMCPTool,
     AgentFrameworkTool,
-    ChatAgent,
     FunctionTool,
     MCPStdioTool,
     MCPStreamableHTTPTool,
     OpenAIChatClient,
+    OpenAIChatCompletionClient,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
-from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.mcp.clienttransport import StdioTransport, StreamableHTTPTransport
 from pyagentspec.mcp.tools import MCPTool
 from pyagentspec.property import Property as AgentSpecProperty
@@ -92,7 +93,7 @@ class AgentFrameworkToAgentSpecConverter:
 
         # If we did not find the object, we create it, and we record it in the referenced_objects registry
         agentspec_component: AgentSpecComponent
-        if isinstance(runtime_component, ChatAgent):
+        if isinstance(runtime_component, Agent):
             agentspec_component = self._agent_convert_to_agentspec(
                 runtime_component,
                 referenced_objects,
@@ -187,22 +188,27 @@ class AgentFrameworkToAgentSpecConverter:
         chat_client: AgentFrameworkLlmConfig,
         referenced_objects: dict[str, AgentSpecComponent],
     ) -> OpenAiCompatibleConfig:
-        if isinstance(chat_client, OpenAIChatClient):
-            if chat_client.model_id is None:
+        if isinstance(chat_client, (OpenAIChatClient, OpenAIChatCompletionClient)):
+            if chat_client.model is None:
                 # Defensive check for None in some versions due to fast iteration
                 # Once the framework stabilizes and the type is set in stone this check can be removed
-                raise ValueError(f"model_id for {type(chat_client)} is not set.")
+                raise ValueError(f"model for {type(chat_client)} is not set.")
             return OpenAiCompatibleConfig(
-                name=chat_client.model_id,
-                model_id=chat_client.model_id,
+                name=chat_client.model,
+                model_id=chat_client.model,
                 url=chat_client.service_url(),
+                api_type=(
+                    OpenAIAPIType.RESPONSES
+                    if isinstance(chat_client, OpenAIChatClient)
+                    else OpenAIAPIType.CHAT_COMPLETIONS
+                ),
             )
         else:
             raise NotImplementedError(f"Chat client {type(chat_client)} not supported")
 
     def _agent_convert_to_agentspec(
         self,
-        chat_agent: ChatAgent,
+        chat_agent: Agent,
         referenced_objects: dict[str, AgentSpecComponent],
     ) -> AgentSpecComponent:
         generation_config = LlmGenerationConfig(
@@ -213,7 +219,7 @@ class AgentFrameworkToAgentSpecConverter:
         llm_config = cast(
             LlmConfig,
             self.convert(
-                chat_agent.chat_client,
+                chat_agent.client,
                 referenced_objects,
             ),
         )

@@ -10,49 +10,50 @@ from pyagentspec._lazy_loader import LazyLoader
 
 if TYPE_CHECKING:
     from agent_framework import (
+        Agent,
         BaseChatClient,
-        ChatAgent,
-        ChatClientProtocol,
         ChatOptions,
         FunctionTool,
         MCPStdioTool,
         MCPStreamableHTTPTool,
         MCPWebsocketTool,
-        ToolProtocol,
     )
-    from agent_framework.openai import OpenAIChatClient
+    from agent_framework.openai import OpenAIChatClient, OpenAIChatCompletionClient
 else:
     ChatOptions = LazyLoader("agent_framework").ChatOptions
     FunctionTool = LazyLoader("agent_framework").FunctionTool
     BaseChatClient = LazyLoader("agent_framework").BaseChatClient
-    ChatAgent = LazyLoader("agent_framework").ChatAgent
-    ChatClientProtocol = LazyLoader("agent_framework").ChatClientProtocol
+    Agent = LazyLoader("agent_framework").Agent
     MCPStdioTool = LazyLoader("agent_framework").MCPStdioTool
     MCPStreamableHTTPTool = LazyLoader("agent_framework").MCPStreamableHTTPTool
     MCPWebsocketTool = LazyLoader("agent_framework").MCPWebsocketTool
-    ToolProtocol = LazyLoader("agent_framework").ToolProtocol
-    OpenAIChatClient = LazyLoader("agent_framework.openai").OpenAIChatClient
+    _openai = LazyLoader("agent_framework.openai")
+    OpenAIChatClient = _openai.OpenAIChatClient
+    OpenAIChatCompletionClient = _openai.OpenAIChatCompletionClient
 
-AgentFrameworkComponent: TypeAlias = ChatAgent
+AgentFrameworkMCPTool: TypeAlias = MCPStdioTool | MCPStreamableHTTPTool | MCPWebsocketTool
 AgentFrameworkTool: TypeAlias = (
-    ToolProtocol
-    | FunctionTool[Any, Any]
+    FunctionTool
     | Callable[..., Any]
     | MutableMapping[str, Any]
-    | Sequence[ToolProtocol | Callable[..., Any] | MutableMapping[str, Any]]
+    | Sequence[Callable[..., Any] | MutableMapping[str, Any]]
+    | AgentFrameworkMCPTool
 )
-AgentFrameworkLlmConfig: TypeAlias = BaseChatClient | ChatClientProtocol
-AgentFrameworkMCPTool: TypeAlias = MCPStdioTool | MCPStreamableHTTPTool | MCPWebsocketTool
+AgentFrameworkLlmConfig: TypeAlias = BaseChatClient
+AgentFrameworkComponent: TypeAlias = Agent | AgentFrameworkTool | AgentFrameworkLlmConfig
 
 __all__ = [
+    "AgentFrameworkComponent",
+    "AgentFrameworkLlmConfig",
+    "AgentFrameworkMCPTool",
+    "AgentFrameworkTool",
     "BaseChatClient",
     "FunctionTool",
-    "ChatAgent",
-    "ChatClientProtocol",
+    "Agent",
     "MCPStdioTool",
     "MCPStreamableHTTPTool",
     "MCPWebsocketTool",
-    "ToolProtocol",
     "OpenAIChatClient",
+    "OpenAIChatCompletionClient",
     "ChatOptions",
 ]

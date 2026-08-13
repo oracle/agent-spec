@@ -6,14 +6,14 @@
 
 from typing import cast
 
-from pyagentspec.agent import Agent
-from pyagentspec.llms.openaicompatibleconfig import OpenAiCompatibleConfig
+from pyagentspec.agent import Agent as AgentSpecAgent
+from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 
 
 def test_agent_framework_converts_to_agent_spec_with_server_tool() -> None:
 
-    from agent_framework import ChatAgent, tool
-    from agent_framework.openai import OpenAIChatClient
+    from agent_framework import Agent, tool
+    from agent_framework.openai import OpenAIChatCompletionClient
 
     from pyagentspec.adapters.agent_framework import AgentSpecExporter
 
@@ -21,31 +21,34 @@ def test_agent_framework_converts_to_agent_spec_with_server_tool() -> None:
     def add_tool(a: int, b: int) -> int:
         return a + b
 
-    agent = ChatAgent(
-        chat_client=OpenAIChatClient(
+    agent = Agent(
+        client=OpenAIChatCompletionClient(
             api_key="ollama",
             base_url="url.to.agi.model",
-            model_id="agi_ollama_model",
+            model="agi_ollama_model",
         ),
         name="MathAgent",
         instructions="You are a helpful math agent",
         tools=add_tool,
-        temperature=0.2,
-        top_p=0.5,
-        max_tokens=10000,
+        additional_properties=dict(
+            temperature=0.2,
+            top_p=0.5,
+            max_tokens=10000,
+        ),
     )
     exporter = AgentSpecExporter()
-    agent_component = cast(Agent, exporter.to_component(agent))
+    agent_component = cast(AgentSpecAgent, exporter.to_component(agent))
     # Agent config
     assert agent_component.name == agent.name
     assert agent_component.description == agent.description
     assert isinstance(agent_component.llm_config, OpenAiCompatibleConfig)
-    assert isinstance(agent.chat_client, OpenAIChatClient)
+    assert agent_component.llm_config.api_type == OpenAIAPIType.CHAT_COMPLETIONS
+    assert isinstance(agent.client, OpenAIChatCompletionClient)
     assert agent_component.system_prompt == agent.default_options["instructions"]
 
     # Llm Config
-    assert agent_component.llm_config.url == agent.chat_client.service_url()
-    assert agent_component.llm_config.model_id == agent.chat_client.model_id
+    assert agent_component.llm_config.url == agent.client.service_url()
+    assert agent_component.llm_config.model_id == agent.client.model
     default_generation_parameters = agent_component.llm_config.default_generation_parameters
     assert default_generation_parameters is not None
     assert default_generation_parameters.temperature == agent.additional_properties["temperature"]
@@ -65,3 +68,26 @@ def test_agent_framework_converts_to_agent_spec_with_server_tool() -> None:
     assert "b" in (schema["title"] for schema in input_json_schemas)
     assert all(schema["type"] == "integer" for schema in input_json_schemas)
     assert output_json_schema["title"] == "result" and output_json_schema["type"] == "integer"
+
+
+def test_agent_framework_responses_client_converts_to_agent_spec() -> None:
+    from agent_framework import Agent
+    from agent_framework.openai import OpenAIChatClient
+
+    from pyagentspec.adapters.agent_framework import AgentSpecExporter
+
+    agent = Agent(
+        client=OpenAIChatClient(
+            api_key="test-key",
+            base_url="https://api.example.com/v1",
+            model="gpt-test",
+        ),
+        name="ResponsesAgent",
+        instructions="Be helpful.",
+    )
+
+    agent_component = cast(AgentSpecAgent, AgentSpecExporter().to_component(agent))
+
+    assert isinstance(agent_component.llm_config, OpenAiCompatibleConfig)
+    assert agent_component.llm_config.api_type == OpenAIAPIType.RESPONSES
+    assert agent_component.llm_config.model_id == agent.client.model

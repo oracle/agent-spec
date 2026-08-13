@@ -204,7 +204,8 @@ class AgentSpecToAutogenConverter:
                     if agentspec_llm_.url
                     else None
                 ),
-                api_key=agentspec_llm_.api_key if agentspec_llm_.api_key else None,
+                # Use a fake API key to avoid `openai` failing immediately at parsing if no key is needed
+                api_key=agentspec_llm_.api_key if agentspec_llm_.api_key else "EMPTY",
                 model_info=_prepare_model_info(agentspec_llm_),
             )
 

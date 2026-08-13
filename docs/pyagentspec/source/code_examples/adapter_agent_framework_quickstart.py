@@ -48,7 +48,7 @@ def subtract(a: float, b: float) -> float:
     return a - b
 
 async def main():
-    from agent_framework import TextContent
+    from agent_framework import Content
     loader = AgentSpecLoader(tool_registry={"subtraction-tool": subtract})
     assistant = loader.load_json(agentspec_config)
 
@@ -58,7 +58,7 @@ async def main():
             break
         result = await assistant.run(user_input)
         agent_message = result.messages[-1].contents[-1]
-        if not isinstance(agent_message, TextContent):
+        if not isinstance(agent_message, Content):
             raise ValueError(f"Unexpected agent_message type {type(agent_message)}")
         print(f"AGENT >> {agent_message.text}")
 
@@ -69,7 +69,7 @@ async def main():
 # .. end-agentspec_to_runtime
 # .. start-runtime_to_agentspec
 # Create an Agent Framework Agent
-from agent_framework import ChatAgent, tool
+from agent_framework import Agent, tool
 from agent_framework.openai import OpenAIChatClient
 
 @tool()
@@ -85,11 +85,11 @@ def get_weather(city: str) -> str:
     """
     return f"The weather in {city} is sunny."
 
-agent_framework_agent = ChatAgent(
-    chat_client=OpenAIChatClient(
+agent_framework_agent = Agent(
+    client=OpenAIChatClient(
         api_key="ollama",
         base_url="url.to.agi.model",
-        model_id="agi_ollama_model",
+        model="agi_ollama_model",
     ),
     name="Weather Agent",
     instructions="You are a weather agent. Use the provided tool to get data related to the weather based on the city mentioned in the user query.",
