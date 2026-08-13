@@ -635,7 +635,24 @@ Database through ``DBMS_VECTOR_CHAIN``.
      connection_config: Optional[OracleDatabaseConnectionConfig]
 
 The ``connection_config`` field is an optional Oracle Database connection
-configuration.
+configuration. If ``connection_config`` is not specified, the runtime must use
+an existing Oracle Database connection from its execution context. If no
+connection is available, the runtime must raise an error.
+
+The ``host`` field can only be set to ``"local"`` and is supported only when
+``provider`` is ``"openai"`` or ``"ollama"``. It indicates that the provider
+is running locally and disables database credential authentication. When
+``host`` is specified, ``credential_name`` must be omitted.
+
+The ``transfer_timeout`` field specifies the maximum number of seconds to wait
+for the provider request to complete. If it is not specified,
+``DBMS_VECTOR_CHAIN`` uses its default timeout of 60 seconds.
+
+The runtime maps these fields to the corresponding ``DBMS_VECTOR_CHAIN``
+parameters: ``model_id`` to ``model``, and ``provider``, ``url``,
+``credential_name``, ``host``, and ``transfer_timeout`` to parameters with the
+same names. ``connection_config`` configures the runtime's database connection
+and is not a ``DBMS_VECTOR_CHAIN`` parameter.
 
 For a remote provider, ``credential_name`` identifies a credential created in
 Oracle Database with ``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``. For a local

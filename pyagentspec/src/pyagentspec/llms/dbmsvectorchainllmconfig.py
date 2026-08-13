@@ -49,8 +49,8 @@ class DbmsVectorChainLlmConfig(LlmConfig):
     connection_config: Optional[OracleDatabaseConnectionConfig] = None
     """Optional Oracle Database connection configuration."""
 
-    # DBMS_VECTOR_CHAIN authenticates with ``credential_name`` and does not use
-    # Agent Spec's direct-provider API settings.
+    # Authentication is configured through the database credential referenced by
+    # ``credential_name``.
     api_provider: SkipJsonSchema[Optional[str]] = Field(default=None, exclude=True)
     api_type: SkipJsonSchema[Optional[str]] = Field(default=None, exclude=True)
     api_key: SkipJsonSchema[SensitiveField[Optional[str]]] = Field(default=None, exclude=True)
