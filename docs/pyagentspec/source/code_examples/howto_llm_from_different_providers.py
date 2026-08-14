@@ -23,6 +23,19 @@ llm = LlmConfig(
 )
 # .. llmconfig-end
 
+# .. dbmsvectorchain-start
+from pyagentspec.llms import DbmsVectorChainLlmConfig
+
+llm = DbmsVectorChainLlmConfig(
+    name="database-openai",
+    model_id="gpt-4o",
+    provider="openai",
+    url="https://api.openai.com/v1/chat/completions",
+    credential_name="MY_OPENAI_CREDENTIAL",
+    transfer_timeout=120,
+)
+# .. dbmsvectorchain-end
+
 # .. oci-start
 from pyagentspec.llms import OciGenAiConfig
 from pyagentspec.llms import LlmGenerationConfig

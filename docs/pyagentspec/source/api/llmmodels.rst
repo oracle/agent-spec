@@ -11,6 +11,14 @@ LlmConfig
     :exclude-members: model_post_init, model_config
 
 
+DBMS Vector Chain LLM Config
+----------------------------
+
+.. _dbmsvectorchainllmconfig:
+.. autoclass:: pyagentspec.llms.dbmsvectorchainllmconfig.DbmsVectorChainLlmConfig
+    :exclude-members: model_post_init, model_config
+
+
 LLM Generation Config
 ---------------------
 

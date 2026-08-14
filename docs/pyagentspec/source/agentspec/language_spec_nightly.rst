@@ -617,6 +617,49 @@ Null value is equivalent to an empty dictionary, i.e., no default generation par
 and ``api_type`` values. Specific extensions of ``LlmConfig`` for the most common providers are also provided
 for convenience, offering additional provider-specific configuration options.
 
+DBMS Vector Chain
+^^^^^^^^^^^^^^^^^
+
+``DbmsVectorChainLlmConfig`` configures an LLM request executed by Oracle
+Database through ``DBMS_VECTOR_CHAIN``.
+
+.. code-block:: python
+
+   class DbmsVectorChainLlmConfig(LlmConfig):
+     model_id: str
+     provider: str
+     url: str
+     credential_name: Optional[str]
+     host: Optional[Literal["local"]]
+     transfer_timeout: Optional[int]
+     connection_config: Optional[OracleDatabaseConnectionConfig]
+
+The ``connection_config`` field is an optional Oracle Database connection
+configuration. If ``connection_config`` is not specified, the runtime must use
+an existing Oracle Database connection from its execution context. If no
+connection is available, the runtime must raise an error.
+
+The ``host`` field can only be set to ``"local"`` and is supported only when
+``provider`` is ``"openai"`` or ``"ollama"``. It indicates that the provider
+is running locally and disables database credential authentication. When
+``host`` is specified, ``credential_name`` must be omitted.
+
+The ``transfer_timeout`` field specifies the maximum number of seconds to wait
+for the provider request to complete. If it is not specified,
+``DBMS_VECTOR_CHAIN`` uses its default timeout of 60 seconds.
+
+The runtime maps these fields to the corresponding ``DBMS_VECTOR_CHAIN``
+parameters: ``model_id`` to ``model``, and ``provider``, ``url``,
+``credential_name``, ``host``, and ``transfer_timeout`` to parameters with the
+same names. ``connection_config`` configures the runtime's database connection
+and is not a ``DBMS_VECTOR_CHAIN`` parameter.
+
+For a remote provider, ``credential_name`` identifies a credential created in
+Oracle Database with ``DBMS_VECTOR_CHAIN.CREATE_CREDENTIAL``. For a local
+OpenAI or Ollama provider, set ``host`` to ``"local"`` and omit
+``credential_name``. Refer to the `DBMS_VECTOR_CHAIN documentation <https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/dbms_vector_chain1.html#GUID-017C9002-194C-48E5-B59B-EF5C60BC8405>`_
+for supported providers and provider-specific parameters.
+
 Structured Generation
 ^^^^^^^^^^^^^^^^^^^^^
 

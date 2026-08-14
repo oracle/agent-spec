@@ -104,6 +104,10 @@
                 "name": "pyagentspec.llms.LlmConfig"
             },
             {
+                "path": "pyagentspec.llms.dbmsvectorchainllmconfig.DbmsVectorChainLlmConfig",
+                "name": "pyagentspec.llms.DbmsVectorChainLlmConfig"
+            },
+            {
                 "path": "pyagentspec.llms.llmgenerationconfig.LlmGenerationConfig",
                 "name": "pyagentspec.llms.LlmGenerationConfig"
             },

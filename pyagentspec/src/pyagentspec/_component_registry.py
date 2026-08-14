@@ -44,6 +44,7 @@ from pyagentspec.flows.nodes import (
     ToolNode,
 )
 from pyagentspec.llms import (
+    DbmsVectorChainLlmConfig,
     GeminiConfig,
     OciGenAiConfig,
     OllamaConfig,
@@ -105,6 +106,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "ControlFlowEdge": ControlFlowEdge,
     "DataFlowEdge": DataFlowEdge,
     "Datastore": Datastore,
+    "DbmsVectorChainLlmConfig": DbmsVectorChainLlmConfig,
     "EndNode": EndNode,
     "Flow": Flow,
     "FlowNode": FlowNode,
