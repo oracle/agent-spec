@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-from typing import Any
+from typing import Any, List, Optional
 from unittest.mock import patch
 
 import pytest
@@ -12,18 +12,22 @@ import pytest
 from pyagentspec.agent import Agent
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.managerworkers import ManagerWorkers
-
-# Every test stubs the chat model and never reaches an endpoint, so they run offline
-# even under SKIP_LLM_TESTS=1.
-pytestmark = pytest.mark.usefixtures("allow_llm_config_construction")
+from pyagentspec.property import Property
 
 
-def _agent(name: str, llm_name: str, description: str = "", system_prompt: str = ".") -> Agent:
+def _agent(
+    name: str,
+    llm_name: str,
+    description: str = "",
+    system_prompt: str = ".",
+    outputs: Optional[List[Property]] = None,
+) -> Agent:
     return Agent(
         name=name,
         description=description,
         system_prompt=system_prompt,
         llm_config=OpenAiCompatibleConfig(name=llm_name, model_id="fake", url="null"),
+        outputs=outputs,
     )
 
 
@@ -102,11 +106,12 @@ def test_route_manager_to_worker_or_end_returns_end_when_no_delegation() -> None
     from langchain_core.messages import AIMessage
     from langgraph.graph import END
 
-    from pyagentspec.adapters.langgraph._managerworkers import _route_manager_to_worker_or_end
+    from pyagentspec.adapters.langgraph._managerworkers import _make_manager_router
 
+    route = _make_manager_router(["drafter"])
     not_delegating = AIMessage(content="Done.", tool_calls=[])
-    assert _route_manager_to_worker_or_end({"messages": [not_delegating]}) == END
-    assert _route_manager_to_worker_or_end({"messages": []}) == END
+    assert route({"messages": [not_delegating]}) == END
+    assert route({"messages": []}) == END
 
 
 def test_route_manager_to_worker_or_end_fans_out_one_send_per_delegation() -> None:
@@ -116,18 +121,19 @@ def test_route_manager_to_worker_or_end_fans_out_one_send_per_delegation() -> No
     from pyagentspec.adapters.langgraph._managerworkers import (
         _DELEGATE_CALL_ID_KEY,
         _DELEGATE_TASK_KEY,
-        _route_manager_to_worker_or_end,
+        _make_manager_router,
     )
 
+    route = _make_manager_router(["drafter", "research_helper"])
     msg = AIMessage(
         content="",
         tool_calls=[
             {"name": "some_other_tool", "args": {}, "id": "c0"},
-            {"name": "delegate_to_drafter", "args": {"task": "x"}, "id": "c1"},
-            {"name": "delegate_to_research_helper", "args": {"task": "y"}, "id": "c2"},
+            {"name": "__delegate_to__drafter", "args": {"task": "x"}, "id": "c1"},
+            {"name": "__delegate_to__research_helper", "args": {"task": "y"}, "id": "c2"},
         ],
     )
-    sends = _route_manager_to_worker_or_end({"messages": [msg]})
+    sends = route({"messages": [msg]})
     # Every delegation gets its own Send carrying the task and the tool_call_id its
     # reply must answer. The non-delegation tool call already ran inside the manager's
     # react loop and is ignored by routing.
@@ -135,6 +141,23 @@ def test_route_manager_to_worker_or_end_fans_out_one_send_per_delegation() -> No
     assert [s.node for s in sends] == ["drafter", "research_helper"]
     assert [s.arg[_DELEGATE_TASK_KEY] for s in sends] == ["x", "y"]
     assert [s.arg[_DELEGATE_CALL_ID_KEY] for s in sends] == ["c1", "c2"]
+
+
+def test_route_manager_ignores_prefixed_tool_whose_suffix_is_not_a_worker() -> None:
+    """A tool call that merely looks like a delegation must not be routed: its suffix
+    is not a worker node, so a Send would target a non-existing node. It already ran
+    as a plain tool inside the react loop."""
+    from langchain_core.messages import AIMessage
+    from langgraph.graph import END
+
+    from pyagentspec.adapters.langgraph._managerworkers import _make_manager_router
+
+    route = _make_manager_router(["drafter"])
+    msg = AIMessage(
+        content="",
+        tool_calls=[{"name": "__delegate_to__nobody", "args": {"task": "x"}, "id": "c1"}],
+    )
+    assert route({"messages": [msg]}) == END
 
 
 def test_manager_workers_compiles_to_hierarchical_graph_topology() -> None:
@@ -186,7 +209,7 @@ def test_manager_workers_registers_a_delegation_tool_per_worker() -> None:
     # react-agent's tools node, so the LLM has the matching contract.
     manager_subgraph = compiled.builder.nodes[_MANAGER_NODE_KEY].runnable
     tools_node = manager_subgraph.builder.nodes["tools"].runnable
-    assert "delegate_to_research_helper" in tools_node.tools_by_name
+    assert "__delegate_to__research_helper" in tools_node.tools_by_name
 
 
 def test_manager_workers_delegates_and_routes_back_with_tool_message() -> None:
@@ -207,7 +230,7 @@ def test_manager_workers_delegates_and_routes_back_with_tool_message() -> None:
             content="",
             tool_calls=[
                 {
-                    "name": "delegate_to_research_helper",
+                    "name": "__delegate_to__research_helper",
                     "args": {"task": "Look up Saturn"},
                     "id": "call_1",
                 }
@@ -256,9 +279,21 @@ def test_manager_workers_answers_every_delegation_in_a_single_turn() -> None:
         AIMessage(
             content="",
             tool_calls=[
-                {"name": "delegate_to_sub_agent", "args": {"task": "Spanish poem"}, "id": "call_1"},
-                {"name": "delegate_to_sub_agent", "args": {"task": "French poem"}, "id": "call_2"},
-                {"name": "delegate_to_sub_agent", "args": {"task": "German poem"}, "id": "call_3"},
+                {
+                    "name": "__delegate_to__sub_agent",
+                    "args": {"task": "Spanish poem"},
+                    "id": "call_1",
+                },
+                {
+                    "name": "__delegate_to__sub_agent",
+                    "args": {"task": "French poem"},
+                    "id": "call_2",
+                },
+                {
+                    "name": "__delegate_to__sub_agent",
+                    "args": {"task": "German poem"},
+                    "id": "call_3",
+                },
             ],
         ),
         AIMessage(content="Here are your three poems."),
@@ -382,7 +417,7 @@ def test_worker_events_stream_natively_namespaced_under_worker_node() -> None:
                     content="",
                     tool_calls=[
                         {
-                            "name": "delegate_to_research_helper",
+                            "name": "__delegate_to__research_helper",
                             "args": {"task": "Saturn"},
                             "id": "c1",
                         }
@@ -421,11 +456,13 @@ def test_is_delegation_tool_name_matches_only_the_synthetic_prefix() -> None:
         is_delegation_tool_name,
     )
 
-    assert DELEGATE_TOOL_PREFIX == "delegate_to_"
-    assert is_delegation_tool_name("delegate_to_research_helper")
+    assert DELEGATE_TOOL_PREFIX == "__delegate_to__"
+    assert is_delegation_tool_name("__delegate_to__research_helper")
     assert not is_delegation_tool_name("get_weather")
-    # A real tool merely *containing* the prefix mid-name is not a delegation.
-    assert not is_delegation_tool_name("please_delegate_to_someone")
+    # A real tool plausibly named delegate_to_<something> is not a delegation.
+    assert not is_delegation_tool_name("delegate_to_someone")
+    # Nor is one merely *containing* the prefix mid-name.
+    assert not is_delegation_tool_name("please__delegate_to__someone")
     assert not is_delegation_tool_name(None)
     assert not is_delegation_tool_name(123)
 
@@ -444,3 +481,143 @@ def test_manager_workers_leaves_astream_events_unwrapped() -> None:
 
     assert "stream" in compiled.__dict__ and "astream" in compiled.__dict__
     assert "astream_events" not in compiled.__dict__
+
+
+def test_managerworkers_infers_inputs_from_group_manager_prompt() -> None:
+    """A ManagerWorkers exposes the group manager's prompt placeholders as inputs, so
+    a flow AgentNode wrapping it declares input ports a DataFlowEdge can resolve."""
+    manager = _agent(
+        "manager",
+        "manager_llm",
+        system_prompt="Translate the following to Arabic:\n\n{{joke}}\n\nMake {{count}} variants.",
+    )
+    worker = _agent("worker", "worker_llm", system_prompt="You translate.")
+    mw = ManagerWorkers(name="mw", group_manager=manager, workers=[worker])
+
+    assert sorted(p.title for p in (mw.inputs or [])) == ["count", "joke"]
+
+
+def test_managerworkers_infers_outputs_from_group_manager() -> None:
+    """Symmetric with inputs: a ManagerWorkers exposes the group manager's outputs."""
+    from pyagentspec.property import StringProperty
+
+    manager = _agent(
+        "manager",
+        "manager_llm",
+        system_prompt="Answer the question.",
+        outputs=[StringProperty(title="answer")],
+    )
+    worker = _agent("worker", "worker_llm", system_prompt="You help.")
+    mw = ManagerWorkers(name="mw", group_manager=manager, workers=[worker])
+
+    assert [p.title for p in (mw.outputs or [])] == ["answer"]
+
+
+def _flow_with_manager_workers_step(outputs: List[Property]) -> Any:
+    """A start → AgentNode(ManagerWorkers) → end flow whose end node exposes
+    ``outputs``, with the data edges resolving the manager's ``joke`` input and
+    every output."""
+    from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
+    from pyagentspec.flows.flow import Flow
+    from pyagentspec.flows.nodes import AgentNode, EndNode, StartNode
+    from pyagentspec.property import StringProperty
+
+    joke = StringProperty(title="joke")
+    manager = _agent(
+        "manager",
+        "manager_llm",
+        system_prompt="Translate the following to Arabic:\n\n{{joke}}",
+        outputs=outputs,
+    )
+    worker = _agent("worker", "worker_llm", system_prompt="You translate.")
+    mw = ManagerWorkers(name="translator", group_manager=manager, workers=[worker])
+    assert [p.title for p in (mw.inputs or [])] == ["joke"]
+
+    manager_node = AgentNode(name="manager_node", agent=mw)
+    start_node = StartNode(name="start", inputs=[joke])
+    end_node = EndNode(name="end", outputs=outputs)
+    return Flow(
+        name="flow",
+        start_node=start_node,
+        nodes=[start_node, manager_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(name="start_to_node", from_node=start_node, to_node=manager_node),
+            ControlFlowEdge(name="node_to_end", from_node=manager_node, to_node=end_node),
+        ],
+        data_flow_connections=[
+            DataFlowEdge(
+                name="joke_edge",
+                source_node=start_node,
+                source_output=joke.title,
+                destination_node=manager_node,
+                destination_input=joke.title,
+            ),
+        ]
+        + [
+            DataFlowEdge(
+                name=f"{output.title}_edge",
+                source_node=manager_node,
+                source_output=output.title,
+                destination_node=end_node,
+                destination_input=output.title,
+            )
+            for output in outputs
+        ],
+        outputs=outputs,
+    )
+
+
+def test_managerworkers_runs_as_a_flow_step_with_data_edge_inputs() -> None:
+    """A ManagerWorkers flow step loads with its data edge resolved and executes:
+    loading proves the node exposes the ``joke`` input the edge targets, running
+    proves the manager's answer comes back as the node's single string output."""
+    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+    from langchain_core.messages import AIMessage
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
+    from pyagentspec.property import StringProperty
+
+    # The final message has no tool_calls → the manager routes to END without delegating.
+    fake_llm = _fake_llm(AIMessage(content="لماذا..."))
+    flow = _flow_with_manager_workers_step(outputs=[StringProperty(title="translated")])
+
+    loader = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver())
+    with patch.object(
+        AgentSpecToLangGraphConverter,
+        "_llm_convert_to_langgraph",
+        autospec=True,
+        side_effect=lambda self_obj, llm_config, *a, **k: fake_llm,
+    ), patch.object(
+        FakeMessagesListChatModel,
+        "bind_tools",
+        new=lambda self_obj, *a, **k: self_obj,
+    ):
+        compiled = loader.load_component(flow)
+        result = compiled.invoke(
+            {
+                "inputs": {"joke": "Why did the car..."},
+                "messages": [{"role": "user", "content": ""}],
+            },
+            {"configurable": {"thread_id": "managerworkers-node"}},
+        )
+
+    assert result["outputs"]["translated"] == "لماذا..."
+
+
+def test_managerworkers_flow_step_with_unsupported_outputs_fails_at_conversion() -> None:
+    """A ManagerWorkers flow step supports a single string output only; any other
+    shape must be rejected when the flow is converted, not once the step runs."""
+    from langgraph.checkpoint.memory import MemorySaver
+
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+    from pyagentspec.property import StringProperty
+
+    flow = _flow_with_manager_workers_step(
+        outputs=[StringProperty(title="translated"), StringProperty(title="notes")]
+    )
+
+    loader = AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver())
+    with pytest.raises(NotImplementedError, match="single string output"):
+        loader.load_component(flow)

@@ -67,10 +67,11 @@ class ManagerWorkers(AgenticComponent):
     )
 
     def _get_inferred_inputs(self) -> List[Property]:
-        # The group manager drives the conversation and is the component whose prompt
-        # the runtime renders, so the group accepts exactly the inputs the manager
-        # accepts. The hasattr guard matches Flow._get_inferred_inputs: validators can
-        # run this against a partially-constructed model with no group_manager yet.
+        # Per the language spec, the inputs of a ManagerWorkers are the inputs of its
+        # group manager (same name and type): the manager drives the conversation and
+        # is the component whose prompt the runtime renders. The hasattr guard matches
+        # Flow._get_inferred_inputs: validators can run this against a
+        # partially-constructed model with no group_manager yet.
         return (self.group_manager.inputs or []) if hasattr(self, "group_manager") else []
 
     def _get_inferred_outputs(self) -> List[Property]:
@@ -90,4 +91,27 @@ class ManagerWorkers(AgenticComponent):
     def _validate_group_manager_is_not_included_as_a_worker(self) -> Self:
         if any(self.group_manager is agent for agent in self.workers):
             raise ValueError("Group manager cannot be a worker.")
+        return self
+
+    @model_validator_with_error_accumulation
+    def _validate_ios_match_group_manager_ios(self) -> Self:
+        # Per the language spec, the I/Os of a ManagerWorkers must be the I/Os of its
+        # group manager, same name and type. The base ComponentWithIO validators
+        # already enforce matching titles; enforce matching types here.
+        if not hasattr(self, "group_manager"):
+            return self
+        for kind, own_properties, manager_properties in (
+            ("input", self.inputs or [], self.group_manager.inputs or []),
+            ("output", self.outputs or [], self.group_manager.outputs or []),
+        ):
+            manager_type_by_title = {p.title: p.type for p in manager_properties}
+            for own_property in own_properties:
+                manager_type = manager_type_by_title.get(own_property.title)
+                if manager_type is not None and own_property.type != manager_type:
+                    raise ValueError(
+                        f"The {kind}s of a `ManagerWorkers` must match the {kind}s of its "
+                        f"group manager (same name and type), but {kind} "
+                        f"`{own_property.title}` has type `{own_property.type}` while the "
+                        f"group manager declares `{manager_type}`."
+                    )
         return self

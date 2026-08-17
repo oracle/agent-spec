@@ -493,6 +493,17 @@ class AgentNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecAgentNode):
             raise TypeError("AgentNodeExecutor can only be initialized with AgentNode")
+        if isinstance(self.node.agent, AgentSpecManagerWorkers):
+            # The hierarchical graph runs over MessagesState, which cannot carry a
+            # structured_response outward: the manager's final message is the only
+            # result, so anything but a single string output cannot be honored.
+            # Raising here fails at conversion time rather than mid-run.
+            outputs = self.node.outputs or []
+            if outputs and (len(outputs) != 1 or outputs[0].type != "string"):
+                raise NotImplementedError(
+                    "A ManagerWorkers flow step supports a single string output; "
+                    f"node `{self.node.name}` declares {[o.title for o in outputs]}."
+                )
         self.tool_registry = tool_registry
         self.checkpointer = checkpointer
         self.converted_components = converted_components
@@ -607,13 +618,9 @@ class AgentNodeExecutor(NodeExecutor):
         if isinstance(self.node.agent, AgentSpecManagerWorkers):
             # The hierarchical graph runs over MessagesState, which cannot carry a
             # structured_response outward: the manager's final message is the result.
-            outputs = self.node.outputs
-            if len(outputs) != 1 or outputs[0].type != "string":
-                raise NotImplementedError(
-                    "A ManagerWorkers flow step supports a single string output; "
-                    f"node `{self.node.name}` declares {[o.title for o in outputs]}."
-                )
-            return {outputs[0].title: result["messages"][-1].content}, NodeExecutionDetails()
+            # __init__ already rejected any shape but a single string output.
+            node_outputs = self.node.outputs or []
+            return {node_outputs[0].title: result["messages"][-1].content}, NodeExecutionDetails()
 
         outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()

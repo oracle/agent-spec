@@ -39,9 +39,9 @@ from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_
 from pyagentspec.adapters.langgraph._managerworkers import (
     _MANAGER_NODE_KEY,
     _append_workers_roster,
+    _make_manager_router,
     _make_worker_delegation_tool,
     _patch_with_manager_workers_execution_span,
-    _route_manager_to_worker_or_end,
     _safe_node_name,
     _wrap_worker_for_subgraph,
 )
@@ -1086,13 +1086,13 @@ class AgentSpecToLangGraphConverter:
 
         Topology::
 
-                            ┌─ delegate_to_w1 ─→ worker_1 ─┐
-            START → manager ┤                              ├→ manager (loop)
-                            └─ delegate_to_w2 ─→ worker_2 ─┘
+                            ┌─ __delegate_to__w1 ─→ worker_1 ─┐
+            START → manager ┤                                 ├→ manager (loop)
+                            └─ __delegate_to__w2 ─→ worker_2 ─┘
                                     │
                                     └─ no tool_call ─→ END
 
-        The manager is a react-agent holding one synthetic ``delegate_to_<worker>``
+        The manager is a react-agent holding one synthetic ``__delegate_to__<worker>``
         tool per worker. A conditional edge routes each delegation to its worker,
         which runs in an isolated message context and answers with a ``ToolMessage``
         matched to the pending delegation id. Workers are converted recursively and
@@ -1161,7 +1161,7 @@ class AgentSpecToLangGraphConverter:
         builder.add_edge(langgraph_graph.START, _MANAGER_NODE_KEY)
         builder.add_conditional_edges(
             _MANAGER_NODE_KEY,
-            _route_manager_to_worker_or_end,
+            _make_manager_router(worker_node_names),
             # The path map covers every worker plus END, so langgraph can validate
             # the routing statically.
             {node_name: node_name for node_name in worker_node_names}
