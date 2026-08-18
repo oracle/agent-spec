@@ -712,9 +712,15 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
         middleware: List[Any],
     ) -> "NodeExecutor":
+        from pyagentspec.adapters.langgraph._managerworkers_node import ManagerWorkersNodeExecutor
         from pyagentspec.adapters.langgraph._node_execution import AgentNodeExecutor
 
-        return AgentNodeExecutor(
+        executor_class = (
+            ManagerWorkersNodeExecutor
+            if isinstance(agent_node.agent, AgentSpecManagerWorkers)
+            else AgentNodeExecutor
+        )
+        return executor_class(
             agent_node,
             tool_registry=tool_registry,
             converted_components=converted_components,

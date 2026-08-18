@@ -49,7 +49,6 @@ from pyagentspec.flows.nodes import MapNode as AgentSpecMapNode
 from pyagentspec.flows.nodes import OutputMessageNode as AgentSpecOutputMessageNode
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
-from pyagentspec.managerworkers import ManagerWorkers as AgentSpecManagerWorkers
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as pyagentspec_empty_default
 from pyagentspec.tracing.events import NodeExecutionEnd as AgentSpecNodeExecutionEnd
@@ -493,17 +492,6 @@ class AgentNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecAgentNode):
             raise TypeError("AgentNodeExecutor can only be initialized with AgentNode")
-        if isinstance(self.node.agent, AgentSpecManagerWorkers):
-            # The hierarchical graph runs over MessagesState, which cannot carry a
-            # structured_response outward: the manager's final message is the only
-            # result, so anything but a single string output cannot be honored.
-            # Raising here fails at conversion time rather than mid-run.
-            outputs = self.node.outputs or []
-            if outputs and (len(outputs) != 1 or outputs[0].type != "string"):
-                raise NotImplementedError(
-                    "A ManagerWorkers flow step supports a single string output; "
-                    f"node `{self.node.name}` declares {[o.title for o in outputs]}."
-                )
         self.tool_registry = tool_registry
         self.checkpointer = checkpointer
         self.converted_components = converted_components
@@ -547,62 +535,21 @@ class AgentNodeExecutor(NodeExecutor):
             )
         return self._agents_cache[system_prompt]
 
-    def _create_manager_workers_with_given_input_values(
-        self, component: AgentSpecManagerWorkers, inputs: Dict[str, Any]
-    ) -> CompiledStateGraph[Any, Any]:
-        """Compile a ``ManagerWorkers`` that this node runs as a flow step.
-
-        The graph runs over ``MessagesState``, which can't carry structured inputs
-        inward to the group manager, so the node inputs are rendered into its
-        ``system_prompt`` and the satisfied ports dropped. Cached by rendered prompt,
-        the same key :meth:`_create_react_agent_with_given_input_values` uses.
-        """
-        from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
-
-        converter = AgentSpecToLangGraphConverter()
-        entry_agent = component.group_manager
-        if not isinstance(entry_agent, AgentSpecAgent):
-            # Nothing to render or cache; the converter owns the error for this case.
-            return converter._manager_workers_convert_to_langgraph(
-                component, **self._conversion_kwargs()
-            )
-
-        system_prompt = render_template(entry_agent.system_prompt, inputs)
-        if system_prompt not in self._agents_cache:
-            rendered = component.model_copy(
-                update={
-                    "group_manager": entry_agent.model_copy(
-                        update={"system_prompt": system_prompt, "inputs": []}
-                    ),
-                    "inputs": [],
-                }
-            )
-            self._agents_cache[system_prompt] = converter._manager_workers_convert_to_langgraph(
-                rendered, **self._conversion_kwargs()
-            )
-        return self._agents_cache[system_prompt]
+    @staticmethod
+    def _with_driving_message(messages: Messages) -> Messages:
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are
+        # provided by the flow, the agent can crash. To avoid this, we artificially
+        # insert an empty user message when the message list is empty.
+        return messages if messages else cast(Messages, [{"role": "user", "content": ""}])
 
     def _prepare_agent_and_inputs(
         self, inputs: Dict[str, Any], messages: Messages
     ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
-        # LangGraph's agent expects at least one user message to drive execution.
-        # When an AgentNode is used with a templated system prompt and no messages are provided
-        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
-        # user message when the message list is empty.
-        if not messages:
-            messages = cast(Messages, [{"role": "user", "content": ""}])
-        agentspec_component = self.node.agent
-        if isinstance(agentspec_component, AgentSpecManagerWorkers):
-            # Inputs were baked into the group-manager's prompt, so this graph runs on
-            # messages alone rather than the agent's remaining_steps state.
-            graph = self._create_manager_workers_with_given_input_values(
-                agentspec_component, inputs
-            )
-            return graph, {"messages": messages}
         agent = self._create_react_agent_with_given_input_values(inputs)
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
-            "messages": messages,
+            "messages": self._with_driving_message(messages),
             "structured_response": {},
         }
         return agent, inputs
@@ -614,13 +561,6 @@ class AgentNodeExecutor(NodeExecutor):
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
-
-        if isinstance(self.node.agent, AgentSpecManagerWorkers):
-            # The hierarchical graph runs over MessagesState, which cannot carry a
-            # structured_response outward: the manager's final message is the result.
-            # __init__ already rejected any shape but a single string output.
-            node_outputs = self.node.outputs or []
-            return {node_outputs[0].title: result["messages"][-1].content}, NodeExecutionDetails()
 
         outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()

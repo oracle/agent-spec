@@ -13,7 +13,7 @@ filter on :func:`is_delegation_tool_name`.
 """
 
 import re
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Annotated, Any, Dict, Iterable, List, Tuple
 
 from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
 from pyagentspec.adapters.langgraph._types import CompiledStateGraph, langgraph_graph
@@ -28,13 +28,14 @@ from pyagentspec.tracing.spans import (
     ManagerWorkersExecutionSpan as AgentSpecManagerWorkersExecutionSpan,
 )
 
-# Cannot collide with a normalized worker node name, which is always [a-z0-9_].
+# Cannot collide with a worker node name: _normalize_identifier strips leading and
+# trailing underscores, so no normalized name ever starts with one.
 _MANAGER_NODE_KEY = "__manager__"
 
 #: Prefix of the synthetic ``__delegate_to__<worker>`` tool names the manager's LLM
 #: uses to address a worker. The dunder prefix, like the delegation keys below, keeps
-#: it from colliding with a real tool named ``delegate_to_<something>``. Public so
-#: consumers can recognize the protocol.
+#: it from colliding with a real tool named ``delegate_to_<something>``. Re-exported
+#: from ``pyagentspec.adapters.langgraph`` so consumers can recognize the protocol.
 DELEGATE_TOOL_PREFIX = "__delegate_to__"
 
 # Keys of the per-delegation ``Send`` payload: the task to run, and the tool_call_id
@@ -98,8 +99,6 @@ def _make_worker_delegation_tool(worker_node_name: str) -> Any:
     would collapse several same-turn delegations into one parent Command and leave the
     other ``tool_call_id``s unanswered.
     """
-    from typing import Annotated
-
     from langchain_core.tools import InjectedToolCallId, tool
     from langgraph.prebuilt import InjectedState
     from langgraph.types import Command

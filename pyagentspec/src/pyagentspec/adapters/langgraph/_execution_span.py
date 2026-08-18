@@ -34,7 +34,9 @@ def _final_state(chunk: Any, so_far: Any) -> Any:
     return chunk[1] if isinstance(chunk, tuple) else so_far
 
 
-async def _async_or_sync(async_call: Callable[..., Any], sync_call: Callable[..., Any], *args: Any):
+async def _async_or_sync(
+    async_call: Callable[..., Any], sync_call: Callable[..., Any], *args: Any
+) -> None:
     """Await ``async_call``, falling back to ``sync_call`` for spans that don't
     implement the async half of the tracing protocol."""
     try:
