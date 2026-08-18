@@ -1,16 +1,8 @@
-:orphan:
+.. _agentspecspec_v26.3.0:
 
-.. _agentspecspec:
-.. _agentspecspec_nightly:
-
-====================================================
-Agent Spec specification (nightly version |release|)
-====================================================
-
-.. warning::
-    This is the nightly version of Agent Spec, and it is currently under development.
-    It is not an official release, and it might be subject to major changes before official release.
-    Use this version only for testing purposes.
+=========================================
+Agent Spec specification (version 26.3.0)
+=========================================
 
 Language specification
 ======================
