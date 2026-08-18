@@ -22,15 +22,6 @@ LangGraph
 .. _adapters_langgraph_loader:
 .. autoclass:: pyagentspec.adapters.langgraph.AgentSpecLoader
 
-CrewAI
-------
-
-.. _adapters_crewai_exporter:
-.. autoclass:: pyagentspec.adapters.crewai.AgentSpecExporter
-
-.. _adapters_crewai_loader:
-.. autoclass:: pyagentspec.adapters.crewai.AgentSpecLoader
-
 AutoGen
 -------
 

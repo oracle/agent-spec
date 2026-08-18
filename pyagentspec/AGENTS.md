@@ -29,7 +29,7 @@ precedence for their subtrees.
 - `src/pyagentspec/llms/`: provider-specific LLM configuration models.
 - `src/pyagentspec/serialization/`: serializer/deserializer plugins and schema
   generation.
-- `src/pyagentspec/adapters/`: conversions to and from LangGraph, CrewAI,
+- `src/pyagentspec/adapters/`: conversions to and from LangGraph,
   AutoGen, Agent Framework, OpenAI Agents, WayFlow, and related runtimes.
 - `src/pyagentspec/tracing/`: Agent Spec tracing models and events.
 - `tests/`: unit and integration-style coverage. Adapter tests live under

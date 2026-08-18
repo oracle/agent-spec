@@ -136,7 +136,6 @@ autodoc_default_options = {
 
 # Add type hints to parameter description, not to signature.
 autodoc_typehints = "description"
-autodoc_mock_imports = ["crewai"]
 
 # Redirects
 rediraffe_redirects = {"agentspec/language_spec.rst": f"agentspec/{language_spec_file}.rst"}
@@ -216,7 +215,6 @@ nitpick_ignore_regex = [
     ("py:class", r"agent_framework\..*"),
     ("py:class", r"wayflowcore\..*"),
     ("py:class", r"agents\..*"),
-    ("py:class", r"crewai\..*"),
     # Purposely ignoring classes
     ("py:class", r"pyagentspec.serialization.serializationcontext.FieldInfoTypeT"),
     ("py:class", r"pyagentspec.serialization.serializationcontext.T"),

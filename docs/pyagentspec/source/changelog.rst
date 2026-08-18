@@ -61,6 +61,10 @@ New features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
+* **Removed CrewAI adapter**
+
+  The CrewAI adapter and its optional dependencies have been removed from ``pyagentspec`` due to a CVE in a pinned dependency of CrewAI (Chroma DB 1.1.0) at the time of our release.
+
 
 Agent Spec 26.1.2
 -----------------

@@ -175,35 +175,20 @@ def get_directory_allowlist_write(tmp_path: str, session_tmp_path: str) -> List[
 
 
 def get_directory_allowlist_read(tmp_path: str, session_tmp_path: str) -> List[Union[str, Path]]:
-    try:
-        # Crew AI sometimes attempts to read in some folders, we need to take that into account
-        from crewai.cli.shared.token_manager import TokenManager
-
-        # crewai may have either method depending on the version
-        crewai_read_dirs_method = getattr(TokenManager, "get_secure_storage_path", None) or getattr(
-            TokenManager, "_get_secure_storage_path"
-        )
-        crewai_read_dirs = [crewai_read_dirs_method()]
-    except ImportError:
-        crewai_read_dirs = []
-    return (
-        get_directory_allowlist_write(tmp_path, session_tmp_path)
-        + [
-            CONFIGS_DIR,
-            # Docs path
-            Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
-            # Accessed by pandas, dependency of wayflowcore
-            Path("/usr/share/zoneinfo/UTC"),
-            # Used in docstring tests
-            Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
-            Path("~/.pdbrc").expanduser(),
-            Path(os.path.dirname(__file__)).parent / ".pdbrc",
-            Path(os.path.dirname(__file__)) / ".pdbrc",
-            Path("/etc/os-release"),
-            Path("~/.oci/").expanduser(),
-        ]
-        + crewai_read_dirs
-    )
+    return get_directory_allowlist_write(tmp_path, session_tmp_path) + [
+        CONFIGS_DIR,
+        # Docs path
+        Path(os.path.dirname(__file__)).parent.parent / "docs" / "pyagentspec" / "source",
+        # Accessed by pandas, dependency of wayflowcore
+        Path("/usr/share/zoneinfo/UTC"),
+        # Used in docstring tests
+        Path(os.path.dirname(__file__)).parent / "src" / "pyagentspec",
+        Path("~/.pdbrc").expanduser(),
+        Path(os.path.dirname(__file__)).parent / ".pdbrc",
+        Path(os.path.dirname(__file__)) / ".pdbrc",
+        Path("/etc/os-release"),
+        Path("~/.oci/").expanduser(),
+    ]
 
 
 def check_allowed_filewrite(

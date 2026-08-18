@@ -28,7 +28,7 @@ These instructions apply to the whole repository. More specific nested
 
 - Agent Spec is a declarative, framework-neutral configuration language for
   agents and workflows. Treat serialized specs as data, not executable code.
-- Runtime adapters may target WayFlow, LangGraph, AutoGen, CrewAI, OpenAI
+- Runtime adapters may target WayFlow, LangGraph, AutoGen, OpenAI
   Agents, and related frameworks. Preserve semantics where possible and fail
   explicitly when a target cannot represent a construct.
 - LLM and tool integrations should stay behind package abstractions so agent

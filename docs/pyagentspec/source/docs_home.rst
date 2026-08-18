@@ -121,7 +121,6 @@ Agent Spec is developed jointly between Oracle Cloud Infrastructure and Oracle L
    Oracle Select AI <oracle_select_ai>
    LangGraph <adapters/langgraph/index>
    WayFlow <adapters/wayflow/index>
-   CrewAI <adapters/crewai/index>
    AutoGen <adapters/autogen/index>
    Agent Framework <adapters/agent-framework/index>
    OpenAI Agents <adapters/openai/index>

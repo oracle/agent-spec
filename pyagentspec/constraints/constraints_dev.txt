@@ -9,9 +9,6 @@ autogen-core==0.7.4
 autogen-ext==0.7.4
 autogen-agentchat==0.7.4
 
-# CrewAI adapter
-crewai==1.6.1
-
 # LangGraph adapter
 langgraph==1.2.4
 langchain==1.3.9
