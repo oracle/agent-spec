@@ -2452,7 +2452,7 @@ For example, the JSON serialized version of an Agent should look like the follow
        "url": "my.llm.url"
     }
     "tools": [],
-    "agentspec_version": "26.3.0"
+    "agentspec_version": "26.4.0"
   }
 
 For release versioning, Agent Spec follows the format YEAR.QUARTER.PATCH. Agent Spec follows a
@@ -3261,7 +3261,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_26_3_0.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_4_0.json
         :language: json
 
 Note about serialization of components
@@ -3344,7 +3344,7 @@ Examples of JSON serialization for a few common Components follow.
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
       "component_type": "Agent",
-      "agentspec_version": "26.3.0"
+      "agentspec_version": "26.4.0"
     }
 
 

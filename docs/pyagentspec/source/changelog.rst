@@ -4,6 +4,21 @@ Changelog
 Agent Spec |release|
 --------------------
 
+New features
+^^^^^^^^^^^^
+
+Improvements
+^^^^^^^^^^^^
+
+Bug fixes
+^^^^^^^^^
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Agent Spec 26.3.0
+-----------------
+
 Improvements
 ^^^^^^^^^^^^
 
