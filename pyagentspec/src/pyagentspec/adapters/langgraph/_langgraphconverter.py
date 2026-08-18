@@ -1174,10 +1174,23 @@ class AgentSpecToLangGraphConverter:
         )
         output_model: Optional[type[BaseModel]] = None
         state_schema: Optional[Any] = None
+        response_format: Any = None
 
         # Build response (output) model (used for response_format)
         if outputs:
             output_model = create_pydantic_model_from_properties("AgentOutputModel", outputs)
+            # Explicitly use ToolStrategy instead of letting LangChain select a provider
+            # strategy. OpenAI-compatible models do not necessarily support provider-native
+            # structured output, and may otherwise return a plain AIMessage without the
+            # structured_response state entry after a client-tool resume.
+            from langchain.agents.structured_output import ToolStrategy
+
+            response_format = ToolStrategy(output_model)
+            system_prompt = (
+                f"{system_prompt}\n\n"
+                "After using the available tools, provide the final result by calling the "
+                "structured output tool. Do not respond with a plain-text final answer."
+            )
 
         if inputs:
             state_schema = _create_agent_state_typed_dict(
@@ -1191,7 +1204,7 @@ class AgentSpecToLangGraphConverter:
             tools=langgraph_tools,
             system_prompt=system_prompt,
             checkpointer=checkpointer,
-            response_format=output_model,
+            response_format=response_format,
             state_schema=state_schema,
         )
         if middleware:

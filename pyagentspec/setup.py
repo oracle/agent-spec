@@ -27,9 +27,9 @@ def read(file_name):
 
 LANGGRAPH_DEPS = [
     # 3rd party dependencies (imported in code)
-    "langgraph>=1.2.0,<1.3.0",
-    "langchain-core>=1.4.0,<1.5.0",
-    "langchain>=1.3.1,<1.4.0",
+    "langgraph>=1.2.4,<1.3.0",
+    "langchain-core>=1.4.6,<2.0.0",
+    "langchain>=1.3.9,<2.0.0",
     "langchain-openai>=1.2.1,<1.3.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<4.12.0",
@@ -37,9 +37,10 @@ LANGGRAPH_DEPS = [
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
     "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-    "langgraph-checkpoint>=4.0.1,<5.0.0",  # needed to avoid CVE present in earlier versions
-    "langsmith>=0.8.0,<1.0.0",  # needed to avoid CVE present in earlier versions
+    "langgraph-checkpoint>=4.1.1,<5.0.0",  # needed to avoid CVE present in earlier versions
+    "langsmith>=0.8.18,<1.0.0",  # needed to avoid CVE present in earlier versions
     "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
+    "langgraph-sdk>=0.3.15",  # needed to avoid CVE present in earlier versions
 ]
 
 LANGGRAPH_FULL_DEPS = LANGGRAPH_DEPS + [
@@ -47,7 +48,7 @@ LANGGRAPH_FULL_DEPS = LANGGRAPH_DEPS + [
     "langchain-mcp-adapters>=0.2.2",
     "langchain-oci>=0.2.6",
     # 4rth party dependencies
-    "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+    "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
     "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
 ]
 
@@ -100,6 +101,7 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.13'",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0; python_version < '3.13'",  # needed to avoid CVE present in earlier versions
+            "pillow>=12.3.0; python_version < '3.13'",  # needed to avoid CVE present in earlier versions
         ],
         "openai-agents": [
             # 3rd party dependencies (imported in code)
@@ -108,7 +110,7 @@ setup(
             "httpx>0.28.0",
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "crewai": [
@@ -117,42 +119,40 @@ setup(
             "httpx>0.28.0; python_version < '3.14'",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=50.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # litellm is included to fix CVEs
             "litellm>=1.84.0,<2.0; python_version < '3.14'",
             "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "chromadb>1.5.9; python_version < '3.14'",  # # needed to avoid CVE present in earlier versions
+            "uv>=0.11.15; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_FULL_DEPS,
         "wayflow": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore>=26.1.2",
+            "wayflowcore>=26.3.0",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_oci": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[oci]>=26.1.2",
+            "wayflowcore[oci]>=26.3.0",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "pyOpenSSL>=26.0.0,<27.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[a2a]>=26.1.2",
+            "wayflowcore[a2a]>=26.3.0",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_datastore": [
             # 3rd party dependencies (imported in code)
-            "wayflowcore[datastore]>=26.1.2",
+            "wayflowcore[datastore]>=26.3.0",
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "agent-framework": [
             # 3rd party dependencies (imported in code)
@@ -161,7 +161,7 @@ setup(
             "httpx>0.28.0",
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
         "evaluation": [
@@ -169,11 +169,11 @@ setup(
             "anyio>=4.10.0,<4.12.0",
             "litellm>=1.84.0,<2.0; python_version < '3.14'",
             "pandas>=2.3.0,<3.0.0",
-            "oci>=2.158.2",
+            "oci>=2.184.2",
             "numpy>=2.2.6",
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
-            "cryptography>=46.0.7",  # needed to avoid CVE present in earlier versions
+            "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
