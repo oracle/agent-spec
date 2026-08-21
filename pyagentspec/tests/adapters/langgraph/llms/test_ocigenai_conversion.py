@@ -265,3 +265,84 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
     assert component.llm_config.compartment_id == OCI_COMPARTMENT_ID
     client_cfg = component.llm_config.client_config
     assert isinstance(client_cfg, OciClientConfigWithApiKey)
+
+
+def _write_throwaway_oci_config(directory: Path) -> str:
+    """Write a syntactically valid, locally-generated OCI API-key config/keypair.
+
+    Not a real credential and never sent anywhere: `ChatOCIGenAI` parses this file
+    to construct its client, but the LangGraph adapter code under test never issues
+    a network call, so no real OCI account is required.
+    """
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    key_path = directory / "oci_api_key.pem"
+    key_path.write_bytes(
+        key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+    )
+    config_path = directory / "config"
+    config_path.write_text(
+        "[DEFAULT]\n"
+        "user=ocid1.user.oc1..aaaaaaaathrowaway\n"
+        "fingerprint=aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99\n"
+        "tenancy=ocid1.tenancy.oc1..aaaaaaaathrowaway\n"
+        "region=us-ashburn-1\n"
+        f"key_file={key_path}\n"
+    )
+    return str(config_path)
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "cohere.command-a-03-2025",
+        "meta.llama-3.3-70b-instruct",
+    ],
+)
+def test_llmnodeexecutor_structured_output_supported_across_providers(
+    tmp_path: Path, model_id: str
+) -> None:
+    """`LlmNodeExecutor` must build a `with_structured_output` schema every
+    `ChatOCIGenAI` provider backend accepts, not only the ones whose tool-schema
+    validation happens to tolerate a dict with no "description" key.
+
+    `ChatOCIGenAI` picks its provider (Cohere vs. Meta/generic) from `model_id`
+    alone (`AgentSpecToLangGraphConverter` never forwards `OciGenAiConfig.provider`),
+    so the two ids above exercise the two `convert_to_oci_tool` implementations.
+    """
+    from pyagentspec.adapters.langgraph._node_execution import LlmNodeExecutor
+    from pyagentspec.flows.nodes import LlmNode
+    from pyagentspec.property import Property
+
+    auth_file_location = _write_throwaway_oci_config(tmp_path)
+    llm_node = LlmNode(
+        name="llm_node",
+        llm_config=OciGenAiConfig(
+            name="oci_cfg",
+            model_id=model_id,
+            compartment_id="ocid1.compartment.oc1..dummy",
+            client_config=OciClientConfigWithApiKey(
+                name="api_key_cfg",
+                service_endpoint=OCI_SERVICE_ENDPOINT,
+                auth_profile="DEFAULT",
+                auth_file_location=auth_file_location,
+            ),
+        ),
+        prompt_template="irrelevant",
+        outputs=[
+            Property(json_schema={"title": "name", "type": "string"}),
+            Property(json_schema={"title": "active", "type": "boolean"}),
+        ],
+    )
+
+    llm = AgentSpecToLangGraphConverter().convert(llm_node.llm_config, {})
+    executor = LlmNodeExecutor(llm_node, llm)
+
+    assert executor.requires_structured_generation is True
+    assert executor.structured_llm is not None

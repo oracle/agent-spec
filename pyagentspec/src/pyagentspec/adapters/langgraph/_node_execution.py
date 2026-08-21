@@ -619,6 +619,10 @@ class LlmNodeExecutor(NodeExecutor):
             json_schema = {
                 # Title is required by langgraph
                 "title": "structured_output",
+                # Description is required by some providers' tool-schema validation
+                # (e.g. langchain_oci's CohereProvider.convert_to_oci_tool rejects a
+                # dict missing "description" with "Unsupported dict type").
+                "description": "Structured output for the LLM node.",
                 "type": "object",
                 "properties": {output.title: output.json_schema for output in node_outputs},
             }
