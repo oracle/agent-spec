@@ -15,6 +15,7 @@ from typing import (
     Awaitable,
     Callable,
     Dict,
+    Hashable,
     List,
     Optional,
     Tuple,
@@ -1165,13 +1166,16 @@ class AgentSpecToLangGraphConverter:
             builder.add_edge(node_name, _MANAGER_NODE_KEY)
 
         builder.add_edge(langgraph_graph.START, _MANAGER_NODE_KEY)
+        path_map: Dict[Hashable, str] = {}
+        for node_name in worker_node_names:
+            path_map[node_name] = node_name
+        path_map[langgraph_graph.END] = langgraph_graph.END
         builder.add_conditional_edges(
             _MANAGER_NODE_KEY,
             _make_manager_router(worker_node_names),
             # The path map covers every worker plus END, so langgraph can validate
             # the routing statically.
-            {node_name: node_name for node_name in worker_node_names}
-            | {langgraph_graph.END: langgraph_graph.END},
+            path_map,
         )
 
         compiled_graph = builder.compile(checkpointer=checkpointer, name=mw.name)

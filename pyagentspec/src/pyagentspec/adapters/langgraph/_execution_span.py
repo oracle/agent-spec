@@ -83,5 +83,5 @@ def patch_with_execution_span(
         finally:
             await _async_or_sync(span.end_async, span.end)
 
-    compiled_graph.stream = patched_stream  # type: ignore[assignment]
-    compiled_graph.astream = patched_astream  # type: ignore[assignment]
+    compiled_graph.stream = patched_stream  # type: ignore[method-assign]
+    compiled_graph.astream = patched_astream  # type: ignore[method-assign]
