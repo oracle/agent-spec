@@ -125,6 +125,7 @@ def test_managerworkers_infers_manager_ios_in_current_version() -> None:
         name="team",
         group_manager=manager,
         workers=[worker],
+        outputs=[StringProperty(title="answer")],
     )
 
     assert manager_workers.outputs == manager.outputs
@@ -133,3 +134,36 @@ def test_managerworkers_infers_manager_ios_in_current_version() -> None:
         AgentSpecSerializer().to_dict(
             manager_workers, agentspec_version=AgentSpecVersionEnum.v25_4_2
         )
+
+
+def test_managerworkers_without_ios_with_manager_ios_is_legacy_compatible() -> None:
+    llm_config = VllmConfig(name="model", model_id="model_id", url="https://example.com")
+    manager = Agent(
+        name="manager",
+        llm_config=llm_config,
+        system_prompt="Manage {{question}}.",
+        inputs=[StringProperty(title="question")],
+        outputs=[StringProperty(title="answer")],
+    )
+    worker = Agent(name="worker", llm_config=llm_config, system_prompt="Help the manager.")
+    manager_workers = ManagerWorkers(
+        name="team",
+        group_manager=manager,
+        workers=[worker],
+        inputs=[],
+        outputs=[],
+    )
+
+    assert manager_workers.inputs == []
+    assert manager_workers.outputs == []
+    assert manager_workers.min_agentspec_version == AgentSpecVersionEnum.v25_4_2
+    assert manager_workers.max_agentspec_version == AgentSpecVersionEnum.v26_1_2
+
+    serialized = AgentSpecSerializer().to_dict(
+        manager_workers, agentspec_version=AgentSpecVersionEnum.v26_1_2
+    )
+    deserialized = AgentSpecDeserializer().from_dict(serialized)
+
+    assert isinstance(deserialized, ManagerWorkers)
+    assert deserialized.inputs == []
+    assert deserialized.outputs == []

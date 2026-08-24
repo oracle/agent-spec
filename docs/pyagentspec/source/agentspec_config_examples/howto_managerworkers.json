@@ -4,7 +4,16 @@
     "name": "managerworkers",
     "description": null,
     "metadata": {},
-    "inputs": [],
+    "inputs": [
+        {
+            "title": "customer_id",
+            "type": "string"
+        },
+        {
+            "title": "company_policy_info",
+            "type": "string"
+        }
+    ],
     "outputs": [],
     "group_manager": {
         "component_type": "Agent",
@@ -208,5 +217,5 @@
             "model_id": "llama-4-maverick"
         }
     },
-    "agentspec_version": "26.1.0"
+    "agentspec_version": "26.2.0"
 }
