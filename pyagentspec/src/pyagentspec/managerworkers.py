@@ -71,7 +71,8 @@ class ManagerWorkers(AgenticComponent):
         # group manager (same name and type): the manager drives the conversation.
         return (
             self.group_manager.inputs or []
-            if self.min_agentspec_version >= AgentSpecVersionEnum.v26_2_0
+            if getattr(self, "group_manager", None)
+            and self.min_agentspec_version >= AgentSpecVersionEnum.v26_2_0
             else []
         )
 
@@ -79,22 +80,25 @@ class ManagerWorkers(AgenticComponent):
         # Symmetric with the inferred inputs: the group manager's outputs.
         return (
             self.group_manager.outputs or []
-            if self.min_agentspec_version >= AgentSpecVersionEnum.v26_2_0
+            if getattr(self, "group_manager", None)
+            and self.min_agentspec_version >= AgentSpecVersionEnum.v26_2_0
             else []
         )
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         min_version = super()._infer_min_agentspec_version_from_configuration()
         # ManagerWorkers I/O matching was introduced in 26.2.0.
-        if self.inputs or self.outputs:
+        if getattr(self, "inputs", []) or getattr(self, "outputs", []):
             min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
         return min_version
 
     def _infer_max_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         max_version = super()._infer_max_agentspec_version_from_configuration()
         # Before 26.2.0 a ManagerWorkers did not inherit its manager's I/O.
-        if (self.group_manager.inputs or self.group_manager.outputs) and not (
-            self.inputs or self.outputs
+        if (
+            getattr(self, "group_manager", None)
+            and (self.group_manager.inputs or self.group_manager.outputs)
+            and not (self.inputs or self.outputs)
         ):
             max_version = min(max_version, AgentSpecVersionEnum.v26_1_2)
         return max_version
