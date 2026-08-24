@@ -14,7 +14,7 @@ from pyagentspec.flows.nodes.endnode import EndNode
 from pyagentspec.flows.nodes.startnode import StartNode
 from pyagentspec.llms import OpenAiConfig
 from pyagentspec.managerworkers import ManagerWorkers
-from pyagentspec.property import FloatProperty, StringProperty
+from pyagentspec.property import FloatProperty, ListProperty, StringProperty
 from pyagentspec.swarm import Swarm
 
 
@@ -133,6 +133,19 @@ def test_managerworkers_with_ios_not_matching_the_group_manager_raises_errors() 
             group_manager=manager_agent,
             workers=[worker_agent],
             outputs=[FloatProperty(title="answer")],
+        )
+
+    # The comparison must also inspect nested schema types, rather than only the
+    # top-level ``array`` type.
+    list_output_manager = manager_agent.model_copy(
+        update={"outputs": [ListProperty(title="answer", item_type=StringProperty())]}
+    )
+    with pytest.raises(ValueError, match="must match the outputs of its group manager"):
+        ManagerWorkers(
+            name="managerworkers",
+            group_manager=list_output_manager,
+            workers=[worker_agent],
+            outputs=[ListProperty(title="answer", item_type=FloatProperty())],
         )
 
     # A title the group manager does not declare is rejected by the base

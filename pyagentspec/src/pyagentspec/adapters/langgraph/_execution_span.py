@@ -47,7 +47,6 @@ async def _async_or_sync(
 
 def patch_with_execution_span(
     compiled_graph: CompiledStateGraph[Any, Any, Any],
-    *,
     make_span: Callable[[], Any],
     make_start_event: Callable[[Dict[str, Any]], Any],
     make_end_event: Callable[[Dict[str, Any]], Any],

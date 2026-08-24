@@ -9,6 +9,7 @@ import pytest
 from pyagentspec.agent import Agent
 from pyagentspec.llms import VllmConfig
 from pyagentspec.managerworkers import ManagerWorkers
+from pyagentspec.property import StringProperty
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
 
@@ -109,3 +110,26 @@ def test_deserializing_managerworkers_with_unsupported_version_raises_error(
 
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         AgentSpecDeserializer().from_yaml(serialized_managerworkers)
+
+
+def test_managerworkers_infers_manager_ios_in_current_version() -> None:
+    llm_config = VllmConfig(name="model", model_id="model_id", url="https://example.com")
+    manager = Agent(
+        name="manager",
+        llm_config=llm_config,
+        system_prompt="Manage the team.",
+        outputs=[StringProperty(title="answer")],
+    )
+    worker = Agent(name="worker", llm_config=llm_config, system_prompt="Help the manager.")
+    manager_workers = ManagerWorkers(
+        name="team",
+        group_manager=manager,
+        workers=[worker],
+    )
+
+    assert manager_workers.outputs == manager.outputs
+    assert manager_workers.min_agentspec_version == AgentSpecVersionEnum.current_version
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecSerializer().to_dict(
+            manager_workers, agentspec_version=AgentSpecVersionEnum.v25_4_2
+        )
