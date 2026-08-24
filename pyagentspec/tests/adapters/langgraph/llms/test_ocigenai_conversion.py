@@ -267,82 +267,51 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
     assert isinstance(client_cfg, OciClientConfigWithApiKey)
 
 
-def _write_throwaway_oci_config(directory: Path) -> str:
-    """Write a syntactically valid, locally-generated OCI API-key config/keypair.
-
-    Not a real credential and never sent anywhere: `ChatOCIGenAI` parses this file
-    to construct its client, but the LangGraph adapter code under test never issues
-    a network call, so no real OCI account is required.
-    """
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa
-
-    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    key_path = directory / "oci_api_key.pem"
-    key_path.write_bytes(
-        key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-    )
-    config_path = directory / "config"
-    config_path.write_text(
-        "[DEFAULT]\n"
-        "user=ocid1.user.oc1..aaaaaaaathrowaway\n"
-        "fingerprint=aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99\n"
-        "tenancy=ocid1.tenancy.oc1..aaaaaaaathrowaway\n"
-        "region=us-ashburn-1\n"
-        f"key_file={key_path}\n"
-    )
-    return str(config_path)
-
-
-@pytest.mark.parametrize(
-    "model_id",
-    [
-        "cohere.command-a-03-2025",
-        "meta.llama-3.3-70b-instruct",
-    ],
-)
-def test_llmnodeexecutor_structured_output_supported_across_providers(
-    tmp_path: Path, model_id: str
-) -> None:
-    """`LlmNodeExecutor` must build a `with_structured_output` schema every
+def test_llmnodeexecutor_structured_output_schema_has_description() -> None:
+    """`LlmNodeExecutor` must pass `with_structured_output` a schema every
     `ChatOCIGenAI` provider backend accepts, not only the ones whose tool-schema
-    validation happens to tolerate a dict with no "description" key.
+    validation happens to tolerate a dict with no "description" key
+    (`langchain_oci`'s `CohereProvider.convert_to_oci_tool` requires one).
 
-    `ChatOCIGenAI` picks its provider (Cohere vs. Meta/generic) from `model_id`
-    alone (`AgentSpecToLangGraphConverter` never forwards `OciGenAiConfig.provider`),
-    so the two ids above exercise the two `convert_to_oci_tool` implementations.
+    Monkey-patches `_node_execution.BaseChatModel` with a tiny fake that
+    captures the schema `with_structured_output` is called with, instead of
+    building a real `ChatOCIGenAI`, which needs no OCI configuration and does
+    not depend on which provider a given `model_id` would route to.
     """
-    from pyagentspec.adapters.langgraph._node_execution import LlmNodeExecutor
+    from pyagentspec.adapters.langgraph import _node_execution
     from pyagentspec.flows.nodes import LlmNode
+    from pyagentspec.llms.llmconfig import LlmConfig
     from pyagentspec.property import Property
 
-    auth_file_location = _write_throwaway_oci_config(tmp_path)
-    llm_node = LlmNode(
-        name="llm_node",
-        llm_config=OciGenAiConfig(
-            name="oci_cfg",
-            model_id=model_id,
-            compartment_id="ocid1.compartment.oc1..dummy",
-            client_config=OciClientConfigWithApiKey(
-                name="api_key_cfg",
-                service_endpoint=OCI_SERVICE_ENDPOINT,
-                auth_profile="DEFAULT",
-                auth_file_location=auth_file_location,
-            ),
-        ),
-        prompt_template="irrelevant",
-        outputs=[
-            Property(json_schema={"title": "name", "type": "string"}),
-            Property(json_schema={"title": "active", "type": "boolean"}),
-        ],
-    )
+    class _FakeChatModel:
+        def __init__(self) -> None:
+            self.captured_schema: dict | None = None
 
-    llm = AgentSpecToLangGraphConverter().convert(llm_node.llm_config, {})
-    executor = LlmNodeExecutor(llm_node, llm)
+        def with_structured_output(self, schema: dict) -> object:
+            self.captured_schema = schema
+            return object()
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(_node_execution, "BaseChatModel", _FakeChatModel)
+
+        llm_node = LlmNode(
+            name="llm_node",
+            llm_config=LlmConfig(name="test", model_id="gpt-4o", api_provider="openai"),
+            prompt_template="irrelevant",
+            outputs=[
+                Property(json_schema={"title": "name", "type": "string"}),
+                Property(json_schema={"title": "active", "type": "boolean"}),
+            ],
+        )
+
+        fake_llm = _FakeChatModel()
+        executor = _node_execution.LlmNodeExecutor(llm_node, fake_llm)
 
     assert executor.requires_structured_generation is True
-    assert executor.structured_llm is not None
+    schema = fake_llm.captured_schema
+    assert schema is not None
+    assert schema["description"] == "Structured output for the LLM node."
+    assert schema["properties"] == {
+        "name": {"title": "name", "type": "string"},
+        "active": {"title": "active", "type": "boolean"},
+    }
