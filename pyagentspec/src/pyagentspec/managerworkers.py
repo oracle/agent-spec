@@ -93,7 +93,9 @@ class ManagerWorkers(AgenticComponent):
     def _infer_max_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         max_version = super()._infer_max_agentspec_version_from_configuration()
         # Before 26.2.0 a ManagerWorkers did not inherit its manager's I/O.
-        if (self.group_manager.inputs or self.group_manager.outputs) and not (self.inputs or self.outputs):
+        if (self.group_manager.inputs or self.group_manager.outputs) and not (
+            self.inputs or self.outputs
+        ):
             max_version = min(max_version, AgentSpecVersionEnum.v26_1_2)
         return max_version
 
