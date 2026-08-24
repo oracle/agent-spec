@@ -33,7 +33,7 @@ def test_examples_in_docstrings_can_be_successfully_ran(
         pytest.skip(f"Skipping because we only want to run {os.environ[ONLY_FILE_VAR]}")
 
     # We skip the test if it is a docstring related to an adapter and the extra dependency is not installed
-    for adapter in ["autogen", "agent_framework", "langgraph", "openaiagents", "wayflow"]:
+    for adapter in ["autogen", "agent_framework", "crewai", "langgraph", "openaiagents", "wayflow"]:
         if adapter in file_path:
             try:
                 importlib.import_module("pyagentspec.adapters." + adapter)

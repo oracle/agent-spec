@@ -10,6 +10,10 @@ New features
 Improvements
 ^^^^^^^^^^^^
 
+* ** Added back the CrewAI adapter**
+
+  The CrewAI adapter has been added back.
+
 Bug fixes
 ^^^^^^^^^
 

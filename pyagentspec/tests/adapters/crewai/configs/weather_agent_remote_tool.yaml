@@ -1,0 +1,44 @@
+# Copyright © 2025 Oracle and/or its affiliates.
+#
+# This software is under the Apache License 2.0
+# (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
+# (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
+
+component_type: Agent
+description: Weather agent
+id: 6135866f-7fbe-4874-8a84-4b2e021aa721
+inputs: []
+llm_config:
+  component_type: VllmConfig
+  default_generation_parameters: {}
+  description: ""
+  id: fde915e6-4f21-4e5a-a0a5-d6121c2655f6
+  metadata:
+    __metadata_info__: {}
+  model_id: /storage/models/Llama-3.3-70B-Instruct
+  name: Llama-3.3-70B-Instruct
+  url: [[LLAMA70BV33_API_URL]]
+metadata:
+  __metadata_info__: {}
+name: agent_87040c07
+outputs: []
+system_prompt: You are a weather agent. Use your tool to answer user questions about weather in particular cities.
+tools:
+- component_type: RemoteTool
+  description: Retrieves the weather in a city
+  headers: {}
+  http_method: GET
+  id: 7767612c-8326-4afd-a037-c1360589c202
+  inputs:
+  - description: The city to get the weather for
+    title: city
+    type: string
+  metadata: {}
+  name: get_weather
+  outputs:
+  - description: The weather in the city
+    title: weather
+    type: string
+  query_params: {}
+  url: "[[remote_tools_server]]/api/weather/{{city}}"
+agentspec_version: "25.4.1"

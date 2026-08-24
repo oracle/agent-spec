@@ -113,6 +113,19 @@ setup(
             "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
+        "crewai": [
+            # 3rd party dependencies (imported in code)
+            "crewai[litellm]>=1.6.1; python_version < '3.14'",
+            "httpx>0.28.0; python_version < '3.14'",
+            # 4rth party dependencies
+            "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "cryptography>=50.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            # litellm is included to fix CVEs
+            "litellm>=1.84.0,<2.0; python_version < '3.14'",
+            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "chromadb>1.5.9; python_version < '3.14'",  # # needed to avoid CVE present in earlier versions
+            "uv>=0.11.15; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+        ],
         "langgraph": LANGGRAPH_DEPS,
         "langgraph-full": LANGGRAPH_FULL_DEPS,
         "wayflow": [
