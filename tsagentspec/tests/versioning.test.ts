@@ -17,12 +17,15 @@ describe("AgentSpecVersion", () => {
     expect(AgentSpecVersion.V25_4_1).toBe("25.4.1");
     expect(AgentSpecVersion.V25_4_2).toBe("25.4.2");
     expect(AgentSpecVersion.V26_1_0).toBe("26.1.0");
+    expect(AgentSpecVersion.V26_1_2).toBe("26.1.2");
     expect(AgentSpecVersion.V26_2_0).toBe("26.2.0");
+    expect(AgentSpecVersion.V26_3_0).toBe("26.3.0");
+    expect(AgentSpecVersion.V26_4_0).toBe("26.4.0");
   });
 
   it("should set CURRENT_VERSION to the latest version", () => {
-    expect(CURRENT_VERSION).toBe("26.2.0");
-    expect(CURRENT_VERSION).toBe(AgentSpecVersion.V26_2_0);
+    expect(CURRENT_VERSION).toBe("26.4.0");
+    expect(CURRENT_VERSION).toBe(AgentSpecVersion.V26_4_0);
   });
 
   it("should define the version field name", () => {

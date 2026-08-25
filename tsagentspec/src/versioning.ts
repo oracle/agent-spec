@@ -10,14 +10,17 @@ export const AgentSpecVersion = {
   V25_4_1: "25.4.1",
   V25_4_2: "25.4.2",
   V26_1_0: "26.1.0",
+  V26_1_2: "26.1.2",
   V26_2_0: "26.2.0",
+  V26_3_0: "26.3.0",
+  V26_4_0: "26.4.0",
 } as const;
 
 export type AgentSpecVersion =
   (typeof AgentSpecVersion)[keyof typeof AgentSpecVersion];
 
 /** The current (latest) agent spec version */
-export const CURRENT_VERSION: AgentSpecVersion = AgentSpecVersion.V26_2_0;
+export const CURRENT_VERSION: AgentSpecVersion = AgentSpecVersion.V26_4_0;
 
 /** Field name for the agentspec version in serialized JSON/YAML */
 export const AGENTSPEC_VERSION_FIELD_NAME = "agentspec_version";
