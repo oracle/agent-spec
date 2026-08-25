@@ -323,15 +323,15 @@ def test_deserialization_and_serialization_preserves_min_version(simplest_flow: 
     )
 
 
-def test_deserialization_accepts_v26_2_0_configs(simplest_flow: Flow) -> None:
+def test_deserialization_accepts_v26_3_0_configs(simplest_flow: Flow) -> None:
     serialized_flow = AgentSpecSerializer().to_dict(
-        simplest_flow, agentspec_version=AgentSpecVersionEnum.v26_2_0
+        simplest_flow, agentspec_version=AgentSpecVersionEnum.v26_3_0
     )
 
     deserialized_flow = AgentSpecDeserializer().from_dict(serialized_flow)
 
-    assert serialized_flow[AGENTSPEC_VERSION_FIELD_NAME] == AgentSpecVersionEnum.v26_2_0.value
-    assert deserialized_flow.min_agentspec_version == AgentSpecVersionEnum.v26_2_0
+    assert serialized_flow[AGENTSPEC_VERSION_FIELD_NAME] == AgentSpecVersionEnum.v26_3_0.value
+    assert deserialized_flow.min_agentspec_version == AgentSpecVersionEnum.v26_3_0
 
 
 def test_dict_serialization_and_deserialization(simplest_flow: Flow) -> None:
