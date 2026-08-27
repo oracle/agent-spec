@@ -12,9 +12,21 @@ The helpers are considered internal, hence the leading underscore prefixes.
 """
 
 import json
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Generic, Hashable, Tuple, TypeVar
+from contextlib import nullcontext
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    Hashable,
+    Tuple,
+    TypeVar,
+)
 
 import anyio
+from anyio.abc import TaskStatus
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.evaluation.datasets.dataset import Dataset
@@ -60,26 +72,25 @@ class _AsyncCallablesComputer(Generic[T]):
         self.dataset = dataset
         self.callables = callables
         self.max_concurrency = max_concurrency
-        if max_concurrency == -1:
-            self.semaphore = None
-        else:
-            self.semaphore = anyio.Semaphore(max_concurrency)
+        self.limiter = (
+            anyio.CapacityLimiter(max_concurrency) if max_concurrency != -1 else nullcontext()
+        )
         self._registry = _AsyncRegistry[Tuple[Any, str], T]()
 
-    async def _compute(self, sample_id: Any, callable_id: str) -> None:
+    async def _compute(
+        self,
+        sample_id: Any,
+        callable_id: str,
+        task_status: TaskStatus[None] = anyio.TASK_STATUS_IGNORED,
+    ) -> None:
         """Run a single callable against a dataset sample and store the result."""
-        # Fetch the sample lazily so IO is naturally parallelised by the caller.
-        sample = await self.dataset.get_sample(sample_id)
-        result = await self.callables[callable_id](**sample)
-        await self._registry.register((sample_id, callable_id), result)
+        async with self.limiter:
+            task_status.started()
 
-    async def _queue(self, sample_id: Any, callable_id: str) -> None:
-        """Wrapper that honours the semaphore before delegating to ``_compute``."""
-        if self.semaphore is not None:
-            async with self.semaphore:
-                await self._compute(sample_id, callable_id)
-        else:
-            await self._compute(sample_id, callable_id)
+            # Fetch the sample lazily so IO is naturally parallelised by the caller.
+            sample = await self.dataset.get_sample(sample_id)
+            result = await self.callables[callable_id](**sample)
+            await self._registry.register((sample_id, callable_id), result)
 
     async def run(self) -> Dict[Tuple[Hashable, str], T]:
         """Kick off all pending computations and return the populated registry."""
@@ -88,48 +99,10 @@ class _AsyncCallablesComputer(Generic[T]):
         if not metrics_names:
             return {}
 
-        # For "unlimited" concurrency we still spawn one task per work item since callers
-        # explicitly opted out of concurrency caps. The producer/worker pattern below
-        # is primarily meant to prevent memory blow-ups when a bounded concurrency limit is used.
-        if self.semaphore is None:
-            async with anyio.create_task_group() as tg:
-                async for sample_id in self.dataset.ids():
-                    for metric_name in metrics_names:
-                        tg.start_soon(self._queue, sample_id, metric_name)
-            return self._registry.store
-
-        # Avoid spawning one task per (sample, metric) pair: for large datasets
-        # that can create millions of tasks and consume large amounts of memory.
-        #
-        # Instead, use a producer/worker pattern:
-        # - one producer enumerates dataset sample ids and enqueues work items
-        # - N workers consume items from the queue and run computations
-
-        num_workers = max(1, self.max_concurrency)
-        queue_max_size = max(1, num_workers * self._QUEUE_BUFFER_FACTOR)
-        work_queue: anyio.abc.ObjectSendStream[Tuple[Any, str]]
-        receive_stream: anyio.abc.ObjectReceiveStream[Tuple[Any, str]]
-        work_queue, receive_stream = anyio.create_memory_object_stream(queue_max_size)
-
-        async def producer() -> None:
-            async with work_queue:
-                async for sample_id in self.dataset.ids():
-                    for metric_name in metrics_names:
-                        await work_queue.send((sample_id, metric_name))
-
-        async def worker(worker_id: int) -> None:
-            del worker_id
-            while True:
-                try:
-                    sample_id, metric_name = await receive_stream.receive()
-                except anyio.EndOfStream:
-                    return
-                await self._queue(sample_id, metric_name)
-
         async with anyio.create_task_group() as tg:
-            tg.start_soon(producer)
-            for i in range(num_workers):
-                tg.start_soon(worker, i)
+            async for sample_id in self.dataset.ids():
+                for metric_name in metrics_names:
+                    await tg.start(self._compute, sample_id, metric_name)
 
         return self._registry.store
 
