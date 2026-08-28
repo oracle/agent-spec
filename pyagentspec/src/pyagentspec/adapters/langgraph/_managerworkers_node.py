@@ -7,9 +7,8 @@
 """Runs a ``ManagerWorkers`` as a flow step.
 
 ``AgentSpecToLangGraphConverter._agent_node_convert_to_langgraph`` selects
-:class:`ManagerWorkersNodeExecutor` when the node's agent is a ``ManagerWorkers``,
-so :class:`~pyagentspec.adapters.langgraph._node_execution.AgentNodeExecutor` keeps
-the plain-Agent behavior only.
+`ManagerWorkersNodeExecutor` when the node's agent is a ``ManagerWorkers``,
+so `AgentNodeExecutor` keeps the plain-Agent behavior only.
 """
 
 from typing import Any, Dict, List, Optional, Tuple

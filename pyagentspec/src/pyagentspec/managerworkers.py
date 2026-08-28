@@ -87,18 +87,33 @@ class ManagerWorkers(AgenticComponent):
 
     def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         min_version = super()._infer_min_agentspec_version_from_configuration()
-        # ManagerWorkers I/O matching was introduced in 26.4.0.
-        if getattr(self, "inputs", []) or getattr(self, "outputs", []):
+        # ManagerWorkers I/O matching was introduced in 26.4.0. Omitted I/O
+        # inherits from the group manager; explicitly empty I/O is legacy-only.
+        manager = getattr(self, "group_manager", None)
+        inherits_manager_io = bool(
+            manager
+            and (
+                ("inputs" not in self.model_fields_set and manager.inputs)
+                or ("outputs" not in self.model_fields_set and manager.outputs)
+            )
+        )
+        if inherits_manager_io or getattr(self, "inputs", []) or getattr(self, "outputs", []):
             min_version = max(min_version, AgentSpecVersionEnum.v26_4_0)
         return min_version
 
     def _infer_max_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
         max_version = super()._infer_max_agentspec_version_from_configuration()
         # Before 26.4.0 a ManagerWorkers did not inherit its manager's I/O.
-        if (
-            getattr(self, "group_manager", None)
-            and (self.group_manager.inputs or self.group_manager.outputs)
-            and not (self.inputs or self.outputs)
+        manager = getattr(self, "group_manager", None)
+        inherits_manager_io = bool(
+            manager
+            and (
+                ("inputs" not in self.model_fields_set and manager.inputs)
+                or ("outputs" not in self.model_fields_set and manager.outputs)
+            )
+        )
+        if manager and (manager.inputs or manager.outputs) and not inherits_manager_io and not (
+            self.inputs or self.outputs
         ):
             max_version = min(max_version, AgentSpecVersionEnum.v26_3_0)
         return max_version
