@@ -1,0 +1,112 @@
+component_type: Flow
+id: 8f0d2cbe-9b8f-4d28-ae2b-2a3b5c6d7e8f
+name: ApiNode flow with top-level JSON data
+description: Flow that calls an ApiNode posting a top-level JSON object body
+metadata: {}
+inputs:
+- title: city
+  type: string
+outputs:
+- title: weather
+  type: string
+start_node:
+  $component_ref: 3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4
+nodes:
+- $component_ref: 3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4
+- $component_ref: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+- $component_ref: 5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+  name: start_to_api
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4
+  from_branch: null
+  to_node:
+    $component_ref: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+- component_type: ControlFlowEdge
+  id: d2e3f4a5-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+  name: api_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+  from_branch: null
+  to_node:
+    $component_ref: 5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: e3f4a5b6-7c8d-4e9f-0a1b-2c3d4e5f6a7b
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4
+  source_output: city
+  destination_node:
+    $component_ref: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+  destination_input: city
+- component_type: DataFlowEdge
+  id: f4a5b6c7-8d9e-4f0a-1b2c-3d4e5f6a7b8c
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+  source_output: weather
+  destination_node:
+    $component_ref: 5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f
+  destination_input: weather
+$referenced_components:
+  3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4:
+    component_type: StartNode
+    id: 3a7c1d9e-2b4f-46a0-86d0-ccf0f1a2b3c4
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: city
+      type: string
+    branches:
+    - next
+  4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e:
+    component_type: ApiNode
+    id: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+    name: Weather forecast (top-level json)
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/weather/forecast_top_json
+    http_method: POST
+    api_spec_uri: null
+    data:
+      city: '{{ city }}'
+    query_params: {}
+    headers: {}
+  5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f:
+    component_type: EndNode
+    id: 5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

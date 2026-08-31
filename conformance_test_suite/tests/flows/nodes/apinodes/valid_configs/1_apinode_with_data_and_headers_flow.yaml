@@ -1,0 +1,216 @@
+component_type: Flow
+id: 54e1df38-bacd-444d-ba80-2a027702414f
+name: Simple prompting flow to find information about an order
+description: null
+metadata: {}
+inputs:
+- title: item_id
+  type: string
+- title: order_id
+  type: string
+- title: store_id
+  type: string
+- title: session_id
+  type: string
+outputs:
+- title: product
+  type: object
+  properties:
+    product_name:
+      type: string
+    product_id:
+      type: string
+    product_order_id:
+      type: string
+    product_store_id:
+      type: string
+    product_session_id:
+      type: string
+start_node:
+  $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+nodes:
+- $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+- $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+- $component_ref: 08677e05-ff72-4e36-9434-27d6b465be2d
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 6caf9261-c14e-4251-8a48-05074785b8dc
+  name: start_to_weather
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+  from_branch: null
+  to_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+- component_type: ControlFlowEdge
+  id: a93a2284-f0eb-473e-a26b-f7b116bc862a
+  name: weather_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  from_branch: null
+  to_node:
+    $component_ref: 08677e05-ff72-4e36-9434-27d6b465be2d
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: a71fb85c-5631-4124-9c3f-794ed7adf279
+  name: item_id_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+  source_output: item_id
+  destination_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  destination_input: item_id
+- component_type: DataFlowEdge
+  id: ac0f2d1e-3f40-4e11-abb0-7ddfa7555f5a
+  name: order_id_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+  source_output: order_id
+  destination_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  destination_input: order_id
+- component_type: DataFlowEdge
+  id: 2e9f7970-5104-4de1-b87b-51b42e70d0df
+  name: store_id_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+  source_output: store_id
+  destination_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  destination_input: store_id
+- component_type: DataFlowEdge
+  id: d53e6dd9-6eed-40a1-8365-397bb97dac75
+  name: session_id_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+  source_output: session_id
+  destination_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  destination_input: session_id
+- component_type: DataFlowEdge
+  id: 8d8fbfa8-44ca-47e6-89fc-800a9b2f7fb7
+  name: product_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+  source_output: product
+  destination_node:
+    $component_ref: 08677e05-ff72-4e36-9434-27d6b465be2d
+  destination_input: product
+$referenced_components:
+  08dec56d-23c7-4857-bcc5-545ba71fbee2:
+    component_type: ApiNode
+    id: 08dec56d-23c7-4857-bcc5-545ba71fbee2
+    name: Orders api call node
+    description: null
+    metadata: {}
+    inputs:
+    - title: item_id
+      type: string
+    - title: order_id
+      type: string
+    - title: store_id
+      type: string
+    - title: session_id
+      type: string
+    outputs:
+    - title: product
+      type: object
+      properties:
+        product_name:
+          type: string
+        product_id:
+          type: string
+        product_order_id:
+          type: string
+        product_store_id:
+          type: string
+        product_session_id:
+          type: string
+    branches:
+    - next
+    url: http://localhost:5008/orders/{{ order_id }}
+    http_method: POST
+    api_spec_uri: null
+    data:
+      topic_id: 12345
+      item_id: '{{ item_id }}'
+    query_params:
+      store_id: '{{ store_id }}'
+    headers:
+      session-id: '{{ session_id }}'
+  06d9d933-a85a-4eab-bdc8-1fd5b5652c92:
+    component_type: StartNode
+    id: 06d9d933-a85a-4eab-bdc8-1fd5b5652c92
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: item_id
+      type: string
+    - title: order_id
+      type: string
+    - title: store_id
+      type: string
+    - title: session_id
+      type: string
+    outputs:
+    - title: item_id
+      type: string
+    - title: order_id
+      type: string
+    - title: store_id
+      type: string
+    - title: session_id
+      type: string
+    branches:
+    - next
+  08677e05-ff72-4e36-9434-27d6b465be2d:
+    component_type: EndNode
+    id: 08677e05-ff72-4e36-9434-27d6b465be2d
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: product
+      type: object
+      properties:
+        product_name:
+          type: string
+        product_id:
+          type: string
+        product_order_id:
+          type: string
+        product_store_id:
+          type: string
+        product_session_id:
+          type: string
+    outputs:
+    - title: product
+      type: object
+      properties:
+        product_name:
+          type: string
+        product_id:
+          type: string
+        product_order_id:
+          type: string
+        product_store_id:
+          type: string
+        product_session_id:
+          type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

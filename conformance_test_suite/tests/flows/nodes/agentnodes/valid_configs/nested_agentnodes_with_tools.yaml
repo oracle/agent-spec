@@ -1,0 +1,298 @@
+$referenced_components:
+  2069c6af-df01-46bb-a55e-582cb5fb562c:
+    agent:
+      component_type: Agent
+      description: null
+      id: 3a84262f-8155-479f-8134-f81ad378fcea
+      inputs:
+      - default: ''
+        title: query_person
+        type: string
+      llm_config:
+        $component_ref: b12c9e92-a510-4336-a889-2493bd0a3a9b
+      metadata: {}
+      name: Search agent for person information
+      outputs:
+      - default:
+        - name
+        - CEO
+        - country
+        items:
+          type: string
+        title: search_person_results
+        type: array
+      system_prompt: "Your task is to gather the required information for the user:\
+        \ {{query_person}} results are retrieved in the form [name, CEO, country]\
+        \ where CEO value is No or Yes. if user not in DB, tool returns Unknown for\
+        \ CEO and country values. Do not attempt to answer yourself\u2014simply return\
+        \ the tool response."
+      tools:
+      - component_type: ServerTool
+        description: This tool runs a web search with the given query_person and returns
+          the most relevant results. If not found we return Unknown values
+        id: 4fb72480-31d0-4baf-bbba-b2181355c72c
+        inputs:
+        - default: ''
+          title: query_person
+          type: string
+        metadata: {}
+        name: search_person_tool
+        outputs:
+        - default:
+          - name
+          - CEO
+          - country
+          items:
+            type: string
+          title: search_person_results
+          type: array
+    branches:
+    - next
+    component_type: AgentNode
+    description: null
+    id: 2069c6af-df01-46bb-a55e-582cb5fb562c
+    inputs:
+    - default: ''
+      title: query_person
+      type: string
+    metadata: {}
+    name: Search agent node for person
+    outputs:
+    - default:
+      - name
+      - CEO
+      - country
+      items:
+        type: string
+      title: search_person_results
+      type: array
+  54bd932c-d6ae-43bd-a839-1dee0ad2e241:
+    agent:
+      component_type: Agent
+      description: null
+      id: 887a0ad5-bdac-44eb-96c7-68af003d414c
+      inputs:
+      - default:
+        - name
+        - CEO
+        - country
+        items:
+          type: string
+        title: search_person_results
+        type: array
+      llm_config:
+        $component_ref: b12c9e92-a510-4336-a889-2493bd0a3a9b
+      metadata: {}
+      name: Search agent for number of employees
+      outputs:
+      - default:
+        - name
+        - CEO
+        - country
+        - number_employees
+        items:
+          type: string
+        title: search_results
+        type: array
+      system_prompt: "Your task is to gather the required information for the user:\
+        \ {{search_person_results}} results are retrieved in the form [name, CEO,\
+        \ country, number_employees] where CEO value is No or Yes. if user not in\
+        \ DB, tool returns Unknown for CEO, country, and number_employees values.\
+        \ Do not attempt to answer yourself\u2014simply return the tool response."
+      tools:
+      - component_type: ServerTool
+        description: This tool runs a web search for the given person_results and
+          adds number of employees. If not found we return Unknown
+        id: fa839db7-e84e-473f-9725-d1e85f1c1e17
+        inputs:
+        - default:
+          - name
+          - CEO
+          - country
+          items:
+            type: string
+          title: search_person_results
+          type: array
+        metadata: {}
+        name: search_number_employees_tool
+        outputs:
+        - default:
+          - name
+          - CEO
+          - country
+          - number_employees
+          items:
+            type: string
+          title: search_results
+          type: array
+    branches:
+    - next
+    component_type: AgentNode
+    description: null
+    id: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+    inputs:
+    - default:
+      - name
+      - CEO
+      - country
+      items:
+        type: string
+      title: search_person_results
+      type: array
+    metadata: {}
+    name: Search agent node
+    outputs:
+    - default:
+      - name
+      - CEO
+      - country
+      - number_employees
+      items:
+        type: string
+      title: search_results
+      type: array
+  aae471f4-fd10-44ff-9a63-8f2d55b93d73:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: aae471f4-fd10-44ff-9a63-8f2d55b93d73
+    inputs:
+    - default:
+      - name
+      - CEO
+      - country
+      - number_employees
+      items:
+        type: string
+      title: search_results
+      type: array
+    metadata: {}
+    name: end
+    outputs:
+    - default:
+      - name
+      - CEO
+      - country
+      - number_employees
+      items:
+        type: string
+      title: search_results
+      type: array
+  b12c9e92-a510-4336-a889-2493bd0a3a9b:
+    component_type: OpenAiCompatibleConfig
+    default_generation_parameters: null
+    description: null
+    id: b12c9e92-a510-4336-a889-2493bd0a3a9b
+    metadata: {}
+    model_id: /storage/models/Llama-3.1-70B-Instruct
+    name: Llama-3.1-70B-Instruct
+    url: http://localhost:5006
+  f14219e0-dd12-43a5-9238-7aa1e1d869b4:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: f14219e0-dd12-43a5-9238-7aa1e1d869b4
+    inputs:
+    - default: ''
+      title: query_person
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - default: ''
+      title: query_person
+      type: string
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: f14219e0-dd12-43a5-9238-7aa1e1d869b4
+  id: 6851a655-8cfb-4ca3-9e53-338ac68061d8
+  metadata: {}
+  name: start_to_search_person_agent
+  to_node:
+    $component_ref: 2069c6af-df01-46bb-a55e-582cb5fb562c
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 2069c6af-df01-46bb-a55e-582cb5fb562c
+  id: 5a677d7c-fd7e-4b85-8677-c14eaebf56b8
+  metadata: {}
+  name: search_person_agent_to_number_employees_agent
+  to_node:
+    $component_ref: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+  id: 7b733789-59ec-4aee-9dcd-7f84a1372e41
+  metadata: {}
+  name: number_employees_agent_to_end
+  to_node:
+    $component_ref: aae471f4-fd10-44ff-9a63-8f2d55b93d73
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: query_person
+  destination_node:
+    $component_ref: 2069c6af-df01-46bb-a55e-582cb5fb562c
+  id: 8aaab320-3b77-4e58-8a70-ad9a9eff7aef
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: f14219e0-dd12-43a5-9238-7aa1e1d869b4
+  source_output: query_person
+- component_type: DataFlowEdge
+  description: null
+  destination_input: search_person_results
+  destination_node:
+    $component_ref: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+  id: db92514e-ac64-4c7d-8443-d4e01d06b6e3
+  metadata: {}
+  name: search_person_results_edge
+  source_node:
+    $component_ref: 2069c6af-df01-46bb-a55e-582cb5fb562c
+  source_output: search_person_results
+- component_type: DataFlowEdge
+  description: null
+  destination_input: search_results
+  destination_node:
+    $component_ref: aae471f4-fd10-44ff-9a63-8f2d55b93d73
+  id: 06cd4658-4894-4505-8de0-579e6ba57355
+  metadata: {}
+  name: search_results_edge
+  source_node:
+    $component_ref: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+  source_output: search_results
+description: null
+id: 2a3fcf0b-2b2b-4386-901c-60eca0a2b72b
+inputs:
+- default: ''
+  title: query_person
+  type: string
+metadata: {}
+name: Search agent flow with 2 nested agent nodes
+nodes:
+- $component_ref: f14219e0-dd12-43a5-9238-7aa1e1d869b4
+- $component_ref: 2069c6af-df01-46bb-a55e-582cb5fb562c
+- $component_ref: 54bd932c-d6ae-43bd-a839-1dee0ad2e241
+- $component_ref: aae471f4-fd10-44ff-9a63-8f2d55b93d73
+outputs:
+- default:
+  - name
+  - CEO
+  - country
+  - number_employees
+  items:
+    type: string
+  title: search_results
+  type: array
+start_node:
+  $component_ref: f14219e0-dd12-43a5-9238-7aa1e1d869b4
+agentspec_version: 25.4.1

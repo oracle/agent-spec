@@ -1,0 +1,66 @@
+$referenced_components:
+  vllm_config:
+    component_type: VllmConfig
+    model_id: /storage/models/Llama-3.3-70B-Instruct
+    name: llama-3.3-70b-instruct
+    url: http://[[LLAMA70BV33_API_URL]]/v1
+  starttollm:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: start_node
+    id: starttollm
+    metadata: {}
+    name: start->llm
+    to_node:
+      $component_ref: what_is_life_llm_node
+  llmtoend:
+    component_type: ControlFlowEdge
+    description: null
+    from_branch: null
+    from_node:
+      $component_ref: what_is_life_llm_node
+    id: llmtoend
+    metadata: {}
+    name: llm->end
+    to_node:
+      $component_ref: end_node
+  start_node:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: start_node
+    inputs: []
+    metadata: {}
+    name: start_node
+    outputs: []
+  what_is_life_llm_node:
+    component_type: LlmNode
+    llm_config: {$component_ref: vllm_config}
+    name: WhatIsLife Prompt
+    prompt_template: "What is life?"
+  end_node:
+    branches: []
+    branch_name: next
+    component_type: EndNode
+    description: null
+    id: end_node
+    inputs: []
+    metadata: {}
+    name: end_node
+    outputs: []
+component_type: Flow
+name: Answer WhatIsLife Flow
+control_flow_connections:
+- $component_ref: starttollm
+- $component_ref: llmtoend
+data_flow_connections: []
+nodes:
+- $component_ref: start_node
+- $component_ref: end_node
+- $component_ref: what_is_life_llm_node
+start_node:
+  $component_ref: start_node
+agentspec_version: 25.4.1

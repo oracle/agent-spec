@@ -1,0 +1,38 @@
+component_type: Agent
+id: 1f67bba2-98bd-4a58-a446-897b098f3837
+name: Agent using MCP
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: b11421f9-3aee-4f40-bf62-50177b0f8bb5
+  name: llm
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: Use tools at your disposal to assist the user.
+tools:
+- component_type: MCPTool
+  id: 64c5e594-3e76-45a4-915e-bd649e411dfb
+  name: get_user_session
+  description: Return session details for the current user
+  metadata: {}
+  inputs: []
+  outputs:
+  - title: user_info
+    type: string
+  client_transport:
+    component_type: StreamableHTTPTransport
+    id: bc3d4c49-5a3c-4f44-b9cf-9e74e4979c5a
+    name: MCP Client
+    description: null
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60.0
+    url: http://localhost:5007/mcp
+    headers: null
+agentspec_version: 25.4.1

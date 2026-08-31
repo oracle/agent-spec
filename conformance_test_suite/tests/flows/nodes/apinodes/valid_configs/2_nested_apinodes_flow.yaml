@@ -1,0 +1,179 @@
+component_type: Flow
+id: 9ac913ca-5ff4-4fe3-9dae-089cb0a61053
+name: Simple prompting flow to find weather of a city
+description: null
+metadata: {}
+inputs:
+- title: user_input
+  type: string
+outputs:
+- title: weather
+  type: object
+  properties:
+    temperature:
+      description: Temperature in celsius degrees
+      type: number
+    weather:
+      type: string
+start_node:
+  $component_ref: 238188ca-54af-4754-862f-0506178a2313
+nodes:
+- $component_ref: 238188ca-54af-4754-862f-0506178a2313
+- $component_ref: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+- $component_ref: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+- $component_ref: 707bc2cf-057e-4c92-b396-8fd6e8f52aa8
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 28e4e86f-f2c7-4d1b-8edd-9ad9897c878c
+  name: start_to_city
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 238188ca-54af-4754-862f-0506178a2313
+  from_branch: null
+  to_node:
+    $component_ref: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+- component_type: ControlFlowEdge
+  id: 32ce3557-faeb-4d61-b6ea-f68710726136
+  name: city_to_weather
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+  from_branch: null
+  to_node:
+    $component_ref: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+- component_type: ControlFlowEdge
+  id: 72ec2b56-d211-40b2-8c1a-d24dc6cd9766
+  name: weather_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+  from_branch: null
+  to_node:
+    $component_ref: 707bc2cf-057e-4c92-b396-8fd6e8f52aa8
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 0db7c9e3-a8d3-4055-b558-d133275e2cc1
+  name: query_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 238188ca-54af-4754-862f-0506178a2313
+  source_output: user_input
+  destination_node:
+    $component_ref: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+  destination_input: country
+- component_type: DataFlowEdge
+  id: 4bb9ca93-4eb2-454c-b19b-726d14bb7bbd
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+  source_output: city
+  destination_node:
+    $component_ref: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+  destination_input: city
+- component_type: DataFlowEdge
+  id: bf72df66-b874-4fca-a2c3-20023e986fe9
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+  source_output: weather
+  destination_node:
+    $component_ref: 707bc2cf-057e-4c92-b396-8fd6e8f52aa8
+  destination_input: weather
+$referenced_components:
+  238188ca-54af-4754-862f-0506178a2313:
+    component_type: StartNode
+    id: 238188ca-54af-4754-862f-0506178a2313
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_input
+      type: string
+    outputs:
+    - title: user_input
+      type: string
+    branches:
+    - next
+  9647b178-89f4-4deb-8fe0-bac0ae24fd3a:
+    component_type: ApiNode
+    id: 9647b178-89f4-4deb-8fe0-bac0ae24fd3a
+    name: Find city API node
+    description: null
+    metadata: {}
+    inputs:
+    - title: country
+      type: string
+    outputs:
+    - title: city
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/findCity
+    http_method: GET
+    api_spec_uri: null
+    data: {}
+    query_params:
+      country: '{{ country }}'
+    headers: {}
+  93b54c6a-6d78-4d7f-9b5b-b9d978231441:
+    component_type: ApiNode
+    id: 93b54c6a-6d78-4d7f-9b5b-b9d978231441
+    name: Weather API call node
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    branches:
+    - next
+    url: http://localhost:5008/findWeather
+    http_method: GET
+    api_spec_uri: null
+    data: {}
+    query_params:
+      city: '{{ city }}'
+    headers: {}
+  707bc2cf-057e-4c92-b396-8fd6e8f52aa8:
+    component_type: EndNode
+    id: 707bc2cf-057e-4c92-b396-8fd6e8f52aa8
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    outputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

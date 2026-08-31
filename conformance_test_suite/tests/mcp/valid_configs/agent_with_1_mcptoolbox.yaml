@@ -1,0 +1,38 @@
+component_type: Agent
+id: bf6fb292-e48a-4464-81f7-5074e4cf2087
+name: Agent using MCP
+description: null
+metadata: {}
+inputs: []
+outputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  id: b11421f9-3aee-4f40-bf62-50177b0f8bb5
+  name: llm
+  description: null
+  metadata: {}
+  default_generation_parameters: null
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+  api_type: chat_completions
+system_prompt: Use tools at your disposal to assist the user.
+tools: []
+toolboxes:
+- component_type: MCPToolBox
+  id: ef1e2155-371c-457a-8abe-23acc4f96a7c
+  name: Payslip MCP ToolBox
+  description: null
+  metadata: {}
+  client_transport:
+    component_type: StreamableHTTPTransport
+    id: bc3d4c49-5a3c-4f44-b9cf-9e74e4979c5a
+    name: MCP Client
+    description: null
+    metadata: {}
+    session_parameters:
+      read_timeout_seconds: 60.0
+    url: http://localhost:5007/mcp
+    headers: null
+  tool_filter: null
+human_in_the_loop: true
+agentspec_version: 25.4.2
