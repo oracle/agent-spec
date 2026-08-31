@@ -4,7 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
-"""How the LangGraph adapter decides on, and bounds, agent structured output.
+"""How :class:`StructuredOutputGuard` bounds an agent that declares structured output.
 
 These build no LLM config, so unlike the AgentNode flow tests they run rather than skip
 under ``SKIP_LLM_TESTS=1``.
@@ -15,25 +15,12 @@ from typing import Any
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from pyagentspec.adapters._utils import is_single_string_output
-from pyagentspec.adapters.langgraph._structured_output import (
+from pyagentspec.adapters.langgraph._agent_output_guard import (
     StructuredOutputGuard,
     StructuredOutputNotProducedError,
 )
-from pyagentspec.property import IntegerProperty, StringProperty
 
-# ─── is_single_string_output ──────────────────────────────────────────────────
-
-
-def test_is_single_string_output() -> None:
-    """A lone string output is free text, not a structured field."""
-    assert is_single_string_output([StringProperty(title="x")]) is True
-    assert is_single_string_output([]) is False
-    assert is_single_string_output([IntegerProperty(title="n")]) is False
-    assert is_single_string_output([StringProperty(title="a"), StringProperty(title="b")]) is False
-
-
-# ─── structured-output guard: after_model budget ───────────────────────────────────────
+# ─── after_model budget ───────────────────────────────────────────────────────
 
 
 def _guard(max_attempts: int = 3) -> StructuredOutputGuard:
@@ -49,14 +36,14 @@ def _prose(attempts: int = 0) -> dict:
     """A model turn that answered in prose, so no structured response."""
     return {
         "messages": [HumanMessage(content="q"), AIMessage(content="42")],
-        "structured_output_attempts": attempts,
+        "__structured_output_attempts__": attempts,
     }
 
 
 def _tool_turn(attempts: int = 0) -> dict:
     return {
         "messages": [AIMessage(content="", tool_calls=[{"name": "s", "args": {}, "id": "c1"}])],
-        "structured_output_attempts": attempts,
+        "__structured_output_attempts__": attempts,
     }
 
 
@@ -64,8 +51,8 @@ def test_prose_turn_increments_until_the_limit() -> None:
     """Prose never satisfies response_format, so the agent cannot exit on its own."""
     guard = _guard(max_attempts=3)
 
-    assert guard.after_model(_prose(0), runtime=None) == {"structured_output_attempts": 1}
-    assert guard.after_model(_prose(1), runtime=None) == {"structured_output_attempts": 2}
+    assert guard.after_model(_prose(0), runtime=None) == {"__structured_output_attempts__": 1}
+    assert guard.after_model(_prose(1), runtime=None) == {"__structured_output_attempts__": 2}
     with pytest.raises(StructuredOutputNotProducedError):
         guard.after_model(_prose(2), runtime=None)
 
@@ -90,7 +77,7 @@ def test_tool_calling_turn_resets_rather_than_counting() -> None:
     guard = _guard(max_attempts=2)
     # max_attempts=2 with 1 attempt already banked would raise if this counted.
     assert guard.after_model(_tool_turn(attempts=1), runtime=None) == {
-        "structured_output_attempts": 0
+        "__structured_output_attempts__": 0
     }
 
 
@@ -198,5 +185,5 @@ def test_limiter_state_schema_declares_the_counter() -> None:
     """The counter belongs on the state schema, not the instance, so concurrent runs do
     not share it."""
     schema: Any = StructuredOutputGuard.state_schema
-    assert "structured_output_attempts" in schema.__annotations__
-    assert "structured_output_attempts" in schema.__optional_keys__
+    assert "__structured_output_attempts__" in schema.__annotations__
+    assert "__structured_output_attempts__" in schema.__optional_keys__

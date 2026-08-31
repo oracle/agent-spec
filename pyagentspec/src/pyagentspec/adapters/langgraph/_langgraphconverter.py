@@ -51,7 +51,7 @@ from pyagentspec.adapters.langgraph._node_execution import (
     NodeExecutor,
     extract_outputs_from_invoke_result,
 )
-from pyagentspec.adapters.langgraph._structured_output import (
+from pyagentspec.adapters.langgraph._agent_output_guard import (
     StructuredOutputGuard,
 )
 from pyagentspec.adapters.langgraph._types import (

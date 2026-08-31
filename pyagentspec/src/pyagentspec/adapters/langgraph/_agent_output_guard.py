@@ -31,8 +31,9 @@ from pyagentspec.adapters.langgraph._types import AgentMiddleware, AgentState
 # bound separates "model is working on it" from "model will never comply".
 DEFAULT_MAX_STRUCTURED_OUTPUT_ATTEMPTS = 3
 
-# Must match the field on _StructuredOutputAttemptState.
-_ATTEMPTS_STATE_KEY = "structured_output_attempts"
+# Must match the field on _StructuredOutputAttemptState. Dunder-wrapped so it cannot
+# collide with a field the agent's own state schema declares.
+_ATTEMPTS_STATE_KEY = "__structured_output_attempts__"
 
 
 class StructuredOutputNotProducedError(RuntimeError):
@@ -45,7 +46,7 @@ class StructuredOutputNotProducedError(RuntimeError):
 class _StructuredOutputAttemptState(AgentState):
     # On the state rather than the instance, so the count is per run and not shared
     # between concurrent ones.
-    structured_output_attempts: NotRequired[int]
+    __structured_output_attempts__: NotRequired[int]
 
 
 class StructuredOutputGuard(AgentMiddleware):
@@ -82,6 +83,16 @@ class StructuredOutputGuard(AgentMiddleware):
 
     # No async variants: LangGraph routes async runs to the sync hooks, and both are pure.
     def after_model(self, state: Any, runtime: Any) -> Optional[Dict[str, int]]:
+        # Runs after every model turn. The last message decides between three cases:
+        #
+        # * an AIMessage with tool calls: progress, counter resets;
+        # * an AIMessage without tool calls: prose instead of the structured response,
+        #   counter increments and the run fails at the bound;
+        # * anything else: in a plain run the model's AIMessage is always last here, so
+        #   this means another middleware rewrote the history and the turn cannot be
+        #   classified. The counter is left untouched (None updates nothing) rather than
+        #   reset: unclassifiable is not evidence of progress, and resetting would let
+        #   such a middleware clear real evidence of a stuck model every turn.
         messages = state.get("messages") or []
         last = messages[-1] if messages else None
         if last is None or getattr(last, "type", None) != "ai":
