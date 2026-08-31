@@ -112,8 +112,11 @@ class ManagerWorkers(AgenticComponent):
                 or ("outputs" not in self.model_fields_set and manager.outputs)
             )
         )
-        if manager and (manager.inputs or manager.outputs) and not inherits_manager_io and not (
-            self.inputs or self.outputs
+        if (
+            manager
+            and (manager.inputs or manager.outputs)
+            and not inherits_manager_io
+            and not (self.inputs or self.outputs)
         ):
             max_version = min(max_version, AgentSpecVersionEnum.v26_3_0)
         return max_version
