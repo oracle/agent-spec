@@ -6,10 +6,13 @@
 
 """Agent Spec adapter for the LangGraph agentic framework."""
 
+from ._managerworkers import DELEGATE_TOOL_PREFIX, is_delegation_tool_name
 from .agentspecexporter import AgentSpecExporter
 from .agentspecloader import AgentSpecLoader
 
 __all__ = [
     "AgentSpecLoader",
     "AgentSpecExporter",
+    "DELEGATE_TOOL_PREFIX",
+    "is_delegation_tool_name",
 ]

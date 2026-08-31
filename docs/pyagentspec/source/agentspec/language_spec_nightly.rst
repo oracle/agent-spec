@@ -2270,6 +2270,9 @@ The ManagerWorkers has two main parameters:
   - Workers cannot interact with the end user directly.
   - When invoked, each worker can leverage its equipped tools to complete the assigned task and report the result back to the group manager.
 
+The ``ManagerWorkers`` input and output schemas must match those of its ``group_manager``.
+In particular, the two components must declare the same input property names and the same output property names,
+and each corresponding property must have the same type.
 
 Datastores
 ~~~~~~~~~~

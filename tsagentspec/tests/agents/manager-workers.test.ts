@@ -3,6 +3,8 @@ import {
   createManagerWorkers,
   createAgent,
   createOpenAiCompatibleConfig,
+  numberProperty,
+  stringProperty,
 } from "../../src/index.js";
 
 function makeLlmConfig() {
@@ -117,5 +119,43 @@ describe("ManagerWorkers", () => {
         workers: [manager],
       }),
     ).toThrow("Group manager cannot be a worker.");
+  });
+
+  it("should infer the group manager's inputs and outputs", () => {
+    const topic = stringProperty({ title: "topic" });
+    const answer = stringProperty({ title: "answer" });
+    const manager = createAgent({
+      name: "manager",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Manage the team.",
+      inputs: [topic],
+      outputs: [answer],
+    });
+    const mw = createManagerWorkers({
+      name: "test-mw",
+      groupManager: manager,
+      workers: [makeAgent("worker")],
+    });
+
+    expect(mw.inputs).toEqual([topic]);
+    expect(mw.outputs).toEqual([answer]);
+  });
+
+  it("should reject explicit I/O that differs from the group manager", () => {
+    const manager = createAgent({
+      name: "manager",
+      llmConfig: makeLlmConfig(),
+      systemPrompt: "Manage the team.",
+      outputs: [stringProperty({ title: "answer" })],
+    });
+
+    expect(() =>
+      createManagerWorkers({
+        name: "test-mw",
+        groupManager: manager,
+        workers: [makeAgent("worker")],
+        outputs: [numberProperty({ title: "answer" })],
+      }),
+    ).toThrow("outputs of a ManagerWorkers must match");
   });
 });

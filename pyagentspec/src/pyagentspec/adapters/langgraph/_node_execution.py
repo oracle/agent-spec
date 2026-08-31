@@ -499,6 +499,16 @@ class AgentNodeExecutor(NodeExecutor):
         self._middleware: List[Any] = list(middleware or [])
         self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
 
+    def _conversion_kwargs(self) -> Dict[str, Any]:
+        """The converter arguments every compile from this executor passes through."""
+        return {
+            "tool_registry": self.tool_registry,
+            "converted_components": self.converted_components,
+            "checkpointer": self.checkpointer,
+            "config": self.config,
+            "middleware": self._middleware,
+        }
+
     def _create_react_agent_with_given_input_values(
         self, inputs: Dict[str, Any]
     ) -> CompiledStateGraph[Any, Any]:
@@ -521,27 +531,25 @@ class AgentNodeExecutor(NodeExecutor):
                 toolboxes=agentspec_component.toolboxes,
                 inputs=agentspec_component.inputs or [],
                 outputs=agentspec_component.outputs or [],
-                tool_registry=self.tool_registry,
-                converted_components=self.converted_components,
-                checkpointer=self.checkpointer,
-                config=self.config,
-                middleware=self._middleware,
+                **self._conversion_kwargs(),
             )
         return self._agents_cache[system_prompt]
+
+    @staticmethod
+    def _with_driving_message(messages: Messages) -> Messages:
+        # LangGraph's agent expects at least one user message to drive execution.
+        # When an AgentNode is used with a templated system prompt and no messages are
+        # provided by the flow, the agent can crash. To avoid this, we artificially
+        # insert an empty user message when the message list is empty.
+        return messages if messages else cast(Messages, [{"role": "user", "content": ""}])
 
     def _prepare_agent_and_inputs(
         self, inputs: Dict[str, Any], messages: Messages
     ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
         agent = self._create_react_agent_with_given_input_values(inputs)
-        # LangGraph's agent expects at least one user message to drive execution.
-        # When an AgentNode is used with a templated system prompt and no messages are provided
-        # by the flow, the agent can crash. To avoid this, we artificially insert an empty
-        # user message when the message list is empty.
-        if not messages:
-            messages = cast(Messages, [{"role": "user", "content": ""}])
         inputs |= {
             "remaining_steps": 20,  # Get the right number of steps left
-            "messages": messages,
+            "messages": self._with_driving_message(messages),
             "structured_response": {},
         }
         return agent, inputs
