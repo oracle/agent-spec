@@ -16,7 +16,11 @@ import re
 from typing import Annotated, Any, Dict, Iterable, List, Tuple
 
 from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
-from pyagentspec.adapters.langgraph._types import CompiledStateGraph, langgraph_graph
+from pyagentspec.adapters.langgraph._types import (
+    CompiledStateGraph,
+    RunnableConfig,
+    langgraph_graph,
+)
 from pyagentspec.managerworkers import ManagerWorkers as AgentSpecManagerWorkers
 from pyagentspec.tracing.events import (
     ManagerWorkersExecutionEnd as AgentSpecManagerWorkersExecutionEnd,
@@ -194,16 +198,17 @@ def _wrap_worker_for_subgraph(
     Hierarchical rather than shared-state like a Swarm: each run is handed only the
     manager's chosen task, and the worker's answer comes back as a ToolMessage so the
     manager's react loop sees a well-formed tool response on its next turn. The worker
-    is invoked with no explicit config and inherits this node's ambient run config,
-    which streams its token events under the worker node's checkpoint namespace.
+    receives this node's ambient run config explicitly, which streams its token events
+    under the worker node's checkpoint namespace. Explicit propagation is necessary on
+    Python 3.10, where LangChain cannot preserve the callback context across tasks.
     """
     from pyagentspec.adapters.langgraph._types import RunnableLambda
 
-    def run(state: Dict[str, Any]) -> Dict[str, Any]:
-        return _worker_reply(state, worker_graph.invoke(_worker_input(state)))
+    def run(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
+        return _worker_reply(state, worker_graph.invoke(_worker_input(state), config=config))
 
-    async def arun(state: Dict[str, Any]) -> Dict[str, Any]:
-        return _worker_reply(state, await worker_graph.ainvoke(_worker_input(state)))
+    async def arun(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
+        return _worker_reply(state, await worker_graph.ainvoke(_worker_input(state), config=config))
 
     return RunnableLambda(func=run, afunc=arun, name=f"worker:{worker_node_name}")
 

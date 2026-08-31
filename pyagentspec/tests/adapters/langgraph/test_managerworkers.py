@@ -390,6 +390,7 @@ def test_worker_events_stream_natively_namespaced_under_worker_node() -> None:
 
     from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
     from langchain_core.messages import AIMessage, HumanMessage
+    from langchain_core.runnables import RunnableConfig
     from langgraph.graph import END, START, MessagesState, StateGraph
 
     from pyagentspec.adapters.langgraph._managerworkers import _wrap_worker_for_subgraph
@@ -398,8 +399,8 @@ def test_worker_events_stream_natively_namespaced_under_worker_node() -> None:
     wmodel = GenericFakeChatModel(messages=iter([AIMessage(content="Saturn has rings")] * 9))
     wb = StateGraph(MessagesState)
 
-    async def _wagent(state: Any) -> Any:
-        return {"messages": [await wmodel.ainvoke(state["messages"])]}
+    async def _wagent(state: Any, config: RunnableConfig) -> Any:
+        return {"messages": [await wmodel.ainvoke(state["messages"], config=config)]}
 
     wb.add_node("agent", _wagent)
     wb.add_edge(START, "agent")
