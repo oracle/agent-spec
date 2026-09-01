@@ -36,6 +36,9 @@ export const VERSION_GATED_FIELDS = {
   CatchExceptionNode: {
     _self: AgentSpecVersion.V26_2_0,
   },
+  FlowNode: {
+    propagatePendingInput: AgentSpecVersion.V26_2_0,
+  },
   ParallelMapNode: {
     _self: AgentSpecVersion.V25_4_2,
   },

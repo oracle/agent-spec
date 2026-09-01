@@ -110,6 +110,13 @@ Agent Spec 26.1.2
 Improvements
 ^^^^^^^^^^^^
 
+* **FlowNode pending input propagation**
+
+  ``FlowNode`` now exposes ``propagate_pending_input`` to make nested
+  ``input-required`` behavior explicit. By default, pending input raised inside
+  a child flow is surfaced through the parent ``FlowNode`` so parent flows do not
+  continue or hang while a child is waiting for input.
+
 * **LangGraph adapter timeout and retry improvements**
 
   The LangGraph adapter now applies ``RetryPolicy.request_timeout`` and

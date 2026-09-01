@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from langgraph.graph._node import StateNodeSpec
     from langgraph.graph.message import Messages
     from langgraph.graph.state import CompiledStateGraph
-    from langgraph.types import Checkpointer, interrupt
+    from langgraph.types import Checkpointer, Command, interrupt
 
 else:
     langgraph_swarm = LazyLoader("langgraph_swarm")
@@ -42,6 +42,7 @@ else:
     BaseTool = LazyType("langchain_core.tools", "BaseTool")
     StructuredTool = LazyType("langchain_core.tools", "StructuredTool")
     Checkpointer = LazyType("langgraph.types", "Checkpointer")
+    Command = LazyType("langgraph.types", "Command")
     interrupt = LazyLoader("langgraph.types", "interrupt")
     StateGraph = LazyType("langgraph.graph", "StateGraph")
     Messages = LazyLoader("langgraph.graph.message", "Messages")
@@ -137,6 +138,7 @@ __all__ = [
     "BaseChatModel",
     "AgentState",
     "Checkpointer",
+    "Command",
     "interrupt",
     "RunnableConfig",
     "Messages",
