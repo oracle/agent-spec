@@ -14,6 +14,11 @@ Improvements
 
   The CrewAI adapter has been added back.
 
+* **LangGraph structured-output schema metadata**
+
+  Added a description to structured-output schemas generated for LangGraph LLM nodes,
+  improving compatibility with integrations that validate tool schema metadata.
+
 Bug fixes
 ^^^^^^^^^
 
