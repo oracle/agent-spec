@@ -627,6 +627,8 @@ class LlmNodeExecutor(NodeExecutor):
             json_schema = {
                 # Title is required by langgraph
                 "title": "structured_output",
+                # Some provider integrations validate that tool schemas include a description.
+                "description": "Structured output for the LLM node.",
                 "type": "object",
                 "properties": {output.title: output.json_schema for output in node_outputs},
             }
