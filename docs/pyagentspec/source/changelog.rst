@@ -17,6 +17,14 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **LangGraph structured-output guard**
+
+  LangGraph agents with declared structured outputs now fail promptly with a clear error when
+  their model repeatedly returns prose or finishes without producing the declared output, rather
+  than looping until the recursion limit or silently returning empty outputs.
+
+  We thank @spichen for the contribution!
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
