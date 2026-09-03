@@ -16,7 +16,11 @@ from pyagentspec.adapters._url_validation import (
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,
 )
-from pyagentspec.adapters._utils import render_nested_object_template, render_template
+from pyagentspec.adapters._utils import (
+    is_single_string_output,
+    render_nested_object_template,
+    render_template,
+)
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     BaseMessage,
@@ -606,20 +610,13 @@ class LlmNodeExecutor(NodeExecutor):
         super().__init__(node)
         if not isinstance(self.node, AgentSpecLlmNode):
             raise TypeError("LlmNodeExecutor can only be initialized with LlmNode")
-        outputs = self.node.outputs
-        if outputs is not None and len(outputs) == 1 and outputs[0].type == "string":
-            self.requires_structured_generation = False
-        else:
-            self.requires_structured_generation = True
         if not isinstance(llm, BaseChatModel):
             raise TypeError("Llm can only be initialized with a BaseChatModel")
 
         self.llm: BaseChatModel = llm
 
         node_outputs = self.node.outputs or []
-        self.requires_structured_generation = not (
-            len(node_outputs) == 1 and node_outputs[0].type == "string"
-        )
+        self.requires_structured_generation = not is_single_string_output(node_outputs)
 
         self.structured_llm: Any = None
 
@@ -933,7 +930,7 @@ def extract_outputs_from_invoke_result(
     # Extracts the outputs from the return value of an invoke call made on an agent
     # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
     # We give priority to the latter.
-    return {
+    outputs = {
         # Defaults if available
         **{
             output.title: output.default
@@ -949,3 +946,14 @@ def extract_outputs_from_invoke_result(
             if output.title in result
         },
     }
+    # No response_format is requested for a single string output, so read it from the
+    # final message.
+    if is_single_string_output(expected_outputs):
+        title = expected_outputs[0].title
+        if title not in outputs:
+            messages = result.get("messages")
+            if messages:
+                content = getattr(messages[-1], "content", None)
+                if content is not None:
+                    outputs[title] = content
+    return outputs
