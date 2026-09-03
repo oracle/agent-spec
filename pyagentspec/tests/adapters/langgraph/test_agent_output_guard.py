@@ -13,8 +13,6 @@ under ``SKIP_LLM_TESTS=1``.
 from typing import Any, get_args
 
 import pytest
-from langchain.agents.middleware.types import PrivateStateAttr
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from pyagentspec.adapters.langgraph._agent_output_guard import (
     StructuredOutputGuard,
@@ -35,6 +33,8 @@ def _guard(max_attempts: int = 3) -> StructuredOutputGuard:
 
 def _prose(attempts: int = 0) -> dict:
     """A model turn that answered in prose, so no structured response."""
+    from langchain_core.messages import AIMessage, HumanMessage
+
     return {
         "messages": [HumanMessage(content="q"), AIMessage(content="42")],
         "_pyagentspec_structured_output_attempts": attempts,
@@ -42,6 +42,8 @@ def _prose(attempts: int = 0) -> dict:
 
 
 def _tool_turn(attempts: int = 0) -> dict:
+    from langchain_core.messages import AIMessage
+
     return {
         "messages": [AIMessage(content="", tool_calls=[{"name": "s", "args": {}, "id": "c1"}])],
         "_pyagentspec_structured_output_attempts": attempts,
@@ -88,6 +90,8 @@ def test_tool_calling_turn_resets_rather_than_counting() -> None:
 
 def test_non_ai_or_empty_last_message_is_ignored() -> None:
     """Only a model turn can be a failed structured response."""
+    from langchain_core.messages import ToolMessage
+
     guard = _guard(max_attempts=1)
     assert guard.after_model({"messages": []}, runtime=None) is None
     assert guard.after_model({}, runtime=None) is None
@@ -103,6 +107,7 @@ async def test_budget_applies_on_async_runs_via_the_sync_hook() -> None:
     sync hook. Agents do run async, so a silent no-op there would bring the hang back."""
     from langchain.agents import create_agent
     from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
+    from langchain_core.messages import AIMessage, HumanMessage
     from pydantic import BaseModel
 
     class _Answer(BaseModel):
@@ -141,6 +146,8 @@ def test_after_agent_accepts_a_run_that_produced_the_response() -> None:
 def test_after_agent_rejects_a_run_that_produced_nothing() -> None:
     """An agent with tools exits after one prose turn, spending no budget, so this hook is
     the only place that failure shows up."""
+    from langchain_core.messages import AIMessage
+
     with pytest.raises(StructuredOutputNotProducedError) as excinfo:
         _guard().after_agent({"messages": [AIMessage(content="42")]}, runtime=None)
 
@@ -157,6 +164,7 @@ def test_agent_with_tools_raises_instead_of_losing_outputs_silently() -> None:
     ``structured_response`` and the declared outputs came back empty."""
     from langchain.agents import create_agent
     from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
+    from langchain_core.messages import AIMessage, HumanMessage
     from langchain_core.tools import tool
     from pydantic import BaseModel
 
@@ -189,6 +197,8 @@ def test_agent_with_tools_raises_instead_of_losing_outputs_silently() -> None:
 def test_limiter_state_schema_declares_the_counter() -> None:
     """The counter belongs on the state schema, not the instance, so concurrent runs do
     not share it."""
+    from langchain.agents.middleware.types import PrivateStateAttr
+
     schema: Any = _guard().state_schema
     key = "_pyagentspec_structured_output_attempts"
     assert key in schema.__annotations__

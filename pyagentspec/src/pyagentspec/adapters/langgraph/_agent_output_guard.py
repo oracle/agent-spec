@@ -47,17 +47,20 @@ class StructuredOutputNotProducedError(RuntimeError):
     """
 
 
+class _StructuredOutputAttemptState(AgentState):
+    # On the state rather than the instance, so the count is per run and not shared
+    # between concurrent ones. LangChain omits PrivateStateAttr fields from user input
+    # and output schemas.
+    _pyagentspec_structured_output_attempts: NotRequired[int]
+
+
 @lru_cache
 def _structured_output_attempt_state_schema() -> type:
-    """Create the LangChain state extension when its optional dependency is available."""
+    """Add LangChain's private-state marker when the guard is used."""
 
-    class _StructuredOutputAttemptState(AgentState):
-        # On the state rather than the instance, so the count is per run and not shared
-        # between concurrent ones. LangChain omits PrivateStateAttr fields from user input
-        # and output schemas.
-        _pyagentspec_structured_output_attempts: NotRequired[
-            Annotated[int, langchain_middleware_types.PrivateStateAttr]
-        ]
+    _StructuredOutputAttemptState.__annotations__[_ATTEMPTS_STATE_KEY] = NotRequired[
+        Annotated[int, langchain_middleware_types.PrivateStateAttr]
+    ]
 
     return _StructuredOutputAttemptState
 
