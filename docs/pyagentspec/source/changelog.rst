@@ -4,6 +4,25 @@ Changelog
 Agent Spec |release|
 --------------------
 
+New features
+^^^^^^^^^^^^
+
+Improvements
+^^^^^^^^^^^^
+
+* ** Added back the CrewAI adapter**
+
+  The CrewAI adapter has been added back.
+
+Bug fixes
+^^^^^^^^^
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Agent Spec 26.3.0
+-----------------
+
 Improvements
 ^^^^^^^^^^^^
 
@@ -52,6 +71,25 @@ New features
   Added ``DbmsVectorChainLlmConfig`` for configuring LLM requests executed
   through Oracle Database ``DBMS_VECTOR_CHAIN``.
 
+* **ManagerWorkers I/O update**
+
+  The ManagerWorkers language specification now requires its input and output
+  schemas to use the same property names and types as its group manager.
+  This allows exposing inputs required by the manager agent (e.g., the placeholders
+  in its system prompt).
+
+  We thank @spichen for the contribution!
+
+* **ManagerWorkers support in the LangGraph adapter**
+
+  The LangGraph adapter now converts ``ManagerWorkers`` into hierarchical graphs:
+  the group manager delegates tasks to workers and receives their results before
+  producing a final response. Nested ``ManagerWorkers`` can be used as workers.
+  The adapter also supports ``ManagerWorkers`` in Flow ``AgentNode`` steps with
+  one string output only.
+
+  We thank @spichen for the contribution!
+
 * **MCP tool retry policies**
 
   Added ``retry_policy`` support to ``MCPTool`` and ``MCPToolBox`` so runtimes can
@@ -60,6 +98,10 @@ New features
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
+
+* **Removed CrewAI adapter**
+
+  The CrewAI adapter and its optional dependencies have been removed from ``pyagentspec`` due to a CVE in a pinned dependency of CrewAI (Chroma DB 1.1.0) at the time of our release.
 
 
 Agent Spec 26.1.2

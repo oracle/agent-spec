@@ -305,7 +305,7 @@ class AgentSpecLlmCallbackHandler(AgentSpecCallbackHandler):
 
     def on_llm_new_token(
         self,
-        token: str,
+        token: Union[str, List[Union[str, Dict[str, Any]]]],
         *,
         chunk: Optional[Union[ChatGenerationChunk, GenerationChunk]] = None,
         run_id: UUID,
@@ -461,7 +461,7 @@ class AgentSpecLlmCallbackHandler(AgentSpecCallbackHandler):
 
     async def on_llm_new_token_async(
         self,
-        token: str,
+        token: Union[str, List[Union[str, Dict[str, Any]]]],
         *,
         chunk: Optional[Union[ChatGenerationChunk, GenerationChunk]] = None,
         run_id: UUID,

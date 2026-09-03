@@ -37,9 +37,10 @@ class AgentSpecVersionEnum(Enum):
     v25_4_2 = "25.4.2"
     v26_1_0 = "26.1.0"
     v26_1_2 = "26.1.2"
-    v26_2_0 = "26.2.0"
-    current_version = "26.2.0"
-    latest_supported_version = "26.2.0"
+    v26_3_0 = "26.3.0"
+    v26_4_0 = "26.4.0"
+    current_version = "26.4.0"
+    latest_supported_version = "26.4.0"
 
     def __lt__(self, other: "AgentSpecVersionEnum") -> bool:
         return _version_lt(self.value, other.value)

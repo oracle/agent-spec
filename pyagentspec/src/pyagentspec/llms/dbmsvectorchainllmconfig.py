@@ -23,7 +23,7 @@ class DbmsVectorChainLlmConfig(LlmConfig):
     """Configure an LLM executed by Oracle Database through DBMS_VECTOR_CHAIN."""
 
     min_agentspec_version: SkipJsonSchema[AgentSpecVersionEnum] = Field(
-        default=AgentSpecVersionEnum.v26_2_0,
+        default=AgentSpecVersionEnum.v26_3_0,
         init=False,
         exclude=True,
     )

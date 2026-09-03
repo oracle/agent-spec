@@ -1,16 +1,8 @@
-:orphan:
+.. _agentspecspec_v26.3.0:
 
-.. _agentspecspec:
-.. _agentspecspec_nightly:
-
-====================================================
-Agent Spec specification (nightly version |release|)
-====================================================
-
-.. warning::
-    This is the nightly version of Agent Spec, and it is currently under development.
-    It is not an official release, and it might be subject to major changes before official release.
-    Use this version only for testing purposes.
+=========================================
+Agent Spec specification (version 26.3.0)
+=========================================
 
 Language specification
 ======================
@@ -2270,9 +2262,6 @@ The ManagerWorkers has two main parameters:
   - Workers cannot interact with the end user directly.
   - When invoked, each worker can leverage its equipped tools to complete the assigned task and report the result back to the group manager.
 
-The ``ManagerWorkers`` input and output schemas must match those of its ``group_manager``.
-In particular, the two components must declare the same input property names and the same output property names,
-and each corresponding property must have the same type.
 
 Datastores
 ~~~~~~~~~~
@@ -2455,7 +2444,7 @@ For example, the JSON serialized version of an Agent should look like the follow
        "url": "my.llm.url"
     }
     "tools": [],
-    "agentspec_version": "26.4.0"
+    "agentspec_version": "26.3.0"
   }
 
 For release versioning, Agent Spec follows the format YEAR.QUARTER.PATCH. Agent Spec follows a
@@ -3264,7 +3253,7 @@ We put here the current JSON spec of the Agent Spec language.
 
 .. collapse:: JSON Schema
 
-    .. literalinclude:: json_spec/agentspec_json_spec_26_4_0.json
+    .. literalinclude:: json_spec/agentspec_json_spec_26_3_0.json
         :language: json
 
 Note about serialization of components
@@ -3347,7 +3336,7 @@ Examples of JSON serialization for a few common Components follow.
       "system_prompt": "You are an expert in {{domain_of_expertise}}. Please help the users with their requests.",
       "tools": [],
       "component_type": "Agent",
-      "agentspec_version": "26.4.0"
+      "agentspec_version": "26.3.0"
     }
 
 

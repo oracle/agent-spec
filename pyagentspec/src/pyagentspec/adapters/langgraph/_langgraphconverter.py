@@ -13,11 +13,10 @@ import sys
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     Awaitable,
     Callable,
     Dict,
-    Generator,
+    Hashable,
     List,
     Optional,
     Tuple,
@@ -37,6 +36,16 @@ from pyagentspec.adapters._utils import (
     SchemaRegistry,
     _build_type_from_schema,
     create_pydantic_model_from_properties,
+)
+from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
+from pyagentspec.adapters.langgraph._managerworkers import (
+    _MANAGER_NODE_KEY,
+    _append_workers_roster,
+    _make_manager_router,
+    _make_worker_delegation_tool,
+    _patch_with_manager_workers_execution_span,
+    _safe_node_name,
+    _wrap_worker_for_subgraph,
 )
 from pyagentspec.adapters.langgraph._node_execution import (
     NodeExecutor,
@@ -71,6 +80,7 @@ from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecToolCallbackHandler,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
+from pyagentspec.agenticcomponent import AgenticComponent as AgentSpecAgenticComponent
 from pyagentspec.flows.edges import ControlFlowEdge as AgentSpecControlFlowEdge
 from pyagentspec.flows.edges import DataFlowEdge as AgentSpecDataFlowEdge
 from pyagentspec.flows.flow import Flow as AgentSpecFlow
@@ -104,6 +114,7 @@ from pyagentspec.llms.openaicompatibleconfig import (
 )
 from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
+from pyagentspec.managerworkers import ManagerWorkers as AgentSpecManagerWorkers
 from pyagentspec.mcp.clienttransport import ClientTransport as AgentSpecClientTransport
 from pyagentspec.mcp.clienttransport import SSEmTLSTransport as AgentSpecSSEmTLSTransport
 from pyagentspec.mcp.clienttransport import SSETransport as AgentSpecSSETransport
@@ -268,6 +279,15 @@ class AgentSpecToLangGraphConverter:
             )
         elif isinstance(agentspec_component, AgentSpecSwarm):
             return self._swarm_convert_to_langgraph(
+                agentspec_component,
+                tool_registry=tool_registry,
+                converted_components=converted_components,
+                checkpointer=checkpointer,
+                config=config,
+                middleware=middleware,
+            )
+        elif isinstance(agentspec_component, AgentSpecManagerWorkers):
+            return self._manager_workers_convert_to_langgraph(
                 agentspec_component,
                 tool_registry=tool_registry,
                 converted_components=converted_components,
@@ -476,87 +496,18 @@ class AgentSpecToLangGraphConverter:
                     "Prefer invoke/stream or upgrade to Python 3.11+ for ainvoke/astream."
                 )
 
-        # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
-
-        original_stream = compiled_graph.stream
-
-        def patch_with_flow_execution_span(*args: Any, **kwargs: Any) -> Generator[Any, Any, None]:
-            span_name = f"FlowExecution[{flow.name}]"
-            inputs = kwargs.get("input", {})
-            if not isinstance(inputs, dict):
-                inputs = {}
-            with AgentSpecFlowExecutionSpan(name=span_name, flow=flow) as span:
-                span.add_event(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
-                original_result: dict[str, Any] | Any = {}
-                result: dict[str, Any]
-                # This is going to patch stream and astream, that return iterators and yield chunks
-                for chunk in original_stream(*args, **kwargs):
-                    yield chunk
-                    if isinstance(chunk, tuple):
-                        original_result = chunk[1]
-                if not isinstance(original_result, dict):
-                    result = {}
-                else:
-                    result = original_result
-                span.add_event(
-                    AgentSpecFlowExecutionEnd(
-                        flow=flow,
-                        outputs=result.get("outputs", {}),
-                        branch_selected=result.get("node_execution_details", {}).get("branch", ""),
-                    )
-                )
-
-        original_astream = compiled_graph.astream
-
-        async def patch_async_with_flow_execution_span(
-            *args: Any, **kwargs: Any
-        ) -> AsyncGenerator[Any, Any]:
-            span_name = f"FlowExecution[{flow.name}]"
-            inputs = kwargs.get("input", {})
-            if not isinstance(inputs, dict):
-                inputs = {}
-            span = AgentSpecFlowExecutionSpan(name=span_name, flow=flow)
-            try:
-                await span.start_async()
-            except NotImplementedError:
-                span.start()
-            try:
-                try:
-                    await span.add_event_async(
-                        AgentSpecFlowExecutionStart(flow=flow, inputs=inputs)
-                    )
-                except NotImplementedError:
-                    span.add_event(AgentSpecFlowExecutionStart(flow=flow, inputs=inputs))
-                original_result: dict[str, Any] | Any = {}
-                result: dict[str, Any]
-                # This is going to patch stream and astream, that return iterators and yield chunks
-                async for chunk in original_astream(*args, **kwargs):
-                    yield chunk
-                    if isinstance(chunk, tuple):
-                        original_result = chunk[1]
-                if not isinstance(original_result, dict):
-                    result = {}
-                else:
-                    result = original_result
-                span_end_event = AgentSpecFlowExecutionEnd(
-                    flow=flow,
-                    outputs=result.get("outputs", {}),
-                    branch_selected=result.get("node_execution_details", {}).get("branch", ""),
-                )
-                try:
-                    await span.add_event_async(span_end_event)
-                except NotImplementedError:
-                    span.add_event(span_end_event)
-            finally:
-                try:
-                    await span.end_async()
-                except NotImplementedError:
-                    span.end()
-
-        # Monkey patch invocation functions to inject tracing
-        # No need to patch `(a)invoke` as the internally use `(a)stream`
-        compiled_graph.stream = patch_with_flow_execution_span  # type: ignore
-        compiled_graph.astream = patch_async_with_flow_execution_span  # type: ignore
+        patch_with_execution_span(
+            compiled_graph,
+            make_span=lambda: AgentSpecFlowExecutionSpan(
+                name=f"FlowExecution[{flow.name}]", flow=flow
+            ),
+            make_start_event=lambda inputs: AgentSpecFlowExecutionStart(flow=flow, inputs=inputs),
+            make_end_event=lambda result: AgentSpecFlowExecutionEnd(
+                flow=flow,
+                outputs=result.get("outputs", {}),
+                branch_selected=result.get("node_execution_details", {}).get("branch", ""),
+            ),
+        )
         return compiled_graph
 
     def _node_convert_to_langgraph(
@@ -763,9 +714,15 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
         middleware: List[Any],
     ) -> "NodeExecutor":
+        from pyagentspec.adapters.langgraph._managerworkers_node import ManagerWorkersNodeExecutor
         from pyagentspec.adapters.langgraph._node_execution import AgentNodeExecutor
 
-        return AgentNodeExecutor(
+        executor_class = (
+            ManagerWorkersNodeExecutor
+            if isinstance(agent_node.agent, AgentSpecManagerWorkers)
+            else AgentNodeExecutor
+        )
+        return executor_class(
             agent_node,
             tool_registry=tool_registry,
             converted_components=converted_components,
@@ -1124,6 +1081,108 @@ class AgentSpecToLangGraphConverter:
             default_active_agent=agentspec_component.first_agent.name,
         ).compile(name=agentspec_component.name, checkpointer=checkpointer)
 
+    def _manager_workers_convert_to_langgraph(
+        self,
+        mw: AgentSpecManagerWorkers,
+        tool_registry: Dict[str, "LangGraphTool"],
+        converted_components: Dict[str, Any],
+        checkpointer: Optional[Checkpointer],
+        config: RunnableConfig,
+        middleware: List[Any],
+    ) -> CompiledStateGraph[Any, Any, Any]:
+        """Compile a ``ManagerWorkers`` into a hierarchical LangGraph.
+
+        Topology::
+
+                            ┌─ __delegate_to__w1 ─→ worker_1 ─┐
+            START → manager ┤                                 ├→ manager (loop)
+                            └─ __delegate_to__w2 ─→ worker_2 ─┘
+                                    │
+                                    └─ no tool_call ─→ END
+
+        The manager is a react-agent holding one synthetic ``__delegate_to__<worker>``
+        tool per worker. A conditional edge routes each delegation to its worker,
+        which runs in an isolated message context and answers with a ``ToolMessage``
+        matched to the pending delegation id. Workers are converted recursively and
+        wired in as subgraph nodes, so ``astream_events`` still exposes the
+        parent/child boundary (``subgraph=True``) for tracing and streaming.
+        """
+        if not isinstance(mw.group_manager, AgentSpecAgent):
+            # Delegation is routed off the manager's tool_calls, so the manager needs
+            # a chat-LLM; a Flow, Swarm or nested ManagerWorkers gives nothing to route on.
+            raise NotImplementedError(
+                f"ManagerWorkers.group_manager must be an Agent for LangGraph "
+                f"conversion; got {type(mw.group_manager).__name__}."
+            )
+
+        named_workers: List[Tuple[str, AgentSpecAgenticComponent]] = [
+            (_safe_node_name(worker.name, fallback_id=worker.id), worker) for worker in mw.workers
+        ]
+        worker_node_names = [node_name for node_name, _ in named_workers]
+        if len(set(worker_node_names)) != len(worker_node_names):
+            raise ValueError(
+                "ManagerWorkers worker names collide after normalization: "
+                f"{worker_node_names}. Give each worker a unique name."
+            )
+
+        conversion_kwargs: Dict[str, Any] = {
+            "tool_registry": tool_registry,
+            "converted_components": converted_components,
+            "checkpointer": checkpointer,
+            "config": config,
+            "middleware": middleware,
+        }
+
+        # The roster tells the LLM which delegation tool maps to which worker.
+        manager_agent = mw.group_manager
+        rendered_prompt = _append_workers_roster(
+            manager_agent.system_prompt,
+            [(node_name, worker.description or "") for node_name, worker in named_workers],
+        )
+
+        # The delegation tools execute inside the react loop: their Command(graph=PARENT)
+        # is how the call escapes the subgraph so the conditional edge below can route on it.
+        manager_graph = self._create_react_agent_with_given_info(
+            name=manager_agent.name,
+            system_prompt=rendered_prompt,
+            agent=manager_agent,
+            llm_config=manager_agent.llm_config,
+            tools=manager_agent.tools,
+            toolboxes=manager_agent.toolboxes,
+            inputs=manager_agent.inputs or [],
+            outputs=manager_agent.outputs or [],
+            additional_langgraph_tools=[
+                _make_worker_delegation_tool(node_name) for node_name in worker_node_names
+            ],
+            **conversion_kwargs,
+        )
+
+        # Manager and workers all go in as compiled subgraph nodes, which is what
+        # makes LangGraph stream them with ``subgraph=True``.
+        builder = StateGraph(langgraph_graph.MessagesState)
+        builder.add_node(_MANAGER_NODE_KEY, manager_graph)
+        for node_name, worker in named_workers:
+            worker_graph = self.convert(worker, **conversion_kwargs)
+            builder.add_node(node_name, _wrap_worker_for_subgraph(worker_graph, node_name))
+            builder.add_edge(node_name, _MANAGER_NODE_KEY)
+
+        builder.add_edge(langgraph_graph.START, _MANAGER_NODE_KEY)
+        path_map: Dict[Hashable, str] = {}
+        for node_name in worker_node_names:
+            path_map[node_name] = node_name
+        path_map[langgraph_graph.END] = langgraph_graph.END
+        builder.add_conditional_edges(
+            _MANAGER_NODE_KEY,
+            _make_manager_router(worker_node_names),
+            # The path map covers every worker plus END, so langgraph can validate
+            # the routing statically.
+            path_map,
+        )
+
+        compiled_graph = builder.compile(checkpointer=checkpointer, name=mw.name)
+        _patch_with_manager_workers_execution_span(compiled_graph, mw)
+        return compiled_graph
+
     def _create_react_agent_with_given_info(
         self,
         *,
@@ -1175,10 +1234,23 @@ class AgentSpecToLangGraphConverter:
         )
         output_model: Optional[type[BaseModel]] = None
         state_schema: Optional[Any] = None
+        response_format: Any = None
 
         # Build response (output) model (used for response_format)
         if outputs:
             output_model = create_pydantic_model_from_properties("AgentOutputModel", outputs)
+            # Explicitly use ToolStrategy instead of letting LangChain select a provider
+            # strategy. OpenAI-compatible models do not necessarily support provider-native
+            # structured output, and may otherwise return a plain AIMessage without the
+            # structured_response state entry after a client-tool resume.
+            from langchain.agents.structured_output import ToolStrategy
+
+            response_format = ToolStrategy(output_model)
+            system_prompt = (
+                f"{system_prompt}\n\n"
+                "After using the available tools, provide the final result by calling the "
+                "structured output tool. Do not respond with a plain-text final answer."
+            )
 
         if inputs:
             state_schema = _create_agent_state_typed_dict(
@@ -1192,7 +1264,7 @@ class AgentSpecToLangGraphConverter:
             tools=langgraph_tools,
             system_prompt=system_prompt,
             checkpointer=checkpointer,
-            response_format=output_model,
+            response_format=response_format,
             state_schema=state_schema,
         )
         if middleware:
@@ -1201,81 +1273,19 @@ class AgentSpecToLangGraphConverter:
             **create_agent_kwargs
         )
 
-        # To enable flow execution traces monkey patch all the functions that invoke the compiled graph
-
-        original_stream = compiled_graph.stream
-
-        def patch_with_agent_execution_span(*args: Any, **kwargs: Any) -> Generator[Any, Any, Any]:
-            span_name = f"AgentExecution[{agent.name}]"
-            inputs = kwargs.get("input", {})
-            if not isinstance(inputs, dict):
-                inputs = {}
-            with AgentSpecAgentExecutionSpan(name=span_name, agent=agent) as span:
-                span.add_event(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
-                original_result: dict[str, Any] | Any = {}
-                result: dict[str, Any]
-                # This is going to patch stream and astream, that return iterators and yield chunks
-                for chunk in original_stream(*args, **kwargs):
-                    yield chunk
-                    if isinstance(chunk, tuple):
-                        original_result = chunk[1]
-                if not isinstance(original_result, dict):
-                    result = {}
-                else:
-                    result = original_result
-                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
-                span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
-
-        original_astream = compiled_graph.astream
-
-        async def patch_async_with_agent_execution_span(
-            *args: Any, **kwargs: Any
-        ) -> AsyncGenerator[Any, Any]:
-            span_name = f"AgentExecution[{agent.name}]"
-            inputs = kwargs.get("input", {})
-            if not isinstance(inputs, dict):
-                inputs = {}
-            span = AgentSpecAgentExecutionSpan(name=span_name, agent=agent)
-            try:
-                await span.start_async()
-            except NotImplementedError:
-                span.start()
-            try:
-                try:
-                    await span.add_event_async(
-                        AgentSpecAgentExecutionStart(agent=agent, inputs=inputs)
-                    )
-                except NotImplementedError:
-                    span.add_event(AgentSpecAgentExecutionStart(agent=agent, inputs=inputs))
-                original_result: dict[str, Any] | Any = {}
-                result: dict[str, Any]
-                # This is going to patch stream and astream, that return iterators and yield chunks
-                async for chunk in original_astream(*args, **kwargs):
-                    yield chunk
-                    if isinstance(chunk, tuple):
-                        original_result = chunk[1]
-                if not isinstance(original_result, dict):
-                    result = {}
-                else:
-                    result = original_result
-
-                outputs = extract_outputs_from_invoke_result(result, agent.outputs or [])
-                try:
-                    await span.add_event_async(
-                        AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs)
-                    )
-                except NotImplementedError:
-                    span.add_event(AgentSpecAgentExecutionEnd(agent=agent, outputs=outputs))
-            finally:
-                try:
-                    await span.end_async()
-                except NotImplementedError:
-                    span.end()
-
-        # Monkey patch invocation functions to inject tracing
-        # No need to patch `(a)invoke` as they internally use `(a)stream`
-        compiled_graph.stream = patch_with_agent_execution_span  # type: ignore
-        compiled_graph.astream = patch_async_with_agent_execution_span  # type: ignore
+        patch_with_execution_span(
+            compiled_graph,
+            make_span=lambda: AgentSpecAgentExecutionSpan(
+                name=f"AgentExecution[{agent.name}]", agent=agent
+            ),
+            make_start_event=lambda inputs: AgentSpecAgentExecutionStart(
+                agent=agent, inputs=inputs
+            ),
+            make_end_event=lambda result: AgentSpecAgentExecutionEnd(
+                agent=agent,
+                outputs=extract_outputs_from_invoke_result(result, agent.outputs or []),
+            ),
+        )
         return compiled_graph
 
     def _agent_convert_to_langgraph(
