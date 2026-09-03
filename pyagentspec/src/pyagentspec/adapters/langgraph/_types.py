@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     # Otherwise, importing the module when they are not installed would lead to an import error.
 
     import langchain.agents as langchain_agents
+    import langchain.agents.middleware.types as langchain_middleware_types
     import langchain_ollama
     import langchain_openai
     import langgraph.graph as langgraph_graph
@@ -39,6 +40,7 @@ else:
     langchain_openai = LazyLoader("langchain_openai")
     langgraph_graph = LazyLoader("langgraph.graph")
     langchain_agents = LazyLoader("langchain.agents")
+    langchain_middleware_types = LazyLoader("langchain.agents.middleware.types")
     BaseTool = LazyType("langchain_core.tools", "BaseTool")
     StructuredTool = LazyType("langchain_core.tools", "StructuredTool")
     Checkpointer = LazyType("langgraph.types", "Checkpointer")
@@ -109,6 +111,7 @@ ControlFlow: TypeAlias = Dict[SourceNodeId, Dict[BranchName, TargetNodeId]]
 __all__ = [
     "langgraph_graph",
     "langchain_agents",
+    "langchain_middleware_types",
     "langchain_ollama",
     "langchain_openai",
     "LangGraphTool",

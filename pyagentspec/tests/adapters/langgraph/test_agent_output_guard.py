@@ -10,9 +10,10 @@ These build no LLM config, so unlike the AgentNode flow tests they run rather th
 under ``SKIP_LLM_TESTS=1``.
 """
 
-from typing import Any
+from typing import Any, get_args
 
 import pytest
+from langchain.agents.middleware.types import PrivateStateAttr
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from pyagentspec.adapters.langgraph._agent_output_guard import (
@@ -36,14 +37,14 @@ def _prose(attempts: int = 0) -> dict:
     """A model turn that answered in prose, so no structured response."""
     return {
         "messages": [HumanMessage(content="q"), AIMessage(content="42")],
-        "__structured_output_attempts__": attempts,
+        "_pyagentspec_structured_output_attempts": attempts,
     }
 
 
 def _tool_turn(attempts: int = 0) -> dict:
     return {
         "messages": [AIMessage(content="", tool_calls=[{"name": "s", "args": {}, "id": "c1"}])],
-        "__structured_output_attempts__": attempts,
+        "_pyagentspec_structured_output_attempts": attempts,
     }
 
 
@@ -51,8 +52,12 @@ def test_prose_turn_increments_until_the_limit() -> None:
     """Prose never satisfies response_format, so the agent cannot exit on its own."""
     guard = _guard(max_attempts=3)
 
-    assert guard.after_model(_prose(0), runtime=None) == {"__structured_output_attempts__": 1}
-    assert guard.after_model(_prose(1), runtime=None) == {"__structured_output_attempts__": 2}
+    assert guard.after_model(_prose(0), runtime=None) == {
+        "_pyagentspec_structured_output_attempts": 1
+    }
+    assert guard.after_model(_prose(1), runtime=None) == {
+        "_pyagentspec_structured_output_attempts": 2
+    }
     with pytest.raises(StructuredOutputNotProducedError):
         guard.after_model(_prose(2), runtime=None)
 
@@ -77,7 +82,7 @@ def test_tool_calling_turn_resets_rather_than_counting() -> None:
     guard = _guard(max_attempts=2)
     # max_attempts=2 with 1 attempt already banked would raise if this counted.
     assert guard.after_model(_tool_turn(attempts=1), runtime=None) == {
-        "__structured_output_attempts__": 0
+        "_pyagentspec_structured_output_attempts": 0
     }
 
 
@@ -184,6 +189,8 @@ def test_agent_with_tools_raises_instead_of_losing_outputs_silently() -> None:
 def test_limiter_state_schema_declares_the_counter() -> None:
     """The counter belongs on the state schema, not the instance, so concurrent runs do
     not share it."""
-    schema: Any = StructuredOutputGuard.state_schema
-    assert "__structured_output_attempts__" in schema.__annotations__
-    assert "__structured_output_attempts__" in schema.__optional_keys__
+    schema: Any = _guard().state_schema
+    key = "_pyagentspec_structured_output_attempts"
+    assert key in schema.__annotations__
+    assert key in schema.__optional_keys__
+    assert PrivateStateAttr in get_args(get_args(schema.__annotations__[key])[0])

@@ -21,19 +21,23 @@ string avoids the problem entirely, since ``response_format`` is skipped for it 
 :func:`pyagentspec.adapters._utils.is_single_string_output`).
 """
 
-from typing import Any, Dict, List, NoReturn, Optional
+from functools import lru_cache
+from typing import Annotated, Any, Dict, List, NoReturn, Optional
 
 from typing_extensions import NotRequired
 
-from pyagentspec.adapters.langgraph._types import AgentMiddleware, AgentState
+from pyagentspec.adapters.langgraph._types import (
+    AgentMiddleware,
+    AgentState,
+    langchain_middleware_types,
+)
 
 # A compliant run spends at most one turn without a structured response, so a small
 # bound separates "model is working on it" from "model will never comply".
 DEFAULT_MAX_STRUCTURED_OUTPUT_ATTEMPTS = 3
 
-# Must match the field on _StructuredOutputAttemptState. Dunder-wrapped so it cannot
-# collide with a field the agent's own state schema declares.
-_ATTEMPTS_STATE_KEY = "__structured_output_attempts__"
+# Must match the private field on _StructuredOutputAttemptState.
+_ATTEMPTS_STATE_KEY = "_pyagentspec_structured_output_attempts"
 
 
 class StructuredOutputNotProducedError(RuntimeError):
@@ -43,10 +47,19 @@ class StructuredOutputNotProducedError(RuntimeError):
     """
 
 
-class _StructuredOutputAttemptState(AgentState):
-    # On the state rather than the instance, so the count is per run and not shared
-    # between concurrent ones.
-    __structured_output_attempts__: NotRequired[int]
+@lru_cache
+def _structured_output_attempt_state_schema() -> type:
+    """Create the LangChain state extension when its optional dependency is available."""
+
+    class _StructuredOutputAttemptState(AgentState):
+        # On the state rather than the instance, so the count is per run and not shared
+        # between concurrent ones. LangChain omits PrivateStateAttr fields from user input
+        # and output schemas.
+        _pyagentspec_structured_output_attempts: NotRequired[
+            Annotated[int, langchain_middleware_types.PrivateStateAttr]
+        ]
+
+    return _StructuredOutputAttemptState
 
 
 class StructuredOutputGuard(AgentMiddleware):
@@ -55,8 +68,6 @@ class StructuredOutputGuard(AgentMiddleware):
     Install only when ``response_format`` is set. Without it, a turn with no tool calls
     just means the agent is done and an empty ``structured_response`` is fine.
     """
-
-    state_schema = _StructuredOutputAttemptState
 
     def __init__(
         self,
@@ -67,6 +78,7 @@ class StructuredOutputGuard(AgentMiddleware):
         max_attempts: int = DEFAULT_MAX_STRUCTURED_OUTPUT_ATTEMPTS,
     ) -> None:
         super().__init__()
+        self.state_schema = _structured_output_attempt_state_schema()
         self.agent_name = agent_name
         self.output_titles = output_titles
         self.model_id = model_id
