@@ -71,7 +71,6 @@ class _AsyncCallablesComputer(Generic[T]):
         """Configure the computer with the dataset, callables, and concurrency cap."""
         self.dataset = dataset
         self.callables = callables
-        self.max_concurrency = max_concurrency
         self.limiter = (
             anyio.CapacityLimiter(max_concurrency) if max_concurrency != -1 else nullcontext()
         )

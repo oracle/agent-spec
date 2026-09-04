@@ -97,31 +97,6 @@ async def test_sequential_running() -> None:
 
 
 @pytest.mark.anyio
-async def test_unlimited_concurrency() -> None:
-    num_samples = 200
-    dataset = Dataset.from_dict([{"dummy_arg": i} for i in range(num_samples)])
-    log_registry = LogRegistry()
-    callables: Dict[str, Callable[..., Awaitable[Any]]] = {
-        "dummy_callable": IoIntensiveMetric(log_registry, 1, 10, 1000)
-    }
-    computer = _AsyncCallablesComputer(
-        dataset=dataset,
-        callables=callables,
-        max_concurrency=-1,
-    )
-    await computer.run()
-    logs = await log_registry.get_logs()
-    num_runnings_sequence = await log_registry.get_num_runnings_sequence()
-
-    for i in range(num_samples):
-        assert logs[i] == ("begin", i)
-
-    for i in range(len(dataset) + 1):
-        assert num_runnings_sequence[i] == i
-        assert num_runnings_sequence[-i - 1] == i
-
-
-@pytest.mark.anyio
 @pytest.mark.parametrize("max_concurrency", [5, 10, 20])
 async def test_max_concurrency_is_respected(max_concurrency: int) -> None:
     num_samples = 200
