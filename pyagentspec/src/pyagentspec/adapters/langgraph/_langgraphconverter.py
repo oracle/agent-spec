@@ -148,6 +148,7 @@ from pyagentspec.tracing.spans import AgentExecutionSpan as AgentSpecAgentExecut
 from pyagentspec.tracing.spans import FlowExecutionSpan as AgentSpecFlowExecutionSpan
 
 if TYPE_CHECKING:
+    from langchain_core.tools import ArgsSchema
     from langchain_mcp_adapters.sessions import (
         SSEConnection,
         StdioConnection,
@@ -388,7 +389,7 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
         middleware: List[Any],
-    ) -> CompiledStateGraph[Any, Any, Any]:
+    ) -> CompiledStateGraph[Any, Any, Any, Any]:
         graph_builder = StateGraph(
             FlowStateSchema,
             input_schema=FlowInputSchema,
@@ -831,7 +832,7 @@ class AgentSpecToLangGraphConverter:
         requires_confirmation = agentspec_server_tool.requires_confirmation
         structured_tool_name: str
         structured_tool_description: str
-        args_schema: Union[type[BaseModel], Dict[str, Any]]
+        args_schema: "ArgsSchema"
         if not (
             _is_structured_tool(tool_obj) or isinstance(tool_obj, BaseTool) or callable(tool_obj)
         ):
@@ -1017,7 +1018,7 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
         middleware: List[Any],
-    ) -> CompiledStateGraph[Any, Any, Any]:
+    ) -> CompiledStateGraph[Any, Any, Any, Any]:
         if agentspec_component.handoff is AgentSpecHandoffMode.NEVER:
             # As of now, we cannot control what langgraph-swarm does internally in terms of conversation sharing.
             # The closest behaviors are OPTIONAL (probably best) or ALWAYS, but NEVER is not really supported.
@@ -1053,7 +1054,7 @@ class AgentSpecToLangGraphConverter:
         for from_agent, to_agent in agentspec_component.relationships:
             handoffs[from_agent.name].append(to_agent.name)
         # We re-create the agents with the additional handoff tools
-        langgraph_agents: list[CompiledStateGraph[Any, Any, Any]] = [
+        langgraph_agents: list[CompiledStateGraph[Any, Any, Any, Any]] = [
             self._create_react_agent_with_given_info(
                 agent=agent,
                 name=agent.name,
@@ -1199,7 +1200,7 @@ class AgentSpecToLangGraphConverter:
         config: RunnableConfig,
         middleware: List[Any],
         additional_langgraph_tools: Optional[List[LangGraphTool]] = None,
-    ) -> CompiledStateGraph[Any, Any, Any]:
+    ) -> CompiledStateGraph[Any, Any, Any, Any]:
         model = self.convert(
             llm_config,
             tool_registry=tool_registry,
@@ -1268,7 +1269,7 @@ class AgentSpecToLangGraphConverter:
         )
         if middleware:
             create_agent_kwargs["middleware"] = middleware
-        compiled_graph: CompiledStateGraph[Any, Any, Any] = langchain_agents.create_agent(
+        compiled_graph: CompiledStateGraph[Any, Any, Any, Any] = langchain_agents.create_agent(
             **create_agent_kwargs
         )
 
@@ -1295,7 +1296,7 @@ class AgentSpecToLangGraphConverter:
         checkpointer: Optional[Checkpointer],
         config: RunnableConfig,
         middleware: List[Any],
-    ) -> CompiledStateGraph[Any, Any, Any]:
+    ) -> CompiledStateGraph[Any, Any, Any, Any]:
         return self._create_react_agent_with_given_info(
             name=agentspec_component.name,
             system_prompt=agentspec_component.system_prompt,

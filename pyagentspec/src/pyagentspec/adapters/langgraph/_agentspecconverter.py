@@ -444,7 +444,7 @@ class LangGraphToAgentSpecConverter:
 
     def _extract_first_agent_name_from_swarm(
         self,
-        compiled_swarm: CompiledStateGraph[Any, Any, Any],
+        compiled_swarm: CompiledStateGraph[Any, Any, Any, Any],
         agent_names: List[str],
     ) -> Optional[str]:
         """Extract the initial agent name for a LangGraph swarm.
