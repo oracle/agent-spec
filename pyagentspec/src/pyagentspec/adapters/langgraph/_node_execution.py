@@ -19,7 +19,6 @@ from pyagentspec.adapters._url_validation import (
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
-    BaseMessage,
     Checkpointer,
     CompiledStateGraph,
     ExecuteOutput,
@@ -59,6 +58,7 @@ from pyagentspec.tracing.spans.span import get_current_span
 
 if TYPE_CHECKING:
     import httpx
+    from langchain_core.messages import MessageLikeRepresentation
     from langchain_core.messages.content import (
         FileContentBlock,
         ImageContentBlock,
@@ -66,8 +66,6 @@ if TYPE_CHECKING:
     )
 else:
     httpx = LazyLoader("httpx")
-
-MessageLike = Union[BaseMessage, List[str], Tuple[str, str], str, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
 
@@ -497,11 +495,11 @@ class AgentNodeExecutor(NodeExecutor):
         self.converted_components = converted_components
         self.config = config
         self._middleware: List[Any] = list(middleware or [])
-        self._agents_cache: Dict[str, CompiledStateGraph[Any, Any]] = {}
+        self._agents_cache: Dict[str, CompiledStateGraph[Any, Any, Any, Any]] = {}
 
     def _create_react_agent_with_given_input_values(
         self, inputs: Dict[str, Any]
-    ) -> CompiledStateGraph[Any, Any]:
+    ) -> CompiledStateGraph[Any, Any, Any, Any]:
         from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 
         if not isinstance(self.node.agent, AgentSpecAgent):
@@ -531,7 +529,7 @@ class AgentNodeExecutor(NodeExecutor):
 
     def _prepare_agent_and_inputs(
         self, inputs: Dict[str, Any], messages: Messages
-    ) -> Tuple[CompiledStateGraph[Any, Any], Dict[str, Any]]:
+    ) -> Tuple[CompiledStateGraph[Any, Any, Any, Any], Dict[str, Any]]:
         agent = self._create_react_agent_with_given_input_values(inputs)
         # LangGraph's agent expects at least one user message to drive execution.
         # When an AgentNode is used with a templated system prompt and no messages are provided
@@ -549,7 +547,7 @@ class AgentNodeExecutor(NodeExecutor):
     def _format_agent_result(self, result: Dict[str, Any]) -> ExecuteOutput:
         if not self.node.outputs:
             generated_message = result["messages"][-1]
-            generated_messages: List[MessageLike] = [
+            generated_messages: List[MessageLikeRepresentation] = [
                 {"role": "assistant", "content": generated_message.content}
             ]
             return {}, NodeExecutionDetails(generated_messages=generated_messages)
@@ -578,7 +576,9 @@ class InputMessageNodeExecutor(NodeExecutor):
             if self.node.outputs
             else AgentSpecInputMessageNode.DEFAULT_OUTPUT
         )
-        generated_messages: List[MessageLike] = [{"role": "user", "content": response}]
+        generated_messages: List[MessageLikeRepresentation] = [
+            {"role": "user", "content": response}
+        ]
         return {output_name: response}, NodeExecutionDetails(generated_messages=generated_messages)
 
 
@@ -587,7 +587,9 @@ class OutputMessageNodeExecutor(NodeExecutor):
 
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         message = render_template(self.node.message, inputs)
-        generated_messages: List[MessageLike] = [{"role": "assistant", "content": message}]
+        generated_messages: List[MessageLikeRepresentation] = [
+            {"role": "assistant", "content": message}
+        ]
         return {}, NodeExecutionDetails(generated_messages=generated_messages)
 
 
@@ -762,7 +764,7 @@ class FlowNodeExecutor(NodeExecutor):
     def __init__(
         self,
         node: AgentSpecFlowNode,
-        subflow: CompiledStateGraph[Any, Any],
+        subflow: CompiledStateGraph[Any, Any, Any, Any],
         config: RunnableConfig,
     ) -> None:
         super().__init__(node)
@@ -792,7 +794,7 @@ class CatchExceptionNodeExecutor(NodeExecutor):
     def __init__(
         self,
         node: AgentSpecCatchExceptionNode,
-        subflow: CompiledStateGraph[Any, Any],
+        subflow: CompiledStateGraph[Any, Any, Any, Any],
         config: RunnableConfig,
     ) -> None:
         super().__init__(node)
@@ -845,7 +847,7 @@ class MapNodeExecutor(NodeExecutor):
     def __init__(
         self,
         node: AgentSpecMapNode,
-        subflow: CompiledStateGraph[Any, Any],
+        subflow: CompiledStateGraph[Any, Any, Any, Any],
         config: RunnableConfig,
     ) -> None:
         super().__init__(node)

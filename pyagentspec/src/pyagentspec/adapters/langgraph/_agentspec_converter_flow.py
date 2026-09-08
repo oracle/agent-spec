@@ -235,7 +235,7 @@ def _langgraph_branch_convert_to_agentspec(
 
 
 def _get_start_end_nodes(
-    graph: StateGraph[Any, Any, Any],
+    graph: StateGraph[Any, Any, Any, Any],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> Tuple[AgentSpecNode, AgentSpecNode]:
     START, END = _langgraph_start_end()
@@ -300,7 +300,7 @@ def _get_property_from_schema(schema: Type[Any]) -> Property:
 
 
 def _resolve_output_properties(
-    graph: StateGraph[Any, Any, Any],
+    graph: StateGraph[Any, Any, Any, Any],
     target_nodes: List[str],
 ) -> Property:
     START, END = _langgraph_start_end()
@@ -327,9 +327,9 @@ def _resolve_output_properties(
 
 
 def _langgraph_node_convert_to_agentspec(
-    graph: StateGraph[Any, Any, Any],
+    graph: StateGraph[Any, Any, Any, Any],
     node_name: str,
-    node: "StateNodeSpec[Any]",
+    node: "StateNodeSpec[Any, Any]",
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> AgentSpecNode:
     if node_name in referenced_objects:
@@ -377,7 +377,7 @@ def _langgraph_edges_convert_to_agentspec_ctrl_flow(
 
 
 def _langgraph_edges_convert_to_agentspec_data_flow(
-    graph: StateGraph[Any, Any, Any],
+    graph: StateGraph[Any, Any, Any, Any],
     edge: Tuple[str, str],
     referenced_objects: Dict[str, AgentSpecComponent],
 ) -> DataFlowEdge:
