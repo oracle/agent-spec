@@ -5,8 +5,6 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import ssl
-import sys
-from contextlib import nullcontext
 
 import pytest
 from pydantic import SecretStr
@@ -351,16 +349,7 @@ async def test_flow_with_mcp_tool_with_interrupt(sse_client_transport):
     langgraph_flow = AgentSpecLoader(checkpointer=MemorySaver()).load_component(flow)
     config = RunnableConfig({"configurable": {"thread_id": "1"}})
 
-    is_py310 = sys.version_info < (3, 11)
-    pytest_warning_raises = pytest.raises(
-        RuntimeError, match="Called get_config outside of a runnable context"
-    )
-    with pytest_warning_raises if is_py310 else nullcontext():
-        # in lower python versions, langchain interrupt does not support interrupts
-        interrupted = await langgraph_flow.ainvoke({"inputs": {"a": 2, "b": 5}}, config=config)
-
-    if is_py310:
-        return
+    interrupted = await langgraph_flow.ainvoke({"inputs": {"a": 2, "b": 5}}, config=config)
 
     assert "__interrupt__" in interrupted  # because of InputMessageNode
 
