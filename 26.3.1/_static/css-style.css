@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+body {
+    font-family: "Public Sans", serif;
+    letter-spacing: 0.015em;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-size: 105%;
+}
+
+strong, b {
+    font-weight: 700;
+}
+
+/* begin-custom-button/* _static/custom.css */
+/* Copy button opacity
+    Without this setting, by default the button is not visible
+    to the user without mouse hover.
+*/
+button.copybtn {
+    opacity: 0.2;
+    transition: opacity 0.3s ease-in-out;
+ }
+ button.copybtn:hover {
+    opacity: 0.9;
+ }
+/* end-custom-button */
+
+
+/* Hide the "Section Navigation" on primary sidebar */
+p.bd-links__title {
+    display: none;
+}
+.logo__image {
+    max-width: 150px !important;
+    max-height: 32px !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding-left: 20px;
+}
+
+.sidebar-brand {
+    padding: 20px 10px !important;
+    text-align: center !important;
+}
+
+.navbar-header-items {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.navbar-header-items__end {
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+}
+
+.version-switcher__button {
+    margin-left: 20px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center;
+}
+
+.search-button__button {
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.bd-sidebar-primary {
+    font-family: var(--pst-font-family-base, "Public Sans", sans-serif) !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+
+.bd-sidebar-primary {
+    background-color: transparent;
+    border-right: 1px solid #e0e0e0 !important;
+    padding-top: 15px !important;
+}
+
+.bd-sidebar-primary a {
+    color: #555;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.bd-sidebar-primary .active {
+    font-weight: bold !important;
+    color: #3fb1c5 !important;
+    border-left: 4px solid #3fb1c5 !important;
+    padding-left: 6px !important;
+}
+
+.bd-sidebar-primary ul {
+    padding-left: 10px !important;
+    list-style-type: none !important;
+}
+
+.bd-sidebar-primary li {
+    padding: 3px 0 !important;
+}
+
+.bd-sidebar-primary li:hover {
+  color: #f29111 !important;
+}
+
+.bd-sidebar-primary a:hover {
+    color: #f29111 !important;
+    text-decoration: none !important;
+}
+
+.sidebar-toggle {
+    background: #f8f9fa !important;
+    color: #333 !important;
+    border: none !important;
+}
+
+#pst-back-to-top {
+  background-color: #f29111 !important;
+}
+
+/* Adapt logo size - pydata-sphinx-theme */
+img.logo__image {
+    max-width: 120px;
+    height: auto;
+}
+
+
+.bd-main .bd-content .bd-article-container {
+    max-width: 100%;  /* default is 60em */
+}
+
+.bd-page-width {
+    max-width: 110rem;  /* default is 88rem */
+}
+
+.bd-sidebar-primary {
+    max-width: max(15%, 22em);
+}
+
+/* Increase the width of the outer node table in the spec */
+.table-responsive .wideoutertable {
+  width: auto !important;
+  min-width: 2400px;
+}
+
+.wideoutertable {
+  width: auto !important;
+  min-width: 2400px;
+}
+
+/* Increase the width of the inner parameters table from the node table in the spec */
+.table-responsive .mywideinnertable {
+  width: auto !important;
+  min-width: 800px;
+}
+
+.mywideinnertable {
+  width: auto !important;
+  min-width: 800px;
+}
