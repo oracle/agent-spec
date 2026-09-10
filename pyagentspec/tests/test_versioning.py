@@ -34,6 +34,7 @@ def test_current_version_is_26_4_0() -> None:
     assert AgentSpecVersionEnum.current_version == AgentSpecVersionEnum.v26_4_0
     assert AgentSpecVersionEnum.latest_supported_version == AgentSpecVersionEnum.v26_4_0
     assert AgentSpecVersionEnum("26.4.0") == AgentSpecVersionEnum.v26_4_0
+    assert AgentSpecVersionEnum("26.3.1") == AgentSpecVersionEnum.v26_3_1
 
 
 def test_flow_exports_with_agentspec_version(simplest_flow: Flow) -> None:

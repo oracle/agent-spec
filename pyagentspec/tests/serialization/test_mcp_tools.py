@@ -138,7 +138,7 @@ def test_mcp_tool_with_retry_policy_can_be_serialized_then_deserialized() -> Non
     dumped_tool = AgentSpecSerializer().to_dict(mcp_tool)
     loaded_tool = AgentSpecDeserializer().from_dict(dumped_tool)
 
-    assert dumped_tool["agentspec_version"] == AgentSpecVersionEnum.v26_3_0.value
+    assert dumped_tool["agentspec_version"] == AgentSpecVersionEnum.v26_3_1.value
     assert dumped_tool["retry_policy"]["max_attempts"] == 3
     assert AgentSpecSerializer().to_dict(loaded_tool) == dumped_tool
 
@@ -159,7 +159,7 @@ def test_mcp_toolbox_with_retry_policy_can_be_serialized_then_deserialized() -> 
     dumped_toolbox = AgentSpecSerializer().to_dict(mcp_toolbox)
     loaded_toolbox = AgentSpecDeserializer().from_dict(dumped_toolbox)
 
-    assert dumped_toolbox["agentspec_version"] == AgentSpecVersionEnum.v26_3_0.value
+    assert dumped_toolbox["agentspec_version"] == AgentSpecVersionEnum.v26_3_1.value
     assert dumped_toolbox["retry_policy"]["max_attempts"] == 4
     assert AgentSpecSerializer().to_dict(loaded_toolbox) == dumped_toolbox
 
