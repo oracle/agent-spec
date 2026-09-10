@@ -20,7 +20,7 @@ Bug fixes
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
-Agent Spec 26.3.0
+Agent Spec 26.3.1
 -----------------
 
 Improvements
