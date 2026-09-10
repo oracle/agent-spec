@@ -54,7 +54,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.55.0",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "ajv": "6.14.0",
