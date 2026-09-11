@@ -36,6 +36,12 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **AutoGen adapter: tools with untyped properties**
+
+  Converting a tool whose input has no ``type`` in its JSON schema (a property accepting any
+  value) failed with ``KeyError: 'type'``. Such properties are now mapped to ``Any``, and arrays
+  without ``items`` to ``List[Any]``.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
