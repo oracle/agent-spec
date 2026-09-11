@@ -10,13 +10,20 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 import anyio
+from pydantic import BaseModel
 
 from pyagentspec._lazy_loader import LazyLoader
 from pyagentspec.adapters._url_validation import (
     maybe_warn_about_unrestricted_templated_url,
     validate_url_against_allow_list,
 )
-from pyagentspec.adapters._utils import render_nested_object_template, render_template
+from pyagentspec.adapters._utils import (
+    apply_json_schema_defaults,
+    get_json_schema_validation_errors,
+    render_nested_object_template,
+    render_template,
+    to_json_value,
+)
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     Checkpointer,
@@ -129,7 +136,11 @@ class NodeExecutor(ABC):
         for property_ in properties:
             key = property_.title
             if key in values_dict:
-                value = values_dict.get(key)
+                # Flow values are plain JSON: models generated from Agent Spec schemas
+                # (and models returned by tools) are converted back to dictionaries.
+                value = to_json_value(values_dict.get(key))
+                if isinstance(value, BaseModel):
+                    value = value.model_dump()
                 if property_.type == "string" and not isinstance(value, str):
                     value = json.dumps(value)
                 elif property_.type == "boolean" and isinstance(value, (int, float)):
@@ -138,20 +149,22 @@ class NodeExecutor(ABC):
                     value = int(value)
                 elif property_.type == "integer" and isinstance(value, str):
                     # Try converting numeric strings to integers; if it fails, leave as-is
+                    # so that the schema validation below reports the invalid value
                     try:
                         value = int(value.strip())
-                    except ValueError as e:
-                        if not str(e).startswith("could not convert string to int:"):
-                            raise e
+                    except ValueError:
+                        pass
                 elif property_.type == "number" and isinstance(value, (int, bool)):
                     value = float(value)
                 elif property_.type == "number" and isinstance(value, str):
                     # Try converting numeric strings to floats; if it fails, leave as-is
+                    # so that the schema validation below reports the invalid value
                     try:
                         value = float(value.strip())
-                    except ValueError as e:
-                        if not str(e).startswith("could not convert string to float:"):
-                            raise e
+                    except ValueError:
+                        pass
+                value = apply_json_schema_defaults(value, property_.json_schema)
+                self._validate_value_against_schema(property_, value)
                 results_dict[key] = value
             elif property_.default is not pyagentspec_empty_default:
                 results_dict[key] = property_.default
@@ -161,6 +174,16 @@ class NodeExecutor(ABC):
                     f"for property `{property_.title}`, but none was found."
                 )
         return results_dict
+
+    def _validate_value_against_schema(self, property_: AgentSpecProperty, value: Any) -> None:
+        """Raise a ValueError if the value does not conform to the property's JSON schema."""
+        errors = get_json_schema_validation_errors(value, property_.json_schema)
+        if errors:
+            error_details = "\n".join(f"  - {error}" for error in errors)
+            raise ValueError(
+                f"The value of property `{property_.title}` of node `{self.node.name}` does not "
+                f"conform to its declared JSON schema:\n{error_details}"
+            )
 
     async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         """Default async implementation delegates to sync _execute in a worker thread.
@@ -341,9 +364,9 @@ class ToolNodeExecutor(NodeExecutor):
         """
         node_output_properties = self.node.outputs or []
         if not node_output_properties:
-            # the node does not emit any output
+            # the node does not emit any output, whatever the tool returned
             mapped = {}
-        if isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
+        elif isinstance(tool_output, list) and self._is_mcp_content_blocks_list(tool_output):
             extracted_values = self._extract_values_from_content_blocks(tool_output)
             mapped = {
                 property_.title: extracted_values[i]
@@ -935,7 +958,7 @@ def extract_outputs_from_invoke_result(
     # Extracts the outputs from the return value of an invoke call made on an agent
     # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
     # We give priority to the latter.
-    return {
+    outputs = {
         # Defaults if available
         **{
             output.title: output.default
@@ -951,3 +974,6 @@ def extract_outputs_from_invoke_result(
             if output.title in result
         },
     }
+    # Structured responses are generated through pydantic models built from the Agent Spec
+    # output schemas; expose them as plain JSON values.
+    return cast(Dict[str, Any], to_json_value(outputs))

@@ -36,6 +36,25 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **LangGraph adapter: object schemas and I/O validation**
+
+  Values flowing through LangGraph agents and flows now keep the JSON Schema semantics of
+  their Agent Spec properties:
+
+  - object schemas without declared properties (including typed dictionaries) are passed
+    through as dictionaries instead of being validated by an empty model that dropped every key;
+  - additional object properties are kept when the schema allows them (``additionalProperties``
+    is ``true``, a schema, or not specified) and are still rejected when it is ``false``;
+  - declared defaults of omitted nested properties are applied, and optional properties that were
+    neither provided nor defaulted are no longer reported as ``null``;
+  - tools receive their object arguments as plain dictionaries (as in the other runtimes) instead
+    of pydantic model instances, and structured agent outputs are exposed as plain JSON values;
+  - node inputs and outputs are validated against their declared JSON schema, so a flow run with
+    a ``StartNode`` input or an ``EndNode`` output missing a nested required property, having a
+    wrong type or an unexpected key now fails with an error naming the node, the property and
+    each violation;
+  - a ``ToolNode`` without declared outputs no longer fails when its tool returns a value.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

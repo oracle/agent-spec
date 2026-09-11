@@ -35,6 +35,7 @@ from pyagentspec.adapters._utils import (
     SchemaRegistry,
     _build_type_from_schema,
     create_pydantic_model_from_properties,
+    to_json_value,
 )
 from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
 from pyagentspec.adapters.langgraph._managerworkers import (
@@ -787,10 +788,12 @@ class AgentSpecToLangGraphConverter:
     ) -> StructuredTool:
         tool_name = remote_tool.name
         tool_description = remote_tool.description or ""
-        _remote_tool = _confirm_then(
-            func=_create_remote_tool_func(remote_tool),
-            tool_name=tool_name,
-            requires_confirmation=remote_tool.requires_confirmation,
+        _remote_tool = _with_json_arguments(
+            _confirm_then(
+                func=_create_remote_tool_func(remote_tool),
+                tool_name=tool_name,
+                requires_confirmation=remote_tool.requires_confirmation,
+            )
         )
 
         # Use a Pydantic model for args_schema
@@ -907,6 +910,9 @@ class AgentSpecToLangGraphConverter:
         requires_confirmation = agentspec_client_tool.requires_confirmation
 
         def client_tool(*args: Any, **kwargs: Any) -> Any:
+            # The client receives plain JSON values, not the generated argument models
+            args = tuple(to_json_value(args))
+            kwargs = to_json_value(kwargs)
             if requires_confirmation:
                 if args:
                     raise ValueError("Args are not supported, please only use kwargs")
@@ -1909,6 +1915,39 @@ def _as_structured_tool_coroutine(
     return _wrapped_async
 
 
+@overload
+def _with_json_arguments(
+    func: Callable[..., Awaitable[Any]],
+) -> Callable[..., Awaitable[Any]]: ...
+
+
+@overload
+def _with_json_arguments(
+    func: Callable[..., Any],
+) -> Callable[..., Any]: ...
+
+
+def _with_json_arguments(func: Callable[..., Any]) -> Callable[..., Any]:
+    """Wrap a tool callable so that it receives plain JSON values as arguments.
+
+    LangChain validates tool arguments with the pydantic models generated from the Agent Spec
+    input schemas and passes the model instances of nested objects to the callable. Agent Spec
+    tools are written against JSON values (as in the other runtimes), so those instances are
+    converted back to dictionaries before the call.
+    """
+    if _is_async_callable(func):
+
+        async def _wrapped_async(*args: Any, **kwargs: Any) -> Any:
+            return await func(*to_json_value(args), **to_json_value(kwargs))
+
+        return _wrapped_async
+
+    def _wrapped_sync(*args: Any, **kwargs: Any) -> Any:
+        return func(*to_json_value(args), **to_json_value(kwargs))
+
+    return _wrapped_sync
+
+
 class StructuredToolCallableKwargs(TypedDict, total=False):
     func: Callable[..., Any]
     coroutine: Callable[..., Awaitable[Any]]
@@ -1933,24 +1972,30 @@ def _get_structured_tool_callable_kwargs(
     if isinstance(tool_obj, BaseTool):
         tool_func = getattr(tool_obj, "func", None)
         if tool_func is not None:
-            structured_tool_callable_kwargs["func"] = _confirm_then(
-                func=tool_func,
-                tool_name=tool_name,
-                requires_confirmation=requires_confirmation,
+            structured_tool_callable_kwargs["func"] = _with_json_arguments(
+                _confirm_then(
+                    func=tool_func,
+                    tool_name=tool_name,
+                    requires_confirmation=requires_confirmation,
+                )
             )
 
         tool_coroutine = getattr(tool_obj, "coroutine", None)
         if tool_coroutine is not None:
-            structured_tool_callable_kwargs["coroutine"] = _confirm_then(
-                func=tool_coroutine,
+            structured_tool_callable_kwargs["coroutine"] = _with_json_arguments(
+                _confirm_then(
+                    func=tool_coroutine,
+                    tool_name=tool_name,
+                    requires_confirmation=requires_confirmation,
+                )
+            )
+    elif callable(tool_obj):
+        wrapped_tool = _with_json_arguments(
+            _confirm_then(
+                func=tool_obj,
                 tool_name=tool_name,
                 requires_confirmation=requires_confirmation,
             )
-    elif callable(tool_obj):
-        wrapped_tool = _confirm_then(
-            func=tool_obj,
-            tool_name=tool_name,
-            requires_confirmation=requires_confirmation,
         )
         if _is_async_callable(wrapped_tool):
             structured_tool_callable_kwargs["coroutine"] = wrapped_tool
