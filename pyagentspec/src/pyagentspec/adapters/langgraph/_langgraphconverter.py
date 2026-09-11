@@ -208,6 +208,37 @@ def _create_agent_state_typed_dict(
     )
 
 
+# Oldest langchain-oci whose ChatOCIGenAI accepts JSON-schema dicts as tool /
+# structured-output definitions. LlmNode structured outputs are compiled to a
+# JSON schema, so older providers fail at load time with
+# "Unsupported tool type <class 'dict'>" (see oracle/agent-spec#232).
+_MIN_LANGCHAIN_OCI_VERSION = (0, 3, 0)
+
+
+def _check_langchain_oci_version() -> None:
+    """Fail early with an actionable message when langchain-oci is too old."""
+    from importlib.metadata import PackageNotFoundError, version
+
+    try:
+        installed = version("langchain-oci")
+    except PackageNotFoundError:  # pragma: no cover - import above already failed
+        return
+    parts: list[int] = []
+    for token in installed.split(".")[:3]:
+        digits = "".join(ch for ch in token if ch.isdigit())
+        if not digits:
+            break
+        parts.append(int(digits))
+    if tuple(parts) < _MIN_LANGCHAIN_OCI_VERSION[: len(parts)]:
+        minimum = ".".join(str(v) for v in _MIN_LANGCHAIN_OCI_VERSION)
+        raise ImportError(
+            f"OciGenAiConfig with the LangGraph adapter requires langchain-oci>={minimum} "
+            f"(found {installed}). Older versions reject the JSON-schema tool definitions "
+            "used for structured LlmNode outputs. Upgrade with: "
+            "pip install -U 'langchain-oci>=" + minimum + "'"
+        )
+
+
 class AgentSpecToLangGraphConverter:
     def convert(
         self,
@@ -1391,6 +1422,7 @@ class AgentSpecToLangGraphConverter:
 
             from langchain_oci import ChatOCIGenAI  # type: ignore
 
+            _check_langchain_oci_version()
             oci_model_kwargs: dict[str, int | float] = {}
             if "temperature" in generation_config:
                 oci_model_kwargs["temperature"] = generation_config["temperature"]

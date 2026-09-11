@@ -46,7 +46,7 @@ LANGGRAPH_DEPS = [
 LANGGRAPH_FULL_DEPS = LANGGRAPH_DEPS + [
     # 3rd party dependencies (imported in code)
     "langchain-mcp-adapters>=0.2.2",
-    "langchain-oci>=0.2.6",
+    "langchain-oci>=0.3.0",  # JSON-schema tool definitions (structured LlmNode outputs)
     # 4rth party dependencies
     "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
     "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions

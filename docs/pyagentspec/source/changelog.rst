@@ -36,6 +36,17 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **LangGraph adapter: structured LlmNode outputs with OciGenAiConfig**
+
+  Loading a Flow whose ``LlmNode`` declares structured outputs with an
+  ``OciGenAiConfig`` failed with ``Unsupported tool type <class 'dict'>``
+  when an older ``langchain-oci`` was installed. The ``langgraph`` extra now
+  requires ``langchain-oci>=0.3.0`` (the first release accepting JSON-schema
+  tool definitions), the adapter checks the installed version up front, and a
+  chat model that rejects the JSON-schema output definition now raises an
+  actionable configuration error naming the node and the fix instead of the
+  low-level provider error.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
