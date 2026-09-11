@@ -2,7 +2,11 @@
  * OCI GenAI LLM config.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
+import {
+  ComponentBaseSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 import { LlmGenerationConfigSchema } from "./llm-config.js";
 import { OciClientConfigUnion, type OciClientConfig } from "./oci-client-config.js";
 
@@ -48,7 +52,7 @@ export const OciGenAiConfigSchema = ComponentBaseSchema.extend({
       ModelProvider.OTHER,
     ])
     .optional(),
-  clientConfig: OciClientConfigUnion,
+  clientConfig: openComponentUnion(OciClientConfigUnion),
   apiType: z
     .enum([
       OciAPIType.OPENAI_CHAT_COMPLETIONS,
@@ -66,7 +70,7 @@ export function createOciGenAiConfig(opts: {
   name: string;
   modelId: string;
   compartmentId: string;
-  clientConfig: OciClientConfig;
+  clientConfig: OciClientConfig | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;

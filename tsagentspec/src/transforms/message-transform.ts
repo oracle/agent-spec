@@ -2,7 +2,11 @@
  * Message transform types.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
+import {
+  ComponentBaseSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 import { LlmConfigUnion, type LlmConfig } from "../llms/index.js";
 import {
   InMemoryCollectionDatastoreSchema,
@@ -26,7 +30,7 @@ export type SupportedDatastores =
 
 export const MessageSummarizationTransformSchema = ComponentBaseSchema.extend({
   componentType: z.literal("MessageSummarizationTransform"),
-  llm: LlmConfigUnion,
+  llm: openComponentUnion(LlmConfigUnion),
   maxMessageSize: z.number().int().default(20000),
   summarizationInstructions: z.string().default(
     "Please make a summary of this message. Include relevant information and keep it short. " +
@@ -40,7 +44,7 @@ export const MessageSummarizationTransformSchema = ComponentBaseSchema.extend({
   cacheCollectionName: z
     .string()
     .default("summarized_messages_cache"),
-  datastore: SupportedDatastoresSchema.optional(),
+  datastore: openComponentUnion(SupportedDatastoresSchema).optional(),
 });
 
 export type MessageSummarizationTransform = z.infer<
@@ -50,7 +54,7 @@ export type MessageSummarizationTransform = z.infer<
 export const ConversationSummarizationTransformSchema =
   ComponentBaseSchema.extend({
     componentType: z.literal("ConversationSummarizationTransform"),
-    llm: LlmConfigUnion,
+    llm: openComponentUnion(LlmConfigUnion),
     maxNumMessages: z.number().int().default(50),
     minNumMessages: z.number().int().default(10),
     summarizationInstructions: z.string().default(
@@ -65,7 +69,7 @@ export const ConversationSummarizationTransformSchema =
     cacheCollectionName: z
       .string()
       .default("summarized_conversations_cache"),
-    datastore: SupportedDatastoresSchema.optional(),
+    datastore: openComponentUnion(SupportedDatastoresSchema).optional(),
   });
 
 export type ConversationSummarizationTransform = z.infer<
@@ -81,7 +85,7 @@ export type MessageTransform = z.infer<typeof MessageTransformUnion>;
 
 export function createMessageSummarizationTransform(opts: {
   name: string;
-  llm: LlmConfig;
+  llm: LlmConfig | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
@@ -91,7 +95,7 @@ export function createMessageSummarizationTransform(opts: {
   maxCacheSize?: number | null;
   maxCacheLifetime?: number | null;
   cacheCollectionName?: string;
-  datastore?: SupportedDatastores;
+  datastore?: SupportedDatastores | CustomComponent;
 }): MessageSummarizationTransform {
   return Object.freeze(
     MessageSummarizationTransformSchema.parse({
@@ -103,7 +107,7 @@ export function createMessageSummarizationTransform(opts: {
 
 export function createConversationSummarizationTransform(opts: {
   name: string;
-  llm: LlmConfig;
+  llm: LlmConfig | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
@@ -114,7 +118,7 @@ export function createConversationSummarizationTransform(opts: {
   maxCacheSize?: number | null;
   maxCacheLifetime?: number | null;
   cacheCollectionName?: string;
-  datastore?: SupportedDatastores;
+  datastore?: SupportedDatastores | CustomComponent;
 }): ConversationSummarizationTransform {
   const parsed = ConversationSummarizationTransformSchema.parse({
     ...opts,

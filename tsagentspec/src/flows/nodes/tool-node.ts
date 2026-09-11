@@ -3,27 +3,29 @@
  */
 import { z } from "zod";
 import type { Property } from "../../property.js";
+import { openComponentUnion, type CustomComponent } from "../../component.js";
 import { ToolUnion, type Tool } from "../../tools/index.js";
 import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
 
 export const ToolNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("ToolNode"),
-  tool: ToolUnion,
+  tool: openComponentUnion(ToolUnion),
 });
 
 export type ToolNode = z.infer<typeof ToolNodeSchema>;
 
 export function createToolNode(opts: {
   name: string;
-  tool: Tool;
+  tool: Tool | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
   inputs?: Property[];
   outputs?: Property[];
 }): ToolNode {
-  const inputs = opts.inputs ?? opts.tool.inputs ?? [];
-  const outputs = opts.outputs ?? opts.tool.outputs ?? [];
+  const tool = opts.tool as { inputs?: Property[]; outputs?: Property[] };
+  const inputs = opts.inputs ?? tool.inputs ?? [];
+  const outputs = opts.outputs ?? tool.outputs ?? [];
   return Object.freeze(
     ToolNodeSchema.parse({
       ...opts,

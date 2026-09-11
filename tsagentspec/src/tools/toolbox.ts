@@ -2,13 +2,17 @@
  * ToolBox and MCPToolBox.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
+import {
+  ComponentBaseSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 import { ClientTransportUnion, type ClientTransport } from "../mcp/client-transport.js";
 import { MCPToolSpecSchema } from "../mcp/mcp-tool.js";
 
 export const MCPToolBoxSchema = ComponentBaseSchema.extend({
   componentType: z.literal("MCPToolBox"),
-  clientTransport: ClientTransportUnion,
+  clientTransport: openComponentUnion(ClientTransportUnion),
   toolFilter: z
     .array(z.union([MCPToolSpecSchema, z.string()]))
     .optional(),
@@ -19,7 +23,7 @@ export type MCPToolBox = z.infer<typeof MCPToolBoxSchema>;
 
 export function createMCPToolBox(opts: {
   name: string;
-  clientTransport: ClientTransport;
+  clientTransport: ClientTransport | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;

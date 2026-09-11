@@ -2,7 +2,11 @@
  * Oracle Database datastore and connection configs.
  */
 import { z } from "zod";
-import { ComponentBaseSchema } from "../component.js";
+import {
+  ComponentBaseSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 
 export const TlsOracleDatabaseConnectionConfigSchema =
   ComponentBaseSchema.extend({
@@ -37,7 +41,7 @@ const OracleConnectionConfigUnion = z.discriminatedUnion("componentType", [
 export const OracleDatabaseDatastoreSchema = ComponentBaseSchema.extend({
   componentType: z.literal("OracleDatabaseDatastore"),
   datastoreSchema: z.record(z.record(z.unknown())),
-  connectionConfig: OracleConnectionConfigUnion,
+  connectionConfig: openComponentUnion(OracleConnectionConfigUnion),
 });
 
 export type OracleDatabaseDatastore = z.infer<
@@ -87,7 +91,10 @@ export function createMTlsOracleDatabaseConnectionConfig(opts: {
 export function createOracleDatabaseDatastore(opts: {
   name: string;
   datastoreSchema: Record<string, Record<string, unknown>>;
-  connectionConfig: TlsOracleDatabaseConnectionConfig | MTlsOracleDatabaseConnectionConfig;
+  connectionConfig:
+    | TlsOracleDatabaseConnectionConfig
+    | MTlsOracleDatabaseConnectionConfig
+    | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
