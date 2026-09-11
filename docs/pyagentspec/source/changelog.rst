@@ -36,6 +36,15 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **LangGraph adapter: agent outputs answered as plain text**
+
+  When an agent with declared outputs ended its run with a plain message instead of calling
+  the structured output tool, the adapter silently reported the declared defaults of the
+  outputs (for example the field names used as default of an ``AgentNode`` output). The
+  values are now recovered from the final agent message when it can be mapped to the
+  declared outputs (a JSON object keyed by output name, the JSON value of a single output,
+  or the free text of a single string output), and a warning is logged when they cannot.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
