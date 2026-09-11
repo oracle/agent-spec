@@ -36,6 +36,14 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **LangGraph adapter: AgentNode agents honour the recursion limit of the flow run**
+
+  The agents compiled for Flow ``AgentNode`` steps are bound by LangChain to a recursion
+  limit of 9999 steps, which overrode the ``recursion_limit`` configured for the flow run.
+  An agent that never terminated made thousands of model calls before failing. A recursion
+  limit explicitly configured for the run (or in the loader config) is now passed on to the
+  nested agent; runs using LangChain's default limit keep the agent's own limit.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

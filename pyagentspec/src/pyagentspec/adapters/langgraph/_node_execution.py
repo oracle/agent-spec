@@ -563,14 +563,40 @@ class AgentNodeExecutor(NodeExecutor):
         outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()
 
+    def _agent_invoke_config(self) -> RunnableConfig:
+        """Config of the nested agent run.
+
+        ``create_agent`` binds ``recursion_limit=9999`` to the agents it compiles, which
+        overrides the limit of the enclosing flow run: an agent that never terminates makes
+        thousands of model calls before failing, whatever limit the caller configured.
+        Unless the loader config sets its own limit, a recursion limit explicitly configured
+        for the current run (any value other than LangChain's default) is passed on to the
+        agent so that it stops where the caller asked.
+        """
+        from langchain_core.runnables.config import DEFAULT_RECURSION_LIMIT
+        from langgraph.config import get_config
+
+        config = cast(RunnableConfig, dict(self.config or {}))
+        if "recursion_limit" in config:
+            return config
+        try:
+            run_config = get_config()
+        except RuntimeError:
+            # Not executed within a LangGraph run
+            return config
+        run_recursion_limit = run_config.get("recursion_limit", DEFAULT_RECURSION_LIMIT)
+        if run_recursion_limit != DEFAULT_RECURSION_LIMIT:
+            config["recursion_limit"] = run_recursion_limit
+        return config
+
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
-        result = agent.invoke(prepared_inputs, self.config)
+        result = agent.invoke(prepared_inputs, self._agent_invoke_config())
         return self._format_agent_result(result)
 
     async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
-        result = await agent.ainvoke(prepared_inputs, self.config)
+        result = await agent.ainvoke(prepared_inputs, self._agent_invoke_config())
         return self._format_agent_result(result)
 
 
