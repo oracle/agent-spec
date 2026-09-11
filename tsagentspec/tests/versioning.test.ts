@@ -19,7 +19,7 @@ describe("AgentSpecVersion", () => {
     expect(AgentSpecVersion.V26_1_0).toBe("26.1.0");
     expect(AgentSpecVersion.V26_1_2).toBe("26.1.2");
     expect(AgentSpecVersion.V26_2_0).toBe("26.2.0");
-    expect(AgentSpecVersion.V26_3_0).toBe("26.3.0");
+    expect(AgentSpecVersion.V26_3_1).toBe("26.3.1");
     expect(AgentSpecVersion.V26_4_0).toBe("26.4.0");
   });
 

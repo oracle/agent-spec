@@ -118,7 +118,7 @@ class ManagerWorkers(AgenticComponent):
             and not inherits_manager_io
             and not (self.inputs or self.outputs)
         ):
-            max_version = min(max_version, AgentSpecVersionEnum.v26_3_0)
+            max_version = min(max_version, AgentSpecVersionEnum.v26_3_1)
         return max_version
 
     @model_validator_with_error_accumulation
