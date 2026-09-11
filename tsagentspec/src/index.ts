@@ -39,9 +39,14 @@ export {
 export {
   ComponentBaseSchema,
   ComponentWithIOSchema,
+  CustomComponentSchema,
+  BUILTIN_COMPONENT_TYPE_NAMES,
   isComponent,
+  isBuiltinComponentTypeName,
+  openComponentUnion,
   type ComponentBase,
   type ComponentWithIO,
+  type CustomComponent,
   type AbstractComponentType,
   type ComponentTypeName,
 } from "./component.js";
