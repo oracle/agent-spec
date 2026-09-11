@@ -188,9 +188,10 @@ def test_toolnode_single_output_wraps_single_dict_under_declared_key() -> None:
 
 
 def test_toolnode_single_output_unwraps_single_dict_under_same_key() -> None:
+    # The unwrapped value is not an object, so the declared output is untyped
     flow = _build_flow_with_client_tool(
         input_prop=NumberProperty(title="x"),
-        output_props=[ObjectProperty(title="out_dict", properties={})],
+        output_props=[Property(json_schema={"title": "out_dict"})],
     )
     expected_return_value = {"out_dict": 1}
     outputs = _run_flow_and_resume(flow, expected_return_value)
