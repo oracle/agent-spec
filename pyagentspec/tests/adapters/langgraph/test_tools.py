@@ -4,7 +4,9 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import asyncio
 import threading
+import time
 from typing import Any
 from unittest.mock import patch
 
@@ -1130,6 +1132,39 @@ def test_server_tool_missing_from_registry_raises() -> None:
 
     with pytest.raises(ValueError, match="does not appear in the tool registry"):
         AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+
+
+@pytest.mark.anyio
+async def test_remote_tool_coroutine_does_not_block_event_loop() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    def mock_request(*args: Any, **kwargs: Any) -> DummyResponse:
+        time.sleep(0.2)
+        return DummyResponse({"ok": True, "body": kwargs["json"]})
+
+    remote_tool = RemoteTool(
+        name="remote_echo",
+        description="Echoes the input value",
+        url="https://example.com/echo",
+        http_method="POST",
+        data={"x": "{{x}}"},
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    assert lang_tool.coroutine is not None
+
+    with patch("httpx.request", side_effect=mock_request):
+        started_at = time.monotonic()
+        task = asyncio.create_task(lang_tool.coroutine(x=5))
+
+        await asyncio.sleep(0.01)
+
+        assert time.monotonic() - started_at < 0.1
+        assert not task.done()
+        assert await task == {"ok": True, "body": {"x": "5"}}
 
 
 @pytest.mark.anyio

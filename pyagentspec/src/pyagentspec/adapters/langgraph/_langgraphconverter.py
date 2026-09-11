@@ -5,6 +5,7 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 
+import asyncio
 import inspect
 import logging
 import os
@@ -1904,7 +1905,7 @@ def _as_structured_tool_coroutine(
         return func
 
     async def _wrapped_async(*args: Any, **kwargs: Any) -> Any:
-        return func(*args, **kwargs)
+        return await asyncio.to_thread(func, *args, **kwargs)
 
     return _wrapped_async
 
