@@ -36,6 +36,17 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **TypeScript SDK: custom components nested inside builtin components**
+
+  Component fields of builtin components (an Agent's ``tools``, ``toolboxes``, ``transforms``
+  and ``llmConfig``, a Flow's nodes, a ToolNode's ``tool``, MCP client transports, OCI client
+  configurations, datastores and their connection configurations) now accept plugin-provided
+  components in addition to the builtin ones, both when constructing components and when
+  deserializing them. Builtin component types are still validated by their own schemas, so a
+  builtin component of the wrong kind is rejected as before. Custom components attached to
+  builtin components can now be round-tripped through ``AgentSpecSerializer`` and
+  ``AgentSpecDeserializer`` with the corresponding plugins, as in PyAgentSpec.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

@@ -4,6 +4,7 @@
 import { z } from "zod";
 import { stringProperty, type Property } from "../../property.js";
 import { getPlaceholderPropertiesFromJsonObject } from "../../templating.js";
+import { openComponentUnion, type CustomComponent } from "../../component.js";
 import { LlmConfigUnion, type LlmConfig } from "../../llms/index.js";
 import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
 
@@ -11,7 +12,7 @@ export const DEFAULT_LLM_OUTPUT = "generated_text";
 
 export const LlmNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("LlmNode"),
-  llmConfig: LlmConfigUnion,
+  llmConfig: openComponentUnion(LlmConfigUnion),
   promptTemplate: z.string(),
 });
 
@@ -19,7 +20,7 @@ export type LlmNode = z.infer<typeof LlmNodeSchema>;
 
 export function createLlmNode(opts: {
   name: string;
-  llmConfig: LlmConfig;
+  llmConfig: LlmConfig | CustomComponent;
   promptTemplate: string;
   id?: string;
   description?: string;
