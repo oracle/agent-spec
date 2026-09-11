@@ -632,7 +632,22 @@ class LlmNodeExecutor(NodeExecutor):
                 "type": "object",
                 "properties": {output.title: output.json_schema for output in node_outputs},
             }
-            self.structured_llm = self.llm.with_structured_output(json_schema)
+            try:
+                self.structured_llm = self.llm.with_structured_output(json_schema)
+            except (ValueError, TypeError, NotImplementedError) as exc:
+                # Providers that only accept BaseModel / TypedDict definitions
+                # surface low-level errors such as "Unsupported tool type
+                # <class 'dict'>". Turn that into an actionable configuration
+                # error at load time (oracle/agent-spec#232).
+                node_name = getattr(self.node, "name", "LlmNode")
+                raise ValueError(
+                    f"Cannot configure structured output for LlmNode '{node_name}': "
+                    f"{type(self.llm).__name__} rejected the JSON-schema output "
+                    f"definition ({exc}). Structured LlmNode outputs require a chat "
+                    "model whose `with_structured_output` accepts a JSON schema dict; "
+                    "for OCI Generative AI upgrade to langchain-oci>=0.3.0, or declare "
+                    "a single string output to disable structured generation."
+                ) from exc
 
     def _build_invoke_inputs(self, inputs: Dict[str, Any]) -> List[Dict[str, Any]]:
         prompt_template = self.node.prompt_template
