@@ -339,7 +339,8 @@ def _normalize_json_schema_union_types(schema: JsonSchemaValue) -> List[JsonSche
     json_schema_types = (
         json_schema_type if isinstance(json_schema_type, list) else [json_schema_type]
     )
-    all_types: List[JsonSchemaValue] = schema.get("anyOf", [])
+    # Copy the list: the normalized types must not be appended to the schema's own anyOf
+    all_types: List[JsonSchemaValue] = list(schema.get("anyOf", []))
     for json_schema_type in json_schema_types:
         if json_schema_type == "array":
             # If one of the basic types is array, we put the items definition in it
