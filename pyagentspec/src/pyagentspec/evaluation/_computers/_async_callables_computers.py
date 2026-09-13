@@ -45,22 +45,18 @@ class _AsyncRegistry(Generic[K, V]):
     """Store key/value pairs while preventing duplicate registrations."""
 
     def __init__(self) -> None:
-        """Initialise the in-memory registry and the coordination lock."""
+        """Initialise the in-memory registry"""
         self.store: Dict[K, V] = {}
-        self._lock = anyio.Lock()
 
     async def register(self, key: K, value: V) -> None:
         """Insert ``value`` under ``key`` while ensuring uniqueness."""
-        async with self._lock:
-            if key in self.store:
-                raise RuntimeError(f"A value of key {key} is already registered.")
-            self.store[key] = value
+        if key in self.store:
+            raise RuntimeError(f"A value of key {key} is already registered.")
+        self.store[key] = value
 
 
 class _AsyncCallablesComputer(Generic[T]):
     """Evaluate a set of async callables across every sample in a dataset."""
-
-    _QUEUE_BUFFER_FACTOR = 3
 
     def __init__(
         self,
