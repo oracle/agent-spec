@@ -6,7 +6,6 @@
 
 import asyncio
 import threading
-import time
 from typing import Any
 from unittest.mock import patch
 
@@ -1138,8 +1137,13 @@ def test_server_tool_missing_from_registry_raises() -> None:
 async def test_remote_tool_coroutine_does_not_block_event_loop() -> None:
     from pyagentspec.adapters.langgraph import AgentSpecLoader
 
+    entered_request = threading.Event()
+    release_request = threading.Event()
+
     def mock_request(*args: Any, **kwargs: Any) -> DummyResponse:
-        time.sleep(0.2)
+        entered_request.set()
+        # Bounded so a regression fails instead of hanging the suite forever.
+        release_request.wait(timeout=5)
         return DummyResponse({"ok": True, "body": kwargs["json"]})
 
     remote_tool = RemoteTool(
@@ -1157,13 +1161,20 @@ async def test_remote_tool_coroutine_does_not_block_event_loop() -> None:
     assert lang_tool.coroutine is not None
 
     with patch("httpx.request", side_effect=mock_request):
-        started_at = time.monotonic()
         task = asyncio.create_task(lang_tool.coroutine(x=5))
+        try:
+            # The event loop must stay responsive while the blocking call is in flight,
+            # so we observe the request being entered without the task having completed.
+            for _ in range(500):
+                if entered_request.is_set():
+                    break
+                await asyncio.sleep(0.01)
 
-        await asyncio.sleep(0.01)
+            assert entered_request.is_set()
+            assert not task.done()
+        finally:
+            release_request.set()
 
-        assert time.monotonic() - started_at < 0.1
-        assert not task.done()
         assert await task == {"ok": True, "body": {"x": "5"}}
 
 
