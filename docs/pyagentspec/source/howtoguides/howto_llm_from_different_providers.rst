@@ -208,7 +208,8 @@ the authentication to use OCI services. The ``OciClientConfig`` holds these sett
   The authentication type to use, e.g., ``API_KEY``,
   ``SECURITY_TOKEN``,
   ``INSTANCE_PRINCIPAL`` (It means that you need to execute the code from a compartment enabled for OCIGenAI.),
-  ``RESOURCE_PRINCIPAL``.
+  ``RESOURCE_PRINCIPAL``,
+  ``GENAI_API_KEY`` (an OCI Generative AI API key sent as a bearer token to the OpenAI-compatible API of the service).
 
 
 Based on the type of authentication the user wants to adopt, different specifications of the ``OciClientConfig``
@@ -245,6 +246,51 @@ OciClientConfigWithApiKey
 
 Client configuration that should be used if users want to use authentication with API key.
 The parameters required are the same defined for the ``OciClientConfigWithSecurityToken``.
+
+
+OciClientConfigWithGenAiApiKey
+------------------------------
+
+Client configuration that should be used if users want to authenticate with an OCI Generative AI API key.
+These keys are created in the Generative AI service (Console *Generative AI > API keys*, or
+``oci generative-ai api-key create``) and are sent as a bearer token to the OpenAI-compatible API of the
+service, so no OCI configuration file is needed. They only authorize model inference, and they are regional
+and compartment-scoped: create the key in the region of the ``service_endpoint`` and in the compartment
+of the ``OciGenAiConfig``.
+
+**Parameters**
+
+.. option:: api_key: Optional[str]
+
+  The Generative AI API key. It is a sensitive field: it is replaced by a reference when the configuration
+  is exported. When unset, runtimes may load it from the ``OCI_GENAI_API_KEY`` environment variable.
+
+.. note::
+
+  Create the IAM policy that authorizes the key **before** creating the key. Keys created before their
+  policy existed have been observed to keep failing authentication (``401``) long after the policy was
+  added, while keys created after the policy authenticate within seconds. Since the key OCID is only
+  known after creation, start with a policy on the principal type, for example
+  ``allow any-user to use generative-ai-family in compartment <compartment> where request.principal.type='generativeaiapikey'``,
+  and restrict it to ``request.principal.id='<api key OCID>'`` afterwards if needed.
+
+.. code-block:: python
+
+    from pyagentspec.llms import OciGenAiConfig
+    from pyagentspec.llms.ociclientconfig import OciClientConfigWithGenAiApiKey
+    from pyagentspec.llms.ocigenaiconfig import OciAPIType
+
+    llm = OciGenAiConfig(
+        name="oci-genai-llama",
+        model_id="meta.llama-3.3-70b-instruct",
+        compartment_id="ocid1.compartment.oc1..<compartment_id>",
+        api_type=OciAPIType.OPENAI_CHAT_COMPLETIONS,
+        client_config=OciClientConfigWithGenAiApiKey(
+            name="client_config",
+            service_endpoint="https://inference.generativeai.<oci region>.oci.oraclecloud.com",
+            # api_key left unset: runtimes read it from OCI_GENAI_API_KEY
+        ),
+    )
 
 
 OciClientConfigWithInstancePrincipal

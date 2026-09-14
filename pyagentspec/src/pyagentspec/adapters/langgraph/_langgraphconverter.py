@@ -101,6 +101,7 @@ from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfig,
     OciClientConfigWithApiKey,
+    OciClientConfigWithGenAiApiKey,
     OciClientConfigWithInstancePrincipal,
     OciClientConfigWithResourcePrincipal,
     OciClientConfigWithSecurityToken,
@@ -1605,6 +1606,13 @@ class AgentSpecToLangGraphConverter:
                 "auth_profile": client_config.auth_profile,
                 "auth_file_location": client_config.auth_file_location,
             }
+        elif isinstance(client_config, OciClientConfigWithGenAiApiKey):
+            raise NotImplementedError(
+                "The LangGraph adapter reaches OCI Generative AI through `langchain-oci`, which "
+                "authenticates with OCI IAM credentials and cannot use an OCI Generative AI API "
+                f"key (OciClientConfigWithGenAiApiKey '{client_config.name}'). Use an IAM-based "
+                "OciClientConfig, or a runtime using the OpenAI-compatible API of OCI Generative AI."
+            )
         else:
             raise ValueError(
                 f"Agent Spec OciClientConfig '{client_config.__class__.__name__}' is not supported yet."

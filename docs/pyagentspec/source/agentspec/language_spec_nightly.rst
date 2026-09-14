@@ -845,7 +845,9 @@ More information about how to perform authentication in OCI is available on the
 
     class OciClientConfig(Component):
         service_endpoint: str
-        auth_type: Literal["SECURITY_TOKEN", "INSTANCE_PRINCIPAL", "RESOURCE_PRINCIPAL", "API_KEY"]
+        auth_type: Literal[
+            "SECURITY_TOKEN", "INSTANCE_PRINCIPAL", "RESOURCE_PRINCIPAL", "API_KEY", "GENAI_API_KEY"
+        ]
 
 Based on the type of authentication the user wants to adopt, different specifications of the ``OciClientConfig``
 are defined. In the following sections we show what client extensions are available and their specific parameters.
@@ -874,6 +876,23 @@ Client configuration that should be used if users want to use authentication wit
         auth_profile: str
         auth_file_location: SensitiveField[str]
         auth_type: Literal["API_KEY"] = "API_KEY"
+
+OciClientConfigWithGenAiApiKey
+''''''''''''''''''''''''''''''
+
+Client configuration that should be used if users want to authenticate with an OCI Generative AI API key.
+Generative AI API keys are created in the Generative AI service, are scoped to a compartment and a region,
+and are sent as a bearer token to the OpenAI-compatible API of the service (``<service_endpoint>/openai/v1``),
+so they require neither an OCI configuration file nor request signing. They only authorize model inference:
+this client configuration cannot be used with the ``OciAgent`` component. When ``api_key`` is not specified,
+runtimes may try to load it from the ``OCI_GENAI_API_KEY`` environment variable.
+See `Generative AI API keys <https://docs.oracle.com/en-us/iaas/Content/generative-ai/api-keys.htm>`_ for more details.
+
+.. code-block:: python
+
+    class OciClientConfigWithGenAiApiKey(OciClientConfig):
+        api_key: SensitiveField[Optional[str]] = None
+        auth_type: Literal["GENAI_API_KEY"] = "GENAI_API_KEY"
 
 OciClientConfigWithInstancePrincipal
 ''''''''''''''''''''''''''''''''''''
@@ -3074,6 +3093,8 @@ See all the fields below that are considered sensitive fields:
 | OciClientConfigWithSecurityToken | auth_file_location |
 +----------------------------------+--------------------+
 | OciClientConfigWithApiKey        | auth_file_location |
++----------------------------------+--------------------+
+| OciClientConfigWithGenAiApiKey   | api_key            |
 +----------------------------------+--------------------+
 | RemoteTool                       | sensitive_headers  |
 +----------------------------------+--------------------+

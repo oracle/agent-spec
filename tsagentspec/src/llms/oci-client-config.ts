@@ -51,8 +51,25 @@ export type OciClientConfigWithSecurityToken = z.infer<
   typeof OciClientConfigWithSecurityTokenSchema
 >;
 
+/**
+ * Authentication with an OCI Generative AI API key, sent as a bearer token to the
+ * OpenAI-compatible API of the service. The key is a sensitive field; when it is left
+ * undefined, runtimes may read it from the OCI_GENAI_API_KEY environment variable.
+ */
+export const OciClientConfigWithGenAiApiKeySchema = ComponentBaseSchema.extend({
+  componentType: z.literal("OciClientConfigWithGenAiApiKey"),
+  serviceEndpoint: z.string(),
+  authType: z.literal("GENAI_API_KEY").default("GENAI_API_KEY"),
+  apiKey: z.string().optional(),
+});
+
+export type OciClientConfigWithGenAiApiKey = z.infer<
+  typeof OciClientConfigWithGenAiApiKeySchema
+>;
+
 export const OciClientConfigUnion = z.discriminatedUnion("componentType", [
   OciClientConfigWithApiKeySchema,
+  OciClientConfigWithGenAiApiKeySchema,
   OciClientConfigWithInstancePrincipalSchema,
   OciClientConfigWithResourcePrincipalSchema,
   OciClientConfigWithSecurityTokenSchema,
@@ -120,6 +137,22 @@ export function createOciClientConfigWithSecurityToken(opts: {
     OciClientConfigWithSecurityTokenSchema.parse({
       ...opts,
       componentType: "OciClientConfigWithSecurityToken" as const,
+    }),
+  );
+}
+
+export function createOciClientConfigWithGenAiApiKey(opts: {
+  name: string;
+  serviceEndpoint: string;
+  apiKey?: string;
+  id?: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}): OciClientConfigWithGenAiApiKey {
+  return Object.freeze(
+    OciClientConfigWithGenAiApiKeySchema.parse({
+      ...opts,
+      componentType: "OciClientConfigWithGenAiApiKey" as const,
     }),
   );
 }
