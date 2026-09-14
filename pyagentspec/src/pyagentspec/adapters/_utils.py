@@ -184,6 +184,16 @@ def _build_type_from_schema(
     return mapping.get(t, Any)
 
 
+def is_single_string_output(expected_outputs: List[AgentSpecProperty]) -> bool:
+    """Whether the declared outputs are a single string property.
+
+    Such an output is the model's free text, so an adapter can read it from the final
+    message instead of asking for structured generation. Lives here rather than in one
+    adapter because it is a property of the declared outputs.
+    """
+    return len(expected_outputs) == 1 and expected_outputs[0].type == "string"
+
+
 def create_pydantic_model_from_properties(
     model_name: str, properties: List[AgentSpecProperty]
 ) -> type[BaseModel]:
