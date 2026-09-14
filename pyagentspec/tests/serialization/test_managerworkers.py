@@ -132,7 +132,7 @@ def test_managerworkers_infers_manager_ios_in_current_version() -> None:
     assert manager_workers.min_agentspec_version == AgentSpecVersionEnum.current_version
     with pytest.raises(ValueError, match="Invalid agentspec_version"):
         AgentSpecSerializer().to_dict(
-            manager_workers, agentspec_version=AgentSpecVersionEnum.v26_3_0
+            manager_workers, agentspec_version=AgentSpecVersionEnum.v26_3_1
         )
 
 
@@ -157,10 +157,10 @@ def test_managerworkers_without_ios_with_manager_ios_is_legacy_compatible() -> N
     assert manager_workers.inputs == []
     assert manager_workers.outputs == []
     assert manager_workers.min_agentspec_version == AgentSpecVersionEnum.v25_4_2
-    assert manager_workers.max_agentspec_version == AgentSpecVersionEnum.v26_3_0
+    assert manager_workers.max_agentspec_version == AgentSpecVersionEnum.v26_3_1
 
     serialized = AgentSpecSerializer().to_dict(
-        manager_workers, agentspec_version=AgentSpecVersionEnum.v26_3_0
+        manager_workers, agentspec_version=AgentSpecVersionEnum.v26_3_1
     )
     deserialized = AgentSpecDeserializer().from_dict(serialized)
 

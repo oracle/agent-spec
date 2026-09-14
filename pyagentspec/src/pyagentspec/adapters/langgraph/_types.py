@@ -63,7 +63,9 @@ else:
 
 LangGraphTool: TypeAlias = Union[BaseTool, Callable[..., Any]]
 if TYPE_CHECKING:
-    LangGraphComponent = Union[StateGraph[Any, Any, Any], CompiledStateGraph[Any, Any, Any]]
+    LangGraphComponent = Union[
+        StateGraph[Any, Any, Any, Any], CompiledStateGraph[Any, Any, Any, Any]
+    ]
 else:
     LangGraphComponent = Union[StateGraph, CompiledStateGraph]
 LangGraphRuntimeComponent: TypeAlias = Union[LangGraphComponent, BaseChatModel, StructuredTool]
