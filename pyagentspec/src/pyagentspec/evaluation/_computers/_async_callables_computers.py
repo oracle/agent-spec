@@ -68,7 +68,9 @@ class _AsyncCallablesComputer(Generic[T]):
         self.dataset = dataset
         self.callables = callables
         self.limiter = (
-            anyio.CapacityLimiter(max_concurrency) if max_concurrency != -1 else nullcontext()
+            anyio.CapacityLimiter(max(1, max_concurrency))
+            if max_concurrency != -1
+            else nullcontext()
         )
         self._registry = _AsyncRegistry[Tuple[Any, str], T]()
 
