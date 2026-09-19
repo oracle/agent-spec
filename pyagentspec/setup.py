@@ -32,7 +32,7 @@ LANGGRAPH_DEPS = [
     "langchain>=1.3.9,<2.0.0",
     "langchain-openai>=1.2.1,<1.3.0",
     "langchain-ollama>=1.0.1",
-    "anyio>=4.10.0,<4.12.0",
+    "anyio>=4.10.0,<4.15.0",
     "httpx>0.28.0",
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies
@@ -166,7 +166,7 @@ setup(
         ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
-            "anyio>=4.10.0,<4.12.0",
+            "anyio>=4.10.0,<4.15.0",
             "litellm>=1.84.0,<2.0; python_version < '3.14'",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.184.2",
