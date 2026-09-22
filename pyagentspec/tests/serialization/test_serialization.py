@@ -4,11 +4,12 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 import json
-from typing import Any, Dict, List, Tuple, Type, Union, cast
+from typing import Any, Callable, Dict, List, Tuple, Type, Union, cast
 from unittest.mock import patch
 
 import pytest
 import yaml
+from pydantic import ValidationError
 
 from pyagentspec.agent import Agent
 from pyagentspec.component import Component
@@ -18,6 +19,7 @@ from pyagentspec.flows.nodes import FlowNode, MapNode
 from pyagentspec.flows.nodes.endnode import EndNode
 from pyagentspec.flows.nodes.llmnode import LlmNode
 from pyagentspec.flows.nodes.startnode import StartNode
+from pyagentspec.llms.openaiconfig import OpenAiConfig
 from pyagentspec.llms.vllmconfig import VllmConfig
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.serialization.pydanticdeserializationplugin import (
@@ -78,6 +80,83 @@ def test_deserialization_raises_on_repeated_referenced_id() -> None:
         match="The objects: .* appear multiple times at different levels in referenced components.",
     ):
         AgentSpecDeserializer().from_yaml(serialized_flow)
+
+
+@pytest.fixture
+def serialized_agent_with_placeholder() -> Dict[str, Any]:
+    agent = Agent(
+        id="agent",
+        name="agent",
+        llm_config=OpenAiConfig(id="llm", name="llm", model_id="some_model"),
+        system_prompt="Hello {{who}}",
+    )
+    return agent.to_dict()
+
+
+@pytest.mark.parametrize(
+    "deserialize",
+    [
+        lambda content: Component.from_dict(content),
+        lambda content: Component.from_json(json.dumps(content)),
+        lambda content: Component.from_yaml(yaml.safe_dump(content)),
+        lambda content: AgentSpecDeserializer().from_dict(content),
+    ],
+    ids=["from_dict", "from_json", "from_yaml", "deserializer_from_dict"],
+)
+def test_deserialization_reports_custom_validation_errors(
+    deserialize: Callable[[Dict[str, Any]], Component],
+) -> None:
+    start_node = StartNode(id="start", name="start")
+    end_node = EndNode(id="end", name="end")
+    flow = Flow(
+        id="flow",
+        name="flow",
+        start_node=start_node,
+        nodes=[start_node, end_node],
+        control_flow_connections=[
+            ControlFlowEdge(id="edge", name="edge", from_node=start_node, to_node=end_node)
+        ],
+    )
+    serialized_flow = flow.to_dict()
+    # An end node without any incoming control flow edge is rejected by a custom Flow validator
+    serialized_end_node = serialized_flow["$referenced_components"]["end"]
+    serialized_flow["nodes"].append(
+        {**serialized_end_node, "id": "unreachable_end", "name": "unreachable_end"}
+    )
+
+    with pytest.raises(
+        ValidationError,
+        match="Found an end node without any incoming control flow edge.*'unreachable_end'",
+    ) as exc_info:
+        deserialize(serialized_flow)
+    (error,) = exc_info.value.errors()
+    assert error["type"] == "value_error"
+
+
+def test_deserialization_reports_extra_io_property_errors(
+    serialized_agent_with_placeholder: Dict[str, Any],
+) -> None:
+    serialized_agent_with_placeholder["inputs"].append({"title": "not_in_prompt", "type": "string"})
+
+    with pytest.raises(
+        ValidationError,
+        match="The Agent component received a property titled `not_in_prompt`",
+    ) as exc_info:
+        Component.from_dict(serialized_agent_with_placeholder)
+    (error,) = exc_info.value.errors()
+    assert error["type"] == "value_error"
+
+
+def test_deserialization_reports_field_type_errors(
+    serialized_agent_with_placeholder: Dict[str, Any],
+) -> None:
+    serialized_agent_with_placeholder["system_prompt"] = 123
+
+    with pytest.raises(ValidationError, match="Input should be a valid string") as exc_info:
+        Component.from_dict(serialized_agent_with_placeholder)
+    (error,) = exc_info.value.errors()
+    assert error["type"] == "string_type"
+    assert error["loc"] == ("system_prompt",)
 
 
 def test_component_are_not_referenced_if_used_only_once() -> None:
