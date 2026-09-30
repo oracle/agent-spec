@@ -36,6 +36,7 @@ from pyagentspec.adapters._utils import (
     _build_type_from_schema,
     create_pydantic_model_from_properties,
 )
+from pyagentspec.adapters.langgraph._async_utils import run_async_in_sync
 from pyagentspec.adapters.langgraph._execution_span import patch_with_execution_span
 from pyagentspec.adapters.langgraph._managerworkers import (
     _MANAGER_NODE_KEY,
@@ -69,10 +70,6 @@ from pyagentspec.adapters.langgraph._types import (
     langchain_agents,
     langgraph_graph,
     langgraph_swarm,
-)
-from pyagentspec.adapters.langgraph.mcp_utils import (
-    _HttpxClientFactory,
-    run_async_in_sync,
 )
 from pyagentspec.adapters.langgraph.tracing import (
     AgentSpecLlmCallbackHandler,
@@ -1474,6 +1471,8 @@ class AgentSpecToLangGraphConverter:
             StdioConnection,
             StreamableHttpConnection,
         )
+
+        from pyagentspec.adapters.langgraph.mcp_utils import _HttpxClientFactory
 
         sesh = agentspec_component.session_parameters.model_dump()
         sesh["read_timeout_seconds"] = datetime.timedelta(seconds=sesh["read_timeout_seconds"])

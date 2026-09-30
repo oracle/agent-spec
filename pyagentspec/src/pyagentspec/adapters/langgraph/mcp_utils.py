@@ -6,22 +6,9 @@
 
 import ssl
 import warnings
-from concurrent.futures import ThreadPoolExecutor
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar
+from typing import Any, Optional
 
-import anyio
-from anyio import from_thread
-from sniffio import AsyncLibraryNotFoundError, current_async_library
-
-from pyagentspec._lazy_loader import LazyLoader
-
-if TYPE_CHECKING:
-    import httpx
-else:
-    httpx = LazyLoader("httpx")
-
-T = TypeVar("T")
+import httpx
 
 
 class _HttpxClientFactory:
@@ -76,9 +63,9 @@ class _HttpxClientFactory:
     def __call__(
         self,
         headers: dict[str, str] | None = None,
-        timeout: "httpx.Timeout | None" = None,
-        auth: "httpx.Auth | None" = None,
-    ) -> "httpx.AsyncClient":
+        timeout: httpx.Timeout | None = None,
+        auth: httpx.Auth | None = None,
+    ) -> httpx.AsyncClient:
         # Set MCP defaults
         kwargs: dict[str, Any] = {
             "follow_redirects": self.follow_redirects,
@@ -96,77 +83,3 @@ class _HttpxClientFactory:
         if auth is not None:
             kwargs["auth"] = auth
         return httpx.AsyncClient(**kwargs)
-
-
-class AsyncContext(Enum):
-    ASYNC = "async"
-    SYNC = "sync"
-    SYNC_WORKER = "sync_worker"
-
-
-def _is_anyio_worker_thread() -> bool:
-    try:
-        # check_cancelled() is a lightweight public API (no I/O, no scheduling)
-        # that only succeeds inside an AnyIO worker thread spawned by
-        # to_thread.run_sync(). Outside that context it raises RuntimeError.
-        from_thread.check_cancelled()
-    except RuntimeError:
-        return False
-    else:
-        return True
-
-
-def get_execution_context() -> AsyncContext:
-    """
-    Return one of:
-    - 'sync'         → plain synchronous context (no loop, no worker thread)
-    - 'sync_worker'  → synchronous worker thread (spawned by to_thread.run_sync)
-    - 'async'        → running inside the event loop
-    """
-    try:
-        current_async_library()
-        return AsyncContext.ASYNC
-    except AsyncLibraryNotFoundError:
-        if _is_anyio_worker_thread():
-            # for anyio workers, we can use specific methods to
-            # handle back asynchronous code to the main loop
-            return AsyncContext.SYNC_WORKER
-
-        # otherwise, consider it as a synchronous thread
-        return AsyncContext.SYNC
-
-
-def run_async_in_sync(
-    async_function: Callable[..., Awaitable[T]], *args: Any, method_name: str = ""
-) -> T:
-    """
-    Runs an asynchronous function in any context, choosing the most efficient way to do so
-    """
-    match get_execution_context():
-        case AsyncContext.SYNC:
-            # case 1: synchronous context
-            return anyio.run(async_function, *args)
-        case AsyncContext.SYNC_WORKER:
-            # case 2: from worker thread get back to existing async event loop
-            return from_thread.run(async_function, *args)
-        case AsyncContext.ASYNC:
-            # case 3: from async main context
-            # this is highly discouraged since it synchronises work that could
-            # be just run async
-            # warnings.warn(
-            #     "You are calling an asynchronous method in a synchronous method from an asynchronous context. "
-            #     "This is highly discouraged because it can lead to deadlocks. "
-            #     f"Please use the asynchronous method equivalent: {method_name}",
-            #     UserWarning,
-            # )
-
-            # workaround: anyio does not have any API run asynchronous code in a
-            # synchronous method that was not started with anyio.to_thread
-            # instead, we spawn a thread to execute it in a completely new event loop
-            def thread_target() -> T:
-                return anyio.run(async_function, *args)
-
-            future = ThreadPoolExecutor(max_workers=1).submit(thread_target)
-            return future.result()
-        case unsupported_context:
-            raise NotImplementedError(f"Unsupported async context: {unsupported_context}")
