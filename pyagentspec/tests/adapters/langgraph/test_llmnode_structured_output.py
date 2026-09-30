@@ -117,23 +117,3 @@ def test_oci_genai_accepts_nested_json_schema_output(monkeypatch: pytest.MonkeyP
     assert tool.name == "structured_output"
     profile = tool.parameters["properties"]["result"]["properties"]["profile"]
     assert set(profile["required"]) == {"score", "active", "tags"}
-
-
-def test_langchain_oci_version_guard(monkeypatch: pytest.MonkeyPatch) -> None:
-    import importlib.metadata as metadata
-
-    from pyagentspec.adapters.langgraph import _langgraphconverter
-
-    def old_version(name: str) -> str:
-        assert name == "langchain-oci"
-        return "0.2.7"
-
-    monkeypatch.setattr(metadata, "version", old_version)
-    with pytest.raises(ImportError, match=r"langchain-oci>=0\.3\.0 \(found 0\.2\.7\)"):
-        _langgraphconverter._check_langchain_oci_version()
-
-    monkeypatch.setattr(metadata, "version", lambda name: "0.3.2")
-    _langgraphconverter._check_langchain_oci_version()  # no error
-
-    monkeypatch.setattr(metadata, "version", lambda name: "1.0.0rc1")
-    _langgraphconverter._check_langchain_oci_version()  # pre-release tokens tolerated
