@@ -42,6 +42,13 @@ Bug fixes
   value) failed with ``KeyError: 'type'``. Such properties are now mapped to ``Any``, and arrays
   without ``items`` to ``List[Any]``.
 
+* **Property type comparison no longer mutates schemas**
+
+  Comparing or checking the castability of a JSON schema that combines a ``type`` list with
+  ``anyOf`` appended the normalized types to the schema's own ``anyOf`` list. The schema is now
+  left untouched.
+
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
