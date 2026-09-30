@@ -33,7 +33,6 @@ LANGGRAPH_DEPS = [
     "langchain-openai>=1.2.1,<1.3.0",
     "langchain-ollama>=1.0.1",
     "anyio>=4.10.0,<5.0.0",
-    "sniffio>=1.1",
     "httpx>0.28.0",
     "langgraph-swarm>=0.1.0",
     # 4rth party dependencies

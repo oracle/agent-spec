@@ -10,7 +10,6 @@ from typing import Any, Callable, Coroutine, TypeVar
 
 import anyio
 from anyio import from_thread
-from sniffio import AsyncLibraryNotFoundError, current_async_library
 
 T = TypeVar("T")
 
@@ -23,9 +22,7 @@ class AsyncContext(Enum):
 
 def _is_anyio_worker_thread() -> bool:
     try:
-        # check_cancelled() is a lightweight public API (no I/O, no scheduling)
-        # that only succeeds inside an AnyIO worker thread spawned by
-        # to_thread.run_sync(). Outside that context it raises RuntimeError.
+        # AnyIO allows this check only in threads it started for sync work.
         from_thread.check_cancelled()
     except RuntimeError:
         return False
@@ -33,16 +30,29 @@ def _is_anyio_worker_thread() -> bool:
         return True
 
 
-def get_execution_context() -> AsyncContext:
-    """Determine whether the current code is sync, async, or in an AnyIO worker."""
+def _is_async_context() -> bool:
     try:
-        current_async_library()
-        return AsyncContext.ASYNC
-    except AsyncLibraryNotFoundError:
-        if _is_anyio_worker_thread():
-            return AsyncContext.SYNC_WORKER
+        anyio.get_current_task()
+    except Exception:
+        # Need to catch a generic Exception.
+        # AnyIO 4.12.0 raised NoCurrentAsyncBackend here; it does not inherit
+        # from RuntimeError like the no-loop exceptions in other supported versions.
+        return False
+    else:
+        return True
 
-        return AsyncContext.SYNC
+
+def get_execution_context() -> AsyncContext:
+    """Check whether this call is running in async code or sync code."""
+    if _is_async_context():
+        return AsyncContext.ASYNC
+
+    # Sync code may still be running in a thread started by AnyIO.
+    if _is_anyio_worker_thread():
+        return AsyncContext.SYNC_WORKER
+
+    # No event loop or AnyIO worker: this is an ordinary sync call.
+    return AsyncContext.SYNC
 
 
 def run_async_in_sync(
@@ -51,12 +61,14 @@ def run_async_in_sync(
     """Run an asynchronous function from synchronous or asynchronous code."""
     match get_execution_context():
         case AsyncContext.SYNC:
+            # A regular sync call needs its own event loop to run the coroutine.
             return anyio.run(async_function, *args)
         case AsyncContext.SYNC_WORKER:
+            # Return to the event loop that started this AnyIO worker thread.
             return from_thread.run(async_function, *args)
         case AsyncContext.ASYNC:
-            # AnyIO cannot run an async function synchronously from an async context
-            # unless the caller is an AnyIO worker, so use a fresh event loop/thread.
+            # The current thread already has an event loop, so run the coroutine
+            # in a new thread with its own loop instead.
             def thread_target() -> T:
                 return anyio.run(async_function, *args)
 
