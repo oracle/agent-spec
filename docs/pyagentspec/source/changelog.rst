@@ -45,6 +45,12 @@ Bug fixes
   declared outputs (a JSON object keyed by output name, the JSON value of a single output,
   or the free text of a single string output), and a warning is logged when they cannot.
 
+* **Property type comparison no longer mutates schemas**
+
+  Comparing or checking the castability of a JSON schema that combines a ``type`` list with
+  ``anyOf`` appended the normalized types to the schema's own ``anyOf`` list. The schema is now
+  left untouched.
+
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 

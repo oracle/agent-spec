@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from copy import deepcopy
 from typing import Any, Dict, List, Type
 
 import pytest
@@ -1048,3 +1049,20 @@ def test_property_deduplication(properties: List[Property], expected_deduplicati
     else:
         with pytest.raises(expected_deduplication):
             print(deduplicate_properties_by_title_and_type(properties))
+
+
+def test_type_comparison_does_not_mutate_schemas_combining_type_and_any_of() -> None:
+    # Normalizing the union types used to append the entries of `type` to the schema's own
+    # `anyOf` list, so comparing a schema silently changed it
+    schema_a = {"type": ["integer", "null"], "anyOf": [{"type": "string"}]}
+    schema_b = {"anyOf": [{"type": "string"}, {"type": "integer"}, {"type": "null"}]}
+    original_schema_a = deepcopy(schema_a)
+    original_schema_b = deepcopy(schema_b)
+
+    assert json_schemas_have_same_type(schema_a, schema_b)
+    assert json_schema_is_castable_to(schema_a, schema_b)
+    assert value_is_of_compatible_type(3, schema_a)
+    assert json_schemas_have_same_type(schema_a, schema_b)
+
+    assert schema_a == original_schema_a
+    assert schema_b == original_schema_b
