@@ -44,6 +44,16 @@ Bug fixes
   values are now recovered from the final agent message when it can be mapped to the
   declared outputs (a JSON object keyed by output name, the JSON value of a single output,
   or the free text of a single string output), and a warning is logged when they cannot.
+  
+  We thank @fede-kamel for the contribution!
+
+* **AutoGen adapter: tools with untyped properties**
+
+  Converting a tool whose input has no ``type`` in its JSON schema (a property accepting any
+  value) failed with ``KeyError: 'type'``. Such properties are now mapped to ``Any``, and arrays
+  without ``items`` to ``List[Any]``.
+  
+  We thank @fede-kamel for the contribution!
 
 * **LangGraph adapter: AgentNode agents honour the recursion limit of the flow run**
 
@@ -52,12 +62,17 @@ Bug fixes
   An agent that never terminated made thousands of model calls before failing. A recursion
   limit explicitly configured for the run (or in the loader config) is now passed on to the
   nested agent; runs using LangChain's default limit keep the agent's own limit.
+  
+  We thank @fede-kamel for the contribution!
 
 * **Property type comparison no longer mutates schemas**
 
   Comparing or checking the castability of a JSON schema that combines a ``type`` list with
   ``anyOf`` appended the normalized types to the schema's own ``anyOf`` list. The schema is now
   left untouched.
+  
+  We thank @fede-kamel for the contribution!
+
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
