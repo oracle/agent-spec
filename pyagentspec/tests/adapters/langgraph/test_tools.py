@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+import asyncio
 import threading
 from typing import Any
 from unittest.mock import patch
@@ -1130,6 +1131,51 @@ def test_server_tool_missing_from_registry_raises() -> None:
 
     with pytest.raises(ValueError, match="does not appear in the tool registry"):
         AgentSpecLoader(tool_registry={}, checkpointer=MemorySaver()).load_component(flow)
+
+
+@pytest.mark.anyio
+async def test_remote_tool_coroutine_does_not_block_event_loop() -> None:
+    from pyagentspec.adapters.langgraph import AgentSpecLoader
+
+    entered_request = threading.Event()
+    release_request = threading.Event()
+
+    def mock_request(*args: Any, **kwargs: Any) -> DummyResponse:
+        entered_request.set()
+        # Bounded so a regression fails instead of hanging the suite forever.
+        release_request.wait(timeout=5)
+        return DummyResponse({"ok": True, "body": kwargs["json"]})
+
+    remote_tool = RemoteTool(
+        name="remote_echo",
+        description="Echoes the input value",
+        url="https://example.com/echo",
+        http_method="POST",
+        data={"x": "{{x}}"},
+        inputs=[IntegerProperty(title="x")],
+        outputs=[Property(title="result", json_schema={})],
+    )
+
+    lang_tool = AgentSpecLoader().load_component(remote_tool)
+
+    assert lang_tool.coroutine is not None
+
+    with patch("httpx.request", side_effect=mock_request):
+        task = asyncio.create_task(lang_tool.coroutine(x=5))
+        try:
+            # The event loop must stay responsive while the blocking call is in flight,
+            # so we observe the request being entered without the task having completed.
+            for _ in range(500):
+                if entered_request.is_set():
+                    break
+                await asyncio.sleep(0.01)
+
+            assert entered_request.is_set()
+            assert not task.done()
+        finally:
+            release_request.set()
+
+        assert await task == {"ok": True, "body": {"x": "5"}}
 
 
 @pytest.mark.anyio
