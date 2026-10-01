@@ -2225,6 +2225,11 @@ Oracle Cloud Infrastructure. It adds OCI-specific authentication and connection 
 - ``client_config`` contains the OCI client and authentication configuration used to connect to the service.
 - ``retry_policy`` optionally specifies a ``RetryPolicy`` for outbound requests to the remote OCI agent.
 
+The ``client_config`` of an ``OciAgent`` must use one of the IAM-based authentication types
+(``SECURITY_TOKEN``, ``INSTANCE_PRINCIPAL``, ``RESOURCE_PRINCIPAL`` or ``API_KEY``).
+``OciClientConfigWithGenAiApiKey`` is not accepted: Generative AI API keys only authorize model inference
+and cannot reach the OCI Agents service, so an ``OciAgent`` configured with it is invalid and SDKs must reject it.
+
 
 Swarm
 ~~~~~
