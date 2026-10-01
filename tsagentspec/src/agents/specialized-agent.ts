@@ -2,7 +2,11 @@
  * SpecializedAgent and AgentSpecializationParameters.
  */
 import { z } from "zod";
-import { ComponentWithIOSchema } from "../component.js";
+import {
+  ComponentWithIOSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 import type { Property } from "../property.js";
 import { deduplicatePropertiesByTitleAndType } from "../property.js";
 import { getPlaceholderPropertiesFromJsonObject } from "../templating.js";
@@ -13,7 +17,7 @@ export const AgentSpecializationParametersSchema =
   ComponentWithIOSchema.extend({
     componentType: z.literal("AgentSpecializationParameters"),
     additionalInstructions: z.string().optional(),
-    additionalTools: z.array(ToolUnion).optional(),
+    additionalTools: z.array(openComponentUnion(ToolUnion)).optional(),
     humanInTheLoop: z.boolean().optional(),
   });
 
@@ -35,7 +39,7 @@ export function createAgentSpecializationParameters(opts: {
   description?: string;
   metadata?: Record<string, unknown>;
   additionalInstructions?: string;
-  additionalTools?: Tool[];
+  additionalTools?: Array<Tool | CustomComponent>;
   humanInTheLoop?: boolean;
   inputs?: Property[];
   outputs?: Property[];
