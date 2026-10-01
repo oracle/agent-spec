@@ -36,6 +36,12 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **AutoGen adapter: tools with untyped properties**
+
+  Converting a tool whose input has no ``type`` in its JSON schema (a property accepting any
+  value) failed with ``KeyError: 'type'``. Such properties are now mapped to ``Any``, and arrays
+  without ``items`` to ``List[Any]``.
+
 * **LangGraph adapter: AgentNode agents honour the recursion limit of the flow run**
 
   The agents compiled for Flow ``AgentNode`` steps are bound by LangChain to a recursion
@@ -49,6 +55,7 @@ Bug fixes
   Comparing or checking the castability of a JSON schema that combines a ``type`` list with
   ``anyOf`` appended the normalized types to the schema's own ``anyOf`` list. The schema is now
   left untouched.
+
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

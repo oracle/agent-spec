@@ -75,15 +75,17 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
             for inner_json_schema_type in json_schema["anyOf"]
         )
         return f"Union[{','.join(possible_types)}]"
-    if isinstance(json_schema["type"], list):
+    # A schema without type accepts any value
+    json_schema_type = json_schema.get("type", "")
+    if isinstance(json_schema_type, list):
         possible_types = set(
             _json_schema_type_to_python_annotation(inner_json_schema_type)
-            for inner_json_schema_type in json_schema["type"]
+            for inner_json_schema_type in json_schema_type
         )
         return f"Union[{','.join(possible_types)}]"
 
-    if json_schema["type"] == "array":
-        return f"List[{_json_schema_type_to_python_annotation(json_schema['items'])}]"
+    if json_schema_type == "array":
+        return f"List[{_json_schema_type_to_python_annotation(json_schema.get('items', {}))}]"
     mapping = {
         "string": "str",
         "number": "float",
@@ -93,7 +95,7 @@ def _json_schema_type_to_python_annotation(json_schema: Dict[str, Any]) -> str:
         "object": "Dict[str, Any]",
     }
 
-    return mapping.get(json_schema["type"], "Any")
+    return mapping.get(json_schema_type, "Any")
 
 
 # Autogen requires that agent names be valid Python identifiers. Thus, we sanitize names to make sure they are valid.
