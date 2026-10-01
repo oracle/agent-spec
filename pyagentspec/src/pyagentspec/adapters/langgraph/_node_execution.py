@@ -17,6 +17,7 @@ from pyagentspec.adapters._url_validation import (
     validate_url_against_allow_list,
 )
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
+from pyagentspec.adapters.langgraph._async_utils import run_async_in_sync
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     Checkpointer,
@@ -32,7 +33,6 @@ from pyagentspec.adapters.langgraph._types import (
     interrupt,
     langgraph_graph,
 )
-from pyagentspec.adapters.langgraph.mcp_utils import run_async_in_sync
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
