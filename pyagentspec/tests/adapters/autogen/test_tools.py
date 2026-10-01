@@ -4,6 +4,7 @@
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
+from typing import Any, List
 from unittest.mock import patch
 
 import pytest
@@ -261,3 +262,32 @@ def test_remote_tool_actual_endpoint_with_autogen(
 
     assert result["value"] == "test1"
     assert result["listofvalues"] == ["a", "test2", "c"]
+
+
+def test_server_tool_with_untyped_input_can_be_converted() -> None:
+    """A property without ``type`` accepts any value; the conversion used to fail with KeyError."""
+    from pyagentspec.adapters.autogen import AgentSpecLoader
+    from pyagentspec.property import Property, StringProperty
+    from pyagentspec.tools import ServerTool
+
+    echo_tool = ServerTool(
+        name="echo",
+        description="Echoes any value as a string",
+        inputs=[
+            Property(json_schema={"title": "anything"}),
+            Property(json_schema={"title": "items", "type": "array"}),
+        ],
+        outputs=[StringProperty(title="echoed")],
+    )
+
+    def echo(anything: Any, items: List[Any]) -> str:
+        return f"{anything} {items}"
+
+    autogen_tool = AgentSpecLoader(tool_registry={"echo": echo}).load_component(echo_tool)
+
+    assert autogen_tool._func(anything={"nested": [1, 2]}, items=[1, "two"]) == (
+        "{'nested': [1, 2]} [1, 'two']"
+    )
+    schema_properties = autogen_tool.schema["parameters"]["properties"]
+    assert "anything" in schema_properties
+    assert "items" in schema_properties

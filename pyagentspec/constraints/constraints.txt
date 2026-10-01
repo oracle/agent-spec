@@ -3,7 +3,7 @@ pydantic==2.12.5
 pyyaml==6.0.3
 httpx==0.28.1
 typing-extensions==4.15.0
-anyio==4.11.0
+anyio==4.14.2
 # AutoGen adapter
 autogen-core==0.7.4
 autogen-ext==0.7.4
@@ -23,7 +23,7 @@ langchain-mcp-adapters==0.2.2
 langgraph-swarm==0.1.0
 
 # WayFlow adapter
-wayflowcore==26.3.0
+wayflowcore==26.4.0.dev0
 
 # AgentFramework adapter
 agent-framework-core==1.13.0

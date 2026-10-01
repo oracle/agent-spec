@@ -17,6 +17,7 @@ from pyagentspec.adapters._url_validation import (
     validate_url_against_allow_list,
 )
 from pyagentspec.adapters._utils import render_nested_object_template, render_template
+from pyagentspec.adapters.langgraph._async_utils import run_async_in_sync
 from pyagentspec.adapters.langgraph._types import (
     BaseChatModel,
     Checkpointer,
@@ -32,7 +33,6 @@ from pyagentspec.adapters.langgraph._types import (
     interrupt,
     langgraph_graph,
 )
-from pyagentspec.adapters.langgraph.mcp_utils import run_async_in_sync
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.flows.edges import DataFlowEdge
 from pyagentspec.flows.node import Node
@@ -50,6 +50,7 @@ from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.property import Property as AgentSpecProperty
 from pyagentspec.property import _empty_default as pyagentspec_empty_default
+from pyagentspec.property import value_is_of_compatible_type
 from pyagentspec.tracing.events import NodeExecutionEnd as AgentSpecNodeExecutionEnd
 from pyagentspec.tracing.events import NodeExecutionStart as AgentSpecNodeExecutionStart
 from pyagentspec.tracing.events.exception import ExceptionRaised
@@ -563,14 +564,40 @@ class AgentNodeExecutor(NodeExecutor):
         outputs = extract_outputs_from_invoke_result(result, self.node.outputs or [])
         return outputs, NodeExecutionDetails()
 
+    def _agent_invoke_config(self) -> RunnableConfig:
+        """Config of the nested agent run.
+
+        ``create_agent`` binds ``recursion_limit=9999`` to the agents it compiles, which
+        overrides the limit of the enclosing flow run: an agent that never terminates makes
+        thousands of model calls before failing, whatever limit the caller configured.
+        Unless the loader config sets its own limit, a recursion limit explicitly configured
+        for the current run (any value other than LangChain's default) is passed on to the
+        agent so that it stops where the caller asked.
+        """
+        from langchain_core.runnables.config import DEFAULT_RECURSION_LIMIT
+        from langgraph.config import get_config
+
+        config = cast(RunnableConfig, dict(self.config or {}))
+        if "recursion_limit" in config:
+            return config
+        try:
+            run_config = get_config()
+        except RuntimeError:
+            # Not executed within a LangGraph run
+            return config
+        run_recursion_limit = run_config.get("recursion_limit", DEFAULT_RECURSION_LIMIT)
+        if run_recursion_limit != DEFAULT_RECURSION_LIMIT:
+            config["recursion_limit"] = run_recursion_limit
+        return config
+
     def _execute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
-        result = agent.invoke(prepared_inputs, self.config)
+        result = agent.invoke(prepared_inputs, self._agent_invoke_config())
         return self._format_agent_result(result)
 
     async def _aexecute(self, inputs: Dict[str, Any], messages: Messages) -> ExecuteOutput:
         agent, prepared_inputs = self._prepare_agent_and_inputs(inputs, messages)
-        result = await agent.ainvoke(prepared_inputs, self.config)
+        result = await agent.ainvoke(prepared_inputs, self._agent_invoke_config())
         return self._format_agent_result(result)
 
 
@@ -929,12 +956,94 @@ class MapNodeExecutor(NodeExecutor):
                 outputs[collected_output_name].append(output_value)
 
 
+def _get_final_agent_message_text(messages: Any) -> Optional[str]:
+    """Return the text of the agent's final message, if the run ended with a plain message.
+
+    A final message carrying tool calls (including the structured output tool call) is not
+    a plain answer, so ``None`` is returned in that case.
+    """
+    for message in reversed(list(messages or [])):
+        if getattr(message, "type", None) != "ai":
+            continue
+        if getattr(message, "tool_calls", None):
+            return None
+        content = message.content
+        if isinstance(content, list):
+            content = "".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        if isinstance(content, str) and content.strip():
+            return content
+        return None
+    return None
+
+
+def _recover_outputs_from_agent_message(
+    message_text: str, expected_outputs: List[AgentSpecProperty]
+) -> Dict[str, Any]:
+    """Best-effort extraction of the declared outputs from the agent's final plain message.
+
+    Models that do not call the structured output tool often answer with the values
+    themselves: a JSON object keyed by the output names, or, for a single output, the value
+    (a JSON array/number/object) or free text for a string output. Values are only used
+    when they are compatible with the declared output schema.
+    """
+    try:
+        parsed_value: Any = json.loads(message_text)
+        parsed = True
+    except ValueError:
+        parsed_value, parsed = None, False
+
+    if parsed and isinstance(parsed_value, dict):
+        recovered = {
+            output.title: parsed_value[output.title]
+            for output in expected_outputs
+            if output.title in parsed_value
+            and value_is_of_compatible_type(parsed_value[output.title], output.json_schema)
+        }
+        if recovered:
+            return recovered
+
+    if len(expected_outputs) == 1:
+        output = expected_outputs[0]
+        if output.json_schema.get("type") == "string":
+            # The free text is the answer itself
+            return {output.title: message_text}
+        if parsed and value_is_of_compatible_type(parsed_value, output.json_schema):
+            return {output.title: parsed_value}
+    return {}
+
+
 def extract_outputs_from_invoke_result(
     result: Dict[str, Any], expected_outputs: List[AgentSpecProperty]
 ) -> Dict[str, Any]:
     # Extracts the outputs from the return value of an invoke call made on an agent
     # The outputs are typically exposed as part of the `structured_response`, or as entries in the result directly.
     # We give priority to the latter.
+    structured_response = result.get("structured_response") or {}
+    recovered_outputs: Dict[str, Any] = {}
+    if not structured_response and expected_outputs:
+        # The model answered with a plain message instead of calling the structured output
+        # tool: the values are recovered from that message when possible, instead of
+        # silently reporting the declared defaults.
+        final_message_text = _get_final_agent_message_text(result.get("messages"))
+        if final_message_text is not None:
+            recovered_outputs = _recover_outputs_from_agent_message(
+                final_message_text, expected_outputs
+            )
+        missing_outputs = [
+            output.title
+            for output in expected_outputs
+            if output.title not in recovered_outputs and output.title not in result
+        ]
+        if missing_outputs:
+            logger.warning(
+                "The agent did not produce a structured response and its final message could "
+                "not be mapped to outputs %s; declared defaults are used when available.",
+                missing_outputs,
+            )
     return {
         # Defaults if available
         **{
@@ -942,8 +1051,10 @@ def extract_outputs_from_invoke_result(
             for output in expected_outputs or []
             if output.default is not pyagentspec_empty_default
         },
+        # Values recovered from the final agent message when no structured response exists
+        **recovered_outputs,
         # Results in `structured_response`
-        **dict(result.get("structured_response", {})),
+        **dict(structured_response),
         # Results appended to main dictionary
         **{
             output.title: result[output.title]
