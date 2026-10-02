@@ -26,10 +26,12 @@ import { OpenAiConfigSchema, createOpenAiConfig } from "./llms/openai-config.js"
 import { OciGenAiConfigSchema, createOciGenAiConfig } from "./llms/oci-genai-config.js";
 import {
   OciClientConfigWithApiKeySchema,
+  OciClientConfigWithGenAiApiKeySchema,
   OciClientConfigWithInstancePrincipalSchema,
   OciClientConfigWithResourcePrincipalSchema,
   OciClientConfigWithSecurityTokenSchema,
   createOciClientConfigWithApiKey,
+  createOciClientConfigWithGenAiApiKey,
   createOciClientConfigWithInstancePrincipal,
   createOciClientConfigWithResourcePrincipal,
   createOciClientConfigWithSecurityToken,
@@ -146,6 +148,7 @@ export const BUILTIN_SCHEMA_MAP: Record<string, z.ZodType> = {
   OpenAiConfig: OpenAiConfigSchema,
   OciGenAiConfig: OciGenAiConfigSchema,
   OciClientConfigWithApiKey: OciClientConfigWithApiKeySchema,
+  OciClientConfigWithGenAiApiKey: OciClientConfigWithGenAiApiKeySchema,
   OciClientConfigWithInstancePrincipal: OciClientConfigWithInstancePrincipalSchema,
   OciClientConfigWithResourcePrincipal: OciClientConfigWithResourcePrincipalSchema,
   OciClientConfigWithSecurityToken: OciClientConfigWithSecurityTokenSchema,
@@ -217,6 +220,7 @@ export const BUILTIN_FACTORY_MAP: Record<string, FactoryFn> = {
   OpenAiConfig: createOpenAiConfig,
   OciGenAiConfig: createOciGenAiConfig,
   OciClientConfigWithApiKey: createOciClientConfigWithApiKey,
+  OciClientConfigWithGenAiApiKey: createOciClientConfigWithGenAiApiKey,
   OciClientConfigWithInstancePrincipal: createOciClientConfigWithInstancePrincipal,
   OciClientConfigWithResourcePrincipal: createOciClientConfigWithResourcePrincipal,
   OciClientConfigWithSecurityToken: createOciClientConfigWithSecurityToken,

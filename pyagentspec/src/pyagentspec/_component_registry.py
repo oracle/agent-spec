@@ -61,6 +61,7 @@ from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfig,
     OciClientConfigWithApiKey,
+    OciClientConfigWithGenAiApiKey,
     OciClientConfigWithInstancePrincipal,
     OciClientConfigWithResourcePrincipal,
     OciClientConfigWithSecurityToken,
@@ -122,6 +123,7 @@ BUILTIN_CLASS_MAP: Mapping[str, type[Component]] = {
     "OciAgent": OciAgent,
     "OciClientConfig": OciClientConfig,
     "OciClientConfigWithApiKey": OciClientConfigWithApiKey,
+    "OciClientConfigWithGenAiApiKey": OciClientConfigWithGenAiApiKey,
     "OciClientConfigWithInstancePrincipal": OciClientConfigWithInstancePrincipal,
     "OciClientConfigWithResourcePrincipal": OciClientConfigWithResourcePrincipal,
     "OciClientConfigWithSecurityToken": OciClientConfigWithSecurityToken,

@@ -7,6 +7,8 @@ import {
   createServerTool,
   createBuiltinTool,
   createMCPToolBox,
+  createOciClientConfigWithGenAiApiKey,
+  createOciGenAiConfig,
   createStdioTransport,
   stringProperty,
 } from "../../src/index.js";
@@ -16,6 +18,20 @@ function makeLlmConfig() {
     name: "test-llm",
     url: "http://localhost:8000",
     modelId: "gpt-4",
+  });
+}
+
+function makeOciGenAiApiKeyLlmConfig() {
+  return createOciGenAiConfig({
+    name: "oci-llm",
+    modelId: "meta.llama-3.3-70b-instruct",
+    compartmentId: "ocid1.compartment.oc1..aaa",
+    clientConfig: createOciClientConfigWithGenAiApiKey({
+      name: "oci-client",
+      serviceEndpoint:
+        "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+      apiKey: "sk-secret",
+    }),
   });
 }
 
@@ -164,6 +180,38 @@ describe("version-gated field serialization", () => {
     const dict = JSON.parse(json);
     const toolboxes = dict["toolboxes"] as Record<string, unknown>[];
     expect("requires_confirmation" in toolboxes[0]!).toBe(true);
+  });
+
+  it("should reject OciClientConfigWithGenAiApiKey for versions before 26.4.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: makeOciGenAiApiKeyLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    expect(() =>
+      serializer.toJson(agent, {
+        agentspecVersion: AgentSpecVersion.V26_3_1,
+      }),
+    ).toThrow(/Invalid agentspec_version.*26\.3\.1.*26\.4\.0.*oci-client/);
+  });
+
+  it("should include OciClientConfigWithGenAiApiKey for version 26.4.0+", () => {
+    const serializer = new AgentSpecSerializer();
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: makeOciGenAiApiKeyLlmConfig(),
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent, {
+      agentspecVersion: AgentSpecVersion.V26_4_0,
+    }) as string;
+    const dict = JSON.parse(json);
+    const llmDict = dict["llm_config"] as Record<string, unknown>;
+    const clientDict = llmDict["client_config"] as Record<string, unknown>;
+    expect(clientDict["component_type"]).toBe("OciClientConfigWithGenAiApiKey");
+    expect(clientDict["auth_type"]).toBe("GENAI_API_KEY");
+    expect("api_key" in clientDict).toBe(false);
   });
 
   it("should include everything for current version", () => {

@@ -7,6 +7,15 @@ Agent Spec |release|
 New features
 ^^^^^^^^^^^^
 
+* **OCI Generative AI API key authentication**
+
+  New ``OciClientConfigWithGenAiApiKey`` client configuration (``auth_type`` ``GENAI_API_KEY``)
+  for ``OciGenAiConfig``. It authenticates to the OpenAI-compatible API of OCI Generative AI with
+  a Generative AI API key sent as a bearer token, without an OCI configuration file or request
+  signing. The key is a sensitive field (``api_key``) that runtimes may also load from the
+  ``OCI_GENAI_API_KEY`` environment variable. ``OciAgent`` does not accept this client configuration,
+  because Generative AI API keys cannot reach the OCI Agents service. Requires Agent Spec 26.4.0.
+
 * **ManagerWorkers I/O update**
 
   The ManagerWorkers language specification now requires its input and output

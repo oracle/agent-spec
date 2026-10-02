@@ -57,6 +57,9 @@ export const VERSION_GATED_FIELDS = {
   OciGenAiConfig: {
     apiType: AgentSpecVersion.V25_4_2,
   },
+  OciClientConfigWithGenAiApiKey: {
+    _self: AgentSpecVersion.V26_4_0,
+  },
   ApiNode: {
     sensitiveHeaders: AgentSpecVersion.V25_4_2,
   },
