@@ -164,6 +164,12 @@ setup(
             "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
         ],
+        "oci": [
+            # 3rd party dependencies (imported in code)
+            # OCI request signing for the OpenAI-compatible API of OCI Generative AI, used by the
+            # adapters built on the `openai` SDK (AutoGen, Agent Framework, OpenAI Agents)
+            "oci-genai-auth>=1.1.1",
+        ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.14.2,<5.0.0",

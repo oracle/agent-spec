@@ -9,6 +9,10 @@ from __future__ import annotations
 # OpenAI Agents SDK model classes for detection
 from typing import Any, Dict, Optional, Sequence, Union, cast, get_args
 
+from pyagentspec.adapters._oci_openai_common import (
+    is_oci_openai_base_url,
+    oci_genai_config_from_openai_client,
+)
 from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.openaiagents._types import (
     OAAgent,
@@ -19,6 +23,8 @@ from pyagentspec.adapters.openaiagents._types import (
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ocigenaiconfig import OciAPIType
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig as AgentSpecOciGenAiConfig
 from pyagentspec.llms.openaicompatibleconfig import (
     OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig,
 )
@@ -47,6 +53,8 @@ class OpenAIToAgentSpecConverter:
       - agents.agent.Agent -> AgentSpec Agent
       - agents.tool.FunctionTool -> AgentSpec ServerTool
       - model (str) -> AgentSpec OpenAiConfig
+      - OpenAIChatCompletionsModel / OpenAIResponsesModel bound to the OpenAI-compatible API of
+        OCI Generative AI -> AgentSpec OciGenAiConfig
     """
 
     def convert(
@@ -115,7 +123,7 @@ class OpenAIToAgentSpecConverter:
         self,
         model: Any,
         referenced: Dict[str, AgentSpecComponent],
-    ) -> AgentSpecOpenAiConfig | AgentSpecOpenAiCompatibleConfig:
+    ) -> AgentSpecOpenAiConfig | AgentSpecOpenAiCompatibleConfig | AgentSpecOciGenAiConfig:
         # String model names map directly to OpenAI config
         if isinstance(model, str):
             return AgentSpecOpenAiConfig(name=model, model_id=model)
@@ -151,6 +159,23 @@ class OpenAIToAgentSpecConverter:
 
             url_str = str(base_url)
             norm_url = url_str.rstrip("/") if url_str else None
+
+            # Clients bound to the OpenAI-compatible API of OCI Generative AI map back to the
+            # OCI configuration (compartment and credentials come from the signing client)
+            oci_client = getattr(model, "_client", None)
+            if norm_url and oci_client is not None and is_oci_openai_base_url(norm_url):
+                oci_config = oci_genai_config_from_openai_client(
+                    oci_client,
+                    name=model_name,
+                    model_id=model_name,
+                    api_type=(
+                        OciAPIType.OPENAI_RESPONSES
+                        if isinstance(model, OAResponsesModel)
+                        else OciAPIType.OPENAI_CHAT_COMPLETIONS
+                    ),
+                )
+                if oci_config is not None:
+                    return oci_config
 
             # If default OpenAI URL, treat as pure OpenAI model; otherwise, OpenAI-compatible
             if norm_url and "api.openai.com" not in norm_url:

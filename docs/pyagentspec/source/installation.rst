@@ -75,6 +75,10 @@ Extra dependencies
 * The ``agent-framework`` extra dependency gives access to the Microsoft Agent Framework runtime adapter.
 * The ``crewai`` extra dependency gives access to the CrewAI runtime adapter. Note that this adapter might be incompatible with other adapters if installed in the same virtual environment due to conflicting dependencies.
 * The ``evaluation`` extra dependency gives access to the Agent Spec Eval functionalities.
+* The ``oci`` extra dependency installs the OCI request signing used to run ``OciGenAiConfig`` models through the
+  OpenAI-compatible API of OCI Generative AI in the AutoGen, Microsoft Agent Framework and OpenAI Agents adapters
+  (for example ``pip install "pyagentspec[autogen,oci]"``). The LangGraph and WayFlow adapters use the native OCI API
+  and do not need it.
 
 To install extra dependencies, run the following command specifying the list of dependencies you want to install:
 
