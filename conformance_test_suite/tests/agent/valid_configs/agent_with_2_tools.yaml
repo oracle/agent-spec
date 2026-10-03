@@ -1,0 +1,50 @@
+component_type: Agent
+description: null
+id: 927b5c6f-0894-41a0-a8f6-96d2d4eae610
+inputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  default_generation_parameters: null
+  description: null
+  id: 60c59c47-2f3c-4e34-bc6e-11e235a41ca5
+  metadata: {}
+  model_id: /storage/models/Llama-3.1-70B-Instruct
+  name: Llama-3.1-70B-Instruct
+  url: http://localhost:5006
+metadata: {}
+name: Calculator agent with 2 tools
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: "You are an assistant for helping with math homework. Do not attempt\
+  \ to answer yourself\u2014simply return the tool response.\n      Do not add extra\
+  \ text."
+tools:
+- component_type: ServerTool
+  description: Tool that allows to compute multiplication between 2 numbers
+  id: multiplication_tool
+  inputs:
+  - title: a
+    type: integer
+  - title: b
+    type: integer
+  metadata: {}
+  name: multiplication_tool
+  outputs:
+  - title: product
+    type: integer
+- component_type: ServerTool
+  description: Tool that allows to compute summation of 2 numbers
+  id: summation_tool
+  inputs:
+  - title: a
+    type: integer
+  - title: b
+    type: integer
+  metadata: {}
+  name: summation_tool
+  outputs:
+  - title: sum
+    type: integer
+agentspec_version: 25.4.1

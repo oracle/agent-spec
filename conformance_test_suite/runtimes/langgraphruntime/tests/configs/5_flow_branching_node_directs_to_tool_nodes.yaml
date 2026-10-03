@@ -1,0 +1,134 @@
+$referenced_components:
+  get_weather_tool:
+    component_type: ServerTool
+    description: Tool that returns the current weather
+    id: get_weather_tool
+    inputs: []
+    name: MyGetWeatherTool
+    outputs: [{title: tool_result, type: string}]
+  get_time_tool:
+    component_type: ServerTool
+    description: Tool that returns the current time
+    id: get_time_tool
+    inputs: []
+    name: MyGetTimeTool
+    outputs: [{title: tool_result, type: string}]
+  my_start_node:
+    component_type: StartNode
+    id: my_start_node
+    inputs: [{title: user_request, type: string}]
+    name: MyStartNode
+  my_end_node:
+    component_type: EndNode
+    id: my_end_node
+    name: MyEndNode
+    outputs: [{title: tool_result, type: string, default: 'NO_TOOL_CALLED'}]
+  get_weather_tool_node:
+    component_type: ToolNode
+    id: get_weather_tool_node
+    name: MyGetWeatherToolNode
+    tool: {$component_ref: get_weather_tool}
+  get_time_tool_node:
+    component_type: ToolNode
+    id: get_time_tool_node
+    name: MyGetTimeToolNode
+    tool: {$component_ref: get_time_tool}
+  select_next_tool_branching_node:
+    component_type: BranchingNode
+    id: select_next_tool_branching_node
+    inputs: [{title: selected_tool, type: string}]
+    mapping: {
+      'TOOL_Ti': 'MY_BRANCH_TIME_SELECTED',
+      'TOOL_We': 'MY_BRANCH_WEATHER_SELECTED'
+    }
+    branches:
+      - default
+      - MY_BRANCH_TIME_SELECTED
+      - MY_BRANCH_WEATHER_SELECTED
+    name: MySelectNextToolBranchingNode
+  select_next_tool_llm_node:
+    component_type: LlmNode
+    llm_config:
+      component_type: VllmConfig
+      model_id: /storage/models/Llama-3.3-70B-Instruct
+      name: llama-3.3-70b-instruct
+      url: http://[[LLAMA70BV33_API_URL]]/v1
+    id: select_next_tool_llm_node
+    inputs: [{title: user_request, type: string}]
+    outputs: [{title: selected_tool, type: string}]
+    prompt_template: |
+      Choose the right tool for the below user request:
+      {{user_request}}
+      The available tools are 'TOOL_We' about the weather and 'TOOL_Ti' about the time.
+      Reply with only the selected tool.
+    name: MySelectNextToolLlmNode
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: my_start_node}
+  name: control_edge
+  to_node: {$component_ref: select_next_tool_llm_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_tool_llm_node}
+  name: control_edge
+  to_node: {$component_ref: select_next_tool_branching_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_tool_branching_node}
+  name: control_edge
+  from_branch: default
+  to_node: {$component_ref: my_end_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_tool_branching_node}
+  name: control_edge
+  from_branch: MY_BRANCH_TIME_SELECTED
+  to_node: {$component_ref: get_time_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_tool_branching_node}
+  name: control_edge
+  from_branch: MY_BRANCH_WEATHER_SELECTED
+  to_node: {$component_ref: get_weather_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: get_time_tool_node}
+  name: control_edge
+  to_node: {$component_ref: my_end_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: get_weather_tool_node}
+  name: control_edge
+  to_node: {$component_ref: my_end_node}
+data_flow_connections:
+- component_type: DataFlowEdge
+  destination_input: user_request
+  destination_node: {$component_ref: select_next_tool_llm_node}
+  name: user_request
+  source_node: {$component_ref: my_start_node}
+  source_output: user_request
+- component_type: DataFlowEdge
+  destination_input: selected_tool
+  destination_node: {$component_ref: select_next_tool_branching_node }
+  name: data_edge
+  source_node: {$component_ref: select_next_tool_llm_node}
+  source_output: selected_tool
+- component_type: DataFlowEdge
+  destination_input: tool_result
+  destination_node: {$component_ref: my_end_node}
+  name: data_edge
+  source_node: {$component_ref: get_time_tool_node}
+  source_output: tool_result
+- component_type: DataFlowEdge
+  destination_input: tool_result
+  destination_node: {$component_ref: my_end_node}
+  name: data_edge
+  source_node: {$component_ref: get_weather_tool_node}
+  source_output: tool_result
+id: flow_select_tool_with_llm_node
+name: MyFlowSelectToolWithLlmNode
+description: Selects a tool then executes it
+nodes:
+- $component_ref: my_start_node
+- $component_ref: select_next_tool_llm_node
+- $component_ref: select_next_tool_branching_node
+- $component_ref: get_time_tool_node
+- $component_ref: get_weather_tool_node
+- $component_ref: my_end_node
+start_node: {$component_ref: my_start_node}
+agentspec_version: 25.4.1

@@ -1,0 +1,36 @@
+# NOTICE:
+# This example requires Ollama to be installed locally. Please check https://github.com/ollama/ollama
+#
+# To use:
+# - Download Ollama: https://ollama.com/download
+# - Run `ollama run llama3.2` to start your model and chat with it
+#   (if the model is not available, it will be downloaded automatically).
+# - Run `ollama list` to view available local llm models; you may customize your model as desired.
+#
+# The default url of the Ollama server is: http://localhost:11434
+
+component_type: Agent
+description: null
+id: 10651ce5-0d47-4f8d-ab01-fef58b900ccf
+inputs: []
+llm_config:
+  component_type: OllamaConfig
+  default_generation_parameters: null
+  description: null
+  id: 659df697-2ebc-4225-a110-6a422c9e1cbb
+  metadata: {}
+  model_id: llama3.2:latest
+  name: llama3.2:latest
+  url: http://localhost:11434
+metadata: {}
+name: Calculator agent
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: "You are a math calculating agent.\n    Your answer should be a single\
+  \ string. If it is a mathematical expression then return its calculation result\
+  \ only.\n    Example: if 5x2, return 10 (not 5x2 = 10).\n    Do not include any\
+  \ units, reasoning, or extra text."
+tools: []
+agentspec_version: 25.4.1

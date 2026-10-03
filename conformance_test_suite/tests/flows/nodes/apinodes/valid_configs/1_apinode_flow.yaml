@@ -1,0 +1,136 @@
+component_type: Flow
+id: 3b0d814a-9277-4d41-829b-0aefdeec89f2
+name: Simple prompting flow to find weather of a city
+description: null
+metadata: {}
+inputs:
+- title: user_input
+  type: string
+outputs:
+- title: weather
+  type: object
+  properties:
+    temperature:
+      description: Temperature in celsius degrees
+      type: number
+    weather:
+      type: string
+start_node:
+  $component_ref: ca471f08-e528-42c4-b90f-acd1b33395b6
+nodes:
+- $component_ref: ca471f08-e528-42c4-b90f-acd1b33395b6
+- $component_ref: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+- $component_ref: 14516fd3-b4c4-4f8f-9bc5-cfd61aff6a4c
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: 8c3ee78b-e675-4346-92bc-4c4133c1ece4
+  name: start_to_weather
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: ca471f08-e528-42c4-b90f-acd1b33395b6
+  from_branch: null
+  to_node:
+    $component_ref: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+- component_type: ControlFlowEdge
+  id: 0b17e711-0355-4b1f-96d5-de2615e4b680
+  name: weather_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+  from_branch: null
+  to_node:
+    $component_ref: 14516fd3-b4c4-4f8f-9bc5-cfd61aff6a4c
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 18480758-8716-42a9-b109-c80e099c50b3
+  name: query_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: ca471f08-e528-42c4-b90f-acd1b33395b6
+  source_output: user_input
+  destination_node:
+    $component_ref: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+  destination_input: city
+- component_type: DataFlowEdge
+  id: d2ac7e15-7798-4d99-9e26-670c233d473b
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+  source_output: weather
+  destination_node:
+    $component_ref: 14516fd3-b4c4-4f8f-9bc5-cfd61aff6a4c
+  destination_input: weather
+$referenced_components:
+  ca471f08-e528-42c4-b90f-acd1b33395b6:
+    component_type: StartNode
+    id: ca471f08-e528-42c4-b90f-acd1b33395b6
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: user_input
+      type: string
+    outputs:
+    - title: user_input
+      type: string
+    branches:
+    - next
+  cc3089cc-797e-4ee5-9b07-a9d1d68a1240:
+    component_type: ApiNode
+    id: cc3089cc-797e-4ee5-9b07-a9d1d68a1240
+    name: Weather API call node
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    outputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    branches:
+    - next
+    url: http://localhost:5008/findWeather
+    http_method: GET
+    api_spec_uri: null
+    data: {}
+    query_params:
+      city: '{{ city }}'
+    headers: {}
+  14516fd3-b4c4-4f8f-9bc5-cfd61aff6a4c:
+    component_type: EndNode
+    id: 14516fd3-b4c4-4f8f-9bc5-cfd61aff6a4c
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    outputs:
+    - title: weather
+      type: object
+      properties:
+        temperature:
+          description: Temperature in celsius degrees
+          type: number
+        weather:
+          type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

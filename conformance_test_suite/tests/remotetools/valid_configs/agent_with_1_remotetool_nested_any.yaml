@@ -1,0 +1,63 @@
+component_type: Agent
+id: 9c3f1b3f-2a9f-4e65-9d6c-6b6db2c5c0a3
+name: Weather agent with nested RemoteTool data
+description: An agent that calls a RemoteTool with nested data payload.
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: VllmConfig
+  id: 2c7a1e8b-5d6a-4d8f-8b1a-1a2b3c4d5e6f
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: |
+  You are a helpful weather agent.
+  Your duty is to compute the result of the given operation using tools, and to output the result.
+  It's important that you reply with the result only.
+tools:
+- component_type: RemoteTool
+  id: 6e4d5c2a-8f3b-41b2-9a6e-1d2c3b4a5f6e
+  name: forecast_weather
+  description: Returns a forecast of the weather for the chosen city
+  metadata: {}
+  inputs:
+  - title: city
+    type: string
+  - title: lat
+    type: string
+  - title: lon
+    type: string
+  - title: user
+    type: string
+  - title: suffix
+    type: string
+  - title: bin_suffix
+    type: string
+  outputs:
+  - title: weather
+    type: string
+  url: http://localhost:5008/weather/forecast_nested_json
+  http_method: POST
+  api_spec_uri: null
+  data:
+    location:
+      city: '{{city}}'
+      coordinates:
+        lat: '{{lat}}'
+        lon: '{{lon}}'
+    meta:
+      - 'requested_by:{{user}}'
+      - { note: 'hello{{suffix}}' }
+    raw: 'binary-{{bin_suffix}}'
+  query_params: {}
+  headers:
+    X-Caller: '{{user}}'
+agentspec_version: 25.4.2

@@ -1,0 +1,282 @@
+component_type: Flow
+id: main_flow
+name: main_flow
+description: null
+metadata: {}
+inputs: []
+outputs: []
+start_node:
+  $component_ref: main_start_node
+nodes:
+- $component_ref: main_start_node
+- $component_ref: parallel_flow_node
+- $component_ref: main_end_node
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: main_cf1
+  name: cf1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: main_start_node
+  from_branch: null
+  to_node:
+    $component_ref: parallel_flow_node
+- component_type: ControlFlowEdge
+  id: main_cf2
+  name: cf2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: parallel_flow_node
+  from_branch: null
+  to_node:
+    $component_ref: main_end_node
+data_flow_connections: null
+$referenced_components:
+  main_start_node:
+    component_type: StartNode
+    id: main_start_node
+    name: start_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+  parallel_flow_node:
+    component_type: ParallelFlowNode
+    id: parallel_flow_node
+    name: parallel_flow_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches:
+    - next
+    subflows:
+    - component_type: Flow
+      id: subflow_1
+      name: subflow_1
+      description: null
+      metadata: {}
+      inputs: []
+      outputs: []
+      start_node:
+        $component_ref: subflow_1_start_node
+      nodes:
+      - $component_ref: subflow_1_start_node
+      - $component_ref: subflow_1_tool_node
+      - $component_ref: subflow_1_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_1-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_1_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_1_tool_node
+      - component_type: ControlFlowEdge
+        id: subflow_1-cf2
+        name: cf2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_1_tool_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_1_end_node
+      data_flow_connections: []
+      $referenced_components:
+        subflow_1_start_node:
+          component_type: StartNode
+          id: subflow_1_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+        subflow_1_tool_node:
+          component_type: ToolNode
+          id: subflow_1_tool_node
+          name: tool_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+          tool:
+            $component_ref: e8ffc044-6e02-4619-8087-9bbe79504a27
+        subflow_1_end_node:
+          component_type: EndNode
+          id: subflow_1_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: subflow_2
+      name: subflow_2
+      description: null
+      metadata: {}
+      inputs: []
+      outputs: []
+      start_node:
+        $component_ref: subflow_2_start_node
+      nodes:
+      - $component_ref: subflow_2_start_node
+      - $component_ref: subflow_2_tool_node
+      - $component_ref: subflow_2_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_2-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_2_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_2_tool_node
+      - component_type: ControlFlowEdge
+        id: subflow_2-cf2
+        name: cf2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_2_tool_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_2_end_node
+      data_flow_connections: []
+      $referenced_components:
+        subflow_2_start_node:
+          component_type: StartNode
+          id: subflow_2_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+        subflow_2_tool_node:
+          component_type: ToolNode
+          id: subflow_2_tool_node
+          name: tool_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+          tool:
+            $component_ref: e8ffc044-6e02-4619-8087-9bbe79504a27
+        subflow_2_end_node:
+          component_type: EndNode
+          id: subflow_2_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: subflow_3
+      name: subflow_3
+      description: null
+      metadata: {}
+      inputs: []
+      outputs: []
+      start_node:
+        $component_ref: subflow_3_start_node
+      nodes:
+      - $component_ref: subflow_3_start_node
+      - $component_ref: subflow_3_tool_node
+      - $component_ref: subflow_3_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_3-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_3_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_3_tool_node
+      - component_type: ControlFlowEdge
+        id: subflow_3-cf2
+        name: cf2
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_3_tool_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_3_end_node
+      data_flow_connections: []
+      $referenced_components:
+        subflow_3_start_node:
+          component_type: StartNode
+          id: subflow_3_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+        subflow_3_tool_node:
+          component_type: ToolNode
+          id: subflow_3_tool_node
+          name: tool_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches:
+          - next
+          tool:
+            $component_ref: e8ffc044-6e02-4619-8087-9bbe79504a27
+        subflow_3_end_node:
+          component_type: EndNode
+          id: subflow_3_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs: []
+          outputs: []
+          branches: []
+          branch_name: next
+    $referenced_components:
+      e8ffc044-6e02-4619-8087-9bbe79504a27:
+        component_type: ServerTool
+        id: e8ffc044-6e02-4619-8087-9bbe79504a27
+        name: wait_2_seconds_tool
+        description: Tool that waits for 2 seconds
+        metadata: {}
+        inputs: []
+        outputs: []
+        requires_confirmation: false
+  main_end_node:
+    component_type: EndNode
+    id: main_end_node
+    name: end_node
+    description: null
+    metadata: {}
+    inputs: []
+    outputs: []
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

@@ -1,0 +1,174 @@
+component_type: Flow
+id: 2ca62e76-926b-4fc0-bcf2-3a3c3113bb21
+name: Simple passthrough flow with sub-flow
+description: null
+metadata: {}
+inputs:
+- title: input
+  type: number
+outputs:
+- title: passthrough_input
+  type: number
+start_node:
+  $component_ref: e35438d1-ab08-4736-8426-15d3170ef2ec
+nodes:
+- $component_ref: e35438d1-ab08-4736-8426-15d3170ef2ec
+- $component_ref: c9af0f63-1eec-48f7-a532-2a26585fca2c
+- $component_ref: 23721140-1457-4ff0-923a-2497e5bf3da7
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: b4802ec7-29c8-49da-bb31-afdee3587cc7
+  name: start_to_flow_node_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: e35438d1-ab08-4736-8426-15d3170ef2ec
+  from_branch: null
+  to_node:
+    $component_ref: c9af0f63-1eec-48f7-a532-2a26585fca2c
+- component_type: ControlFlowEdge
+  id: 45ea6569-6e90-4871-bf54-1f7bbc28a801
+  name: flow_node_to_end_control_edge
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: c9af0f63-1eec-48f7-a532-2a26585fca2c
+  from_branch: null
+  to_node:
+    $component_ref: 23721140-1457-4ff0-923a-2497e5bf3da7
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 2765c844-d3b1-4b2d-ac22-378cb75da013
+  name: start_to_flow_node_user_request_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: e35438d1-ab08-4736-8426-15d3170ef2ec
+  source_output: input
+  destination_node:
+    $component_ref: c9af0f63-1eec-48f7-a532-2a26585fca2c
+  destination_input: input
+- component_type: DataFlowEdge
+  id: 451916e6-fba1-4816-ab4c-173dfeb86448
+  name: flow_node_to_end_code_data_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: c9af0f63-1eec-48f7-a532-2a26585fca2c
+  source_output: passthrough_input
+  destination_node:
+    $component_ref: 23721140-1457-4ff0-923a-2497e5bf3da7
+  destination_input: passthrough_input
+$referenced_components:
+  e35438d1-ab08-4736-8426-15d3170ef2ec:
+    component_type: StartNode
+    id: e35438d1-ab08-4736-8426-15d3170ef2ec
+    name: Start node outer
+    description: null
+    metadata: {}
+    inputs:
+    - title: input
+      type: number
+    outputs:
+    - title: input
+      type: number
+    branches:
+    - next
+  c9af0f63-1eec-48f7-a532-2a26585fca2c:
+    component_type: FlowNode
+    id: c9af0f63-1eec-48f7-a532-2a26585fca2c
+    name: Passthrough in subflow
+    description: null
+    metadata: {}
+    inputs:
+    - title: input
+      type: number
+    outputs:
+    - title: passthrough_input
+      type: number
+    branches:
+    - next
+    subflow:
+      component_type: Flow
+      id: 64eb6fd0-83ab-47c9-979b-c8f836571929
+      name: Passthrough flow
+      description: A simple flow that passes through a numeric input.
+      metadata: {}
+      inputs:
+      - title: input
+        type: number
+      outputs:
+      - title: passthrough_input
+        type: number
+      start_node:
+        $component_ref: 4d291fcb-9db9-4acf-a354-d53860a5b141
+      nodes:
+      - $component_ref: 4d291fcb-9db9-4acf-a354-d53860a5b141
+      - $component_ref: 70b6974a-527d-4ea0-8acf-133e975809e2
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: 11a93343-76ed-4eae-81d6-6f29ca735888
+        name: start_to_end
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: 4d291fcb-9db9-4acf-a354-d53860a5b141
+        from_branch: null
+        to_node:
+          $component_ref: 70b6974a-527d-4ea0-8acf-133e975809e2
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: 38fc7e62-382d-467e-b905-2e267b423fc9
+        name: start_to_end_input
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: 4d291fcb-9db9-4acf-a354-d53860a5b141
+        source_output: input
+        destination_node:
+          $component_ref: 70b6974a-527d-4ea0-8acf-133e975809e2
+        destination_input: passthrough_input
+      $referenced_components:
+        4d291fcb-9db9-4acf-a354-d53860a5b141:
+          component_type: StartNode
+          id: 4d291fcb-9db9-4acf-a354-d53860a5b141
+          name: start_node
+          description: 'Entry point: accepts a numeric input'
+          metadata: {}
+          inputs:
+          - title: input
+            type: number
+          outputs:
+          - title: input
+            type: number
+          branches:
+          - next
+        70b6974a-527d-4ea0-8acf-133e975809e2:
+          component_type: EndNode
+          id: 70b6974a-527d-4ea0-8acf-133e975809e2
+          name: end_node
+          description: 'Exit point: returns the input value'
+          metadata: {}
+          inputs:
+          - title: passthrough_input
+            type: number
+          outputs:
+          - title: passthrough_input
+            type: number
+          branches: []
+          branch_name: next
+  23721140-1457-4ff0-923a-2497e5bf3da7:
+    component_type: EndNode
+    id: 23721140-1457-4ff0-923a-2497e5bf3da7
+    name: End node outer
+    description: null
+    metadata: {}
+    inputs:
+    - title: passthrough_input
+      type: number
+    outputs:
+    - title: passthrough_input
+      type: number
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.1

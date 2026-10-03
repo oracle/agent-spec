@@ -1,0 +1,216 @@
+component_type: Flow
+id: 0a3f6d22-7c2a-4c7c-9b7d-0b2f8b62a1e1
+name: ApiNode flow with nested JSON data
+description: Flow that calls an ApiNode posting nested JSON body
+metadata: {}
+inputs:
+- title: city
+  type: string
+- title: lat
+  type: string
+- title: lon
+  type: string
+- title: user
+  type: string
+- title: suffix
+  type: string
+- title: bin_suffix
+  type: string
+outputs:
+- title: weather
+  type: string
+start_node:
+  $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+nodes:
+- $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+- $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+- $component_ref: 7f6e5d4c-3b2a-4a19-8c7b-9a8b7c6d5e4f
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+  name: start_to_api
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  from_branch: null
+  to_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+- component_type: ControlFlowEdge
+  id: d5c4b3a2-1f0e-4d9c-8b7a-6f5e4d3c2b1a
+  name: api_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  from_branch: null
+  to_node:
+    $component_ref: 7f6e5d4c-3b2a-4a19-8c7b-9a8b7c6d5e4f
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 11111111-2222-4333-8444-555555555555
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: city
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: city
+- component_type: DataFlowEdge
+  id: 21111111-2222-4333-8444-555555555555
+  name: lat_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: lat
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: lat
+- component_type: DataFlowEdge
+  id: 31111111-2222-4333-8444-555555555555
+  name: lon_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: lon
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: lon
+- component_type: DataFlowEdge
+  id: 41111111-2222-4333-8444-555555555555
+  name: user_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: user
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: user
+- component_type: DataFlowEdge
+  id: 51111111-2222-4333-8444-555555555555
+  name: suffix_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: suffix
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: suffix
+- component_type: DataFlowEdge
+  id: 61111111-2222-4333-8444-555555555555
+  name: bin_suffix_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+  source_output: bin_suffix
+  destination_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  destination_input: bin_suffix
+- component_type: DataFlowEdge
+  id: 71111111-2222-4333-8444-555555555555
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+  source_output: weather
+  destination_node:
+    $component_ref: 7f6e5d4c-3b2a-4a19-8c7b-9a8b7c6d5e4f
+  destination_input: weather
+$referenced_components:
+  2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01:
+    component_type: StartNode
+    id: 2a0a2bca-c7d5-4d5d-9a29-3e5b4f2c9b01
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: lat
+      type: string
+    - title: lon
+      type: string
+    - title: user
+      type: string
+    - title: suffix
+      type: string
+    - title: bin_suffix
+      type: string
+    outputs:
+    - title: city
+      type: string
+    - title: lat
+      type: string
+    - title: lon
+      type: string
+    - title: user
+      type: string
+    - title: suffix
+      type: string
+    - title: bin_suffix
+      type: string
+    branches:
+    - next
+  6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d:
+    component_type: ApiNode
+    id: 6b7cde0f-8f1b-4b84-8f8b-1f2d3c4b5a6d
+    name: Weather forecast (nested json)
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: lat
+      type: string
+    - title: lon
+      type: string
+    - title: user
+      type: string
+    - title: suffix
+      type: string
+    - title: bin_suffix
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/weather/forecast_nested_json
+    http_method: POST
+    api_spec_uri: null
+    data:
+      location:
+        city: '{{ city }}'
+        coordinates:
+          lat: '{{ lat }}'
+          lon: '{{ lon }}'
+      meta:
+        - 'requested_by:{{ user }}'
+        - { note: 'hello{{ suffix }}' }
+      raw: 'binary-{{ bin_suffix }}'
+    query_params: {}
+    headers:
+      X-Caller: '{{ user }}'
+  7f6e5d4c-3b2a-4a19-8c7b-9a8b7c6d5e4f:
+    component_type: EndNode
+    id: 7f6e5d4c-3b2a-4a19-8c7b-9a8b7c6d5e4f
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

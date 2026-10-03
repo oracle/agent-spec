@@ -1,0 +1,24 @@
+component_type: Agent
+description: null
+id: 2c9b3512-5eb6-487d-a9fc-93cc4ae36e0d
+inputs: []
+llm_config:
+  component_type: OpenAiConfig
+  default_generation_parameters: null
+  description: null
+  id: 0dae1d45-f358-421e-b16d-20c1b201b038
+  metadata: {}
+  model_id: gpt-4o-mini
+  name: Name-llm-config
+metadata: {}
+name: Calculator agent
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: "You are a math calculating agent.\n    Your answer should be a single\
+  \ string. If it is a mathematical expression then return its calculation result\
+  \ only.\n    Example: if 5x2, return 10 (not 5x2 = 10).\n    Do not include any\
+  \ units, reasoning, or extra text."
+tools: []
+agentspec_version: 25.4.1

@@ -1,0 +1,84 @@
+component_type: Agent
+description: An agent that provides assistance with tool usage.
+id: 547a2493-1312-441c-aa58-ec8ecbe94ea6
+inputs: []
+llm_config:
+  component_type: OpenAiCompatibleConfig
+  default_generation_parameters:
+    max_tokens: null
+    temperature: 0.1
+    top_p: null
+  description: null
+  id: 33743827-e841-4932-be18-8ecb4f502b6e
+  metadata: {}
+  model_id: Llama-4-Maverick
+  name: llama-maverick
+  url: http://localhost:5006
+metadata: {}
+name: Calculator agent with multiple tools
+outputs:
+- default: ''
+  title: llm_output
+  type: string
+system_prompt: 'You are a helpful calculator agent.
+
+  Your duty is to compute the result of the given operation using tools, and to output
+  the result.
+
+  It''s important that you reply with the result only.
+
+  '
+tools:
+- component_type: ClientTool
+  description: Sum two numbers
+  id: dac6f872-edf3-44bc-a985-3b72a8d4670d
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: sum_tool
+  outputs:
+  - title: result
+    type: number
+- component_type: ClientTool
+  description: Subtract two numbers
+  id: 4d27c1c3-ba5e-4ed4-bd9b-4f8f30275e18
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: subtract_tool
+  outputs:
+  - title: result
+    type: number
+- component_type: ServerTool
+  description: Multiply two numbers
+  id: 55a85de2-ad86-461b-b2b1-f782b8a74df8
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: multiply_tool
+  outputs:
+  - title: result
+    type: number
+- component_type: ServerTool
+  description: Divide two numbers
+  id: bdd3751a-f1b5-4ba5-b92d-6e43e45f06d5
+  inputs:
+  - title: a
+    type: number
+  - title: b
+    type: number
+  metadata: {}
+  name: divide_tool
+  outputs:
+  - title: result
+    type: number
+agentspec_version: 25.4.1

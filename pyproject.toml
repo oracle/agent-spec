@@ -14,6 +14,7 @@ strict = true
 
 [[tool.mypy.overrides]]
 module = [
+    'conformance_test_suite.*',
     'tests.*',
     'setup',
 ]

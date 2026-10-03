@@ -1,0 +1,232 @@
+$referenced_components:
+  0bf01bfa-8d13-479c-9e79-d526c47170b8:
+    branches:
+    - next
+    component_type: LlmNode
+    description: null
+    id: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+    inputs:
+    - title: user_input
+      type: string
+    llm_config:
+      component_type: OpenAiCompatibleConfig
+      default_generation_parameters: null
+      description: null
+      id: 9e836ad0-adb0-4ba5-8c1c-a7283ec25b19
+      metadata: {}
+      model_id: /storage/models/Llama-3.1-70B-Instruct
+      name: Llama-3.1-70B-Instruct
+      url: http://localhost:5006
+    metadata: {}
+    name: simple llm node to return language of text
+    outputs:
+    - title: language
+      type: string
+    prompt_template: "Your task is to understand the language spoken by the user:\
+      \ {{user_input}}\n    Please output only the language in lowercase and submit.\
+      \ Your answer should be a single string.\n    Do not include any units, reasoning,\
+      \ or extra text."
+  1b8f076a-9db8-47de-8c4b-67cde41bfd3c:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: 1b8f076a-9db8-47de-8c4b-67cde41bfd3c
+    inputs:
+    - title: user_input
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - title: user_input
+      type: string
+  3f0ce097-a1ef-4633-9155-fdd641913ff3:
+    branch_name: ENGLISH
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 3f0ce097-a1ef-4633-9155-fdd641913ff3
+    inputs:
+    - default: ENGLISH_LANGUAGE
+      title: detected_language
+      type: string
+    metadata: {}
+    name: english end
+    outputs:
+    - default: ENGLISH_LANGUAGE
+      title: detected_language
+      type: string
+  4e7a0d2f-4853-499e-bd38-8dc7de929659:
+    branch_name: ITALIAN
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 4e7a0d2f-4853-499e-bd38-8dc7de929659
+    inputs:
+    - default: ITALIAN_LANGUAGE
+      title: detected_language
+      type: string
+    metadata: {}
+    name: italian end
+    outputs:
+    - default: ITALIAN_LANGUAGE
+      title: detected_language
+      type: string
+  7515259f-d42f-49cf-941d-d70f5d064cba:
+    branch_name: SPANISH
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 7515259f-d42f-49cf-941d-d70f5d064cba
+    inputs:
+    - default: SPANISH_LANGUAGE
+      title: detected_language
+      type: string
+    metadata: {}
+    name: spanish end
+    outputs:
+    - default: SPANISH_LANGUAGE
+      title: detected_language
+      type: string
+  8b5527dc-63d6-4f5d-a333-afaf1f80c965:
+    branch_name: unknown
+    branches: []
+    component_type: EndNode
+    description: null
+    id: 8b5527dc-63d6-4f5d-a333-afaf1f80c965
+    inputs:
+    - default: UNKNOWN_LANGUAGE
+      title: detected_language
+      type: string
+    metadata: {}
+    name: unknown language end
+    outputs:
+    - default: UNKNOWN_LANGUAGE
+      title: detected_language
+      type: string
+  8c4e6d49-d833-436f-a082-84266ae42303:
+    branches:
+    - ENGLISH
+    - ITALIAN
+    - SPANISH
+    - default
+    component_type: BranchingNode
+    description: null
+    id: 8c4e6d49-d833-436f-a082-84266ae42303
+    inputs:
+    - title: language
+      type: string
+    mapping:
+      english: ENGLISH
+      italian: ITALIAN
+      spanish: SPANISH
+    metadata: {}
+    name: language check
+    outputs: []
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 1b8f076a-9db8-47de-8c4b-67cde41bfd3c
+  id: eb984a1f-0f43-41bd-a6f2-675dc26dbcdc
+  metadata: {}
+  name: start_to_agent
+  to_node:
+    $component_ref: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+  id: 6c565f65-1bed-4f69-8e35-852316fcf18f
+  metadata: {}
+  name: agent_to_branching
+  to_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: ENGLISH
+  from_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+  id: a7a61b88-f8e3-4efc-956e-a30db652f145
+  metadata: {}
+  name: branching_to_english_end
+  to_node:
+    $component_ref: 3f0ce097-a1ef-4633-9155-fdd641913ff3
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: SPANISH
+  from_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+  id: af845617-fd30-477d-9fa6-0ceb58d14bd9
+  metadata: {}
+  name: branching_to_spanish_end
+  to_node:
+    $component_ref: 7515259f-d42f-49cf-941d-d70f5d064cba
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: ITALIAN
+  from_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+  id: 05ad3898-44cc-439e-841e-ab554c8c18d1
+  metadata: {}
+  name: branching_to_italian_end
+  to_node:
+    $component_ref: 4e7a0d2f-4853-499e-bd38-8dc7de929659
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: default
+  from_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+  id: 9b13b6bf-b27a-49a8-9a73-33684a148764
+  metadata: {}
+  name: branching_to_unknown_end
+  to_node:
+    $component_ref: 8b5527dc-63d6-4f5d-a333-afaf1f80c965
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: user_input
+  destination_node:
+    $component_ref: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+  id: adadcfa8-0692-4bf2-b22d-543144bb281d
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: 1b8f076a-9db8-47de-8c4b-67cde41bfd3c
+  source_output: user_input
+- component_type: DataFlowEdge
+  description: null
+  destination_input: language
+  destination_node:
+    $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+  id: a9cd9c3d-ae29-4aed-9b23-169c2cdaf22b
+  metadata: {}
+  name: language_edge
+  source_node:
+    $component_ref: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+  source_output: language
+description: null
+id: 98c6332a-3031-49a3-9984-180f21499f42
+inputs:
+- title: user_input
+  type: string
+metadata: {}
+name: Check language flow
+nodes:
+- $component_ref: 1b8f076a-9db8-47de-8c4b-67cde41bfd3c
+- $component_ref: 0bf01bfa-8d13-479c-9e79-d526c47170b8
+- $component_ref: 8c4e6d49-d833-436f-a082-84266ae42303
+- $component_ref: 3f0ce097-a1ef-4633-9155-fdd641913ff3
+- $component_ref: 7515259f-d42f-49cf-941d-d70f5d064cba
+- $component_ref: 4e7a0d2f-4853-499e-bd38-8dc7de929659
+- $component_ref: 8b5527dc-63d6-4f5d-a333-afaf1f80c965
+outputs:
+- default: UNKNOWN_LANGUAGE
+  title: detected_language
+  type: string
+start_node:
+  $component_ref: 1b8f076a-9db8-47de-8c4b-67cde41bfd3c
+agentspec_version: 25.4.1
