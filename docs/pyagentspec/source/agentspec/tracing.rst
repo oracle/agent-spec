@@ -1166,13 +1166,22 @@ Consuming traces (consumer example)
 Interoperability examples
 -------------------------
 
+Agent Spec tracing can feed OpenInference-compatible Arize workflows. Use
+`Arize Phoenix <https://arize.com/docs/phoenix>`_ for open-source local or
+self-hosted tracing, and use
+`Arize AX <https://arize.com/docs/ax/integrations/python-agent-frameworks/agentspec/agentspec-tracing>`_
+for managed production observability and evaluation. The same traces can
+support workflows such as
+`agent evaluation <https://arize.com/guides/ai-agent-handbook/agent-evaluation/>`_
+and `LLM evaluation <https://arize.com/resources/llm-evaluation/>`_.
+
 Tracing with LangGraph
 
 .. code-block:: python
 
    from pyagentspec.adapters.langgraph import AgentSpecLoader
    from openinference_spanprocessor import ArizePhoenixSpanProcessor
-   # Assuming this package implements a SpanProcessor that takes the Agent Spec Traces and sends them to a Phoenix Arize server
+   # Assuming this package implements a SpanProcessor that takes Agent Spec traces and sends them to Arize Phoenix
 
    agent_json = read_json_file("my/agentspec/agent.json")
    processor = ArizePhoenixSpanProcessor(mask_sensitive_information=False, project_name="agentspec-tracing-test")
