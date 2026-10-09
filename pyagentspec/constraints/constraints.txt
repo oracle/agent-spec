@@ -33,6 +33,9 @@ agent-framework-openai==1.12.0
 openai-agents==0.19.4
 libcst==1.8.5
 
+# OCI Generative AI through the OpenAI-compatible API
+oci-genai-auth==1.1.1
+
 # Evaluation
 pandas==2.3.3
 oci==2.184.2

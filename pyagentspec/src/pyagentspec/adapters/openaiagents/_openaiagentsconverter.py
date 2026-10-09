@@ -8,18 +8,25 @@ from __future__ import annotations
 
 import inspect
 import json
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 
+from pyagentspec.adapters._oci_openai_common import (
+    create_oci_openai_client,
+    uses_responses_api,
+    validate_oci_openai_compatible_config,
+)
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.openaiagents._types import (
     OAAgent,
     OAChatCompletionsModel,
     OAFunctionTool,
+    OAResponsesModel,
     OAToolContext,
 )
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig as AgentSpecOciGenAiConfig
 from pyagentspec.llms.openaicompatibleconfig import (
     OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleConfig,
 )
@@ -39,6 +46,8 @@ class AgentSpecToOpenAIConverter:
 
     Supported:
       - AgentSpec OpenAiConfig -> model string
+      - AgentSpec OciGenAiConfig -> OpenAIChatCompletionsModel / OpenAIResponsesModel bound to
+        the OpenAI-compatible API of OCI Generative AI (requests signed with OCI credentials)
       - AgentSpec Agent -> agents.agent.Agent
       - AgentSpec Tools:
           * ServerTool -> OA FunctionTool from registry (prebuilt or wrapped callable)
@@ -92,6 +101,16 @@ class AgentSpecToOpenAIConverter:
         if isinstance(llm, AgentSpecOpenAiConfig):
             # OpenAI Agents accepts model as str for default OpenAI models
             return llm.model_id
+        elif isinstance(llm, AgentSpecOciGenAiConfig):
+            # OCI Generative AI through its OpenAI-compatible API: the client signs the requests
+            # with the OCI credentials of the configuration.
+            validate_oci_openai_compatible_config(
+                llm, runtime_name="OpenAI Agents", responses_api_supported=True
+            )
+            oci_client = cast(AsyncOpenAI, create_oci_openai_client(llm, is_async=True))
+            if uses_responses_api(llm):
+                return OAResponsesModel(llm.model_id, oci_client)
+            return OAChatCompletionsModel(llm.model_id, oci_client)
         elif isinstance(llm, AgentSpecOpenAiCompatibleConfig):
             # Map any OpenAI-compatible endpoint via OAOpenAIProvider with custom base_url.
             base_url = llm.url
