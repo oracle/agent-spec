@@ -19,6 +19,7 @@ export const SENSITIVE_FIELDS = {
   SSETransport: new Set(["sensitiveHeaders"]),
   StreamableHTTPTransport: new Set(["sensitiveHeaders"]),
   OciClientConfigWithApiKey: new Set(["authFileLocation"]),
+  OciClientConfigWithGenAiApiKey: new Set(["apiKey"]),
   OciClientConfigWithSecurityToken: new Set(["authFileLocation"]),
   TlsOracleDatabaseConnectionConfig: new Set(["user", "password", "dsn"]),
   MTlsOracleDatabaseConnectionConfig: new Set([

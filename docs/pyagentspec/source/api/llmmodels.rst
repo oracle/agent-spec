@@ -114,6 +114,10 @@ OciGenAi Models
 .. autoclass:: pyagentspec.llms.ociclientconfig.OciClientConfigWithApiKey
     :exclude-members: model_post_init, model_config
 
+.. _ociclientconfigwithgenaiapikey:
+.. autoclass:: pyagentspec.llms.ociclientconfig.OciClientConfigWithGenAiApiKey
+    :exclude-members: model_post_init, model_config
+
 .. _ociclientconfigwithsecuritytoken:
 .. autoclass:: pyagentspec.llms.ociclientconfig.OciClientConfigWithSecurityToken
     :exclude-members: model_post_init, model_config
