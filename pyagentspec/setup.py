@@ -140,7 +140,7 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "pyOpenSSL>=26.0.0,<27.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
-            "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.8.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
         ],
         "wayflow_a2a": [
             # 3rd party dependencies (imported in code)
@@ -162,12 +162,12 @@ setup(
             # 4rth party dependencies
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
-            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.8.0",  # needed to avoid CVE present in earlier versions
         ],
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.14.2,<5.0.0",
-            "litellm>=1.84.0,<2.0; python_version < '3.14'",
+            "litellm>=1.104.2,<2.0",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.184.2",
             "numpy>=2.2.6",
@@ -175,7 +175,7 @@ setup(
             "certifi>=2025.1.31",  # needed to avoid CVE present in earlier versions
             "cryptography>=50.0.0",  # needed to avoid CVE present in earlier versions
             "pyOpenSSL>=26.0.0,<27.0.0",  # needed to avoid CVE present in earlier versions
-            "urllib3>=2.7.0",  # needed to avoid CVE present in earlier versions
+            "urllib3>=2.8.0",  # needed to avoid CVE present in earlier versions
         ],
     },
 )
