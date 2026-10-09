@@ -9,7 +9,7 @@
 from typing import Any, Dict, List, Mapping, Tuple, Type, cast
 
 from pydantic import BaseModel, ValidationError
-from pydantic_core import InitErrorDetails
+from pydantic_core import InitErrorDetails, PydanticCustomError
 
 from pyagentspec.component import Component
 from pyagentspec.serialization.deserializationcontext import DeserializationContext
@@ -57,7 +57,11 @@ class PydanticComponentDeserializationPlugin(ComponentDeserializationPlugin):
         if len(validation_errors) > 0:
             line_errors = [
                 InitErrorDetails(
-                    type=e.type,
+                    # Several pydantic error types (e.g. ``value_error`` raised by custom
+                    # validators) cannot be rebuilt from their type alone, they need the context
+                    # of the original error to render their message. Wrapping the type and the
+                    # message in a ``PydanticCustomError`` preserves both without the context.
+                    type=PydanticCustomError(e.type, e.msg),
                     loc=e.loc,
                     input=(),
                 )

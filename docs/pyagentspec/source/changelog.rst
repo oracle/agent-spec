@@ -36,6 +36,16 @@ Improvements
 Bug fixes
 ^^^^^^^^^
 
+* **Validation error messages preserved during deserialization**
+
+  Deserializing an invalid component with ``from_dict``, ``from_json`` or ``from_yaml`` failed with
+  ``TypeError: ValueError: 'error' required in context`` whenever a custom validator rejected the
+  component (for example a ``Flow`` with an unreachable ``EndNode`` or an ``Agent`` declaring an
+  input that is not in its prompt), hiding the actual problem. Deserialization now raises a
+  ``ValidationError`` carrying the original error type and message.
+  
+  We thank @fede-kamel for the contribution!
+
 * **LangGraph adapter: agent outputs answered as plain text**
 
   When an agent with declared outputs ended its run with a plain message instead of calling
