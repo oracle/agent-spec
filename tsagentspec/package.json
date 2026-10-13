@@ -28,6 +28,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./adapters/mastra": {
+      "types": "./dist/adapters/mastra/index.d.ts",
+      "import": "./dist/adapters/mastra/index.js",
+      "require": "./dist/adapters/mastra/index.cjs"
     }
   },
   "files": [
@@ -44,6 +49,18 @@
   "dependencies": {
     "yaml": "^2.8.3",
     "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "@mastra/core": "^1.45.0",
+    "@mastra/pg": "^1.14.0"
+  },
+  "peerDependenciesMeta": {
+    "@mastra/core": {
+      "optional": true
+    },
+    "@mastra/pg": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
