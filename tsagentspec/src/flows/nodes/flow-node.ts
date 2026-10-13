@@ -10,6 +10,7 @@ import { LazyFlowRef } from "../lazy-schemas.js";
 export const FlowNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("FlowNode"),
   subflow: LazyFlowRef,
+  propagatePendingInput: z.boolean().default(true),
 });
 
 export type FlowNode = z.infer<typeof FlowNodeSchema>;
@@ -22,6 +23,7 @@ export function createFlowNode(opts: {
   metadata?: Record<string, unknown>;
   inputs?: Property[];
   outputs?: Property[];
+  propagatePendingInput?: boolean;
 }): FlowNode {
   const subflow = opts.subflow;
   const inputs =

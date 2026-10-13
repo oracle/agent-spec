@@ -12,6 +12,7 @@ from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.node import Node
 from pyagentspec.flows.nodes.endnode import EndNode
 from pyagentspec.property import Property
+from pyagentspec.versioning import AgentSpecVersionEnum
 
 
 class FlowNode(Node):
@@ -26,6 +27,11 @@ class FlowNode(Node):
     - **Branches**
         Inferred from the inner flow, one per each different value of the attribute
         ``branch_name`` of the nodes of type EndNode in the inner flow.
+    - **Pending input**
+        If the subflow execution pauses to request input from a user or external caller,
+        the pending input state is propagated through the ``FlowNode`` by default. This
+        preserves the inline semantics of the subflow and lets the parent flow surface
+        the child prompt and resume only after the child input is supplied.
 
     Example
     -------
@@ -258,6 +264,23 @@ class FlowNode(Node):
 
     subflow: Flow
     """The flow that should be executed"""
+
+    propagate_pending_input: bool = True
+    """Whether pending input requests raised inside the subflow propagate through this FlowNode."""
+
+    def _versioned_model_fields_to_exclude(
+        self, agentspec_version: AgentSpecVersionEnum
+    ) -> set[str]:
+        fields_to_exclude = super()._versioned_model_fields_to_exclude(agentspec_version)
+        if agentspec_version < AgentSpecVersionEnum.v26_2_0:
+            fields_to_exclude.add("propagate_pending_input")
+        return fields_to_exclude
+
+    def _infer_min_agentspec_version_from_configuration(self) -> AgentSpecVersionEnum:
+        min_version = super()._infer_min_agentspec_version_from_configuration()
+        if not self.propagate_pending_input:
+            min_version = max(min_version, AgentSpecVersionEnum.v26_2_0)
+        return min_version
 
     def _get_inferred_branches(self) -> List[str]:
         if hasattr(self, "subflow"):
