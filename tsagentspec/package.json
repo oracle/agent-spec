@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "yaml": "^2.8.3",
-    "zod": "^3.23.0"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
