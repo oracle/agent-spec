@@ -121,7 +121,7 @@ setup(
             "certifi>=2025.1.31; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "cryptography>=50.0.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             # litellm is included to fix CVEs
-            "litellm>=1.84.0,<2.0; python_version < '3.14'",
+            "litellm>=1.84.0,!=1.107.0,<2.0; python_version < '3.14'",
             "urllib3>=2.7.0; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
             "chromadb>1.5.9; python_version < '3.14'",  # # needed to avoid CVE present in earlier versions
             "uv>=0.11.15; python_version < '3.14'",  # needed to avoid CVE present in earlier versions
@@ -167,7 +167,7 @@ setup(
         "evaluation": [
             # 3rd party dependencies (imported in code)
             "anyio>=4.14.2,<5.0.0",
-            "litellm>=1.104.2,<2.0",
+            "litellm>=1.104.2,!=1.107.0,<2.0",
             "pandas>=2.3.0,<3.0.0",
             "oci>=2.184.2",
             "numpy>=2.2.6",
