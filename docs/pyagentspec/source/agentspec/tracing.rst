@@ -1172,7 +1172,7 @@ self-hosted tracing, and use
 `Arize AX <https://arize.com/docs/ax/integrations/python-agent-frameworks/agentspec/agentspec-tracing>`_
 for managed production observability and evaluation. The same traces can
 support workflows such as
-`agent evaluation <https://arize.com/guides/ai-agent-handbook/agent-evaluation/>`_
+`agent evaluation <https://arize.com/ai-agents/agent-evaluation/>`_
 and `LLM evaluation <https://arize.com/resources/llm-evaluation/>`_.
 
 Tracing with LangGraph
