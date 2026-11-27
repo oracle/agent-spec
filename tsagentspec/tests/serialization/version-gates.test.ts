@@ -8,6 +8,11 @@ import {
   createBuiltinTool,
   createMCPToolBox,
   createStdioTransport,
+  createControlFlowEdge,
+  createEndNode,
+  createFlow,
+  createFlowNode,
+  createStartNode,
   stringProperty,
 } from "../../src/index.js";
 
@@ -16,6 +21,19 @@ function makeLlmConfig() {
     name: "test-llm",
     url: "http://localhost:8000",
     modelId: "gpt-4",
+  });
+}
+
+function makeFlow() {
+  const start = createStartNode({ name: "start" });
+  const end = createEndNode({ name: "end" });
+  return createFlow({
+    name: "flow",
+    startNode: start,
+    nodes: [start, end],
+    controlFlowConnections: [
+      createControlFlowEdge({ name: "start-end", fromNode: start, toNode: end }),
+    ],
   });
 }
 
@@ -164,6 +182,26 @@ describe("version-gated field serialization", () => {
     const dict = JSON.parse(json);
     const toolboxes = dict["toolboxes"] as Record<string, unknown>[];
     expect("requires_confirmation" in toolboxes[0]!).toBe(true);
+  });
+
+  it("should version-gate FlowNode propagatePendingInput before 26.2.0", () => {
+    const serializer = new AgentSpecSerializer();
+    const node = createFlowNode({
+      name: "flow-node",
+      subflow: makeFlow(),
+      propagatePendingInput: false,
+    });
+
+    const oldJson = serializer.toJson(node, {
+      agentspecVersion: AgentSpecVersion.V26_1_0,
+    }) as string;
+    expect("propagate_pending_input" in JSON.parse(oldJson)).toBe(false);
+
+    const newJson = serializer.toJson(node, {
+      agentspecVersion: AgentSpecVersion.V26_2_0,
+    }) as string;
+    const newDict = JSON.parse(newJson);
+    expect(newDict["propagate_pending_input"]).toBe(false);
   });
 
   it("should include everything for current version", () => {
