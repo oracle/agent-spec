@@ -6,12 +6,26 @@ import {
   isBuiltinComponentType,
   getComponentFactory,
 } from "../src/component-registry.js";
+import {
+  BUILTIN_COMPONENT_TYPE_NAMES,
+  isBuiltinComponentTypeName,
+} from "../src/component.js";
 
 describe("component-registry", () => {
   it("should have matching keys in schema and factory maps", () => {
     expect(Object.keys(BUILTIN_SCHEMA_MAP).sort()).toEqual(
       Object.keys(BUILTIN_FACTORY_MAP).sort(),
     );
+  });
+
+  it("should list the same component type names as the registry", () => {
+    expect([...BUILTIN_COMPONENT_TYPE_NAMES].sort()).toEqual(
+      Object.keys(BUILTIN_SCHEMA_MAP).sort(),
+    );
+    for (const componentType of Object.keys(BUILTIN_SCHEMA_MAP)) {
+      expect(isBuiltinComponentTypeName(componentType)).toBe(true);
+    }
+    expect(isBuiltinComponentTypeName("FunctionTransform")).toBe(false);
   });
 
   it("should return the schema for a known component type", () => {

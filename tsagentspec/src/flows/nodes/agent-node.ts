@@ -3,19 +3,20 @@
  */
 import { z } from "zod";
 import type { Property } from "../../property.js";
+import { openComponentUnion, type CustomComponent } from "../../component.js";
 import { AgenticComponentUnion } from "../../agents/index.js";
 import { NodeBaseSchema, DEFAULT_NEXT_BRANCH } from "../node.js";
 
 export const AgentNodeSchema = NodeBaseSchema.extend({
   componentType: z.literal("AgentNode"),
-  agent: AgenticComponentUnion,
+  agent: openComponentUnion(AgenticComponentUnion),
 });
 
 export type AgentNode = z.infer<typeof AgentNodeSchema>;
 
 export function createAgentNode(opts: {
   name: string;
-  agent: z.infer<typeof AgenticComponentUnion>;
+  agent: z.infer<typeof AgenticComponentUnion> | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;

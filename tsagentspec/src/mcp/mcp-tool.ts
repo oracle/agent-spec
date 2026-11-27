@@ -2,21 +2,25 @@
  * MCP Tool and MCP ToolSpec.
  */
 import { z } from "zod";
-import { ComponentWithIOSchema } from "../component.js";
+import {
+  ComponentWithIOSchema,
+  openComponentUnion,
+  type CustomComponent,
+} from "../component.js";
 import type { Property } from "../property.js";
 import { ToolBaseSchema } from "../tools/tool.js";
 import { ClientTransportUnion, type ClientTransport } from "./client-transport.js";
 
 export const MCPToolSchema = ToolBaseSchema.extend({
   componentType: z.literal("MCPTool"),
-  clientTransport: ClientTransportUnion,
+  clientTransport: openComponentUnion(ClientTransportUnion),
 });
 
 export type MCPTool = z.infer<typeof MCPToolSchema>;
 
 export function createMCPTool(opts: {
   name: string;
-  clientTransport: ClientTransport;
+  clientTransport: ClientTransport | CustomComponent;
   id?: string;
   description?: string;
   metadata?: Record<string, unknown>;
