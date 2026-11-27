@@ -1,0 +1,304 @@
+component_type: Flow
+id: main_flow
+name: main_flow
+description: null
+metadata: {}
+inputs:
+- title: n
+  type: integer
+outputs:
+- title: n1
+  type: string
+- title: n2
+  type: integer
+- title: n3
+  type: integer
+start_node:
+  $component_ref: main_start_node
+nodes:
+- $component_ref: main_start_node
+- $component_ref: parallel_flow_node
+- $component_ref: main_end_node
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: main_cf1
+  name: cf1
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: main_start_node
+  from_branch: null
+  to_node:
+    $component_ref: parallel_flow_node
+- component_type: ControlFlowEdge
+  id: main_cf2
+  name: cf2
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: parallel_flow_node
+  from_branch: null
+  to_node:
+    $component_ref: main_end_node
+data_flow_connections: null
+$referenced_components:
+  main_start_node:
+    component_type: StartNode
+    id: main_start_node
+    name: start_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: n
+      type: integer
+    outputs:
+    - title: n
+      type: integer
+    branches:
+    - next
+  parallel_flow_node:
+    component_type: ParallelFlowNode
+    id: parallel_flow_node
+    name: parallel_flow_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: n
+      type: integer
+    outputs:
+    - title: n1
+      type: string
+    - title: n2
+      type: integer
+    - title: n3
+      type: integer
+    branches:
+    - next
+    subflows:
+    - component_type: Flow
+      id: subflow_1
+      name: subflow_1
+      description: null
+      metadata: {}
+      inputs:
+      - title: n
+        type: string
+      outputs:
+      - title: n1
+        type: string
+      start_node:
+        $component_ref: subflow_1_start_node
+      nodes:
+      - $component_ref: subflow_1_start_node
+      - $component_ref: subflow_1_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_1-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_1_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_1_end_node
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: subflow_1-idf0
+        name: idf0
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: subflow_1_start_node
+        source_output: n
+        destination_node:
+          $component_ref: subflow_1_end_node
+        destination_input: n1
+      $referenced_components:
+        subflow_1_start_node:
+          component_type: StartNode
+          id: subflow_1_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n
+            type: string
+          outputs:
+          - title: n
+            type: string
+          branches:
+          - next
+        subflow_1_end_node:
+          component_type: EndNode
+          id: subflow_1_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n1
+            type: string
+          outputs:
+          - title: n1
+            type: string
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: subflow_2
+      name: subflow_2
+      description: null
+      metadata: {}
+      inputs:
+      - title: n
+        type: integer
+      outputs:
+      - title: n2
+        type: integer
+      start_node:
+        $component_ref: subflow_2_start_node
+      nodes:
+      - $component_ref: subflow_2_start_node
+      - $component_ref: subflow_2_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_2-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_2_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_2_end_node
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: subflow_2-idf0
+        name: idf0
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: subflow_2_start_node
+        source_output: n
+        destination_node:
+          $component_ref: subflow_2_end_node
+        destination_input: n2
+      $referenced_components:
+        subflow_2_start_node:
+          component_type: StartNode
+          id: subflow_2_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n
+            type: integer
+          outputs:
+          - title: n
+            type: integer
+          branches:
+          - next
+        subflow_2_end_node:
+          component_type: EndNode
+          id: subflow_2_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n2
+            type: integer
+          outputs:
+          - title: n2
+            type: integer
+          branches: []
+          branch_name: next
+    - component_type: Flow
+      id: subflow_3
+      name: subflow_3
+      description: null
+      metadata: {}
+      inputs:
+      - title: n
+        type: integer
+      outputs:
+      - title: n3
+        type: integer
+      start_node:
+        $component_ref: subflow_3_start_node
+      nodes:
+      - $component_ref: subflow_3_start_node
+      - $component_ref: subflow_3_end_node
+      control_flow_connections:
+      - component_type: ControlFlowEdge
+        id: subflow_3-cf1
+        name: cf1
+        description: null
+        metadata: {}
+        from_node:
+          $component_ref: subflow_3_start_node
+        from_branch: null
+        to_node:
+          $component_ref: subflow_3_end_node
+      data_flow_connections:
+      - component_type: DataFlowEdge
+        id: subflow_3-idf0
+        name: idf0
+        description: null
+        metadata: {}
+        source_node:
+          $component_ref: subflow_3_start_node
+        source_output: n
+        destination_node:
+          $component_ref: subflow_3_end_node
+        destination_input: n3
+      $referenced_components:
+        subflow_3_start_node:
+          component_type: StartNode
+          id: subflow_3_start_node
+          name: start_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n
+            type: integer
+          outputs:
+          - title: n
+            type: integer
+          branches:
+          - next
+        subflow_3_end_node:
+          component_type: EndNode
+          id: subflow_3_end_node
+          name: end_node
+          description: null
+          metadata: {}
+          inputs:
+          - title: n3
+            type: integer
+          outputs:
+          - title: n3
+            type: integer
+          branches: []
+          branch_name: next
+  main_end_node:
+    component_type: EndNode
+    id: main_end_node
+    name: end_node
+    description: null
+    metadata: {}
+    inputs:
+    - title: n1
+      type: string
+    - title: n2
+      type: integer
+    - title: n3
+      type: integer
+    outputs:
+    - title: n1
+      type: string
+    - title: n2
+      type: integer
+    - title: n3
+      type: integer
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

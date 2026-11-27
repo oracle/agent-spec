@@ -1,0 +1,239 @@
+$referenced_components:
+  308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9:
+    branches:
+    - next
+    component_type: ToolNode
+    description: null
+    id: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+    inputs:
+    - title: city
+      type: string
+    - title: continent
+      type: string
+    metadata: {}
+    name: simple tool node to find weather
+    outputs:
+    - default: Unknown
+      title: weather
+      type: string
+    tool:
+      component_type: ServerTool
+      description: find weather by city
+      id: weather_tool
+      inputs:
+      - description: city to find weather for
+        title: city
+        type: string
+      - description: continent of the city
+        title: continent
+        type: string
+      metadata: {}
+      name: weather_tool
+      outputs:
+      - title: weather
+        type: string
+  5279de16-64ea-4823-bb9d-cd497da0d1f3:
+    branches:
+    - next
+    component_type: LlmNode
+    description: null
+    id: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+    inputs:
+    - title: user_input
+      type: string
+    llm_config:
+      component_type: OpenAiCompatibleConfig
+      default_generation_parameters: null
+      description: null
+      id: c393381a-e739-4be6-b08c-24cd82404674
+      metadata: {}
+      model_id: /storage/models/Llama-3.1-70B-Instruct
+      name: Llama-3.1-70B-Instruct
+      url: http://localhost:5006
+    metadata: {}
+    name: simple llm node to return input
+    outputs:
+    - title: country
+      type: string
+    prompt_template: "Return this user input exactly as it is provided: {{user_input}}\n\
+      \    Your answer should be a single string, without modification.\n    Do not\
+      \ include any units, reasoning, or extra text."
+  607b3b13-aa71-44ff-8779-33b58dd758b7:
+    branches:
+    - next
+    component_type: ToolNode
+    description: null
+    id: 607b3b13-aa71-44ff-8779-33b58dd758b7
+    inputs:
+    - title: country
+      type: string
+    metadata: {}
+    name: simple tool node to find city
+    outputs:
+    - title: city
+      type: string
+    - title: continent
+      type: string
+    tool:
+      component_type: ClientTool
+      description: locate city by country
+      id: city_tool
+      inputs:
+      - description: find city
+        title: country
+        type: string
+      metadata: {}
+      name: city_tool
+      outputs:
+      - title: city
+        type: string
+      - title: continent
+        type: string
+  e0804e31-b15d-4744-bf19-a3a0272ddec2:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: e0804e31-b15d-4744-bf19-a3a0272ddec2
+    inputs:
+    - default: Unknown
+      title: weather
+      type: string
+    metadata: {}
+    name: end
+    outputs:
+    - default: Unknown
+      title: weather
+      type: string
+  f4d33f2f-c49f-4774-9575-ac2254f74b82:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: f4d33f2f-c49f-4774-9575-ac2254f74b82
+    inputs:
+    - title: user_input
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - title: user_input
+      type: string
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: f4d33f2f-c49f-4774-9575-ac2254f74b82
+  id: 517739c4-1aa0-4b3f-bce1-f0975f171e28
+  metadata: {}
+  name: start_to_llm
+  to_node:
+    $component_ref: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+  id: bb953875-822b-4aa7-8ab0-e5c9e0fd6aab
+  metadata: {}
+  name: llm_to_city
+  to_node:
+    $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+  id: d2229821-8a68-46bc-8b8b-629eaa90831f
+  metadata: {}
+  name: city_to_weather
+  to_node:
+    $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+  id: 6229ccf3-f9a7-48f9-90bc-7d0ff1b44e2a
+  metadata: {}
+  name: weather_to_end
+  to_node:
+    $component_ref: e0804e31-b15d-4744-bf19-a3a0272ddec2
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: user_input
+  destination_node:
+    $component_ref: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+  id: a64f6270-1809-4411-8dca-79e3fd9b99ce
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: f4d33f2f-c49f-4774-9575-ac2254f74b82
+  source_output: user_input
+- component_type: DataFlowEdge
+  description: null
+  destination_input: country
+  destination_node:
+    $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+  id: 4ad5c9c1-c264-4e0c-9a3e-8c9449436655
+  metadata: {}
+  name: city_edge
+  source_node:
+    $component_ref: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+  source_output: country
+- component_type: DataFlowEdge
+  description: null
+  destination_input: city
+  destination_node:
+    $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+  id: 800bd852-8e63-47ed-a81a-46292d98f203
+  metadata: {}
+  name: weather_edge
+  source_node:
+    $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+  source_output: city
+- component_type: DataFlowEdge
+  description: null
+  destination_input: continent
+  destination_node:
+    $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+  id: 3e04a813-52b4-4e90-9477-a281d1f211c1
+  metadata: {}
+  name: weather_edge
+  source_node:
+    $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+  source_output: continent
+- component_type: DataFlowEdge
+  description: null
+  destination_input: weather
+  destination_node:
+    $component_ref: e0804e31-b15d-4744-bf19-a3a0272ddec2
+  id: faab7cd3-f436-44b2-99b8-e50291cbe605
+  metadata: {}
+  name: weather_end_edge
+  source_node:
+    $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+  source_output: weather
+description: null
+id: 17bb4df1-c4e0-48ac-85c9-8feff9f74e5e
+inputs:
+- title: user_input
+  type: string
+metadata: {}
+name: Simple prompting flow to find weather of a city by country
+nodes:
+- $component_ref: f4d33f2f-c49f-4774-9575-ac2254f74b82
+- $component_ref: 607b3b13-aa71-44ff-8779-33b58dd758b7
+- $component_ref: 308daacd-6fe4-4b38-8ed9-72f8cbd1cfc9
+- $component_ref: 5279de16-64ea-4823-bb9d-cd497da0d1f3
+- $component_ref: e0804e31-b15d-4744-bf19-a3a0272ddec2
+outputs:
+- default: Unknown
+  title: weather
+  type: string
+start_node:
+  $component_ref: f4d33f2f-c49f-4774-9575-ac2254f74b82
+agentspec_version: 25.4.1

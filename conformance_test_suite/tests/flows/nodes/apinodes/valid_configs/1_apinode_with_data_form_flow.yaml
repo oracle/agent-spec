@@ -1,0 +1,131 @@
+component_type: Flow
+id: 2d4f6a8c-0e1f-4b2c-9d3e-5f6a7b8c9d0e
+name: ApiNode flow with form-encoded data
+description: Flow that calls an ApiNode posting application/x-www-form-urlencoded body
+metadata: {}
+inputs:
+- title: city
+  type: string
+- title: note
+  type: string
+outputs:
+- title: weather
+  type: string
+start_node:
+  $component_ref: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+nodes:
+- $component_ref: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+- $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+- $component_ref: 2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+control_flow_connections:
+- component_type: ControlFlowEdge
+  id: aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee
+  name: start_to_api
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+  from_branch: null
+  to_node:
+    $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+- component_type: ControlFlowEdge
+  id: ffffffff-1111-4222-8333-444444444444
+  name: api_to_end
+  description: null
+  metadata: {}
+  from_node:
+    $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+  from_branch: null
+  to_node:
+    $component_ref: 2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+data_flow_connections:
+- component_type: DataFlowEdge
+  id: 11111111-2222-4333-8444-aaaaaaaaaaaa
+  name: city_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+  source_output: city
+  destination_node:
+    $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+  destination_input: city
+- component_type: DataFlowEdge
+  id: 22222222-3333-4444-8555-bbbbbbbbbbbb
+  name: note_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+  source_output: note
+  destination_node:
+    $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+  destination_input: note
+- component_type: DataFlowEdge
+  id: 33333333-4444-4555-8666-cccccccccccc
+  name: weather_edge
+  description: null
+  metadata: {}
+  source_node:
+    $component_ref: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+  source_output: weather
+  destination_node:
+    $component_ref: 2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+  destination_input: weather
+$referenced_components:
+  0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d:
+    component_type: StartNode
+    id: 0f1e2d3c-4b5a-6978-9c0d-1e2f3a4b5c6d
+    name: start
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    outputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    branches:
+    - next
+  1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f:
+    component_type: ApiNode
+    id: 1e2d3c4b-5a6b-7c8d-9e0f-1a2b3c4d5e6f
+    name: Weather forecast (form-encoded)
+    description: null
+    metadata: {}
+    inputs:
+    - title: city
+      type: string
+    - title: note
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches:
+    - next
+    url: http://localhost:5008/weather/forecast_form
+    http_method: POST
+    api_spec_uri: null
+    data: {"city": "{{ city }}", "note": "{{ note }}"}
+    query_params: {}
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+  2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d:
+    component_type: EndNode
+    id: 2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+    name: end
+    description: null
+    metadata: {}
+    inputs:
+    - title: weather
+      type: string
+    outputs:
+    - title: weather
+      type: string
+    branches: []
+    branch_name: next
+agentspec_version: 25.4.2

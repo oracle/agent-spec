@@ -1,0 +1,188 @@
+$referenced_components:
+  my_start_node:
+    component_type: StartNode
+    id: my_start_node
+    inputs: [{title: number, type: integer}]
+    name: MyStartNode
+  my_end_node:
+    component_type: EndNode
+    id: my_end_node
+    name: MyEndNode
+    outputs: [{default: 'Has converged !!', title: status, type: string}]
+  three_times_plus_one_tool:
+    component_type: ServerTool
+    description: Tool that multiplies a number by 3 and adds one
+    id: three_times_plus_one_tool
+    inputs: [{title: number, type: integer}]
+    name: three_times_plus_one_tool
+    outputs: [{title: number, type: integer}]
+  divide_by_two_tool:
+    component_type: ServerTool
+    description: Tool that divides a number by 2
+    id: divide_by_two_tool
+    inputs: [{title: number, type: integer}]
+    name: divide_by_two_tool
+    outputs: [{title: number, type: integer}]
+  get_parity_tool:
+    component_type: ServerTool
+    description: Returns 'even' or 'odd'
+    id: get_parity_tool
+    inputs: [{title: number, type: integer}]
+    name: get_parity_tool
+    outputs: [{title: parity, type: string}]
+  three_times_plus_one_tool_node:
+    component_type: ToolNode
+    id: three_times_plus_one_tool_node
+    name: X3P1 Tool Node
+    tool: {$component_ref: three_times_plus_one_tool}
+  divide_by_two_tool_node:
+    component_type: ToolNode
+    id: divide_by_two_tool_node
+    name: D2 Tool Node
+    tool: {$component_ref: divide_by_two_tool}
+  get_parity_tool_node:
+    component_type: ToolNode
+    id: get_parity_tool_node
+    name: Parity Tool Node
+    tool: {$component_ref: get_parity_tool}
+  select_next_operation_branching_node:
+    component_type: BranchingNode
+    id: select_next_operation_branching_node
+    inputs: [{title: parity, type: string}]
+    mapping: {'even': 'even', 'odd': 'odd'}
+    name: HasSequenceConvergedToOne
+  stop_when_converged_branching_node:
+    component_type: BranchingNode
+    id: stop_when_converged_branching_node
+    inputs: [{title: number, type: string}]
+    mapping: {'1': 'converged'}
+    name: HasSequenceConvergedToOne
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: stop_when_converged_branching_node}
+  name: control_edge
+  from_branch: converged
+  to_node: {$component_ref: my_end_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: stop_when_converged_branching_node}
+  name: control_edge
+  from_branch: default
+  to_node: {$component_ref: get_parity_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: my_start_node}
+  name: control_edge
+  to_node: {$component_ref: get_parity_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: get_parity_tool_node}
+  name: control_edge
+  to_node: {$component_ref: select_next_operation_branching_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_operation_branching_node}
+  name: control_edge
+  from_branch: even
+  to_node: {$component_ref: divide_by_two_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: select_next_operation_branching_node}
+  name: control_edge
+  from_branch: odd
+  to_node: {$component_ref: three_times_plus_one_tool_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: divide_by_two_tool_node}
+  name: control_edge
+  to_node: {$component_ref: stop_when_converged_branching_node}
+- component_type: ControlFlowEdge
+  from_node: {$component_ref: three_times_plus_one_tool_node}
+  name: control_edge
+  to_node: {$component_ref: stop_when_converged_branching_node}
+data_flow_connections:
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: get_parity_tool_node}
+  name: data_edge
+  source_node: {$component_ref: my_start_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: get_parity_tool_node}
+  name: data_edge
+  source_node: {$component_ref: three_times_plus_one_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: get_parity_tool_node}
+  name: data_edge
+  source_node: {$component_ref: divide_by_two_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: divide_by_two_tool_node}
+  name: data_edge
+  source_node: {$component_ref: my_start_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: divide_by_two_tool_node}
+  name: data_edge
+  source_node: {$component_ref: three_times_plus_one_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: divide_by_two_tool_node}
+  name: data_edge
+  source_node: {$component_ref: divide_by_two_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: three_times_plus_one_tool_node}
+  name: data_edge
+  source_node: {$component_ref: my_start_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: three_times_plus_one_tool_node}
+  name: data_edge
+  source_node: {$component_ref: three_times_plus_one_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: three_times_plus_one_tool_node}
+  name: data_edge
+  source_node: {$component_ref: divide_by_two_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: stop_when_converged_branching_node}
+  name: data_edge
+  source_node: {$component_ref: my_start_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: stop_when_converged_branching_node}
+  name: data_edge
+  source_node: {$component_ref: three_times_plus_one_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: number
+  destination_node: {$component_ref: stop_when_converged_branching_node}
+  name: data_edge
+  source_node: {$component_ref: divide_by_two_tool_node}
+  source_output: number
+- component_type: DataFlowEdge
+  destination_input: parity
+  destination_node: {$component_ref: select_next_operation_branching_node}
+  name: data_edge
+  source_node: {$component_ref: get_parity_tool_node }
+  source_output: parity
+id: flow_collatz
+name: Computes Collatz Sequence With Branching
+nodes:
+- $component_ref: my_start_node
+- $component_ref: stop_when_converged_branching_node
+- $component_ref: get_parity_tool_node
+- $component_ref: select_next_operation_branching_node
+- $component_ref: three_times_plus_one_tool_node
+- $component_ref: divide_by_two_tool_node
+- $component_ref: my_end_node
+start_node: {$component_ref: my_start_node}
+agentspec_version: 25.4.1

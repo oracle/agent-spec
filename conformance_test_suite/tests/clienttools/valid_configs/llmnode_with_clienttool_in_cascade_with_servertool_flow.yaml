@@ -1,0 +1,219 @@
+$referenced_components:
+  1667507d-ec95-4aa1-a027-9787eeaf66d1:
+    branches:
+    - next
+    component_type: ToolNode
+    description: null
+    id: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+    inputs:
+    - title: city
+      type: string
+    metadata: {}
+    name: simple tool node to find weather
+    outputs:
+    - default: Unknown
+      title: weather
+      type: string
+    tool:
+      component_type: ServerTool
+      description: find weather by city
+      id: weather_tool
+      inputs:
+      - description: find weather
+        title: city
+        type: string
+      metadata: {}
+      name: weather_tool
+      outputs:
+      - title: weather
+        type: string
+  28727180-a977-45ea-84d5-b7d280feaa85:
+    branches:
+    - next
+    component_type: StartNode
+    description: null
+    id: 28727180-a977-45ea-84d5-b7d280feaa85
+    inputs:
+    - title: user_input
+      type: string
+    metadata: {}
+    name: start
+    outputs:
+    - title: user_input
+      type: string
+  2b9450a1-69f5-45a7-96e9-3bc4edf13b8f:
+    branches:
+    - next
+    component_type: LlmNode
+    description: null
+    id: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+    inputs:
+    - title: user_input
+      type: string
+    llm_config:
+      component_type: OpenAiCompatibleConfig
+      default_generation_parameters: null
+      description: null
+      id: 1dbbab33-c058-4573-9052-0b3d87217423
+      metadata: {}
+      model_id: /storage/models/Llama-3.1-70B-Instruct
+      name: Llama-3.1-70B-Instruct
+      url: http://localhost:5006
+    metadata: {}
+    name: simple llm node to return input
+    outputs:
+    - title: country
+      type: string
+    prompt_template: "Return this user input exactly as it is provided: {{user_input}}\n\
+      \    Your answer should be a single string, without modification.\n    Do not\
+      \ include any units, reasoning, or extra text."
+  76ada2e6-ee0e-4725-bc46-e3d77220b450:
+    branches:
+    - next
+    component_type: ToolNode
+    description: null
+    id: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+    inputs:
+    - title: country
+      type: string
+    metadata: {}
+    name: simple tool node to find city
+    outputs:
+    - title: city
+      type: string
+    tool:
+      component_type: ClientTool
+      description: locate city by country
+      id: city_tool
+      inputs:
+      - description: find city
+        title: country
+        type: string
+      metadata: {}
+      name: city_tool
+      outputs:
+      - title: city
+        type: string
+  b4b31bc6-d8fa-4e2d-8c00-9cb435ca1917:
+    branch_name: next
+    branches: []
+    component_type: EndNode
+    description: null
+    id: b4b31bc6-d8fa-4e2d-8c00-9cb435ca1917
+    inputs:
+    - default: Unknown
+      title: weather
+      type: string
+    metadata: {}
+    name: end
+    outputs:
+    - default: Unknown
+      title: weather
+      type: string
+component_type: Flow
+control_flow_connections:
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 28727180-a977-45ea-84d5-b7d280feaa85
+  id: 76199f37-d0de-44f8-89cb-038a830ae5b1
+  metadata: {}
+  name: start_to_llm
+  to_node:
+    $component_ref: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+  id: afbf7071-541e-4075-85c6-24ec61fa3cf6
+  metadata: {}
+  name: llm_to_city
+  to_node:
+    $component_ref: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+  id: e719f7fc-522a-4b72-8cab-0a865400153e
+  metadata: {}
+  name: city_to_weather
+  to_node:
+    $component_ref: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+- component_type: ControlFlowEdge
+  description: null
+  from_branch: null
+  from_node:
+    $component_ref: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+  id: 99972711-6bba-46f6-9008-cd0ecd6e7de2
+  metadata: {}
+  name: weather_to_end
+  to_node:
+    $component_ref: b4b31bc6-d8fa-4e2d-8c00-9cb435ca1917
+data_flow_connections:
+- component_type: DataFlowEdge
+  description: null
+  destination_input: user_input
+  destination_node:
+    $component_ref: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+  id: ed870b5e-fead-4748-ae0a-a677f9d27078
+  metadata: {}
+  name: query_edge
+  source_node:
+    $component_ref: 28727180-a977-45ea-84d5-b7d280feaa85
+  source_output: user_input
+- component_type: DataFlowEdge
+  description: null
+  destination_input: country
+  destination_node:
+    $component_ref: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+  id: bff0ea30-ddd8-4cd0-a65c-7b8db11b9286
+  metadata: {}
+  name: city_edge
+  source_node:
+    $component_ref: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+  source_output: country
+- component_type: DataFlowEdge
+  description: null
+  destination_input: city
+  destination_node:
+    $component_ref: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+  id: ce617d78-53f6-436c-998e-96c32b94f991
+  metadata: {}
+  name: weather_edge
+  source_node:
+    $component_ref: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+  source_output: city
+- component_type: DataFlowEdge
+  description: null
+  destination_input: weather
+  destination_node:
+    $component_ref: b4b31bc6-d8fa-4e2d-8c00-9cb435ca1917
+  id: b3419b03-a56a-4c1b-babc-d603bc3c4842
+  metadata: {}
+  name: weather_end_edge
+  source_node:
+    $component_ref: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+  source_output: weather
+description: null
+id: f76cec7d-f132-4560-80cf-da1d2af05656
+inputs:
+- title: user_input
+  type: string
+metadata: {}
+name: Simple prompting flow to find weather of a city by country
+nodes:
+- $component_ref: 28727180-a977-45ea-84d5-b7d280feaa85
+- $component_ref: 76ada2e6-ee0e-4725-bc46-e3d77220b450
+- $component_ref: 1667507d-ec95-4aa1-a027-9787eeaf66d1
+- $component_ref: 2b9450a1-69f5-45a7-96e9-3bc4edf13b8f
+- $component_ref: b4b31bc6-d8fa-4e2d-8c00-9cb435ca1917
+outputs:
+- default: Unknown
+  title: weather
+  type: string
+start_node:
+  $component_ref: 28727180-a977-45ea-84d5-b7d280feaa85
+agentspec_version: 25.4.1

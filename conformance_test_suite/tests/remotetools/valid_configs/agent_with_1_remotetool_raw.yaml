@@ -1,0 +1,48 @@
+component_type: Agent
+id: 44444444-4444-4444-8444-444444444444
+name: Agent with RemoteTool raw string data
+description: Agent calling a RemoteTool that posts a raw string body
+metadata: {}
+inputs: []
+outputs:
+- title: llm_output
+  type: string
+  default: ''
+llm_config:
+  component_type: VllmConfig
+  id: 55555555-5555-4555-8555-555555555555
+  name: llama-maverick
+  description: null
+  metadata: {}
+  default_generation_parameters:
+    temperature: 0.1
+  url: http://localhost:5006
+  model_id: Llama-4-Maverick
+system_prompt: |
+  You are a helpful agent.
+  Your duty is to compute the result of the given operation using tools, and to output the result.
+  It's important that you reply with the result only.
+tools:
+- component_type: RemoteTool
+  id: 66666666-6666-4666-8666-666666666666
+  name: send_raw
+  description: Sends a raw string body
+  metadata: {}
+  inputs:
+  - title: city
+    type: string
+  - title: note
+    type: string
+  - title: user
+    type: string
+  outputs:
+  - title: city
+    type: string
+  url: http://localhost:5008/raw/echo_text
+  http_method: POST
+  api_spec_uri: null
+  data: "request body for city: {{city}} with note: {{note}}"
+  query_params: {}
+  headers:
+    X-Caller: '{{user}}'
+agentspec_version: 25.4.2
