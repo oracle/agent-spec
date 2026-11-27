@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     # Keep setuptools on the patched 83.x release line.
-    "setuptools>=83.0.0,<90.0.0",
+    "setuptools>=84.1.0,<90.0.0",
     "wheel",
     # setuptools-scm lets us include all necessary files (e.g. .pyx files) in the source
     # distribution (sdist) without needing a MANIFEST.in file.
