@@ -41,6 +41,10 @@ To consume it from another local project, add it as a local path dependency in t
 
 See the [examples](./examples/README.md) directory.
 
+## Adapters
+
+- [Mastra adapter](./docs/mastra/README.md)
+
 ## License
 
 UPL-1.0 or Apache-2.0 — see [LICENSE-UPL.txt](../LICENSE-UPL.txt) and [LICENSE-APACHE.txt](../LICENSE-APACHE.txt).
