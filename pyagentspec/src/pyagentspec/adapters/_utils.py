@@ -5,8 +5,10 @@
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import re
-from typing import Any, Dict, List, Literal, Tuple, Union
+from copy import deepcopy
+from typing import Any, ClassVar, Dict, FrozenSet, List, Literal, Tuple, Union
 
+from jsonschema import Draft202012Validator
 from pydantic import BaseModel, ConfigDict, Field, create_model
 
 from pyagentspec.property import Property as AgentSpecProperty
@@ -100,6 +102,96 @@ class SchemaRegistry:
         self.models: Dict[str, type[BaseModel]] = {}
 
 
+class AgentSpecObjectModel(BaseModel):
+    """Base class of the pydantic models generated from Agent Spec object schemas.
+
+    The generated models keep the JSON Schema semantics of the property they come from:
+    additional keys are kept when the schema allows them, declared defaults are applied,
+    and optional fields that were neither provided nor defaulted are omitted when the
+    model is converted back to a plain JSON value with :func:`to_json_value`.
+    """
+
+    _agentspec_fields_with_default: ClassVar[FrozenSet[str]] = frozenset()
+
+    def to_json_value(self) -> Dict[str, Any]:
+        """Convert the model back to the plain JSON object it was validated from."""
+        result: Dict[str, Any] = {}
+        for field_name in type(self).model_fields:
+            if (
+                field_name in self.model_fields_set
+                or field_name in self._agentspec_fields_with_default
+            ):
+                result[field_name] = to_json_value(getattr(self, field_name))
+        for extra_name, extra_value in (self.model_extra or {}).items():
+            result[extra_name] = to_json_value(extra_value)
+        return result
+
+
+class _AllowExtraObjectModel(AgentSpecObjectModel):
+    """Generated object model for schemas that allow additional properties."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+class _ForbidExtraObjectModel(AgentSpecObjectModel):
+    """Generated object model for schemas with ``additionalProperties: false``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+def to_json_value(value: Any) -> Any:
+    """Recursively convert generated object models (and tuples) into plain JSON values.
+
+    Pydantic models that do not come from Agent Spec schemas are left untouched so that
+    runtime-specific tools keep receiving their own argument models.
+    """
+    if isinstance(value, AgentSpecObjectModel):
+        return value.to_json_value()
+    if isinstance(value, dict):
+        return {key: to_json_value(inner_value) for key, inner_value in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [to_json_value(inner_value) for inner_value in value]
+    return value
+
+
+def apply_json_schema_defaults(value: Any, json_schema: Dict[str, Any]) -> Any:
+    """Fill the declared defaults of missing object properties, recursively.
+
+    Only object ``properties`` and array ``items`` are traversed; ``anyOf`` alternatives are
+    left untouched because the matching alternative cannot be determined reliably.
+    """
+    if isinstance(value, dict):
+        properties = json_schema.get("properties") or {}
+        if not isinstance(properties, dict):
+            return value
+        result = dict(value)
+        for property_name, property_schema in properties.items():
+            if not isinstance(property_schema, dict):
+                continue
+            if property_name in result:
+                result[property_name] = apply_json_schema_defaults(
+                    result[property_name], property_schema
+                )
+            elif "default" in property_schema:
+                result[property_name] = deepcopy(property_schema["default"])
+        return result
+    if isinstance(value, list):
+        items_schema = json_schema.get("items")
+        if isinstance(items_schema, dict):
+            return [apply_json_schema_defaults(item, items_schema) for item in value]
+    return value
+
+
+def get_json_schema_validation_errors(value: Any, json_schema: Dict[str, Any]) -> List[str]:
+    """Return human-readable validation errors of ``value`` against ``json_schema``.
+
+    An empty list means the value conforms to the schema.
+    """
+    validator = Draft202012Validator(json_schema)
+    errors = sorted(validator.iter_errors(value), key=lambda error: error.json_path)
+    return [f"{error.json_path}: {error.message}" for error in errors]
+
+
 def _build_type_from_schema(
     name: str,
     schema: Dict[str, Any],
@@ -137,6 +229,21 @@ def _build_type_from_schema(
         return List[item_type]  # type: ignore
     # objects
     if t == "object" or ("properties" in schema or "required" in schema):
+        props = schema.get("properties", {}) or {}
+        # JSON Schema allows additional properties unless the schema says otherwise
+        additional_properties = schema.get("additionalProperties", True)
+
+        if not props and additional_properties is not False:
+            # Bare object schema (or a typed dictionary): any object is accepted, so the value
+            # is passed through as a dictionary. An empty pydantic model would silently strip
+            # every key instead.
+            value_type = (
+                _build_type_from_schema(f"{name}Value", additional_properties, registry)
+                if isinstance(additional_properties, dict)
+                else Any
+            )
+            return Dict[str, value_type]  # type: ignore
+
         # Create or reuse a Pydantic model for this object schema
         model_name = schema.get("title") or name
         unique_name = model_name
@@ -145,28 +252,30 @@ def _build_type_from_schema(
             suffix += 1
             unique_name = f"{model_name}_{suffix}"
 
-        props = schema.get("properties", {}) or {}
         required = set(schema.get("required", []))
 
         fields: Dict[str, Tuple[Any, Any]] = {}
+        fields_with_default = set()
         for prop_name, prop_schema in props.items():
             prop_type = _build_type_from_schema(f"{unique_name}_{prop_name}", prop_schema, registry)
             desc = prop_schema.get("description")
-            default_field = (
-                Field(..., description=desc)
-                if prop_name in required
-                else Field(None, description=desc)
-            )
+            if prop_name in required:
+                default_field = Field(..., description=desc)
+            elif "default" in prop_schema:
+                # Omitted optional properties take their declared default
+                default_field = Field(deepcopy(prop_schema["default"]), description=desc)
+                fields_with_default.add(prop_name)
+            else:
+                default_field = Field(None, description=desc)
             fields[prop_name] = (prop_type, default_field)
 
-        # Enforce additionalProperties: False (extra=forbid)
-        extra_forbid = schema.get("additionalProperties") is False
-        model_kwargs: Dict[str, Any] = {}
-        if extra_forbid:
-            # Pydantic v2: pass a ConfigDict/dict into __config__
-            model_kwargs["__config__"] = ConfigDict(extra="forbid")
+        # additionalProperties: False -> extra=forbid, otherwise keep the extra keys (extra=allow)
+        base_model = (
+            _ForbidExtraObjectModel if additional_properties is False else _AllowExtraObjectModel
+        )
 
-        model_cls = create_model(unique_name, **fields, **model_kwargs)  # type: ignore
+        model_cls = create_model(unique_name, __base__=base_model, **fields)  # type: ignore
+        model_cls._agentspec_fields_with_default = frozenset(fields_with_default)
         registry.models[unique_name] = model_cls
         return model_cls
 
