@@ -333,3 +333,47 @@ streamablehttp_mcp_server_mtls = register_server_fixture(
     ),
     deps=_MCP_SERVER_FIXTURE_DEPS,
 )
+
+
+OCI_TEST_SERVICE_ENDPOINT = "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"
+OCI_TEST_COMPARTMENT_ID = "ocid1.compartment.oc1..aaaaaaaafakecompartment"
+OCI_TEST_API_KEY_PROFILE = "APIKEY"
+OCI_TEST_SESSION_PROFILE = "SESSION"
+
+
+@pytest.fixture
+def oci_config_file(tmp_path: Path) -> Path:
+    """An OCI configuration file with an API key profile and a session token profile.
+
+    Both profiles use a private key generated for the test, so requests can be signed offline
+    (see the OCI Generative AI tests of the adapters built on the ``openai`` SDK).
+    """
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    key_file = tmp_path / "oci_api_key.pem"
+    key_file.write_bytes(
+        private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+    )
+    token_file = tmp_path / "token"
+    token_file.write_text("fake-session-token")
+    config_file = tmp_path / "config"
+    config_file.write_text(f"""[{OCI_TEST_API_KEY_PROFILE}]
+user=ocid1.user.oc1..aaaaaaaafakeuser
+fingerprint=aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99
+tenancy=ocid1.tenancy.oc1..aaaaaaaafaketenancy
+region=us-chicago-1
+key_file={key_file}
+
+[{OCI_TEST_SESSION_PROFILE}]
+key_file={key_file}
+security_token_file={token_file}
+tenancy=ocid1.tenancy.oc1..aaaaaaaafaketenancy
+region=us-chicago-1
+""")
+    return config_file

@@ -27,6 +27,7 @@ from pyagentspec.flows.nodes.llmnode import LlmNode
 from pyagentspec.flows.nodes.outputmessagenode import OutputMessageNode
 from pyagentspec.flows.nodes.startnode import StartNode
 from pyagentspec.flows.nodes.toolnode import ToolNode
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 from pyagentspec.serialization.deserializer import AgentSpecDeserializer
 from pyagentspec.serialization.serializer import AgentSpecSerializer
 
@@ -232,6 +233,22 @@ model_id: gpt-4o-mini
         return flow
 
     # ----- Agent Spec -> IR -----
+    @staticmethod
+    def _ensure_llm_config_supported_by_codegen(llm_config: Any, node_name: str) -> None:
+        # The generated source references models by name and relies on the default OpenAI
+        # client. The OCI client (request signing, compartment, endpoint) has no equivalent
+        # there, so emitting the model name alone would silently target the wrong service.
+        if isinstance(llm_config, OciGenAiConfig):
+            raise UnsupportedPatternError(
+                code="OCI_LLM_CONFIG_UNSUPPORTED",
+                message=(
+                    "Flow code generation does not support OciGenAiConfig: the generated code "
+                    "cannot carry the OCI client configuration. Run OCI Generative AI models by "
+                    "loading Agents instead, or use an OpenAiConfig for code generation."
+                ),
+                details={"node": node_name, "model_id": llm_config.model_id},
+            )
+
     def agentspec_to_ir(self, flow: AgentSpecFlow, *, strict: bool = True) -> IRFlow:
         serializer = AgentSpecSerializer()
 
@@ -242,11 +259,15 @@ model_id: gpt-4o-mini
             elif isinstance(node, EndNode):
                 irn = IRNode(id=node.id, name=node.name, kind="end", meta={})
             elif isinstance(node, AgentNode):
+                self._ensure_llm_config_supported_by_codegen(
+                    getattr(node.agent, "llm_config", None), node.name
+                )
                 agent_yaml = serializer.to_yaml(node.agent)
                 irn = IRNode(
                     id=node.id, name=node.name, kind="agent", meta={"agent_spec_yaml": agent_yaml}
                 )
             elif isinstance(node, LlmNode):
+                self._ensure_llm_config_supported_by_codegen(node.llm_config, node.name)
                 llm_yaml = serializer.to_yaml(node.llm_config)
                 prompt = node.prompt_template
                 irn = IRNode(

@@ -8,6 +8,7 @@ import json
 import types
 from typing import Any, Dict, List, Optional, Union, cast, get_args, get_origin
 
+from pyagentspec.adapters._oci_openai_common import oci_genai_config_from_openai_client
 from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.autogen._types import (
     AutogenAssistantAgent,
@@ -32,6 +33,7 @@ from pyagentspec.flows.nodes import EndNode as AgentSpecEndNode
 from pyagentspec.flows.nodes import StartNode as AgentSpecStartNode
 from pyagentspec.flows.nodes import ToolNode as AgentSpecToolNode
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ocigenaiconfig import OciAPIType
 from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
 from pyagentspec.llms.openaiconfig import OpenAiConfig as AgentSpecOpenAiModel
 from pyagentspec.llms.vllmconfig import VllmConfig as AgentSpecVllmModel
@@ -552,6 +554,17 @@ class AutogenToAgentSpecConverter:
             )
         elif isinstance(autogen_llm, AutogenOpenAIChatCompletionClient):
             _autogen_component = autogen_llm.dump_component()
+            model_id = _autogen_component.config["model"]
+            # Clients created for OCI Generative AI sign their requests with OCI credentials and
+            # target the OpenAI-compatible API of the service; they map back to OciGenAiConfig.
+            oci_llm_config = oci_genai_config_from_openai_client(
+                autogen_llm._client,
+                name=model_id,
+                model_id=model_id,
+                api_type=OciAPIType.OPENAI_CHAT_COMPLETIONS,
+            )
+            if oci_llm_config is not None:
+                return oci_llm_config
             if "base_url" in _autogen_component.config and _autogen_component.config["base_url"]:
                 return AgentSpecVllmModel(
                     name=_autogen_component.config["model"],

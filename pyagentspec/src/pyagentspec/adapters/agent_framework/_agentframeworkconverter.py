@@ -8,6 +8,11 @@ from typing import Any, Literal, cast
 
 from pydantic import BaseModel, Field, create_model
 
+from pyagentspec.adapters._oci_openai_common import (
+    create_oci_openai_client,
+    uses_responses_api,
+    validate_oci_openai_compatible_config,
+)
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.agent_framework._types import (
     Agent,
@@ -25,6 +30,7 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms.llmconfig import LlmConfig as AgentSpecLlmConfig
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.llms.openaiconfig import OpenAiConfig
@@ -269,6 +275,19 @@ class AgentSpecToAgentFrameworkConverter:
             )
         elif isinstance(llm_config, OpenAiConfig):
             return openai_client(model=llm_config.model_id)
+        elif isinstance(llm_config, OciGenAiConfig):
+            # OCI Generative AI is reached through its OpenAI-compatible API: the `openai`
+            # client signs every request with the OCI credentials of the client configuration
+            validate_oci_openai_compatible_config(
+                llm_config, runtime_name="Agent Framework", responses_api_supported=True
+            )
+            oci_client_class = (
+                OpenAIChatClient if uses_responses_api(llm_config) else OpenAIChatCompletionClient
+            )
+            return oci_client_class(
+                model=llm_config.model_id,
+                async_client=cast(Any, create_oci_openai_client(llm_config, is_async=True)),
+            )
         else:
             # Bare LlmConfig — dispatch on api_provider string
             if llm_config.api_provider == "openai":
@@ -295,6 +314,16 @@ class AgentSpecToAgentFrameworkConverter:
         chat_client = self.convert(agent.llm_config, tool_registry, converted_components)
         tools = [self.convert(tool, tool_registry, converted_components) for tool in agent.tools]
         prompt = agent.system_prompt
+        default_options: dict[str, Any] = {}
+        if (
+            isinstance(agent.llm_config, OciGenAiConfig)
+            and uses_responses_api(agent.llm_config)
+            and not agent.llm_config.conversation_store_id
+        ):
+            # Without a conversation store, OCI Generative AI does not retain responses, so the
+            # agent must send the whole conversation at every turn instead of chaining the turns
+            # with `previous_response_id` (rejected by the service in that case).
+            default_options["store"] = False
         return Agent(
             id=agent.id,
             name=agent.name,
@@ -302,6 +331,7 @@ class AgentSpecToAgentFrameworkConverter:
             client=cast(BaseChatClient, chat_client),
             tools=cast(AgentFrameworkTool, tools),
             instructions=prompt,
+            default_options=cast(Any, default_options) or None,
             additional_properties=dict(
                 temperature=generation_parameters.temperature,
                 top_p=generation_parameters.top_p,

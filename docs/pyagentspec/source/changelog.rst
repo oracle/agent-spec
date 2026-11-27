@@ -26,6 +26,15 @@ New features
 
   We thank @spichen for the contribution!
 
+* **OCI Generative AI in the AutoGen, Agent Framework and OpenAI Agents adapters**
+
+  ``OciGenAiConfig`` LLMs now run in the AutoGen, Microsoft Agent Framework and OpenAI Agents
+  adapters through the OpenAI-compatible API of OCI Generative AI. A shared client helper signs
+  requests for the IAM ``OciClientConfig`` types with ``oci-genai-auth`` (new ``oci`` extra,
+  ``pip install "pyagentspec[oci]"``) and sends OCI Generative AI API keys as bearer tokens.
+  Chat Completions is supported in all three adapters and the Responses API where the runtime
+  offers it; the runtime-to-Agent-Spec converters rebuild the ``OciGenAiConfig``.
+
 Improvements
 ^^^^^^^^^^^^
 

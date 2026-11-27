@@ -13,6 +13,13 @@ from urllib.parse import urljoin
 
 from pydantic import BaseModel, Field, create_model
 
+from pyagentspec.adapters._oci_openai_common import (
+    OCI_OPENAI_PLACEHOLDER_API_KEY,
+    create_oci_openai_httpx_client,
+    get_oci_openai_base_url,
+    get_oci_openai_retry_kwargs,
+    validate_oci_openai_compatible_config,
+)
 from pyagentspec.adapters._tools_common import _create_remote_tool_func
 from pyagentspec.adapters.autogen._functiontool import FunctionTool
 from pyagentspec.adapters.autogen._types import (
@@ -29,6 +36,7 @@ from pyagentspec.adapters.autogen._types import (
 from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms import LlmConfig as AgentSpecLlmConfig
+from pyagentspec.llms.ocigenaiconfig import OciGenAiConfig as AgentSpecOciGenAiConfig
 from pyagentspec.llms.ollamaconfig import OllamaConfig as AgentSpecOllamaModel
 from pyagentspec.llms.openaicompatibleconfig import (
     OpenAiCompatibleConfig as AgentSpecOpenAiCompatibleModel,
@@ -219,6 +227,23 @@ class AgentSpecToAutogenConverter:
             return AutogenOllamaChatCompletionClient(**llm_args)
         elif isinstance(agentspec_llm, AgentSpecOpenAiCompatibleModel):
             return AutogenOpenAIChatCompletionClient(**_prepare_llm_args(agentspec_llm))
+        elif isinstance(agentspec_llm, AgentSpecOciGenAiConfig):
+            # OCI Generative AI is reached through its OpenAI-compatible API: requests are signed
+            # with the OCI credentials by the httpx client. The http client is not part of the
+            # picklable configuration of the AutoGen client (`dump_component` omits it).
+            validate_oci_openai_compatible_config(
+                agentspec_llm, runtime_name="AutoGen", responses_api_supported=False
+            )
+            # `http_client` is accepted by the client (it is one of the `openai` init arguments
+            # AutoGen forwards) although its typed configuration does not declare it.
+            return AutogenOpenAIChatCompletionClient(  # type: ignore[call-arg]
+                model=agentspec_llm.model_id,
+                base_url=get_oci_openai_base_url(agentspec_llm),
+                api_key=OCI_OPENAI_PLACEHOLDER_API_KEY,
+                http_client=create_oci_openai_httpx_client(agentspec_llm, is_async=True),
+                model_info=_prepare_model_info(agentspec_llm),
+                **get_oci_openai_retry_kwargs(agentspec_llm.retry_policy),
+            )
         else:
             # Bare LlmConfig — dispatch on api_provider string
             if agentspec_llm.api_provider == "openai":

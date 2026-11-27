@@ -7,6 +7,7 @@
 import typing
 from typing import Any, Union, cast, get_args, get_origin, get_type_hints
 
+from pyagentspec.adapters._oci_openai_common import oci_genai_config_from_openai_client
 from pyagentspec.adapters._utils import _get_obj_reference
 from pyagentspec.adapters.agent_framework._types import (
     Agent,
@@ -23,6 +24,7 @@ from pyagentspec.agent import Agent as AgentSpecAgent
 from pyagentspec.component import Component as AgentSpecComponent
 from pyagentspec.llms.llmconfig import LlmConfig
 from pyagentspec.llms.llmgenerationconfig import LlmGenerationConfig
+from pyagentspec.llms.ocigenaiconfig import OciAPIType
 from pyagentspec.llms.openaicompatibleconfig import OpenAIAPIType, OpenAiCompatibleConfig
 from pyagentspec.mcp.clienttransport import StdioTransport, StreamableHTTPTransport
 from pyagentspec.mcp.tools import MCPTool
@@ -187,19 +189,34 @@ class AgentFrameworkToAgentSpecConverter:
         self,
         chat_client: AgentFrameworkLlmConfig,
         referenced_objects: dict[str, AgentSpecComponent],
-    ) -> OpenAiCompatibleConfig:
+    ) -> LlmConfig:
         if isinstance(chat_client, (OpenAIChatClient, OpenAIChatCompletionClient)):
             if chat_client.model is None:
                 # Defensive check for None in some versions due to fast iteration
                 # Once the framework stabilizes and the type is set in stone this check can be removed
                 raise ValueError(f"model for {type(chat_client)} is not set.")
+            is_responses_client = isinstance(chat_client, OpenAIChatClient)
+            # Clients created for OCI Generative AI (OpenAI-compatible API with OCI request
+            # signing) are mapped back to an OciGenAiConfig
+            oci_llm_config = oci_genai_config_from_openai_client(
+                chat_client.client,
+                name=chat_client.model,
+                model_id=chat_client.model,
+                api_type=(
+                    OciAPIType.OPENAI_RESPONSES
+                    if is_responses_client
+                    else OciAPIType.OPENAI_CHAT_COMPLETIONS
+                ),
+            )
+            if oci_llm_config is not None:
+                return oci_llm_config
             return OpenAiCompatibleConfig(
                 name=chat_client.model,
                 model_id=chat_client.model,
                 url=chat_client.service_url(),
                 api_type=(
                     OpenAIAPIType.RESPONSES
-                    if isinstance(chat_client, OpenAIChatClient)
+                    if is_responses_client
                     else OpenAIAPIType.CHAT_COMPLETIONS
                 ),
             )
