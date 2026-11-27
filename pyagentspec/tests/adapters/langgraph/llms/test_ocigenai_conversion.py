@@ -12,6 +12,7 @@ import pytest
 from pyagentspec.adapters.langgraph._langgraphconverter import AgentSpecToLangGraphConverter
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfigWithApiKey,
+    OciClientConfigWithGenAiApiKey,
     OciClientConfigWithInstancePrincipal,
     OciClientConfigWithSecurityToken,
 )
@@ -265,3 +266,13 @@ def test_reverse_convert_chatocigenai_to_agentspec_real():
     assert component.llm_config.compartment_id == OCI_COMPARTMENT_ID
     client_cfg = component.llm_config.client_config
     assert isinstance(client_cfg, OciClientConfigWithApiKey)
+
+
+def test_ocigenai_llm_conversion_rejects_genai_api_key_client_config() -> None:
+    # langchain-oci authenticates with OCI IAM credentials only; a Generative AI API key
+    # (bearer token for the OpenAI-compatible API) has no equivalent in ChatOCIGenAI
+    client_config = OciClientConfigWithGenAiApiKey(
+        name="with_genai_api_key", service_endpoint=OCI_SERVICE_ENDPOINT, api_key="sk-test"
+    )
+    with pytest.raises(NotImplementedError, match="Generative AI API key"):
+        AgentSpecToLangGraphConverter()._oci_client_config_to_langgraph(client_config)

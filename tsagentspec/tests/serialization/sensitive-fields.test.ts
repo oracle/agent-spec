@@ -6,6 +6,8 @@ import {
   createOllamaConfig,
   createVllmConfig,
   createOpenAiConfig,
+  createOciGenAiConfig,
+  createOciClientConfigWithGenAiApiKey,
   createRemoteTool,
   stringProperty,
 } from "../../src/index.js";
@@ -40,6 +42,33 @@ describe("sensitive field exclusion", () => {
     const dict = JSON.parse(json);
     const llmDict = dict["llm_config"] as Record<string, unknown>;
     expect("api_key" in llmDict).toBe(false);
+  });
+
+  it("should exclude apiKey from OciClientConfigWithGenAiApiKey", () => {
+    const serializer = new AgentSpecSerializer();
+    const llm = createOciGenAiConfig({
+      name: "oci",
+      modelId: "meta.llama-3.3-70b-instruct",
+      compartmentId: "ocid1.compartment.oc1..aaa",
+      clientConfig: createOciClientConfigWithGenAiApiKey({
+        name: "oci-client",
+        serviceEndpoint:
+          "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+        apiKey: "sk-secret",
+      }),
+    });
+    const agent = createAgent({
+      name: "agent",
+      llmConfig: llm,
+      systemPrompt: "Hello",
+    });
+    const json = serializer.toJson(agent) as string;
+    expect(json).not.toContain("sk-secret");
+    const dict = JSON.parse(json);
+    const llmDict = dict["llm_config"] as Record<string, unknown>;
+    const clientDict = llmDict["client_config"] as Record<string, unknown>;
+    expect("api_key" in clientDict).toBe(false);
+    expect(clientDict["auth_type"]).toBe("GENAI_API_KEY");
   });
 
   it("should exclude apiKey from OllamaConfig", () => {

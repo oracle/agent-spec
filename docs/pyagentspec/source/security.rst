@@ -133,6 +133,12 @@ If sensitive values are explicitly included in an Agent Spec configuration for a
 local workflow, treat that configuration as secret material. Do not commit, log, share,
 or persist it except in systems approved for storing secrets.
 
+OCI Generative AI API keys (``OciClientConfigWithGenAiApiKey.api_key``) are sensitive fields and
+follow the same rules. Oracle recommends them for testing and early development; prefer the
+IAM-based ``OciClientConfig`` types (instance or resource principals in particular) for
+production workloads, and leave ``api_key`` unset so that runtimes read it from the
+``OCI_GENAI_API_KEY`` environment variable instead of the configuration.
+
 Furthermore, follow these general best practices around credential management
 
 * Rotate credentials regularly.

@@ -606,6 +606,16 @@
         }
       ]
     },
+    "OciClientConfigWithGenAiApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithGenAiApiKey"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ]
+    },
     "OciClientConfigWithInstancePrincipal": {
       "anyOf": [
         {
@@ -4905,6 +4915,9 @@
           "$ref": "#/$defs/OciClientConfigWithApiKey"
         },
         {
+          "$ref": "#/$defs/OciClientConfigWithGenAiApiKey"
+        },
+        {
           "$ref": "#/$defs/OciClientConfigWithInstancePrincipal"
         },
         {
@@ -4984,6 +4997,79 @@
         "service_endpoint"
       ],
       "title": "OciClientConfigWithApiKey",
+      "type": "object",
+      "x-abstract-component": false
+    },
+    "BaseOciClientConfigWithGenAiApiKey": {
+      "additionalProperties": false,
+      "description": "OCI client config class for authentication using an OCI Generative AI API key.\n\nGenerative AI API keys are created in the OCI Generative AI service, are scoped to a\ncompartment and a region, and are sent as a bearer token to the OpenAI-compatible API of the\nservice (``<service_endpoint>/openai/v1``). They require neither an OCI configuration file nor\nrequest signing. They only authorize model inference, so this client configuration cannot be\nused to reach other OCI services such as the Agents service.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "service_endpoint": {
+          "title": "Service Endpoint",
+          "type": "string"
+        },
+        "auth_type": {
+          "const": "GENAI_API_KEY",
+          "default": "GENAI_API_KEY",
+          "title": "Auth Type",
+          "type": "string"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key"
+        },
+        "$referenced_components": {
+          "$ref": "#/$defs/ReferencedComponents"
+        },
+        "component_type": {
+          "const": "OciClientConfigWithGenAiApiKey"
+        }
+      },
+      "required": [
+        "name",
+        "service_endpoint"
+      ],
+      "title": "OciClientConfigWithGenAiApiKey",
       "type": "object",
       "x-abstract-component": false
     },
@@ -7965,6 +8051,9 @@
             "$ref": "#/$defs/BaseOciClientConfigWithApiKey"
           },
           {
+            "$ref": "#/$defs/BaseOciClientConfigWithGenAiApiKey"
+          },
+          {
             "$ref": "#/$defs/BaseOciClientConfigWithInstancePrincipal"
           },
           {
@@ -8724,6 +8813,21 @@
         }
       }
     },
+    "VersionedOciClientConfigWithGenAiApiKey": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseOciClientConfigWithGenAiApiKey"
+        },
+        {
+          "$ref": "#/$defs/ComponentReference"
+        }
+      ],
+      "properties": {
+        "agentspec_version": {
+          "$ref": "#/$defs/AgentSpecVersionEnum"
+        }
+      }
+    },
     "VersionedOciClientConfigWithInstancePrincipal": {
       "anyOf": [
         {
@@ -9323,6 +9427,9 @@
     },
     {
       "$ref": "#/$defs/VersionedOciClientConfigWithApiKey"
+    },
+    {
+      "$ref": "#/$defs/VersionedOciClientConfigWithGenAiApiKey"
     },
     {
       "$ref": "#/$defs/VersionedOciClientConfigWithInstancePrincipal"

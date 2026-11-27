@@ -148,6 +148,10 @@
                 "name": "pyagentspec.llms.OciClientConfigWithApiKey"
             },
             {
+                "path": "pyagentspec.llms.ociclientconfig.OciClientConfigWithGenAiApiKey",
+                "name": "pyagentspec.llms.OciClientConfigWithGenAiApiKey"
+            },
+            {
                 "path": "pyagentspec.llms.ociclientconfig.OciClientConfigWithSecurityToken",
                 "name": "pyagentspec.llms.OciClientConfigWithSecurityToken"
             },

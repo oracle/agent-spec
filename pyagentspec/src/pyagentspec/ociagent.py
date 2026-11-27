@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -9,10 +9,12 @@
 from typing import Optional
 
 from pydantic import SerializeAsAny
+from typing_extensions import Self
 
-from pyagentspec.llms.ociclientconfig import OciClientConfig
+from pyagentspec.llms.ociclientconfig import OciClientConfig, OciClientConfigWithGenAiApiKey
 from pyagentspec.remoteagent import RemoteAgent
 from pyagentspec.retrypolicy import RetryPolicy
+from pyagentspec.validation_helpers import model_validator_with_error_accumulation
 from pyagentspec.versioning import AgentSpecVersionEnum
 
 
@@ -32,6 +34,17 @@ class OciAgent(RemoteAgent):
 
     retry_policy: Optional[RetryPolicy] = None
     """Optional retry configuration for calls sent to the remote OCI agent."""
+
+    @model_validator_with_error_accumulation
+    def _validate_client_config_can_reach_the_agents_service(self) -> Self:
+        if isinstance(self.client_config, OciClientConfigWithGenAiApiKey):
+            raise ValueError(
+                "OciAgent does not support OciClientConfigWithGenAiApiKey: OCI Generative AI API "
+                "keys only authorize model inference and cannot reach the OCI Agents service. Use "
+                "an IAM-based OciClientConfig (API_KEY, SECURITY_TOKEN, INSTANCE_PRINCIPAL or "
+                "RESOURCE_PRINCIPAL)."
+            )
+        return self
 
     def _versioned_model_fields_to_exclude(
         self, agentspec_version: AgentSpecVersionEnum

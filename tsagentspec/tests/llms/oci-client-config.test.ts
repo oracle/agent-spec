@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   createOciClientConfigWithApiKey,
+  createOciClientConfigWithGenAiApiKey,
   createOciClientConfigWithInstancePrincipal,
   createOciClientConfigWithResourcePrincipal,
   createOciClientConfigWithSecurityToken,
@@ -120,6 +121,40 @@ describe("OciClientConfigWithSecurityToken", () => {
       serviceEndpoint: "https://x",
       authProfile: "p",
       authFileLocation: "f",
+    });
+    expect(Object.isFrozen(config)).toBe(true);
+  });
+});
+
+describe("OciClientConfigWithGenAiApiKey", () => {
+  it("should create with required fields", () => {
+    const config = createOciClientConfigWithGenAiApiKey({
+      name: "oci-genai-api-key",
+      serviceEndpoint:
+        "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+      apiKey: "sk-secret",
+    });
+    expect(config.componentType).toBe("OciClientConfigWithGenAiApiKey");
+    expect(config.authType).toBe("GENAI_API_KEY");
+    expect(config.serviceEndpoint).toBe(
+      "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+    );
+    expect(config.apiKey).toBe("sk-secret");
+  });
+
+  it("should let the runtime resolve the api key when it is not set", () => {
+    const config = createOciClientConfigWithGenAiApiKey({
+      name: "oci-genai-api-key",
+      serviceEndpoint: "https://x",
+    });
+    expect(config.apiKey).toBeUndefined();
+    expect(config.authType).toBe("GENAI_API_KEY");
+  });
+
+  it("should be frozen", () => {
+    const config = createOciClientConfigWithGenAiApiKey({
+      name: "c",
+      serviceEndpoint: "https://x",
     });
     expect(Object.isFrozen(config)).toBe(true);
   });

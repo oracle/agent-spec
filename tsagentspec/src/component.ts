@@ -95,6 +95,7 @@ export type ComponentTypeName =
   | "StreamableHTTPmTLSTransport"
   | "RemoteTransport"
   | "OciClientConfigWithApiKey"
+  | "OciClientConfigWithGenAiApiKey"
   | "OciClientConfigWithInstancePrincipal"
   | "OciClientConfigWithResourcePrincipal"
   | "OciClientConfigWithSecurityToken"

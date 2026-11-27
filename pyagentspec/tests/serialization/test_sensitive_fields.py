@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -14,6 +14,7 @@ from pyagentspec.flows.nodes import AgentNode, ApiNode, EndNode, StartNode
 from pyagentspec.llms import OpenAiCompatibleConfig
 from pyagentspec.llms.ociclientconfig import (
     OciClientConfigWithApiKey,
+    OciClientConfigWithGenAiApiKey,
     OciClientConfigWithSecurityToken,
 )
 from pyagentspec.mcp import MCPToolBox
@@ -50,6 +51,11 @@ from pyagentspec.tools import RemoteTool
             auth_file_location="path/to/abcdexyz.json",
             auth_profile="default",
             service_endpoint="https://some.url",
+        ),
+        OciClientConfigWithGenAiApiKey(
+            name="name",
+            service_endpoint="https://some.url",
+            api_key="sk-abcdexyz",
         ),
         RemoteTool(
             name="name",

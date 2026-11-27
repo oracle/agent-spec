@@ -1,4 +1,4 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
@@ -6,7 +6,11 @@
 
 import pytest
 
-from pyagentspec.llms.ociclientconfig import OciClientConfig, OciClientConfigWithInstancePrincipal
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfig,
+    OciClientConfigWithGenAiApiKey,
+    OciClientConfigWithInstancePrincipal,
+)
 from pyagentspec.llms.ocigenaiconfig import ModelProvider, OciAPIType, OciGenAiConfig, ServingMode
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
 from pyagentspec.versioning import AgentSpecVersionEnum
@@ -147,3 +151,82 @@ def test_cannot_serialize_xai_ocigenai_config_with_old_versions(
         _ = AgentSpecSerializer().to_yaml(
             oci_xai_llm_config, agentspec_version=AgentSpecVersionEnum.v26_1_0
         )
+
+
+@pytest.fixture
+def oci_genai_api_key_llm_config() -> OciGenAiConfig:
+    return OciGenAiConfig(
+        name="oci_llm",
+        id="oci_llm_123",
+        model_id="meta.llama-3.3-70b-instruct",
+        client_config=OciClientConfigWithGenAiApiKey(
+            id="my_oci_config_id",
+            name="my_oci_config",
+            service_endpoint="my_llm_endpoint",
+            api_key="sk-secret",
+        ),
+        compartment_id="my_compartment",
+        api_type=OciAPIType.OPENAI_CHAT_COMPLETIONS,
+    )
+
+
+def test_genai_api_key_client_config_requires_agentspec_26_4_0(
+    oci_genai_api_key_llm_config: OciGenAiConfig,
+) -> None:
+    assert (
+        oci_genai_api_key_llm_config.client_config.min_agentspec_version
+        == AgentSpecVersionEnum.v26_4_0
+    )
+    # The client configuration lower-bounds the version of the whole LLM configuration
+    min_version, min_component = (
+        oci_genai_api_key_llm_config._get_min_agentspec_version_and_component()
+    )
+    assert min_version == AgentSpecVersionEnum.v26_4_0
+    assert min_component is oci_genai_api_key_llm_config.client_config
+
+
+def test_can_serialize_and_deserialize_genai_api_key_ocigenai_config(
+    oci_genai_api_key_llm_config: OciGenAiConfig,
+) -> None:
+    serialized_llm = AgentSpecSerializer().to_yaml(
+        oci_genai_api_key_llm_config, agentspec_version=AgentSpecVersionEnum.v26_4_0
+    )
+    assert "agentspec_version: 26.4.0" in serialized_llm
+    assert "component_type: OciClientConfigWithGenAiApiKey" in serialized_llm
+    assert "auth_type: GENAI_API_KEY" in serialized_llm
+    assert "sk-secret" not in serialized_llm
+    deserialized_llm = AgentSpecDeserializer().from_yaml(
+        serialized_llm, components_registry={"my_oci_config_id.api_key": "sk-secret"}
+    )
+    assert isinstance(deserialized_llm, OciGenAiConfig)
+    assert isinstance(deserialized_llm.client_config, OciClientConfigWithGenAiApiKey)
+    assert deserialized_llm.client_config.api_key == "sk-secret"
+    assert deserialized_llm._is_equal(
+        oci_genai_api_key_llm_config, fields_to_exclude=["min_agentspec_version"]
+    )
+
+
+def test_cannot_serialize_genai_api_key_ocigenai_config_with_old_versions(
+    oci_genai_api_key_llm_config: OciGenAiConfig,
+) -> None:
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        _ = AgentSpecSerializer().to_yaml(
+            oci_genai_api_key_llm_config, agentspec_version=AgentSpecVersionEnum.v26_3_1
+        )
+
+
+def test_cannot_deserialize_genai_api_key_client_config_from_old_versions() -> None:
+    serialized_client_config = """{
+      "component_type": "OciClientConfigWithGenAiApiKey",
+      "id": "my_oci_config_id",
+      "name": "my_oci_config",
+      "service_endpoint": "my_llm_endpoint",
+      "auth_type": "GENAI_API_KEY",
+      "agentspec_version": "26.3.1"
+    }"""
+    with pytest.raises(ValueError, match="Invalid agentspec_version"):
+        AgentSpecDeserializer().from_json(serialized_client_config)
+    accepted = serialized_client_config.replace('"26.3.1"', '"26.4.0"')
+    client_config = AgentSpecDeserializer().from_json(accepted)
+    assert isinstance(client_config, OciClientConfigWithGenAiApiKey)
+    assert client_config.api_key is None

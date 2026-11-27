@@ -1,13 +1,17 @@
-# Copyright © 2025 Oracle and/or its affiliates.
+# Copyright © 2025, 2026 Oracle and/or its affiliates.
 #
 # This software is under the Apache License 2.0
 # (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) or Universal Permissive License
 # (UPL) 1.0 (LICENSE-UPL or https://oss.oracle.com/licenses/upl), at your option.
 
 import pytest
+from pydantic import ValidationError
 
 from pyagentspec.flows.nodes import AgentNode
-from pyagentspec.llms.ociclientconfig import OciClientConfigWithInstancePrincipal
+from pyagentspec.llms.ociclientconfig import (
+    OciClientConfigWithGenAiApiKey,
+    OciClientConfigWithInstancePrincipal,
+)
 from pyagentspec.ociagent import OciAgent
 from pyagentspec.retrypolicy import RetryPolicy
 from pyagentspec.serialization import AgentSpecDeserializer, AgentSpecSerializer
@@ -97,3 +101,15 @@ def test_deserialize_oci_agent_from_file(oci_agent: OciAgent) -> None:
     serialized_agent = read_agentspec_config_file("ociagent.yaml")
     deserialized_assistant = AgentSpecDeserializer().from_yaml(serialized_agent)
     assert deserialized_assistant.name == oci_agent.name
+
+
+def test_oci_agent_rejects_genai_api_key_client_config() -> None:
+    # Generative AI API keys only authorize model inference, not the OCI Agents service
+    with pytest.raises(ValidationError, match="OciClientConfigWithGenAiApiKey"):
+        OciAgent(
+            name="oci_agent",
+            client_config=OciClientConfigWithGenAiApiKey(
+                name="my_oci_config", service_endpoint="my_service_endpoint", api_key="sk-secret"
+            ),
+            agent_endpoint_id="my_agent_endpoint",
+        )
