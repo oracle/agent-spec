@@ -11,10 +11,48 @@ import pytest
 from pyagentspec.flows.edges import ControlFlowEdge, DataFlowEdge
 from pyagentspec.flows.flow import Flow
 from pyagentspec.flows.nodes import EndNode, LlmNode, StartNode
-from pyagentspec.llms import LlmGenerationConfig, VllmConfig
-from pyagentspec.property import StringProperty
+from pyagentspec.llms import LlmConfig, LlmGenerationConfig, VllmConfig
+from pyagentspec.property import Property, StringProperty
 
 from ....retry_test import retry_test
+
+
+def test_llmnode_structured_output_schema_has_description(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Structured output schemas include the metadata required by tool-based providers."""
+    from pyagentspec.adapters.langgraph import _node_execution
+
+    class FakeChatModel:
+        def __init__(self) -> None:
+            self.captured_schema: dict | None = None
+
+        def with_structured_output(self, schema: dict) -> object:
+            self.captured_schema = schema
+            return object()
+
+    monkeypatch.setattr(_node_execution, "BaseChatModel", FakeChatModel)
+    llm_node = LlmNode(
+        name="llm_node",
+        llm_config=LlmConfig(name="test", model_id="test-model", api_provider="test"),
+        prompt_template="irrelevant",
+        outputs=[
+            Property(json_schema={"title": "name", "type": "string"}),
+            Property(json_schema={"title": "active", "type": "boolean"}),
+        ],
+    )
+    fake_llm = FakeChatModel()
+
+    executor = _node_execution.LlmNodeExecutor(llm_node, fake_llm)
+
+    assert executor.requires_structured_generation is True
+    assert fake_llm.captured_schema == {
+        "title": "structured_output",
+        "description": "Structured output for the LLM node.",
+        "type": "object",
+        "properties": {
+            "name": {"title": "name", "type": "string"},
+            "active": {"title": "active", "type": "boolean"},
+        },
+    }
 
 
 @pytest.fixture()
